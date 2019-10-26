@@ -1,6 +1,6 @@
 @echo off
 set DIR=%~dp0
-set DIR=%DIR%bCNC\
+set DIR=%DIR%OKKCNC\
 set PYTHONPATH=%DIR%lib;%DIR%plugins;%PYTHONPATH%
 cd %~dp0
-start python -m bCNC
+start python -m OKKCNC

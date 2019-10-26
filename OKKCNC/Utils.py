@@ -1,13 +1,15 @@
 # -*- coding: ascii -*-
 # $Id$
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	16-Apr-2015
+# Author:	carlo.dormeletti@gmail.com
+# Date: 26 Oct 2019
+
+__author__  = "Carlo Dormeletti (onekk)"
+__email__   = "carlo.dormeletti@gmail.com"
+
 
 from __future__ import absolute_import
 from __future__ import print_function
-__author__ = "Vasilis Vlachoudis"
-__email__  = "vvlachoudis@gmail.com"
 
 import os
 import glob
@@ -36,7 +38,7 @@ try:
 except:
 	serial = None
 
-__prg__     = "bCNC"
+__prg__     = "OKKCNC"
 prgpath   = os.path.abspath(os.path.dirname(__file__))
 if getattr( sys, 'frozen', False ):
 	#When being bundled by pyinstaller, paths are different
@@ -54,15 +56,16 @@ __builtin__.N_ = lambda message: message
 import Ribbon
 import tkExtra
 
-__www__     = "https://github.com/vlachoudis/bCNC"
-__contribute__ = \
-		"@effer Filippo Rivato\n" \
+__www__     = "https://github.com/onekk/OKKCNC"
+__contribute__ = ""
+
+__credits__ = \
+        "@effer Filippo Rivato\n" \
 		"@carlosgs Carlos Garcia Saura\n" \
 		"@dguerizec\n" \
 		"@buschhardt\n" \
 		"@MARIOBASZ\n" \
 		"@harvie Tomas Mudrunka"
-__credits__ = \
 		"@1bigpig\n" \
 		"@chamnit Sonny Jeon\n" \
 		"@harvie Tomas Mudrunka\n" \
@@ -441,7 +444,8 @@ def addException():
 		errors.extend(exception)
 		if len(errors) > 100:
 			# If too many errors are found send the error report
-			ReportDialog(self.widget)
+			#ReportDialog(self.widget)
+            # do nothing for now
 	except:
 		say(str(sys.exc_info()))
 
