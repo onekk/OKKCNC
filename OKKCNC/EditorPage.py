@@ -1,13 +1,14 @@
 # -*- coding: ascii -*-
 # $Id$
 #
-# Author: vvlachoudis@gmail.com
-# Date: 18-Jun-2015
+# Author: carlo.dormeletti@gmail.com
+# Date: 26 Oct 2019
 
 from __future__ import absolute_import
 from __future__ import print_function
-__author__ = "Vasilis Vlachoudis"
-__email__  = "vvlachoudis@gmail.com"
+
+__author__  = "Carlo Dormeletti (onekk)"
+__email__   = "carlo.dormeletti@gmail.com"
 
 try:
 	from Tkinter import *

@@ -1,8 +1,8 @@
 # -*- coding: ascii -*-
 # $Id$
 #
-# Author: vvlachoudis@gmail.com
-# Date: 24-Aug-2014
+# Author: carlo.dormeletti@gmail.com
+# Date: 26 Oct 2019
 
 from __future__ import absolute_import
 from __future__ import print_function

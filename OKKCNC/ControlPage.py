@@ -1,13 +1,14 @@
 # -*- coding: ascii -*-
 # $Id$
 #
-# Author: vvlachoudis@gmail.com
-# Date: 18-Jun-2015
+# Author: carlo.dormeletti@gmail.com
+# Date: 26 Oct 2019
 
 from __future__ import absolute_import
 from __future__ import print_function
-__author__ = "Vasilis Vlachoudis"
-__email__  = "vvlachoudis@gmail.com"
+
+__author__  = "Carlo Dormeletti (onekk)"
+__email__   = "carlo.dormeletti@gmail.com"
 
 try:
 	from Tkinter import *
@@ -562,7 +563,7 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
 		# --
 		col += 1
 		Label(frame,"",width=2).grid(row=row,column=col)
-		
+
 		col += 1
 		self.step = tkExtra.Combobox(frame, width=6, background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
 		self.step.grid(row=row, column=col, columnspan=2, sticky=EW)

@@ -1,13 +1,14 @@
 # -*- coding: ascii -*-
 # $Id$
 #
-# Author: vvlachoudis@gmail.com
-# Date: 24-Aug-2014
+# Author: carlo.dormeletti@gmail.com
+# Date: 26 Oct 2019
 
 from __future__ import absolute_import
 from __future__ import print_function
-__author__ = "Vasilis Vlachoudis"
-__email__  = "Vasilis.Vlachoudis@cern.ch"
+
+__author__  = "Carlo Dormeletti (onekk)"
+__email__   = "carlo.dormeletti@gmail.com"
 
 import os
 import re
@@ -178,7 +179,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
 		if not fn:
 			return (False, "Can't find out file name...")
 		path = os.path.expanduser("~")
-		path = os.path.join(path, "bCNCUploads")
+		path = os.path.join(path, "OKKCNCUploads")
 		if not os.path.exists(path):
 		    os.makedirs(path)
 		fn = os.path.join(path, fn[0])
