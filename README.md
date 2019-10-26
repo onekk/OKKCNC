@@ -4,7 +4,24 @@ OKKCNC
 GRBL CNC command sender, autoleveler, g-code editor, digitizer, CAM
 and swiss army knife for all your CNC needs.
 
-An advanced fully featured g-code sender for GRBL. foprked from bCNC is a cross platform program (Windows, Linux, Mac) written in python. The sender is robust and fast able to work nicely with old or slow hardware like [Raspberry Pi](http://www.openbuilds.com/threads/bcnc-and-the-raspberry-pi.3038/) (As it was validated by the GRBL maintainer on heavy testing).
+An advanced fully featured g-code sender for GRBL, forked from bCNC ver 0.9.14.
+
+The main reason to fork, is the intention to make it resembling professional CNC controller, and adding the
+ability to operate the CNC like a "manual machining tool"
+
+The main goals are:
+
+- Add some memA memB buttons to make possible to memorize some "asolute positions", and operate on them
+ using "functions" line "LINE" from posA to posB "SQUARE" like a "square pocket"
+
+- add a Z override to make possible to correct the Z position by some amount, useful when pocketing os profiling
+  using materials like plywood that are not perfectly stable in time, so a nominal 5mm plywood is 4.9 or 5.1 
+  making diffcult to cut or ruining too much the sacrifical bed. 
+
+
+OKKCNC is a cross platform program (Windows, Linux, Mac) written in python.
+
+The sender is robust and fast able to work nicely with old or slow hardware like [Raspberry Pi]
 
 Note that on Windows XP you have to use `pyserial==3.0.1` or older as newer version do not work on XP.
 
@@ -39,7 +56,7 @@ installation directory.
 
 *PLEASE DO NOT CHANGE THIS FILE, IT'S GOING TO BE OVERWRITTEN ON EACH UPGRADE OF BCNC*
 
-* THESE FEATURES ARE COPIED FROM BCNC, thing may change in the progress of porting*
+* THESE FEATURES ARE COPIED FROM BCNC, thing may change in the progress of porting *
 
 # Features:
 - simple and intuitive interface for small screens
