@@ -1,21 +1,21 @@
 from setuptools import setup, find_packages
 
-print("Running bCNC setup...")
+print("Running OKKCNC setup...")
 
 with open("README.md", "r") as fh:
 	long_description = fh.read()
 
 setup(
-	name = "bCNC",
-	version = "0.9.14.62",
+	name = "OKKCNC",
+	version = "0.0.9.00",
 	license="GPLv2",
 	description='Swiss army knife for all your CNC/g-code needs',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	packages = find_packages(),
-	author = 'Vasilis Vlachoudis',
-	author_email='vvlachoudis@gmail.com',
-	url="https://github.com/vlachoudis/bCNC",
+	author = 'Carlo Dormeletti',
+	author_email='carlo.dormeletti@gmail.com',
+	url="https://github.com/onekk/OKKCNC",
 	include_package_data=True,
 	python_requires="<3.0",
 	install_requires = [
@@ -28,9 +28,9 @@ setup(
 
 	entry_points = {
 		'console_scripts': [
-			#'bCNC = {package}.{module}:{main_function}',
-			#'bCNC = bCNC.bCNC:main',
-			'bCNC = bCNC.__main__:main',
+			#'OKKCNC = {package}.{module}:{main_function}',
+			#'OKKCNC = OKKCNC.OKKCNC:main',
+			'OKKCNC = OKKCNC.__main__:main',
 		]
 	},
 
@@ -46,18 +46,7 @@ setup(
 		"Topic :: Scientific/Engineering",
 		"Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 		"Topic :: Terminals :: Serial",
-		"Natural Language :: Dutch",
 		"Natural Language :: English",
-		"Natural Language :: German",
-		"Natural Language :: Spanish",
-		"Natural Language :: Portuguese",
-		"Natural Language :: Portuguese (Brazilian)",
-		"Natural Language :: French",
 		"Natural Language :: Italian",
-		"Natural Language :: Japanese",
-		"Natural Language :: Korean",
-		"Natural Language :: Russian",
-		"Natural Language :: Chinese (Simplified)",
-		"Natural Language :: Chinese (Traditional)",
 	]
 )

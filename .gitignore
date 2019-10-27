@@ -3,7 +3,7 @@
 lib/*.pyc
 lib/*.pyo
 .idea
-bCNC.egg-info
+OKKCNC.egg-info
 .eggs
 dist
 build

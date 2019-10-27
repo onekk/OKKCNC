@@ -1,35 +1,35 @@
 NAME = bCNC
-SOURCES =	bCNC/*.py \
-		bCNC/controllers/*.py \
-		bCNC/lib/*.py \
-		bCNC/lib/python_utils/*.py \
-		bCNC/lib/stl/*.py \
-		bCNC/lib/svg/*.py \
-		bCNC/lib/svg/path/*.py \
-		bCNC/plugins/*.py
+SOURCES =	OKKCNC/*.py \
+		OKKCNC/controllers/*.py \
+		OKKCNC/lib/*.py \
+		OKKCNC/lib/python_utils/*.py \
+		OKKCNC/lib/stl/*.py \
+		OKKCNC/lib/svg/*.py \
+		OKKCNC/lib/svg/path/*.py \
+		OKKCNC/plugins/*.py
 .PHONY = help
 
 help:
 	@echo see source
 
-pot: bCNC/${NAME}.pot
+pot: OKKCNC/${NAME}.pot
 
-bCNC/${NAME}.pot: ${SOURCES}
+OKKCNC/${NAME}.pot: ${SOURCES}
 	xgettext --from-code=UTF-8 --keyword=N_ -d ${NAME} -o $@ $^
 
 tags:
-	ctags bCNC/*.py bCNC/lib/*.py bCNC/plugins/*.py
+	ctags OKKCNC/*.py OKKCNC/lib/*.py OKKCNC/plugins/*.py
 
 clean:
 	git clean -Xf
-	rm -f bCNC/*.pyc bCNC/*.pyo
-	rm -f bCNC/controllers/*.pyc bCNC/controllers/*.pyo
-	rm -f bCNC/lib/*.pyc bCNC/lib/*.pyo
-	rm -f bCNC/lib/python_utils/*.pyc bCNC/lib/python_utils/*.pyo
-	rm -f bCNC/lib/stl/*.pyc bCNC/lib/stl/*.pyo
-	rm -f bCNC/lib/svg/*.pyc bCNC/lib/svg/*.pyo
-	rm -f bCNC/lib/svg/path/*.pyc bCNC/lib/svg/path/*.pyo
-	rm -f bCNC/plugins/*.pyc bCNC/plugins/*.pyo
+	rm -f OKKCNC/*.pyc OKKCNC/*.pyo
+	rm -f OKKCNC/controllers/*.pyc OKKCNC/controllers/*.pyo
+	rm -f OKKCNC/lib/*.pyc OKKCNC/lib/*.pyo
+	rm -f OKKCNC/lib/python_utils/*.pyc OKKCNC/lib/python_utils/*.pyo
+	rm -f OKKCNC/lib/stl/*.pyc OKKCNC/lib/stl/*.pyo
+	rm -f OKKCNC/lib/svg/*.pyc OKKCNC/lib/svg/*.pyo
+	rm -f OKKCNC/lib/svg/path/*.pyc OKKCNC/lib/svg/path/*.pyo
+	rm -f OKKCNC/plugins/*.pyc OKKCNC/plugins/*.pyo
 
 upload:
 	rm -f dist/*
