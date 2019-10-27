@@ -18,7 +18,7 @@ import traceback
 import rexx
 import time
 import threading
-import webbrowser
+#import webbrowser
 
 from datetime import datetime
 try:
@@ -35,7 +35,7 @@ import Utils
 import Pendant
 from _GenericGRBL import ERROR_CODES
 
-WIKI = "https://github.com/vlachoudis/bCNC/wiki"
+#WIKI = "https://github.com/vlachoudis/bCNC/wiki"
 
 SERIAL_POLL    = 0.125    # s
 SERIAL_TIMEOUT = 0.10    # s
@@ -340,7 +340,8 @@ class Sender:
 
     #----------------------------------------------------------------------
     def help(self, event=None):
-        webbrowser.open(WIKI,new=2)
+        pass
+        #webbrowser.open(WIKI,new=2)
 
     #----------------------------------------------------------------------
     def loadRecent(self, recent):

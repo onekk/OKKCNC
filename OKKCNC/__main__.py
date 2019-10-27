@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__version__ = "0.0.1-dev"
+__version__ = "0.0.9-dev"
 __date__    = "26 Dec 2019"
 __author__  = "Carlo Dormeletti (onekk)"
 __email__   = "carlo.dormeletti@gmail.com"
@@ -540,8 +540,12 @@ class Application(Toplevel,Sender):
         Sender.quit(self)
         self.saveConfig()
         self.destroy()
+
         if Utils.errors and Utils._errorReport:
-            Utils.ReportDialog.sendErrorReport()
+            # Don't send report dialog
+            #    Utils.ReportDialog.sendErrorReport()
+            pass
+
         tk.destroy()
 
     # ---------------------------------------------------------------------
@@ -1099,8 +1103,8 @@ class Application(Toplevel,Sender):
         toplevel.wait_window()
 
     #-----------------------------------------------------------------------
-    def reportDialog(self, event=None):
-        Utils.ReportDialog(self)
+    #def reportDialog(self, event=None):
+    #    Utils.ReportDialog(self)
 
     #-----------------------------------------------------------------------
     def viewChange(self, event=None):

@@ -449,391 +449,756 @@ class DROFrame(CNCRibbon.PageFrame):
 				_("No info available.\nPlease contact the author."))
 		tkMessageBox.showinfo(_("State: %s")%(state), msg, parent=self)
 
-
 #===============================================================================
 # ControlFrame
 #===============================================================================
-class ControlFrame(CNCRibbon.PageExLabelFrame):
-	def __init__(self, master, app):
-		CNCRibbon.PageExLabelFrame.__init__(self, master, "Control", _("Control"), app)
+class ControlFrame(CNCRibbon.PageLabelFrame):
+    def __init__(self, master, app):
+        CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
 
-		frame = Frame(self())
-		frame.pack(side=TOP, fill=X)
 
-		row,col = 0,0
-		Label(frame, text=_("Z")).grid(row=row, column=col)
+        Label(self, text="Z").grid(row=3, column=0, columnspan=2)
 
-		col += 3
-		Label(frame, text=_("Y")).grid(row=row, column=col)
+        Label(self, text="Y").grid(row=6, column=3)
 
-		# ---
-		row += 1
-		col = 0
+        Label(self, text="X").grid(row=3,column=6, columnspan=2)
 
-		width=3
-		height=2
+        Label(self,"",width=1).grid(row=1,column=10)
 
-		b = Button(frame, text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-					command=self.moveZup,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move +Z"))
-		self.addWidget(b)
+        b_width = 2
+        b_height = 2
 
-		col += 2
-		b = Button(frame, text=Unicode.UPPER_LEFT_TRIANGLE,
-					command=self.moveXdownYup,
-					width=width, height=height,
-					activebackground="LightYellow")
+        # Default steppings
 
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move -X +Y"))
-		self.addWidget(b)
+        try:
+            self.step1 = Utils.getFloat("Control","step1")
+        except:
+            self.step1 = 1
+        try:
+            self.step2 = Utils.getFloat("Control","step2")
+        except:
+            self.step2 = 1
 
-		col += 1
-		b = Button(frame, text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-					command=self.moveYup,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move +Y"))
-		self.addWidget(b)
+        try:
+            self.step3 = Utils.getFloat("Control","step3")
+        except:
+            self.step3 = 10
 
-		col += 1
-		b = Button(frame, text=Unicode.UPPER_RIGHT_TRIANGLE,
-					command=self.moveXupYup,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move +X +Y"))
-		self.addWidget(b)
+        # Default z-steppings
+        try:
+            self.zstep1 = Utils.getFloat("Control","zstep1")
+        except:
+            self.zstep1 = 0.1
 
-		col += 2
-		b = Button(frame, text=u"\u00D710",
-				command=self.mulStep,
-				width=3,
-				padx=1, pady=1)
-		b.grid(row=row, column=col, sticky=EW+S)
-		tkExtra.Balloon.set(b, _("Multiply step by 10"))
-		self.addWidget(b)
+        try:
+            self.zstep2 = Utils.getFloat("Control","zstep2")
+        except:
+            self.zstep2 = 1
 
-		col += 1
-		b = Button(frame, text=_("+"),
-				command=self.incStep,
-				width=3,
-				padx=1, pady=1)
-		b.grid(row=row, column=col, sticky=EW+S)
-		tkExtra.Balloon.set(b, _("Increase step by 1 unit"))
-		self.addWidget(b)
+        try:
+            self.zstep3 = Utils.getFloat("Control","zstep3")
+        except:
+            self.zstep3 = 5
 
-		# ---
-		row += 1
+        try:
+            self.zstep4 = Utils.getFloat("Control","zstep4")
+        except:
+            self.zstep4 = 10
 
-		col = 1
-		Label(frame, text=_("X"), width=3, anchor=E).grid(row=row, column=col, sticky=E)
+        row = 0
 
-		col += 1
-		b = Button(frame, text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
-					command=self.moveXdown,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move -X"))
-		self.addWidget(b)
+        zstep = Utils.config.get("Control","zstep")
+        self.zstep = tkExtra.Combobox(self, width=4, background="White")
+        self.zstep.grid(row=row, column=0, columnspan=3, sticky=EW)
+        self.zstep.set(zstep)
+        self.zstep.fill(map(float, Utils.config.get("Control","zsteplist").split()))
+        tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
+        self.addWidget(self.zstep)
 
-		col += 1
-		b = Utils.UserButton(frame, self.app, 0, text=Unicode.LARGE_CIRCLE,
-					command=self.go2origin,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move to Origin.\nUser configurable button.\nRight click to configure."))
-		self.addWidget(b)
+        self.step1_b = Button(self, text="%s"%(self.step1),
+                command=self.setStep1,
+                width=2,
+                padx=1, pady=1)
+        self.step1_b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
+        self.step1_b.bind("<Button-3>", lambda event: self.InputValue("S0"))
+        tkExtra.Balloon.set(self.step1_b, _("Use step1"))
+        self.addWidget(self.step1_b)
 
-		col += 1
-		b = Button(frame, text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
-					command=self.moveXup,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move +X"))
-		self.addWidget(b)
 
-		# --
-		col += 1
-		Label(frame,"",width=2).grid(row=row,column=col)
+        self.step2_b = Button(self, text="%s"%(self.step2),
+                command=self.setStep2,
+                width=2,
+                padx=1, pady=1)
+        self.step2_b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
+        self.step2_b.bind("<Button-3>", lambda event: self.InputValue("S1"))
+        tkExtra.Balloon.set(self.step2_b, _("Use step2"))
+        self.addWidget(self.step2_b)
 
-		col += 1
-		self.step = tkExtra.Combobox(frame, width=6, background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-		self.step.grid(row=row, column=col, columnspan=2, sticky=EW)
-		self.step.set(Utils.config.get("Control","step"))
-		self.step.fill(map(float, Utils.config.get("Control","steplist").split()))
-		tkExtra.Balloon.set(self.step, _("Step for every move operation"))
-		self.addWidget(self.step)
 
-		# -- Separate zstep --
-		try:
-			zstep = Utils.config.get("Control","zstep")
-			self.zstep = tkExtra.Combobox(frame, width=4, background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-			self.zstep.grid(row=row, column=0, columnspan=1, sticky=EW)
-			self.zstep.set(zstep)
-			zsl = [_NOZSTEP]
-			zsl.extend(map(float, Utils.config.get("Control","zsteplist").split()))
-			self.zstep.fill(zsl)
-			tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
-			self.addWidget(self.zstep)
-		except:
-			self.zstep = self.step
+        self.step3_b = Button(self, text="%s"%(self.step3),
+                command=self.setStep3,
+                width=2,
+                padx=1, pady=1)
+        self.step3_b.grid(row=row, column=8, columnspan = 2, sticky=EW)
+        self.step3_b.bind("<Button-3>", lambda event: self.InputValue("S2"))
+        tkExtra.Balloon.set(self.step3_b, _("Use step3"))
+        self.addWidget(self.step3_b)
 
-		# Default steppings
-		try:
-			self.step1 = Utils.getFloat("Control","step1")
-		except:
-			self.step1 = 0.1
 
-		try:
-			self.step2 = Utils.getFloat("Control","step2")
-		except:
-			self.step2 = 1
+        b = Button(self, text="m A",
+                    command=self.memA,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, rowspan=1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Mem A"))
+        self.addWidget(b)
 
-		try:
-			self.step3 = Utils.getFloat("Control","step3")
-		except:
-			self.step3 = 10
+        row = 1
 
-		# ---
-		row += 1
-		col = 0
+        b = Button(self, text=u"\u00F75",
+                    command=self.divStep,
+                    width=3,
+                    padx=1, pady=1)
+        b.grid(row=row, column=4, sticky=EW)
+        tkExtra.Balloon.set(b, _("Divide step by 5"))
+        self.addWidget(b)
 
-		b = Button(frame, text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-					command=self.moveZdown,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move -Z"))
-		self.addWidget(b)
+        b = Button(self, text=u"\u00D75",
+                command=self.mulStep,
+                width=3,
+                padx=1, pady=1)
+        b.grid(row=row, column=5, sticky=EW)
+        tkExtra.Balloon.set(b, _("Multiply step by 5"))
+        self.addWidget(b)
 
-		col += 2
-		b = Button(frame, text=Unicode.LOWER_LEFT_TRIANGLE,
-					command=self.moveXdownYdown,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move -X -Y"))
-		self.addWidget(b)
+        self.step = tkExtra.Combobox(self, width=6, background="White")
+        self.step.grid(row=row, column=6, columnspan=2, sticky=EW)
+        self.step.set(Utils.config.get("Control","step"))
+        self.step.fill(map(float, Utils.config.get("Control","steplist").split()))
+        tkExtra.Balloon.set(self.step, _("Step for coarse move operation"))
+        self.addWidget(self.step)
 
-		col += 1
-		b = Button(frame, text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-					command=self.moveYdown,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move -Y"))
-		self.addWidget(b)
+        b = Button(self, text="<",
+                    command=self.decStep,
+                    width=3,
+                    padx=1, pady=1)
+        b.grid(row=row, column=8, sticky=EW)
+        tkExtra.Balloon.set(b, _("Decrease step"))
+        self.addWidget(b)
 
-		col += 1
-		b = Button(frame, text=Unicode.LOWER_RIGHT_TRIANGLE,
-					command=self.moveXupYdown,
-					width=width, height=height,
-					activebackground="LightYellow")
-		b.grid(row=row, column=col, sticky=EW)
-		tkExtra.Balloon.set(b, _("Move +X -Y"))
-		self.addWidget(b)
+        b = Button(self, text=">",
+                command=self.incStep,
+                width=3,
+                padx=1, pady=1)
+        b.grid(row=row, column=9, sticky=EW)
+        tkExtra.Balloon.set(b, _("Increase step"))
+        self.addWidget(b)
 
-		col += 2
-		b = Button(frame, text=u"\u00F710",
-					command=self.divStep,
-					padx=1, pady=1)
-		b.grid(row=row, column=col, sticky=EW+N)
-		tkExtra.Balloon.set(b, _("Divide step by 10"))
-		self.addWidget(b)
+        b = Button(self, text="m B",
+                    command=self.memB,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Mem B"))
+        self.addWidget(b)
 
-		col += 1
-		b = Button(frame, text=_("-"),
-					command=self.decStep,
-					padx=1, pady=1)
-		b.grid(row=row, column=col, sticky=EW+N)
-		tkExtra.Balloon.set(b, _("Decrease step by 1 unit"))
-		self.addWidget(b)
+        row = 2
 
-		#self.grid_columnconfigure(6,weight=1)
-		try:
-#			self.grid_anchor(CENTER)
-			self.tk.call("grid","anchor",self,CENTER)
-		except TclError:
-			pass
+        b = Button(self, text="-",
+                command=self.decZStep,
+                padx=1, pady=1)
+        b.grid(row=row, column=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Decrease zstep"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def saveConfig(self):
-		Utils.setFloat("Control", "step", self.step.get())
-		if self.zstep is not self.step:
-			Utils.setFloat("Control", "zstep", self.zstep.get())
+        b = Button(self, text="+",
+                command=self.incZStep,
+                padx=1, pady=1)
+        b.grid(row=row, column=1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Increase zstep"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	# Jogging
-	#----------------------------------------------------------------------
-	def getStep(self, axis='x'):
-		if axis == 'z':
-			zs = self.zstep.get()
-			if zs == _NOZSTEP:
-				return self.step.get()
-			else:
-				return zs
-		else:
-			return self.step.get()
+        b = Button(self, text="-",
+                    command=self.decStepF,
+                    width=3,
+                    padx=1, pady=1)
+        b.grid(row=row, column=8, sticky=EW)
+        tkExtra.Balloon.set(b, _("Decrease step fine"))
+        self.addWidget(b)
 
-	def moveXup(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X%s"%(self.step.get()))
+        b = Button(self, text="+",
+                command=self.incStepF,
+                width=3,
+                padx=1, pady=1)
+        b.grid(row=row, column=9, sticky=EW)
+        tkExtra.Balloon.set(b, _("Increase step fine"))
+        self.addWidget(b)
 
-	def moveXdown(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X-%s"%(self.step.get()))
 
-	def moveYup(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("Y%s"%(self.step.get()))
+        b = Button(self, text="line",
+                    command=self.line,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Cut Line from A to B"))
+        self.addWidget(b)
 
-	def moveYdown(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("Y-%s"%(self.step.get()))
 
-	def moveXdownYup(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X-%sY%s"%(self.step.get(),self.step.get()))
+        row = 4
 
-	def moveXupYup(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X%sY%s"%(self.step.get(),self.step.get()))
+        b = Button(self, text=Unicode.BLACK_UP_POINTING_TRIANGLE,
+                    command=self.moveZup,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=0,columnspan=2,rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move +Z"))
+        self.addWidget(b)
 
-	def moveXdownYdown(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X-%sY-%s"%(self.step.get(),self.step.get()))
+        b = Button(self, text=Unicode.UPPER_LEFT_TRIANGLE,
+                    command=self.moveXdownYup,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
 
-	def moveXupYdown(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("X%sY-%s"%(self.step.get(),self.step.get()))
+        b.grid(row=row, column=4, columnspan=2,rowspan=2,  sticky=EW)
+        tkExtra.Balloon.set(b, _("Move -X +Y"))
+        self.addWidget(b)
 
-	def moveZup(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("Z%s"%(self.getStep('z')))
+        b = Button(self, text=Unicode.BLACK_UP_POINTING_TRIANGLE,
+                    command=self.moveYup,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move +Y"))
+        self.addWidget(b)
 
-	def moveZdown(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.app.mcontrol.jog("Z-%s"%(self.getStep('z')))
+        b = Button(self, text=Unicode.UPPER_RIGHT_TRIANGLE,
+                    command=self.moveXupYup,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move +X +Y"))
+        self.addWidget(b)
 
-	def go2origin(self, event=None):
-		self.sendGCode("G90")
-		self.sendGCode("G0Z%d"%(CNC.vars['safe']))
-		self.sendGCode("G0X0Y0")
-		self.sendGCode("G0Z0")
+        b = Button(self, text="RmA",
+                    command=self.retA,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Return to mem A"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def setStep(self, s, zs=None):
-		self.step.set("%.4g"%(s))
-		if self.zstep is self.step or zs is None:
-			self.event_generate("<<Status>>",
-				data=_("Step: %g")%(s))
-				#data=(_("Step: %g")%(s)).encode("utf8"))
-		else:
-			self.zstep.set("%.4g"%(zs))
-			self.event_generate("<<Status>>",
-				data=_("Step: %g    Zstep:%g ")%(s,zs))
-				#data=(_("Step: %g    Zstep:%g ")%(s,zs)).encode("utf8"))
+        row = 5
 
-	#----------------------------------------------------------------------
-	@staticmethod
-	def _stepPower(step):
-		try:
-			step = float(step)
-			if step <= 0.0: step = 1.0
-		except:
-			step = 1.0
-		power = math.pow(10.0,math.floor(math.log10(step)))
-		return round(step/power)*power, power
+        b = Button(self, text="RmB",
+                    command=self.retB,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Return to mem B"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def incStep(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		step, power = ControlFrame._stepPower(self.step.get())
-		s = step+power
-		if s<_LOWSTEP: s = _LOWSTEP
-		elif s>_HIGHSTEP: s = _HIGHSTEP
-		if self.zstep is not self.step and self.zstep.get() != _NOZSTEP:
-			step, power = ControlFrame._stepPower(self.zstep.get())
-			zs = step+power
-			if zs<_LOWSTEP: zs = _LOWSTEP
-			elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
-		else:
-			zs=None
-		self.setStep(s, zs)
+        row = 6
 
-	#----------------------------------------------------------------------
-	def decStep(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		step, power = ControlFrame._stepPower(self.step.get())
-		s = step-power
-		if s<=0.0: s = step-power/10.0
-		if s<_LOWSTEP: s = _LOWSTEP
-		elif s>_HIGHSTEP: s = _HIGHSTEP
-		if self.zstep is not self.step and self.zstep.get() != _NOZSTEP:
-			step, power = ControlFrame._stepPower(self.zstep.get())
-			zs = step-power
-			if zs<=0.0: zs = step-power/10.0
-			if zs<_LOWSTEP: zs = _LOWSTEP
-			elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
-		else:
-			zs=None
-		self.setStep(s, zs)
+        b = Button(self, text="%s"%(self.zstep1),
+                command=self.setZStep1,
+                width=2,
+                padx=1, pady=1)
+        b.grid(row=row, column=0, columnspan = 1, sticky=EW)
+        b.bind("<Button-3>",self.zstep1_set)
+        tkExtra.Balloon.set(b, _("Use zstep1"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def mulStep(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		step, power = ControlFrame._stepPower(self.step.get())
-		s = step*10.0
-		if s<_LOWSTEP: s = _LOWSTEP
-		elif s>_HIGHSTEP: s = _HIGHSTEP
-		if self.zstep is not self.step and self.zstep.get() != _NOZSTEP:
-			step, power = ControlFrame._stepPower(self.zstep.get())
-			zs = step*10.0
-			if zs<_LOWSTEP: zs = _LOWSTEP
-			elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
-		else:
-			zs=None
-		self.setStep(s, zs)
+        b = Button(self, text="%s"%(self.zstep2),
+                command=self.setZStep2,
+                width=2,
+                padx=1, pady=1)
+        b.grid(row=row, column=1, columnspan = 1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Use zstep2"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def divStep(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		step, power = ControlFrame._stepPower(self.step.get())
-		s = step/10.0
-		if s<_LOWSTEP: s = _LOWSTEP
-		elif s>_HIGHSTEP: s = _HIGHSTEP
-		if self.zstep is not self.step and self.zstep.get() != _NOZSTEP:
-			step, power = ControlFrame._stepPower(self.zstep.get())
-			zs = step/10.0
-			if zs<_LOWSTEP: zs = _LOWSTEP
-			elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
-		else:
-			zs=None
-		self.setStep(s, zs)
 
-	#----------------------------------------------------------------------
-	def setStep1(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.setStep(self.step1, self.step1)
+        b = Button(self, text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
+                    command=self.moveXdown,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move -X"))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def setStep2(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.setStep(self.step2, self.step2)
+        b = Utils.UserButton(self, self.app, 0, text=Unicode.LARGE_CIRCLE,
+                    command=self.go2origin,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move to Origin.\nUser configurable button.\nRight click to configure."))
+        self.addWidget(b)
 
-	#----------------------------------------------------------------------
-	def setStep3(self, event=None):
-		if event is not None and not self.acceptKey(): return
-		self.setStep(self.step3, self.step2)
+        b = Button(self, text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
+                    command=self.moveXup,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move +X"))
+        self.addWidget(b)
 
+
+        row = 7
+
+        b = Button(self, text="%s"%(self.zstep3),
+                command=self.setZStep3,
+                width=2,
+                padx=1, pady=1)
+        b.grid(row=row, column=0, columnspan = 1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Use zstep3"))
+        self.addWidget(b)
+
+
+
+        row = 8
+
+        b = Button(self, text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+                    command=self.moveZdown,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move -Z"))
+        self.addWidget(b)
+
+
+        b = Button(self, text=Unicode.LOWER_LEFT_TRIANGLE,
+                    command=self.moveXdownYdown,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=4,columnspan=2,rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move -X -Y"))
+        self.addWidget(b)
+
+        b = Button(self, text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+                    command=self.moveYdown,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=6,columnspan=2,rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move -Y"))
+        self.addWidget(b)
+
+        b = Button(self, text=Unicode.LOWER_RIGHT_TRIANGLE,
+                    command=self.moveXupYdown,
+                    width=b_width, height=b_height,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=8,columnspan=2,rowspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Move +X -Y"))
+        self.addWidget(b)
+
+        try:
+#            self.grid_anchor(CENTER)
+            self.tk.call("grid","anchor",self,CENTER)
+        except TclError:
+            pass
+
+    #----------------------------------------------------------------------
+    def InputValue(self,caller):
+        title_c = ""
+        if caller == "S0":
+            title_c = "Enter Value for Step1:"
+            min_value = 0.001
+            max_value = 100.0
+        if caller == "S1":
+            title_c = "Enter Value for Step2:"
+            min_value = 0.001
+            max_value = 1000.0
+        elif caller == "S2":
+            title_c = "Enter Value for Step3:"
+            min_value = 0.001
+            max_value = 1000.0
+        elif caller == "TD":
+            title_c = "Enter Target Depth "
+            min_value = -35.0
+            max_value = 0.0
+        else:
+            title_c = "Enter a float Value"
+            min_value = 0.001
+            max_value = 0.0
+
+        retval = tkSimpleDialog.askfloat("Value","%s (min: %f max: %f)"%(title_c,min_value,max_value),parent = self, minvalue = min_value, maxvalue = max_value)
+
+        if caller == "S0":
+            self.step1_b.configure(text = retval)
+            self.step1 = retval
+            Utils.setFloat("Control", "step1", retval)
+        elif caller == "S1":
+            self.step2_b.configure(text = retval)
+            self.step2 = retval
+            Utils.setFloat("Control", "step2", retval)
+        elif caller == "S2":
+            self.step3_b.configure(text = retval)
+            self.step3 = retval
+            Utils.setFloat("Control", "step3", retval)
+        else:
+            return retval
+
+
+    def saveConfig(self):
+        Utils.setFloat("Control", "step", self.step.get())
+        # Utils.setFloat("Control", "step1", self.step1.get())
+        Utils.setFloat("Control", "zstep", self.zstep.get())
+
+    def memA(self):
+        #print("State: ", CNC.vars["state"])
+        if CNC.vars["state"] == "Idle":
+            mAx = CNC.vars["wx"]
+            mAy = CNC.vars["wy"]
+            mAz = CNC.vars["wz"]
+
+            memvar =  "%f  %f %f"%(mAx,mAy,mAz)
+            Utils.addSection("Memory")
+            Utils.setStr("Memory", "mem_a", memvar)
+            self.event_generate("<<Status>>",
+            data=(_("Set mem_A to X: %f Y: %f Z: %f"%(mAx,mAy,mAz))))
+        else:
+            pass
+
+
+    def memB(self):
+        if CNC.vars["state"] == "Idle":
+            mBx = CNC.vars["wx"]
+            mBy = CNC.vars["wy"]
+            mBz = CNC.vars["wz"]
+
+            memvar = "%f  %f %f"%(mBx, mBy, mBz)
+            Utils.addSection("Memory")
+            Utils.setStr("Memory", "mem_b", memvar)
+            self.event_generate("<<Status>>",
+                data=(_("Set mem_B to X: %f Y: %f Z: %f"%(mBx,mBy,mBz))))
+        else:
+            pass
+
+    def retA(self):
+        if CNC.vars["state"] == "Idle":
+            try:
+                get_coord = Utils.config.get("Memory","mem_a")
+                print(get_coord)
+            except:
+                return
+
+            Acoord = get_coord.split()
+            self.sendGCode("G90")
+            self.sendGCode("G0 X%f Y%f"%(float(Acoord[0]),float(Acoord[1])))
+        else:
+            pass
+
+    def retB(self):
+        if CNC.vars["state"] == "Idle":
+            try:
+                get_coord = Utils.config.get("Memory","mem_b")
+                print(get_coord)
+            except:
+                return
+
+            Bcoord = get_coord.split()
+            self.sendGCode("G90")
+            self.sendGCode("G0 X%f Y%f"%(float(Bcoord[0]),float(Bcoord[1])))
+        else:
+            pass
+
+
+    def line(self):
+        try:
+            Acoord = Utils.config.get("Memory","mem_a").split()
+            Bcoord = Utils.config.get("Memory","mem_b").split()
+        except:
+            return
+
+        XStart = float(Acoord[0])
+        YStart = float(Acoord[1])
+        currDepth = float(Acoord[2])
+
+        XEnd = float(Bcoord[0])
+        YEnd = float(Bcoord[1])
+
+        #f_width = float(Bcoord[0]) - float(Acoord[0])
+        #f_height = float(Bcoord[1]) - float(Acoord[1])
+
+        f_depth = self.InputValue("TD")
+
+        if f_depth is None:
+            return
+
+        toolDiam = CNC.vars['diameter']
+        #toolRadius = toolDiam / 2.
+        StepOverInUnitMax = toolDiam * CNC.vars['stepover'] / 100.0
+
+        stepz = CNC.vars['stepz']
+        if stepz==0 : stepz=0.001  #avoid infinite while loop
+
+        msg = "Line Cut Operation: \n"
+        msg+= "Start at X: %f Y: %f \n\n"%(XStart,YStart)
+        msg+= "End at X: %f Y: %f \n\n"%(XEnd,YEnd)
+        msg+= "Depth: %f \n\n"%(f_depth)
+        msg+= "StepZ: %f T_StepOver: %f \n\n"%(stepz,StepOverInUnitMax)
+
+        retval = tkMessageBox.askokcancel("Line Cut",msg)
+
+        print("RetVal",retval)
+
+        if retval is False:
+            return
+
+        # Reset the Gcode in the Editor
+        # Loading an empty file
+
+
+        # Set the Initialization file
+        blocks = []
+        block = Block("Init")
+        # Get the current WCS as the mem are related to it
+        block.append(CNC.vars['WCS'])
+        blocks.append(block)
+
+        block = Block("Line")
+        block.append("(Line from X=%g Y=%g)"%(XStart,YStart))
+        block.append("(to X=%g Y=%g at depth=%g)"%(XEnd,YEnd,f_depth))
+
+        xP=[]
+        yP=[]
+
+        #Move safe to first point
+        block.append(CNC.zsafe())
+        block.append(CNC.grapid(XStart,YStart))
+        #Init Depth
+
+
+        #Create GCode from points
+        while True:
+            currDepth -= stepz
+            if currDepth < f_depth : currDepth = f_depth
+            block.append(CNC.zenter(currDepth))
+            block.append(CNC.gcode(1, [("f",CNC.vars["cutfeed"])]))
+
+            block.append(CNC.gline(XEnd,YEnd))
+
+            #Verify exit condition
+            if currDepth <= f_depth : break
+
+            #Move to the begin in a safe way
+            block.append(CNC.zsafe())
+            block.append(CNC.grapid(XStart,YStart))
+
+        blocks.append(block)
+
+        if blocks is not None:
+            app = self.app
+            active = app.activeBlock()
+            if active==0: active=1
+            app.gcode.insBlocks(active, blocks, "Line Cut")
+            app.refresh()
+            app.setStatus(_("Line Cut: Generated line cut code"))
+
+    #----------------------------------------------------------------------
+    # Jogging
+    #----------------------------------------------------------------------
+
+    def moveXup(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X%s"%(self.step.get()))
+        self.sendGCode("G90")
+
+    def moveXdown(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X-%s"%(self.step.get()))
+        self.sendGCode("G90")
+
+    def moveYup(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0Y%s"%(self.step.get()))
+        self.sendGCode("G90")
+
+    def moveYdown(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0Y-%s"%(self.step.get()))
+        self.sendGCode("G90")
+
+    def moveXdownYup(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X-%sY%s"%(self.step.get(),self.step.get()))
+        self.sendGCode("G90")
+
+    def moveXupYup(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X%sY%s"%(self.step.get(),self.step.get()))
+        self.sendGCode("G90")
+
+    def moveXdownYdown(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X-%sY-%s"%(self.step.get(),self.step.get()))
+        self.sendGCode("G90")
+
+    def moveXupYdown(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0X%sY-%s"%(self.step.get(),self.step.get()))
+        self.sendGCode("G90")
+
+    def moveZup(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0Z%s"%(self.zstep.get()))
+        self.sendGCode("G90")
+
+    def moveZdown(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.sendGCode("G91G0Z-%s"%(self.zstep.get()))
+        self.sendGCode("G90")
+
+    def go2origin(self, event=None):
+        self.sendGCode("G90")
+        self.sendGCode("G0X0Y0")
+        self.sendGCode("G0Z0")
+
+
+    def setStep(self, s, zs=None,fs=None):
+        self.step.set("%.4g"%(s))
+
+        if fs is not None:
+            self.stepf.set("%.4g"%(fs))
+
+        if self.zstep is self.step or zs is None:
+            self.event_generate("<<Status>>",
+                data=_("Step: %g")%(s))
+                #data=(_("Step: %g")%(s)).encode("utf8"))
+        else:
+            self.zstep.set("%.4g"%(zs))
+            self.event_generate("<<Status>>",
+                data=_("Step: %g    Zstep:%g ")%(s,zs))
+                #data=(_("Step: %g    Zstep:%g ")%(s,zs)).encode("utf8"))
+
+    #----------------------------------------------------------------------
+    @staticmethod
+    def _stepPower(step):
+        try:
+            step = float(step)
+            if step <= 0.0: step = 1.0
+        except:
+            step = 1.0
+        power = math.pow(10.0,math.floor(math.log10(step)))
+        return round(step/power)*power, power
+
+    #----------------------------------------------------------------------
+    def incStep(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step.get())
+        s = step+power
+        zs = None
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        self.setStep(s, zs)
+
+    def incStepF(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step1.get())
+        s = float(self.step.get()) + power
+        zs = None
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        self.setStep(s, zs)
+
+    def incZStep(self, event=None):
+        step, power = ControlFrame._stepPower(self.zstep.get())
+        s = float(self.step.get())
+        zs = step+power
+        if zs<_LOWSTEP: zs = _LOWSTEP
+        elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
+        self.setStep(s,zs)
+
+    #----------------------------------------------------------------------
+    def decStep(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step.get())
+        s = step - power
+        zs = None
+        if s<=0.0: s = step-power/10.0
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        self.setStep(s, zs)
+
+    def decStepF(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step1.get())
+        s = float(self.step.get()) - power
+        zs = None
+        if s<=0.0: s = step-power/10.0
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        self.setStep(s, zs)
+
+    def decZStep(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.zstep.get())
+        s = float(self.step.get())
+        zs = step-power
+        if zs<=0.0: zs = step-power/10.0
+        if zs<_LOWSTEP: zs = _LOWSTEP
+        elif zs>_HIGHZSTEP: zs = _HIGHZSTEP
+        self.setStep(s,zs)
+
+    #----------------------------------------------------------------------
+    def mulStep(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step.get())
+        s = step*5.0
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        zs=None
+        self.setStep(s, zs)
+
+    #----------------------------------------------------------------------
+    def divStep(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        step, power = ControlFrame._stepPower(self.step.get())
+        s = step/5.0
+        if s<_LOWSTEP: s = _LOWSTEP
+        elif s>_HIGHSTEP: s = _HIGHSTEP
+        zs=None
+        self.setStep(s, zs)
+
+    def setZStep1(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(float(self.step.get()), self.zstep1)
+
+    #----------------------------------------------------------------------
+    def setZStep2(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(float(self.step.get()), self.zstep2)
+
+    #----------------------------------------------------------------------
+    def setZStep3(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(float(self.step.get()), self.zstep3)
+
+    #-----------------------------------------------------------------------
+    def zstep1_set(self, event=None):
+        return
+        """
+        self.zstep1 = float(self.zstep.get())
+        self.setStep(float(self.step.get()), self.zstep1)
+        return
+        """
+    #----------------------------------------------------------------------
+    def setStep1(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(self.step1, float(self.zstep.get()))
+
+    #----------------------------------------------------------------------
+    def setStep2(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(self.step2, float(self.zstep.get()))
+
+    #----------------------------------------------------------------------
+    def setStep3(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(self.step3, float(self.zstep.get()))
 
 #===============================================================================
 # StateFrame
