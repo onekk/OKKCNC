@@ -44,11 +44,11 @@ OVERRIDES = ["Feed", "Rapid", "Spindle"]
 class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 	def __init__(self, master, app):
 		CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Connection"), app,
-			[(_("Hard Reset"),  "reset",     app.hardReset) ])
+			[(_("Hard Reset"), "reset", app.hardReset)])
 		self.grid2rows()
 
 		# ---
-		col,row=0,0
+		col,row = 0, 0
 		b = Ribbon.LabelButton(self.frame,
 				image=Utils.icons["home32"],
 				text=_("Home"),
@@ -61,7 +61,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 		self.addWidget(b)
 
 		# ---
-		col,row=1,0
+		col,row = 1, 0
 		b = Ribbon.LabelButton(self.frame,
 				image=Utils.icons["unlock"],
 				text=_("Unlock"),
@@ -1640,7 +1640,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 #===============================================================================
 class ControlPage(CNCRibbon.Page):
 	__doc__ = _("CNC communication and control")
-	_name_  = N_("Control")
+	_name_  = _("Control") # era N_( probabile errore
 	_icon_  = "control"
 
 	#----------------------------------------------------------------------

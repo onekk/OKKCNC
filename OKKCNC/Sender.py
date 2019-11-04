@@ -99,31 +99,31 @@ class Sender:
         self.cnc   = self.gcode.cnc
 
         self.log     = Queue()    # Log queue returned from GRBL
-        self.queue     = Queue()    # Command queue to be send to GRBL
-        self.pendant     = Queue()    # Command queue to be executed from Pendant
-        self.serial     = None
-        self.thread     = None
+        self.queue   = Queue()    # Command queue to be send to GRBL
+        self.pendant = Queue()    # Command queue to be executed from Pendant
+        self.serial  = None
+        self.thread  = None
 
-        self._posUpdate  = False    # Update position
-        self._probeUpdate= False    # Update probe
+        self._posUpdate   = False    # Update position
+        self._probeUpdate = False    # Update probe
         self._gUpdate     = False    # Update $G
-        self._update     = None        # Generic update
+        self._update      = None        # Generic update
 
         self.running     = False
         self.runningPrev = None
         self.cleanAfter  = False
-        self._runLines     = 0
-        self._quit     = 0        # Quit counter to exit program
-        self._stop     = False    # Raise to stop current run
-        self._pause     = False    # machine is on Hold
-        self._alarm     = True        # Display alarm message if true
+        self._runLines   = 0
+        self._quit    = 0        # Quit counter to exit program
+        self._stop    = False    # Raise to stop current run
+        self._pause   = False    # machine is on Hold
+        self._alarm   = True        # Display alarm message if true
         self._msg     = None
-        self._sumcline     = 0
-        self._lastFeed     = 0
-        self._newFeed     = 0
+        self._sumcline  = 0
+        self._lastFeed  = 0
+        self._newFeed   = 0
 
-        self._onStart    = ""
-        self._onStop     = ""
+        self._onStart   = ""
+        self._onStop    = ""
 
 
     #----------------------------------------------------------------------
@@ -272,7 +272,8 @@ class Sender:
 
         # RESET: perform a soft reset to grbl
         elif cmd == "RESET":
-            self.softReset()
+            self.mcontrol.softReset(clearAlarm)
+            #self.softReset()
 
         # RUN: run g-code
         elif cmd == "RUN":
@@ -329,7 +330,8 @@ class Sender:
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK",cmd,3):
-            self.unlock()
+             self.mcontrol.unlock(True)
+             #self.unlock()
 
         # Send commands to SMOOTHIE
         elif self.mcontrol.executeCommand(oline, line, cmd):
@@ -536,8 +538,8 @@ class Sender:
     # FIXME: legacy wrappers. try to call mcontrol directly instead:
     #----------------------------------------------------------------------
     def hardReset(self):            self.mcontrol.hardReset()
-    def softReset(self, clearAlarm=True):    self.mcontrol.softReset(clearAlarm)
-    def unlock(self, clearAlarm=True):    self.mcontrol.unlock(clearAlarm)
+    #def softReset(self, clearAlarm=True):    self.mcontrol.softReset(clearAlarm)
+    #def unlock(self, clearAlarm=True):    self.mcontrol.unlock(clearAlarm)
     def home(self, event=None):        self.mcontrol.home(event)
     def viewSettings(self):            self.mcontrol.viewSettings()
     def viewParameters(self):        self.mcontrol.viewParameters()

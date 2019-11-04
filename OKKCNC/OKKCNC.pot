@@ -1,0 +1,4741 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-04 16:09+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: OKKCNC/Sender.py:339
+msgid "unknown command"
+msgstr ""
+
+#: OKKCNC/Sender.py:339
+#, python-format
+msgid "Invalid command %s"
+msgstr ""
+
+#: OKKCNC/Sender.py:593
+msgid "Run ended"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:530 OKKCNC/ToolsPage.py:542 OKKCNC/ToolsPage.py:554
+msgid "F1"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:531 OKKCNC/ToolsPage.py:543 OKKCNC/ToolsPage.py:555
+msgid "F2"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:532 OKKCNC/ToolsPage.py:544 OKKCNC/ToolsPage.py:556
+msgid "F3"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:533 OKKCNC/ToolsPage.py:545 OKKCNC/ToolsPage.py:557
+msgid "F4"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:534 OKKCNC/ToolsPage.py:546 OKKCNC/ToolsPage.py:558
+msgid "F5"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:535 OKKCNC/ToolsPage.py:547 OKKCNC/ToolsPage.py:559
+msgid "F6"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:536 OKKCNC/ToolsPage.py:548 OKKCNC/ToolsPage.py:560
+msgid "F7"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:537 OKKCNC/ToolsPage.py:549 OKKCNC/ToolsPage.py:561
+msgid "F8"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:538 OKKCNC/ToolsPage.py:550 OKKCNC/ToolsPage.py:562
+msgid "F9"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:539 OKKCNC/ToolsPage.py:551 OKKCNC/ToolsPage.py:563
+msgid "F10"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:540 OKKCNC/ToolsPage.py:552 OKKCNC/ToolsPage.py:564
+msgid "F11"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:541 OKKCNC/ToolsPage.py:553 OKKCNC/ToolsPage.py:565
+msgid "F12"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:542 OKKCNC/ToolsPage.py:543 OKKCNC/ToolsPage.py:544
+#: OKKCNC/ToolsPage.py:545 OKKCNC/ToolsPage.py:546 OKKCNC/ToolsPage.py:547
+#: OKKCNC/ToolsPage.py:548 OKKCNC/ToolsPage.py:549 OKKCNC/ToolsPage.py:550
+#: OKKCNC/ToolsPage.py:551 OKKCNC/ToolsPage.py:552 OKKCNC/ToolsPage.py:553
+msgid "Shift-"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:554 OKKCNC/ToolsPage.py:555 OKKCNC/ToolsPage.py:556
+#: OKKCNC/ToolsPage.py:557 OKKCNC/ToolsPage.py:558 OKKCNC/ToolsPage.py:559
+#: OKKCNC/ToolsPage.py:560 OKKCNC/ToolsPage.py:561 OKKCNC/ToolsPage.py:562
+#: OKKCNC/ToolsPage.py:563 OKKCNC/ToolsPage.py:564 OKKCNC/ToolsPage.py:565
+msgid "Control-"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:580
+msgid "Align Camera"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:581
+msgid "Align Camera Width"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:582
+msgid "Align Camera Height"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:583
+msgid "Align Camera Angle"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:584
+msgid "Web Camera"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:585
+msgid "Web Camera Width"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:586
+msgid "Web Camera Height"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:587
+msgid "Web Camera Angle"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:599
+msgid "Units (inches)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:600
+msgid "Laser Cutter"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:601
+msgid "Laser Adaptive Power"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:602
+msgid "Double Size Icon"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:603
+msgid "Acceleration x"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:604
+msgid "Acceleration y"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:605
+msgid "Acceleration z"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:606
+msgid "Feed max x"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:607
+msgid "Feed max y"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:608
+msgid "Feed max z"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:609
+msgid "Travel x"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:610
+msgid "Travel y"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:611
+msgid "Travel z"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:612
+msgid "Decimal digits"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:613
+msgid "Plotting Arc accuracy"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:614
+msgid "Start up"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:615
+msgid "Spindle min (RPM)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:616
+msgid "Spindle max (RPM)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:617
+msgid "DRO Zero padding"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:618
+msgid "Header gcode"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:619
+msgid "Footer gcode"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:642 OKKCNC/ToolsPage.py:669 OKKCNC/ToolsPage.py:699
+#: OKKCNC/ToolsPage.py:727 OKKCNC/ToolsPage.py:817 OKKCNC/ToolsPage.py:853
+#: OKKCNC/ToolsPage.py:897 OKKCNC/ToolsPage.py:922 OKKCNC/ToolsPage.py:1671
+#: OKKCNC/lib/bFileDialog.py:276 OKKCNC/plugins/jigsaw.py:268
+#: OKKCNC/plugins/center.py:35 OKKCNC/plugins/bowl.py:113
+#: OKKCNC/plugins/trochoidal_3D.py:38 OKKCNC/plugins/pyrograph.py:40
+#: OKKCNC/plugins/zigzag.py:99 OKKCNC/plugins/intersection.py:37
+#: OKKCNC/plugins/heightmap.py:49 OKKCNC/plugins/linearize.py:35
+#: OKKCNC/plugins/midi2cnc.py:52 OKKCNC/plugins/function_plot.py:28
+#: OKKCNC/plugins/gear.py:168 OKKCNC/plugins/flatten.py:259
+#: OKKCNC/plugins/hilbert.py:90 OKKCNC/plugins/trochoidal.py:34
+#: OKKCNC/plugins/difference.py:38 OKKCNC/plugins/Random.py:39
+#: OKKCNC/plugins/slicemesh.py:53 OKKCNC/plugins/tile.py:38
+#: OKKCNC/plugins/Helical_Descent.py:64 OKKCNC/plugins/spirograph.py:105
+#: OKKCNC/plugins/sketch.py:40 OKKCNC/plugins/dragknife.py:36
+#: OKKCNC/plugins/halftone.py:38 OKKCNC/plugins/drillmark.py:28
+#: OKKCNC/plugins/trochoidPath.py:42 OKKCNC/plugins/arcfit.py:35
+#: OKKCNC/plugins/driller.py:45 OKKCNC/plugins/scaling.py:41
+#: OKKCNC/plugins/box.py:299 OKKCNC/plugins/text.py:39
+msgid "Name"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:643 OKKCNC/ToolsPage.py:670 OKKCNC/ToolsPage.py:700
+#: OKKCNC/EditorPage.py:257
+msgid "Comment"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:644 OKKCNC/ToolsPage.py:731
+#: OKKCNC/plugins/trochoidal_3D.py:53 OKKCNC/plugins/scaling.py:46
+msgid "Feed"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:645 OKKCNC/ToolsPage.py:732
+#: OKKCNC/plugins/trochoidal_3D.py:54 OKKCNC/plugins/scaling.py:47
+msgid "Plunge Feed"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:646 OKKCNC/ToolsPage.py:730
+#: OKKCNC/plugins/trochoidal_3D.py:49 OKKCNC/plugins/trochoidPath.py:50
+#: OKKCNC/plugins/trochoidPath.py:51
+msgid "Depth Increment"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:671 OKKCNC/lib/bFileDialog.py:277
+msgid "Type"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:672
+msgid "Shape"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:673 OKKCNC/ToolsPage.py:701 OKKCNC/ToolsPage.py:1208
+msgid "Material"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:674
+msgid "Coating"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:675 OKKCNC/plugins/bowl.py:114
+msgid "Diameter"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:676
+msgid "Mount Axis"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:677
+msgid "Flutes"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:678
+msgid "Length"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:679
+msgid "Angle"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:680
+msgid "Stepover %"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:702
+msgid "Safe Z"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:703 OKKCNC/ToolsPage.py:728
+msgid "Surface Z"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:704
+msgid "Thickness"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:729 OKKCNC/ToolsPage.py:819
+#: OKKCNC/plugins/trochoidal_3D.py:48 OKKCNC/plugins/spirograph.py:109
+#: OKKCNC/plugins/trochoidPath.py:49 OKKCNC/plugins/driller.py:47
+msgid "Target Depth"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:733
+msgid "Cutting strategy"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:734
+msgid "Ramp length"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:734
+msgid ""
+"positive value = relative to tool diameter (5 to 10 probably makes sense), "
+"negative = absolute ramp distance (you probably don't need this). Also note "
+"that ramp can't currently be shorter than affected g-code segment."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:735
+msgid "First cut at surface height"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:736
+msgid "Spring pass"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:736
+msgid ""
+"Do the last cut once more in opposite direction. Helix bottom is disabled in "
+"such case."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:737
+msgid "Exit strategy (usefull for threads)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:737
+msgid "You should probably always use 'on path', unless you are threadmilling!"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:738
+msgid "Leave islands uncut"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:739
+msgid "Only leave selected islands uncut"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:740
+msgid "Compensate islands for cutter radius"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:740
+msgid ""
+"Add additional margin/offset around islands to compensate for endmill "
+"radius. This is automaticaly done for all islands if they are marked as tabs."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:741
+msgid "Cut contours of selected islands"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:806
+msgid "CUT selected paths"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:818
+msgid "Drill in center only"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:820
+msgid "Peck depth"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:821
+msgid "Dwell (s)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:822
+msgid "Distance (mm)"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:823
+msgid "Number"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:842
+msgid "DRILL selected points"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:854 OKKCNC/ToolsPage.py:898 OKKCNC/ToolsPage.py:1222
+#: OKKCNC/plugins/trochoidal_3D.py:40 OKKCNC/plugins/Helical_Descent.py:70
+#: OKKCNC/plugins/trochoidPath.py:46
+msgid "End Mill"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:854
+msgid "Size of this endmill will be used as offset distance"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:855 OKKCNC/plugins/trochoidal_3D.py:44
+#: OKKCNC/plugins/pyrograph.py:46 OKKCNC/plugins/trochoidPath.py:44
+msgid "Direction"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:855
+msgid "Should we machine on inside or outside of the shape?"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:856 OKKCNC/plugins/trochoidal_3D.py:45
+#: OKKCNC/plugins/trochoidPath.py:45
+msgid "Additional offset distance"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:857 OKKCNC/plugins/trochoidal_3D.py:47
+#: OKKCNC/plugins/trochoidPath.py:48 OKKCNC/plugins/box.py:308
+msgid "Overcut"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:857
+msgid "Sets if we want to overcut or not."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:858 OKKCNC/ToolsPage.py:1325
+msgid "Pocket"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:858
+msgid ""
+"Generate pocket after profiling? Usefull for making pockets with overcuts."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:886
+msgid "Generate profile path"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:911
+msgid "Generate pocket path"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:924
+msgid "Number of tabs"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:925
+msgid "Min. Distance of tabs"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:928
+msgid "Height"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:963
+msgid "Tabs error"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:964
+msgid "You cannot have both the number of tabs or distance equal to zero"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:970
+msgid "Create tabs on blocks"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:981
+msgid "$0 Step pulse time [us]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:982
+msgid "$1 Step idle delay [ms]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:983
+msgid "$2 Step port invert [mask]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:984
+msgid "$3 Direction port invert [mask]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:985
+msgid "$4 Step enable invert"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:986
+msgid "$5 Limit pins invert"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:987
+msgid "$6 Probe pin invert"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:988
+msgid "$10 Status report [mask]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:989
+msgid "$11 Junction deviation [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:990
+msgid "$12 Arc tolerance [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:991
+msgid "$13 Report inches"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:992
+msgid "$20 Soft limits"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:993
+msgid "$21 Hard limits"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:994
+msgid "$22 Homing cycle"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:995
+msgid "$23 Homing direction invert [mask]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:996
+msgid "$24 Homing feed [mm/min]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:997
+msgid "$25 Homing seek [mm/min]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:998
+msgid "$26 Homing debounce [ms]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:999
+msgid "$27 Homing pull-off [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1000
+msgid "$30 Max spindle speed [RPM]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1001
+msgid "$31 Min spindle speed [RPM]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1002
+msgid "$32 Laser mode enable"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1003
+msgid "$100 X steps/mm"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1004
+msgid "$101 Y steps/mm"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1005
+msgid "$102 Z steps/mm"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1006
+msgid "$110 X max rate [mm/min]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1007
+msgid "$111 Y max rate [mm/min]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1008
+msgid "$112 Z max rate [mm/min]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1009
+msgid "$120 X acceleration [mm/sec^2]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1010
+msgid "$121 Y acceleration [mm/sec^2]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1011
+msgid "$122 Z acceleration [mm/sec^2]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1012
+msgid "$130 X max travel [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1013
+msgid "$131 Y max travel [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1014
+msgid "$132 Z max travel [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1015
+msgid "$140 X homing pull-off [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1016
+msgid "$141 Y homing pull-off [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1017
+msgid "$142 Z homing pull-off [mm]"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1187
+msgid "Database"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1194
+msgid "Stock"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1201
+msgid "Stock material currently on machine"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1215
+msgid "Editable database of material properties"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1229
+msgid "Editable database of EndMills properties"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1236
+msgid "Rename"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1241
+msgid "Edit name of current operation/object"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1249 OKKCNC/EditorPage.py:184 OKKCNC/ProbePage.py:556
+msgid "Add"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1254
+msgid "Add a new operation/object"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1262 OKKCNC/EditorPage.py:196
+msgid "Clone"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1267
+msgid "Clone selected operation/object"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1275 OKKCNC/EditorPage.py:208 OKKCNC/ProbePage.py:590
+msgid "Delete"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1280
+msgid "Delete selected operation/object"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1290 OKKCNC/ToolsPage.py:1776
+msgid "CAM"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1297 OKKCNC/EditorPage.py:49 OKKCNC/plugins/box.py:309
+msgid "Cut"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1304
+msgid "Cut for the full stock thickness selected code"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1311 OKKCNC/plugins/box.py:307
+msgid "Profile"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1318
+msgid "Perform a profile operation on selected code"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1332
+msgid "Perform a pocket operation on selected code"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1339
+msgid "Drill"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1346
+msgid "Insert a drill cycle on current objects/location"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1353
+msgid "Tabs"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1360
+msgid "Insert holding tabs"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1368
+msgid "Island"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1374
+msgid "Toggle island"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1493 OKKCNC/ToolsPage.py:1545
+msgid "Config"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1508
+msgid "Change program language restart is required"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1517 OKKCNC/ProbePage.py:110 OKKCNC/ProbePage.py:1362
+msgid "Camera"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1524
+msgid "Camera Configuration"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1531
+msgid "Colors"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1538
+msgid "Color configuration"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1552
+msgid "Machine configuration for bCNC"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1559
+msgid "Controller"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1566
+msgid "Controller (GRBL) configuration"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1573
+msgid "Fonts"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1580
+msgid "Font configuration"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1587
+msgid "Shortcuts"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1594
+msgid "Shortcuts configuration"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1625
+msgid "Language change"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1626
+msgid "Please restart the program."
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1634
+msgid "Events"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1639
+msgid "User File"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1659
+msgid "Execute"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1672
+msgid "Value"
+msgstr ""
+
+#: OKKCNC/ToolsPage.py:1775
+msgid "GCode manipulation tools and user plugins"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:87 OKKCNC/__main__.py:87
+msgid "All accepted"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:88 OKKCNC/OKKCNC.py:2112 OKKCNC/__main__.py:88
+#: OKKCNC/__main__.py:2112
+msgid "G-Code"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:89 OKKCNC/__main__.py:89
+msgid "G-Code clean"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:92 OKKCNC/ProbePage.py:79 OKKCNC/ProbePage.py:86
+#: OKKCNC/ProbePage.py:424 OKKCNC/ProbePage.py:495 OKKCNC/__main__.py:92
+msgid "Probe"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:93 OKKCNC/ProbePage.py:536 OKKCNC/ProbePage.py:644
+#: OKKCNC/__main__.py:93
+msgid "Orient"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:95 OKKCNC/EditorPage.py:83 OKKCNC/__main__.py:95
+msgid "All"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:145 OKKCNC/__main__.py:145
+msgid "Controller buffer fill"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:158 OKKCNC/Utils.py:608 OKKCNC/__main__.py:158
+msgid "Command:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:172 OKKCNC/__main__.py:172
+msgid ""
+"MDI Command line: Accept g-code commands or macro commands (RESET/HOME...) "
+"or editor commands (move,inkscape, round...) [Space or Ctrl-Space]"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:529 OKKCNC/__main__.py:529
+msgid "Running"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:530 OKKCNC/__main__.py:530
+msgid "CNC is currently running, please stop it before."
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:735 OKKCNC/__main__.py:735
+#, python-format
+msgid "About %s v%s"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:770 OKKCNC/__main__.py:770
+msgid ""
+"OKKCNC/\tAn advanced fully featured\n"
+"\tg-code sender for GRBL."
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:881 OKKCNC/OKKCNC.py:1086 OKKCNC/OKKCNC.py:2169
+#: OKKCNC/FilePage.py:220 OKKCNC/__main__.py:881 OKKCNC/__main__.py:1086
+#: OKKCNC/__main__.py:2169
+msgid "Close"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:926 OKKCNC/EditorPage.py:555 OKKCNC/__main__.py:926
+msgid "Statistics"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:946 OKKCNC/__main__.py:946
+msgid "Enabled GCode"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:951 OKKCNC/OKKCNC.py:1024 OKKCNC/__main__.py:951
+#: OKKCNC/__main__.py:1024
+msgid "Margins X:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:984 OKKCNC/OKKCNC.py:1057 OKKCNC/__main__.py:984
+#: OKKCNC/__main__.py:1057
+msgid "# Blocks:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:992 OKKCNC/OKKCNC.py:1064 OKKCNC/__main__.py:992
+#: OKKCNC/__main__.py:1064
+msgid "Length:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1000 OKKCNC/__main__.py:1000
+msgid "Rapid:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1008 OKKCNC/OKKCNC.py:1072 OKKCNC/__main__.py:1008
+#: OKKCNC/__main__.py:1072
+msgid "Time:"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1019 OKKCNC/__main__.py:1019
+msgid "All GCode"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1244 OKKCNC/__main__.py:1244
+msgid "Evaluation error"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1326 OKKCNC/__main__.py:1326
+msgid "Direction command error"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1327 OKKCNC/__main__.py:1327
+#, python-format
+msgid "Invalid direction %s specified"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1501 OKKCNC/EditorPage.py:351 OKKCNC/__main__.py:1501
+msgid "Optimize"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1502 OKKCNC/__main__.py:1502
+msgid "Please select the blocks of gcode you want to optimize."
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1647 OKKCNC/__main__.py:1647
+#, python-format
+msgid "EndMill: %s %g"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1672 OKKCNC/__main__.py:1672
+#, python-format
+msgid "Invalid user command %s"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1728 OKKCNC/__main__.py:1728
+msgid "Nothing to do"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1729 OKKCNC/__main__.py:1729
+#, python-format
+msgid "Operation %s requires some gcode to be selected"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1775 OKKCNC/__main__.py:1775
+msgid "Operation error"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1816 OKKCNC/OKKCNC.py:1887 OKKCNC/__main__.py:1816
+#: OKKCNC/__main__.py:1887
+#, python-format
+msgid "Profile block distance=%g"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1832 OKKCNC/__main__.py:1832
+msgid "Open paths"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1833 OKKCNC/__main__.py:1833
+#, python-format
+msgid "WARNING: %s"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:1995 OKKCNC/__main__.py:1995
+msgid "Open file"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2011 OKKCNC/__main__.py:2011
+msgid "Save file"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2020 OKKCNC/__main__.py:2020
+msgid "File modified"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2021 OKKCNC/__main__.py:2021
+msgid "Gcode was modified do you want to save it first?"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2030 OKKCNC/__main__.py:2030
+msgid "Probe File modified"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2031 OKKCNC/__main__.py:2031
+msgid "Probe was modified do you want to save it first?"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2054 OKKCNC/__main__.py:2054
+msgid "Existing Autolevel"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2055 OKKCNC/__main__.py:2055
+msgid ""
+"Autolevel/probe information already exists.\n"
+"Delete it?"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2060 OKKCNC/__main__.py:2060
+#, python-format
+msgid "Loading: %s ..."
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2081 OKKCNC/__main__.py:2081
+#, python-format
+msgid "'%s' reloaded at '%s'"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2083 OKKCNC/__main__.py:2083
+#, python-format
+msgid "'%s' loaded"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2089 OKKCNC/__main__.py:2089
+#, python-format
+msgid "'%s' saved"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2108 OKKCNC/__main__.py:2108
+msgid "Import Gcode/DXF file"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2144 OKKCNC/__main__.py:2144
+msgid "Warning"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2145 OKKCNC/__main__.py:2145
+#, python-format
+msgid ""
+"Gcode file %s was changed since editing started\n"
+"Reload new version?"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2161 OKKCNC/FilePage.py:87 OKKCNC/FilePage.py:310
+#: OKKCNC/__main__.py:2161 OKKCNC/lib/bFileDialog.py:303
+#: OKKCNC/lib/bFileDialog.py:855 OKKCNC/lib/bFileDialog.py:967
+msgid "Open"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2181 OKKCNC/__main__.py:2181
+msgid "Error opening serial"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2214 OKKCNC/__main__.py:2214
+msgid "Serial Error"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2215 OKKCNC/__main__.py:2215
+msgid "Serial is not connected"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2222 OKKCNC/__main__.py:2222
+msgid "Already running"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2223 OKKCNC/__main__.py:2223
+msgid "Please stop before"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2270 OKKCNC/__main__.py:2270
+msgid "Empty gcode"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2271 OKKCNC/__main__.py:2271
+msgid "Not gcode file was loaded"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2306 OKKCNC/__main__.py:2306
+msgid "Running..."
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2323 OKKCNC/OKKCNC.py:2327 OKKCNC/OKKCNC.py:2340
+#: OKKCNC/FilePage.py:189 OKKCNC/__main__.py:2323 OKKCNC/__main__.py:2327
+#: OKKCNC/__main__.py:2340
+msgid "Pendant"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2324 OKKCNC/__main__.py:2324
+msgid "Pendant started:\n"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2328 OKKCNC/__main__.py:2328
+msgid "Pendant already started:\n"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2330 OKKCNC/__main__.py:2330
+msgid ""
+"\n"
+"Would you like open it locally?"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2340 OKKCNC/__main__.py:2340
+msgid "Pendant stopped"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2689 OKKCNC/__main__.py:2689
+msgid "python serial missing"
+msgstr ""
+
+#: OKKCNC/OKKCNC.py:2690 OKKCNC/__main__.py:2690
+msgid ""
+"ERROR: Please install the python pyserial module\n"
+"Windows:\n"
+"\tC:\\PythonXX\\Scripts\\easy_install pyserial\n"
+"Mac:\tpip install pyserial\n"
+"Linux:\tsudo apt-get install python-serial\n"
+"\tor yum install python-serial\n"
+"\tor dnf install python-pyserial"
+msgstr ""
+
+#: OKKCNC/Utils.py:570
+msgid "User configurable button"
+msgstr ""
+
+#: OKKCNC/Utils.py:576
+msgid "Name:"
+msgstr ""
+
+#: OKKCNC/Utils.py:580
+msgid "Name to appear on button"
+msgstr ""
+
+#: OKKCNC/Utils.py:584
+msgid "Icon:"
+msgstr ""
+
+#: OKKCNC/Utils.py:596
+msgid "Icon to appear on button"
+msgstr ""
+
+#: OKKCNC/Utils.py:600
+msgid "Tool Tip:"
+msgstr ""
+
+#: OKKCNC/Utils.py:604
+msgid "Tooltip for button"
+msgstr ""
+
+#: OKKCNC/Utils.py:620 OKKCNC/lib/bFileDialog.py:327
+msgid "Cancel"
+msgstr ""
+
+#: OKKCNC/Utils.py:621
+msgid "Ok"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:522
+msgid "New file"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:528
+msgid "Open file [Ctrl-O]"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:534
+msgid "Save all [Ctrl-S]"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:540
+msgid "Undo [Ctrl-Z]"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:553
+msgid "Redo [Ctrl-Y]"
+msgstr ""
+
+#: OKKCNC/Ribbon.py:564
+msgid "Help [F1]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:32
+msgid "Clipboard"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:38
+msgid "Paste"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:43
+msgid "Paste [Ctrl-V]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:54
+msgid "Cut [Ctrl-X]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:61
+msgid "Copy"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:66
+msgid "Copy [Ctrl-C]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:76
+msgid "Select"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:88
+msgid "Select all blocks [Ctrl-A]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:95
+msgid "None"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:100
+msgid "Unselect all blocks [Ctrl-Shift-A]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:107 OKKCNC/EditorPage.py:383
+#: OKKCNC/plugins/heightmap.py:57
+msgid "Invert"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:112
+msgid "Invert selection [Ctrl-I]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:119
+msgid "Layer"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:124
+msgid "Select all blocks from current layer"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:130
+msgid "Filter"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:135
+msgid "Filter blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:151
+msgid "Edit"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:152 OKKCNC/ProbePage.py:98 OKKCNC/ProbePage.py:195
+#: OKKCNC/ProbePage.py:1004
+msgid "Autolevel"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:153 OKKCNC/CNCList.py:719
+msgid "Color"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:154 OKKCNC/FilePage.py:99
+msgid "Import"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:155
+msgid "Postprocess Inkscape g-code"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:156
+msgid "Round"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:176 OKKCNC/EditorPage.py:190
+msgid "Insert a new block or line of code [Ins or Ctrl-Enter]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:179
+msgid "Line"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:181
+msgid "Block"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:201
+msgid "Clone selected lines or blocks [Ctrl-D]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:213
+msgid "Delete selected lines or blocks [Del]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:225
+msgid "Toggle enable/disable block of g-code [Ctrl-L]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:228
+msgid "Enable"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:230
+msgid "Disable"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:233
+msgid "Active"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:239
+msgid "Enable or disable blocks of gcode"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:245
+msgid "Expand"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:250
+msgid "Toggle expand/collapse blocks of gcode [Ctrl-E]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:262
+msgid "(Un)Comment selected lines"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:269
+msgid "Join"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:274
+msgid "Join selected blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:280
+msgid "Split"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:285
+msgid "Split selected blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:294 OKKCNC/EditorPage.py:301
+msgid "Move"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:309
+msgid "Move objects [M]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:316
+msgid "Origin"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:324
+msgid "Move all gcode such as origin is on mouse location [O]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:330
+msgid "Top-Left"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:331
+msgid "Left"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:332
+msgid "Bottom-Left"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:333
+msgid "Top"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:334 OKKCNC/ProbePage.py:512 OKKCNC/ProbePage.py:524
+#: OKKCNC/plugins/center.py:12
+msgid "Center"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:335
+msgid "Bottom"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:336
+msgid "Top-Right"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:337
+msgid "Right"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:338
+msgid "Bottom-Right"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:350 OKKCNC/plugins/hilbert.py:92
+msgid "Order"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:359
+msgid "Up"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:364
+msgid "Move selected g-code up [Ctrl-Up, Ctrl-PgUp]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:371
+msgid "Down"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:376
+msgid "Move selected g-code down [Ctrl-Down, Ctrl-PgDn]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:388
+msgid "Invert cutting order of selected blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:397
+msgid "Transform"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:404
+msgid "CW"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:410
+msgid "Rotate selected gcode clock-wise (-90deg)"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:417
+msgid "Flip"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:423
+msgid "Rotate selected gcode by 180deg"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:430
+msgid "CCW"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:436
+msgid "Rotate selected gcode counter-clock-wise (90deg)"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:443
+msgid "Horizontal"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:449
+msgid "Mirror horizontally X=-X selected gcode"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:456
+msgid "Vertical"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:462
+msgid "Mirror vertically Y=-Y selected gcode"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:474
+msgid "Route"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:481
+msgid "Conventional"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:487
+msgid "Change cut direction to conventional for selected gcode blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:494
+msgid "Climb"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:500
+msgid "Change cut direction to climb for selected gcode blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:507
+msgid "Reverse"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:513
+msgid "Reverse cut direction for selected gcode blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:520
+msgid "Cut CW"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:526
+msgid "Change cut direction to CW for selected gcode blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:533
+msgid "Cut CCW"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:539
+msgid "Change cut direction to CCW for selected gcode blocks"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:548 OKKCNC/EditorPage.py:568
+msgid "Info"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:561
+msgid "Show statistics for enabled gcode"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:574
+msgid "Show cutting information on selected blocks [Ctrl-n]"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:600
+msgid "GCode editor"
+msgstr ""
+
+#: OKKCNC/EditorPage.py:601
+msgid "Editor"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:33
+msgid "G38.2 stop on contact else error"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:34
+msgid "G38.3 stop on contact"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:35
+msgid "G38.4 stop on loss contact else error"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:36
+msgid "G38.5 stop on loss contact"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:39
+msgid "Send M6 commands"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:40
+msgid "Ignore M6 commands"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:41
+msgid "Manual Tool Change (WCS)"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:42
+msgid "Manual Tool Change (TLO)"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:43
+msgid "Manual Tool Change (NoProbe)"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:46
+msgid "ONLY before probing"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:47
+msgid "BEFORE & AFTER probing"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:92
+msgid "Simple probing along a direction"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:104
+msgid "Autolevel Z surface"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:116
+msgid "Work surface camera view and alignment"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:123
+msgid "Tool"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:129
+msgid "Setup probing for manual tool change"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:147
+msgid "Margins"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:152
+msgid "Get margins from gcode file"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:159
+msgid "Zero"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:164
+msgid ""
+"Set current XY location as autoleveling Z-zero (recalculate probed data to "
+"be relative to this XY origin point)"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:171 OKKCNC/ProbePage.py:623 OKKCNC/TerminalPage.py:34
+msgid "Clear"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:176
+msgid "Clear probe data"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:184 OKKCNC/ProbePage.py:208
+#: OKKCNC/plugins/heightmap.py:52
+msgid "Scan"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:189
+msgid "Scan Autolevel Margins"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:201
+msgid "Modify selected G-Code to match autolevel"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:215
+msgid "Scan probed area for level information on Z plane"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:229
+msgid "Common"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:239
+msgid "Fast Probe Feed:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:248
+msgid "Set initial probe feed rate for tool change and calibration"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:255
+msgid "Probe Feed:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:262
+msgid "Set probe feed rate"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:269
+msgid "TLO"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:273
+msgid "Set tool offset for probing"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:279 OKKCNC/ControlPage.py:1280
+#: OKKCNC/ControlPage.py:1315 OKKCNC/ControlPage.py:1350
+msgid "set"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:289
+msgid "Probe Command"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:364
+msgid "Record"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:372
+msgid "Z"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:376
+msgid "Record Z coordinate?"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:380
+msgid "RAPID"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:387
+msgid "FEED"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:394
+msgid "POINT"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:401
+msgid "CIRCLE"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:408
+msgid "FINISH"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:416
+msgid "Circle radius"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:428 OKKCNC/ProbePage.py:1720
+msgid "Probe:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:451
+msgid "Automatic GOTO after probing"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:460
+msgid "Goto"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:467
+msgid "Rapid goto to last probe location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:471
+msgid "Pos:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:476
+msgid "Probe along X direction"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:482
+msgid "Probe along Y direction"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:488
+msgid "Probe along Z direction"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:502
+msgid "Perform a single probe cycle"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:515
+msgid "Diameter:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:518
+msgid "Probing ring internal diameter"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:531
+msgid "Center probing using a ring"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:542
+msgid "Markers:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:552
+msgid "Select orientation marker"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:564
+msgid ""
+"Add an orientation marker. Jog first the machine to the marker position and "
+"then click on canvas to add the marker."
+msgstr ""
+
+#: OKKCNC/ProbePage.py:571
+msgid "Gcode:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:578
+msgid "GCode X coordinate of orientation point"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:586
+msgid "GCode Y coordinate of orientation point"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:598
+msgid "Delete current marker"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:604 OKKCNC/ControlPage.py:188
+msgid "WPos:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:611
+msgid "Machine X coordinate of orientation point"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:619
+msgid "Machine Y coordinate of orientation point"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:631 OKKCNC/ProbePage.py:851
+msgid "Delete all markers"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:636
+msgid "Angle:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:652
+msgid "Align GCode with the machine markers"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:657 OKKCNC/ProbePage.py:1428
+msgid "Offset:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:670
+msgid "Error:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:715
+msgid "Probe connected?"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:716
+msgid ""
+"Please verify that the probe is connected.\n"
+"\n"
+"Show this message again?"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:730 OKKCNC/ProbePage.py:761 OKKCNC/ProbePage.py:1170
+#: OKKCNC/ProbePage.py:1177 OKKCNC/ProbePage.py:1190 OKKCNC/ProbePage.py:1197
+#: OKKCNC/ProbePage.py:1207 OKKCNC/ProbePage.py:1214 OKKCNC/ProbePage.py:1221
+msgid "Probe Error"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:731 OKKCNC/ProbePage.py:1222
+msgid "Invalid probe feed rate"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:762
+msgid "At least one probe direction should be specified"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:787
+msgid "Probe Center Error"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:788
+msgid "Invalid diameter entered"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:852
+msgid "Do you want to delete all orientation markers?"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:944
+msgid "Pointrec"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:994
+msgid "Finished recording"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1010
+msgid "Min"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1012
+msgid "Max"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1014
+msgid "Step"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1016
+msgid "N"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1021
+msgid "X:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1025
+msgid "X minimum"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1031
+msgid "X maximum"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1038
+msgid "X step"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1047
+msgid "X bins"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1053
+msgid "Y:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1057
+msgid "Y minimum"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1063
+msgid "Y maximum"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1070
+msgid "Y step"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1079
+msgid "Y bins"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1086
+msgid "Z:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1090
+msgid "Z Minimum depth to scan"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1096
+msgid "Z safe to move"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1171
+msgid "Invalid X probing region"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1178
+msgid "Invalid X range [xmin>=xmax]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1191
+msgid "Invalid Y probing region"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1198
+msgid "Invalid Y range [ymin>=ymax]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1208
+msgid "Invalid Z probing region"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1215
+msgid "Invalid Z range [zmin>=zmax]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1242
+msgid "Delete autolevel information"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1243
+msgid "Do you want to delete all autolevel in formation?"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1283
+msgid "Switch To"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1289
+msgid "Switch between camera and spindle"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1295
+msgid "Edge Detection"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1302
+msgid "Turn on/off edge detection"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1308
+msgid "Freeze"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1315
+msgid "Turn on/off freeze image"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1367
+msgid "Location:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1374
+msgid "Camera location inside canvas"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1378
+msgid "Rotation:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1384
+msgid "Camera rotation [degrees]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1387
+msgid "Haircross Offset:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1393
+msgid "Haircross X offset [unit]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1400
+msgid "Haircross Y offset [unit]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1404
+msgid "Scale:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1410
+msgid "Camera scale [pixels / unit]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1414
+msgid "Crosshair:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1420
+msgid "Camera cross hair diameter [units]"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1422
+msgid "Get"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1424
+msgid "Get diameter from active endmill"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1434 OKKCNC/ProbePage.py:1441
+msgid "Camera offset from gantry"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1448
+msgid "Spindle Z position when camera was registered"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1451
+msgid "Register:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1452
+msgid "1. Spindle"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1456
+msgid "Mark spindle position for calculating offset"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1458
+msgid "2. Camera"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1462
+msgid "Mark camera position for calculating offset"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1541
+msgid "Spindle position is registered"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1548
+msgid "Spindle position is not registered"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1549
+msgid "Spindle position must be registered before camera"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1555
+msgid "Camera offset is updated"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1615 OKKCNC/ProbePage.py:1777
+msgid "Calibrate"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1621
+msgid "Perform a single a tool change cycle to set the calibration field"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1625
+msgid "Change"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1631
+msgid "Perform a tool change cycle"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1641
+msgid "Manual Tool Change"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1646
+msgid "Policy:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1655
+msgid "Tool change policy"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1661
+msgid "Pause:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1675
+msgid "MX"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1677
+msgid "MY"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1679
+msgid "MZ"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1684
+msgid "Change:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1688
+msgid "Manual tool change Machine X location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1696
+msgid "Manual tool change Machine Y location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1704
+msgid "Manual tool change Machine Z location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1710 OKKCNC/ProbePage.py:1746
+msgid "get"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1714
+msgid "Get current gantry position as machine tool change location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1724
+msgid "Manual tool change Probing MX location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1732
+msgid "Manual tool change Probing MY location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1740
+msgid "Manual tool change Probing MZ location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1750
+msgid "Get current gantry position as machine tool probe location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1756 OKKCNC/ControlPage.py:1238
+msgid "Distance:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1761
+msgid "After a tool change distance to scan starting from ProbeZ"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1769
+msgid "Calibration:"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1773
+msgid "Tool probe height"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1781
+msgid "Perform a calibration probing to determine the height"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1832 OKKCNC/ProbePage.py:1842 OKKCNC/ProbePage.py:1850
+#: OKKCNC/ProbePage.py:1858 OKKCNC/ProbePage.py:1866
+msgid "Probe Tool Change Error"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1833
+msgid "Invalid tool change position"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1843
+msgid "Invalid tool probe location"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1851 OKKCNC/ProbePage.py:1867
+msgid "Invalid tool scanning distance entered"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1859
+msgid "Invalid tool height or not calibrated"
+msgstr ""
+
+#: OKKCNC/ProbePage.py:1981
+msgid "Probe configuration and probing"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:46 OKKCNC/ControlPage.py:79
+msgid "Connection"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:47
+msgid "Hard Reset"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:54
+msgid "Home"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:60
+msgid "Perform a homing cycle [$H]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:67
+msgid "Unlock"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:73
+msgid "Unlock controller [$X]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:85
+msgid "Open/Close connection"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:91 OKKCNC/ControlPage.py:1386
+msgid "Reset"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:97
+msgid "Software reset of controller [ctrl-x]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:128 OKKCNC/FilePage.py:194
+msgid "Start"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:132
+msgid "Run g-code commands from editor to controller"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:137
+msgid "Pause"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:141
+msgid "Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:145 OKKCNC/FilePage.py:205
+msgid "Stop"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:149
+msgid "Pause running program and soft reset controller to empty the buffer."
+msgstr ""
+
+#: OKKCNC/ControlPage.py:169
+msgid "Status:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:180
+msgid ""
+"Show current state of the machine\n"
+"Click to see details\n"
+"Right-Click to clear alarm/errors"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:198
+msgid "X work position (click to set)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:211
+msgid "Y work position (click to set)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:224
+msgid "Z work position (click to set)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:232
+msgid "MPos:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:250
+msgid "X=0"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:255
+msgid "Set X coordinate to zero (or to typed coordinate in WPos)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:259
+msgid "Y=0"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:264
+msgid "Set Y coordinate to zero (or to typed coordinate in WPos)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:268
+msgid "Z=0"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:273
+msgid "Set Z coordinate to zero (or to typed coordinate in WPos)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:279
+msgid "XY=0"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:284
+msgid "Set XY coordinate to zero (or to typed coordinate in WPos)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:288
+msgid "XYZ=0"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:293
+msgid "Set XYZ coordinate to zero (or to typed coordinate in WPos)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:302
+msgid "Set WPOS"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:309
+msgid "Set WPOS to mouse location"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:313
+msgid "Move Gantry"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:321
+msgid "Move gantry to mouse location [g]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:332
+msgid "Show Info"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:334
+msgid "Clear Message"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:338
+msgid "Feed hold"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:340
+msgid "Resume"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:443
+#, python-format
+msgid "Last error: %s\n"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:449
+msgid ""
+"No info available.\n"
+"Please contact the author."
+msgstr ""
+
+#: OKKCNC/ControlPage.py:450
+#, python-format
+msgid "State: %s"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:457 OKKCNC/ControlPage.py:1643
+msgid "Control"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:515
+msgid "Step for Z move operation"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:524
+msgid "Use step1"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:534
+msgid "Use step2"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:544
+msgid "Use step3"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:554
+msgid "Mem A"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:564
+msgid "Divide step by 5"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:572
+msgid "Multiply step by 5"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:579
+msgid "Step for coarse move operation"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:587
+msgid "Decrease step"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:595
+msgid "Increase step"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:604
+msgid "Mem B"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:613
+msgid "Decrease zstep"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:620
+msgid "Increase zstep"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:628
+msgid "Decrease step fine"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:636
+msgid "Increase step fine"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:646
+msgid "Cut Line from A to B"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:657
+msgid "Move +Z"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:666
+msgid "Move -X +Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:674
+msgid "Move +Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:682
+msgid "Move +X +Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:691
+msgid "Return to mem A"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:702
+msgid "Return to mem B"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:713
+msgid "Use zstep1"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:721
+msgid "Use zstep2"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:730
+msgid "Move -X"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:738
+msgid ""
+"Move to Origin.\n"
+"User configurable button.\n"
+"Right click to configure."
+msgstr ""
+
+#: OKKCNC/ControlPage.py:746
+msgid "Move +X"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:757
+msgid "Use zstep3"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:769
+msgid "Move -Z"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:778
+msgid "Move -X -Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:786
+msgid "Move -Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:794
+msgid "Move +X -Y"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:861
+#, python-format
+msgid "Set mem_A to X: %f Y: %f Z: %f"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:876
+#, python-format
+msgid "Set mem_B to X: %f Y: %f Z: %f"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:999
+msgid "Line Cut: Generated line cut code"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1069
+#, python-format
+msgid "Step: %g"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1074
+#, python-format
+msgid "Step: %g    Zstep:%g "
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1209 OKKCNC/TerminalPage.py:85
+msgid "State"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1232
+#, python-format
+msgid "Switch to workspace %s"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1246
+msgid "Distance Mode [G90,G91]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1256
+msgid "Units:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1264
+msgid "Units [G20, G21]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1271 OKKCNC/CNCCanvas.py:2013
+msgid "Tool:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1276
+msgid "Tool number [T#]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1288
+msgid "Plane:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1296
+msgid "Plane [G17,G18,G19]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1304
+msgid "Feed:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1311
+msgid "Feed Rate [F#]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1323
+msgid "Mode:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1332
+msgid "Feed Mode [G93, G94, G95]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1339
+msgid "TLO:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1346
+msgid "Tool length offset [G43.1#]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1358
+msgid "G92:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1363
+msgid "Set position [G92 X# Y# Z#]"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1384
+msgid "Select override type."
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1388
+msgid "Reset override to 100%"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1402
+msgid "Set Feed/Rapid/Spindle Override. Right or Double click to reset."
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1409
+msgid "Spindle"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1417
+msgid "Start/Stop spindle (M3/M5)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1428
+msgid "Set spindle RPM"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1443
+msgid "Coolant:"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1446
+msgid "OFF"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1452
+msgid "Stop cooling (M9)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1457
+msgid "Flood"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1463
+msgid "Start flood (M8)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1468
+msgid "Mist"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1474
+msgid "Start mist (M7)"
+msgstr ""
+
+#: OKKCNC/ControlPage.py:1642
+msgid "CNC communication and control"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:396
+msgid "Select objects with mouse"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:401
+msgid "Pan viewport"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:406
+msgid "Click to set the origin (zero)"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:411
+msgid "Move graphically objects"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:417
+msgid "Move CNC gantry to mouse location"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:423
+msgid "Set mouse location as current machine position (X/Y only)"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:428
+msgid "Drag a ruler to measure distances"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:433
+msgid "Add an orientation marker"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:489
+msgid "ERROR: Cannot set X-Y marker  with the current view"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:575
+#, python-format
+msgid "origin %g %g %g"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:621
+#, python-format
+msgid "dx=%g  dy=%g  dz=%g  length=%g  angle=%g"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:687
+#, python-format
+msgid "Move by %g, %g, %g"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:1767
+#, python-format
+msgid ">>> ERROR: %s\n"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:1768
+#, python-format
+msgid "     line: %s\n"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:1996
+msgid "Change viewing angle"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2000
+msgid "Zoom In [Ctrl-=]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2005
+msgid "Zoom Out [Ctrl--]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2010
+msgid "Fit to screen [F]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2024
+msgid "Select tool [S]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2033
+msgid "Pan viewport [X]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2059
+msgid "Ruler [R]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2065
+msgid "Draw:"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2074
+msgid "Toggle display of axes"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2082
+msgid "Toggle display of grid lines"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2090
+msgid "Toggle display of margins"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2099
+msgid "Toggle display of probe"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2107
+msgid "Toggle display of paths (G1,G2,G3)"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2115
+msgid "Toggle display of rapid motion (G0)"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2123
+msgid "Toggle display of workarea"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2131
+msgid "Toggle display of camera"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2138
+msgid "Redraw display [Ctrl-R]"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2146
+msgid "Draw timeout in seconds"
+msgstr ""
+
+#: OKKCNC/CNCCanvas.py:2150
+msgid "Timeout:"
+msgstr ""
+
+#: OKKCNC/FilePage.py:62 OKKCNC/FilePage.py:382
+msgid "File"
+msgstr ""
+
+#: OKKCNC/FilePage.py:69
+msgid "New"
+msgstr ""
+
+#: OKKCNC/FilePage.py:73
+msgid "New gcode/dxf file"
+msgstr ""
+
+#: OKKCNC/FilePage.py:82
+msgid "Open existing gcode/dxf file [Ctrl-O]"
+msgstr ""
+
+#: OKKCNC/FilePage.py:92
+msgid "Open recent file"
+msgstr ""
+
+#: OKKCNC/FilePage.py:103
+msgid "Import gcode/dxf file"
+msgstr ""
+
+#: OKKCNC/FilePage.py:113
+msgid "Save gcode/dxf file [Ctrl-S]"
+msgstr ""
+
+#: OKKCNC/FilePage.py:118 OKKCNC/lib/bFileDialog.py:890
+msgid "Save"
+msgstr ""
+
+#: OKKCNC/FilePage.py:123
+msgid "Save gcode/dxf AS"
+msgstr ""
+
+#: OKKCNC/FilePage.py:132
+msgid "Options"
+msgstr ""
+
+#: OKKCNC/FilePage.py:174
+msgid "About"
+msgstr ""
+
+#: OKKCNC/FilePage.py:181
+msgid "About the program"
+msgstr ""
+
+#: OKKCNC/FilePage.py:201
+msgid "Start pendant"
+msgstr ""
+
+#: OKKCNC/FilePage.py:212
+msgid "Stop pendant"
+msgstr ""
+
+#: OKKCNC/FilePage.py:224
+msgid "Exit"
+msgstr ""
+
+#: OKKCNC/FilePage.py:231
+msgid "Close program [Ctrl-Q]"
+msgstr ""
+
+#: OKKCNC/FilePage.py:239
+msgid "Serial"
+msgstr ""
+
+#: OKKCNC/FilePage.py:244
+msgid "Port:"
+msgstr ""
+
+#: OKKCNC/FilePage.py:250
+msgid "Select (or manual enter) port to connect"
+msgstr ""
+
+#: OKKCNC/FilePage.py:259
+msgid "Baud:"
+msgstr ""
+
+#: OKKCNC/FilePage.py:264
+msgid "Select connection baud rate"
+msgstr ""
+
+#: OKKCNC/FilePage.py:271
+msgid "Controller:"
+msgstr ""
+
+#: OKKCNC/FilePage.py:278
+msgid "Select controller board"
+msgstr ""
+
+#: OKKCNC/FilePage.py:286
+msgid "Connect on startup"
+msgstr ""
+
+#: OKKCNC/FilePage.py:289
+msgid "Connect to serial on startup of the program"
+msgstr ""
+
+#: OKKCNC/FilePage.py:297
+msgid "Refresh"
+msgstr ""
+
+#: OKKCNC/FilePage.py:302
+msgid "Refresh list of serial ports"
+msgstr ""
+
+#: OKKCNC/FilePage.py:315
+msgid "Open/Close serial port"
+msgstr ""
+
+#: OKKCNC/FilePage.py:381
+msgid "File I/O and configuration"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:30 OKKCNC/TerminalPage.py:153
+msgid "Terminal"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:38
+msgid "Clear terminal"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:46
+msgid "Commands"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:47
+msgid "Restore Settings"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:48
+msgid "Restore Workspace"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:49
+msgid "Restore All"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:60
+msgid "Settings"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:67
+msgid "$$ Display settings of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:73
+msgid "Parameters"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:79
+msgid "$# Display parameters of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:91
+msgid "$G Display state of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:99
+msgid "Build"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:105
+msgid "$I Display build information of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:111
+msgid "Startup"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:118
+msgid "$N Display startup configuration of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:125
+msgid "Check gcode"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:132
+msgid "$C Enable/Disable checking of gcode"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:140
+msgid "Help"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:146
+msgid "$ Display build information of Grbl"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:166
+msgid "Terminal communication with controller"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:177
+msgid "Buffered commands"
+msgstr ""
+
+#: OKKCNC/TerminalPage.py:202
+msgid "Serial Terminal"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericController.py:132
+#, python-format
+msgid "Set workspace %s to %s"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:11
+msgid "bCNC is currently sending a gcode program to Grbl"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:12
+msgid "Grbl is in idle state and waiting for user commands"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:13
+msgid "Grbl is on hold state. Click on resume (pause) to continue"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:14
+msgid ""
+"Alarm is an emergency state. Something has gone terribly wrong when these "
+"occur. Typically, they are caused by limit error when the machine has moved "
+"or wants to move outside the machine space and crash into something. They "
+"also report problems if Grbl is lost and can't guarantee positioning or a "
+"probe command has failed. Once in alarm-mode, Grbl will lock out and shut "
+"down everything until the user issues a reset. Even after a reset, Grbl will "
+"remain in alarm-mode, block all G-code from being executed, but allows the "
+"user to override the alarm manually. This is to ensure the user knows and "
+"acknowledges the problem and has taken steps to fix or account for it."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:15
+msgid ""
+"Grbl is in g-code check mode. If you send g-code to it, it will only check "
+"it without actualy doing any motion. You can exit this by $C command (Or "
+"equivalent button in terminal tab)"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:16
+msgid "Grbl executes jogging motion"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:17
+msgid ""
+"Grbl is in sleep mode. Motors are disabled, so you can move them manualy. "
+"That also means that your machine might have lost the position (or "
+"microsteps) and you may need to re-zero. Perform reset+unlock (or stop) to "
+"wake Grbl again."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:18
+msgid ""
+"Grbl is in queue state. This also means you have relatively old GRBL "
+"version, there are even 0.9 versions newer than this."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:19
+msgid "Grbl is not connected. Please specify the correct port and click Open."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:20
+msgid "Connection is established with Grbl"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:22
+msgid ""
+"All is good! Everything in the last line was understood by Grbl and was "
+"successfully processed and executed."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:24
+msgid "G-code words consist of a letter and a value. Letter was not found."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:25
+msgid "Numeric value format is not valid or missing an expected value."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:26
+msgid "Grbl '$' system command was not recognized or supported."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:27
+msgid "Negative value received for an expected positive value."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:28
+msgid "Homing cycle is not enabled via settings."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:29
+msgid "Minimum step pulse time must be greater than 3usec"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:30
+msgid "EEPROM read failed. Reset and restored to default values."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:31
+msgid ""
+"Grbl '$' command cannot be used unless Grbl is IDLE. Ensures smooth "
+"operation during a job."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:32
+msgid "G-code locked out during alarm or jog state"
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:33
+msgid "Soft limits cannot be enabled without homing also enabled."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:34
+msgid "Max characters per line exceeded. Line was not processed and executed."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:35
+msgid ""
+"(Compile Option) Grbl '$' setting value exceeds the maximum step rate "
+"supported."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:36
+msgid "Safety door detected as opened and door state initiated."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:37
+msgid ""
+"(Grbl-Mega Only) Build info or startup line exceeded EEPROM line length "
+"limit."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:38
+msgid "Jog target exceeds machine travel. Command ignored."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:39
+msgid "Jog command with no '=' or contains prohibited g-code."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:40
+msgid "Laser mode requires PWM output."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:41
+msgid "Unsupported or invalid g-code command found in block."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:42
+msgid "More than one g-code command from same modal group found in block."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:43
+msgid "Feed rate has not yet been set or is undefined."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:44
+msgid "G-code command in block requires an integer value."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:45
+msgid ""
+"Two G-code commands that both require the use of the XYZ axis words were "
+"detected in the block."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:46
+msgid "A G-code word was repeated in the block."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:47
+msgid ""
+"A G-code command implicitly or explicitly requires XYZ axis words in the "
+"block, but none were detected."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:48
+msgid "N line number value is not within the valid range of 1 - 9,999,999."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:49
+msgid ""
+"A G-code command was sent, but is missing some required P or L value words "
+"in the line."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:50
+msgid ""
+"Grbl supports six work coordinate systems G54-G59. G59.1, G59.2, and G59.3 "
+"are not supported."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:51
+msgid ""
+"The G53 G-code command requires either a G0 seek or G1 feed motion mode to "
+"be active. A different motion was active."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:52
+msgid ""
+"There are unused axis words in the block and G80 motion mode cancel is "
+"active."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:53
+msgid ""
+"A G2 or G3 arc was commanded but there are no XYZ axis words in the selected "
+"plane to trace the arc."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:54
+msgid ""
+"The motion command has an invalid target. G2, G3, and G38.2 generates this "
+"error, if the arc is impossible to generate or if the probe target is the "
+"current position."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:55
+msgid ""
+"A G2 or G3 arc, traced with the radius definition, had a mathematical error "
+"when computing the arc geometry. Try either breaking up the arc into semi-"
+"circles or quadrants, or redefine them with the arc offset definition."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:56
+msgid ""
+"A G2 or G3 arc, traced with the offset definition, is missing the IJK offset "
+"word in the selected plane to trace the arc."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:57
+msgid ""
+"There are unused, leftover G-code words that aren't used by any command in "
+"the block."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:58
+msgid ""
+"The G43.1 dynamic tool length offset command cannot apply an offset to an "
+"axis other than its configured axis. The Grbl default axis is the Z-axis."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:60
+msgid ""
+"Hard limit triggered. Machine position is likely lost due to sudden and "
+"immediate halt. Re-homing is highly recommended."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:61
+msgid ""
+"G-code motion target exceeds machine travel. Machine position safely "
+"retained. Alarm may be unlocked."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:62
+msgid ""
+"Reset while in motion. Grbl cannot guarantee position. Lost steps are "
+"likely. Re-homing is highly recommended."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:63
+msgid ""
+"Probe fail. The probe is not in the expected initial state before starting "
+"probe cycle, where G38.2 and G38.3 is not triggered and G38.4 and G38.5 is "
+"triggered."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:64
+msgid ""
+"Probe fail. Probe did not contact the workpiece within the programmed travel "
+"for G38.2 and G38.4."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:65
+msgid "Homing fail. Reset during active homing cycle."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:66
+msgid "Homing fail. Safety door was opened during active homing cycle."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:67
+msgid ""
+"Homing fail. Cycle failed to clear limit switch when pulling off. Try "
+"increasing pull-off setting or check wiring."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:68
+msgid ""
+"Homing fail. Could not find limit switch within search distance. Defined as "
+"1.5 * max_travel on search and 5 * pulloff on locate phases."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:70
+msgid "Hold complete. Ready to resume."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:71
+msgid "Hold in-progress. Reset will throw an alarm."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:72
+msgid "Door closed. Ready to resume."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:73
+msgid "Machine stopped. Door still ajar. Can't resume until closed."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:74
+msgid ""
+"Door opened. Hold (or parking retract) in-progress. Reset will throw an "
+"alarm."
+msgstr ""
+
+#: OKKCNC/controllers/_GenericGRBL.py:75
+msgid ""
+"Door closed and resuming. Restoring from park, if applicable. Reset will "
+"throw an alarm."
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:252
+msgid "Directory:"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:278 OKKCNC/plugins/hilbert.py:91
+msgid "Size"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:279
+msgid "Date"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:299
+msgid "File name:"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:306
+msgid "Files of type:"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:536 OKKCNC/lib/bFileDialog.py:594
+#: OKKCNC/lib/bFileDialog.py:801 OKKCNC/lib/bFileDialog.py:825
+#: OKKCNC/lib/bFileDialog.py:847
+msgid "Error"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:537
+#, python-format
+msgid "Cannot access path \"%s\""
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:595
+#, python-format
+msgid "Error listing folder \"%s\""
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:789
+msgid "NewFolder"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:802
+#, python-format
+msgid "Error creating folder \"%s\""
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:826
+#, python-format
+msgid "Error renaming \"%s\" to \"%s\""
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:848
+#, python-format
+msgid "Error deleting file \"%s\""
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:866 OKKCNC/lib/bFileDialog.py:875
+msgid "File does not exist"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:867 OKKCNC/lib/bFileDialog.py:876
+#, python-format
+msgid "File \"%s\" does not exist"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:885
+msgid "Save As"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:896
+msgid "File already exists"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:897
+#, python-format
+msgid "Overwrite existing file %r?"
+msgstr ""
+
+#: OKKCNC/lib/bFileDialog.py:909
+msgid "Choose Directory"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:261
+msgid "Jigsaw puzzle generator"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:269
+msgid "Board width"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:270
+msgid "Board height"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:271
+msgid "Piece count"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:272
+msgid "Random seed"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:273
+msgid "Difference between pieces"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:274
+msgid "Shape of the tap"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:291
+msgid "Generating puzzle..."
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:299
+msgid "Jigsaw puzzle generated in {}s"
+msgstr ""
+
+#: OKKCNC/plugins/jigsaw.py:301
+msgid "Error: Check the parameters and your endmill config"
+msgstr ""
+
+#: OKKCNC/plugins/center.py:24
+msgid "Find center of bounding box"
+msgstr ""
+
+#: OKKCNC/plugins/center.py:62
+msgid "Generated: Center"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:12
+msgid "Bowl"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:106
+msgid "Generate a bowl cavity"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:115
+msgid "Resolution (degrees)"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:116
+msgid "Progressive"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:131
+msgid "Generated: BOWL"
+msgstr ""
+
+#: OKKCNC/plugins/bowl.py:133
+msgid "Error: Check the Bowl and End Mill parameters"
+msgstr ""
+
+#: OKKCNC/plugins/flatpath.py:12
+msgid "FlatPath"
+msgstr ""
+
+#: OKKCNC/plugins/flatpath.py:24
+msgid "Flatten the path"
+msgstr ""
+
+#: OKKCNC/plugins/flatpath.py:64
+msgid "Generated: Flat"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:15
+msgid "Trochoidcut"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:31
+msgid "Create trochoids along selected blocks"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:39
+msgid "Trochoid Cut Diameter"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:41
+msgid "Trochoids Advance"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:43
+msgid "Type of Splice"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:46 OKKCNC/plugins/trochoidPath.py:47
+msgid "Adaptative"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:50 OKKCNC/plugins/trochoidal.py:35
+msgid "Clockwise"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:52 OKKCNC/plugins/scaling.py:48
+msgid "RPM"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:55
+msgid "splice steps every 360 degrees"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:329
+msgid "Trochoid abort: Please select some path"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:333
+msgid "Trochoid Cut Diameter has to be greater than End mill"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:337
+msgid "Helical Descent Diameter has to be greater than End mill"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:341
+msgid "Feed has to be greater than 0"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:345
+msgid "Plunge Feed has to be greater than 0"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:349
+msgid "Minimum Adaptative Feed has to be greater than 0"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal_3D.py:1077
+msgid "Trochoid Generated"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:13
+msgid "Pyrograph"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:32
+msgid "Create a variable feed path based upon image brightness"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:41
+msgid "Pyrograph tip size"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:42 OKKCNC/plugins/heightmap.py:50
+#: OKKCNC/plugins/sketch.py:42 OKKCNC/plugins/halftone.py:48
+#: OKKCNC/plugins/text.py:41
+msgid "Working Depth"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:43 OKKCNC/plugins/heightmap.py:51
+#: OKKCNC/plugins/sketch.py:43
+msgid "Maximum size"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:44
+msgid "Minimum feed"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:45
+msgid "Maximum feed"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:47 OKKCNC/plugins/sketch.py:48
+#: OKKCNC/plugins/halftone.py:47
+msgid "Draw border"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:48 OKKCNC/plugins/heightmap.py:59
+#: OKKCNC/plugins/sketch.py:51 OKKCNC/plugins/halftone.py:39
+msgid "Image to process"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:57
+msgid "Pyrograph abort: This plugin requires PIL/Pillow"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:74
+msgid "Pyrograph abort: please define a scan Direction"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:78
+msgid "Pyrograph abort: Tool Size must be > 0"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:82
+msgid "Pyrograph abort: Please check feed rate parameters"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:93
+msgid "Pyrograph abort: Can't read image file"
+msgstr ""
+
+#: OKKCNC/plugins/pyrograph.py:203
+#, python-format
+msgid "Generated Pyrograph W=%g x H=%g x D=%g"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:13
+msgid "Zig-Zag"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:92
+msgid "Create a Zig-Zag path"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:100
+msgid "Number of lines"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:101
+msgid "Line length"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:102
+msgid "Additional length at start/end"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:103
+msgid "Step distance"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:104
+msgid "Corner resolution"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:105 OKKCNC/plugins/hilbert.py:93
+msgid "Depth"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:124
+msgid "Zig-Zag abort: verify Nlines > 0"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:128
+msgid "Zig-Zag abort: verify LineLen > 0"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:132
+msgid "Zig-Zag abort: verify Step > 0"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:136
+msgid "Zig-Zag abort: verify CornerRes >= 0"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:140
+msgid "Zig-Zag abort: depth must be minor or equal to zero"
+msgstr ""
+
+#: OKKCNC/plugins/zigzag.py:149
+msgid "Generated: Zig-Zag"
+msgstr ""
+
+#: OKKCNC/plugins/intersection.py:12
+msgid "Intersection"
+msgstr ""
+
+#: OKKCNC/plugins/intersection.py:26
+msgid "Intersection of two shapes"
+msgstr ""
+
+#: OKKCNC/plugins/intersection.py:79
+msgid "Generated: Intersect"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:19
+msgid "Heightmap"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:41
+msgid "Use a brightess map to create a variable Z path"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:54
+msgid "ScanDir"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:55
+msgid "Cut Top"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:56
+msgid "Cut Border"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:58
+msgid "Single pass"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:69
+msgid "Heightmap abort: This plugin requires PIL/Pillow"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:78
+msgid "Heightmap abort: Can't read image file"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:82
+msgid "Heightmap abort: depth must be < 0"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:153
+msgid "Heightmap abort: angle not defined for selected End Mill"
+msgstr ""
+
+#: OKKCNC/plugins/heightmap.py:368
+#, python-format
+msgid "Generated Heightmap %d x %d x %d "
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:12
+msgid "Linearize"
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:25
+msgid "G-Code linearizer"
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:36
+msgid "segment size"
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:36
+msgid ""
+"Maximal length of resulting lines, smaller number means more precise output "
+"and longer g-code. Length will be automaticaly truncated to be even across "
+"whole subdivided segment."
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:37
+msgid "subdiv lines"
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:37
+msgid ""
+"Also subdivide the lines. Otherwise only arcs and splines will be subdivided"
+msgstr ""
+
+#: OKKCNC/plugins/linearize.py:80
+msgid "Generated: Linearize"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:35
+msgid "Sound your machine from a midi file"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:53
+msgid "Pulse per unit for X"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:54
+msgid "Pulse per unit for Y"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:55
+msgid "Pulse per unit for Z"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:56
+msgid "Maximum X travel"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:57
+msgid "Maximum Y travel"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:58
+msgid "Maximum Z travel"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:59
+msgid "Axis to be used"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:60
+msgid "Midi to process"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:102
+msgid "Error: This plugin requires midiparser.py"
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:140
+msgid "Error: Sorry can't parse the Midi file."
+msgstr ""
+
+#: OKKCNC/plugins/midi2cnc.py:298
+msgid "Generated Midi2CNC, ready to play?"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:10
+msgid "Function"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:19
+msgid "Generates gcode from a formula"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:29
+msgid "Formula"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:30
+msgid "Resolution"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:31
+msgid "Range of X"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:32
+msgid "Range of Y"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:33
+msgid "Center X coordinate"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:34
+msgid "Center Y coordinate"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:35
+msgid "X dimension"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:36
+msgid "Y dimension"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:37
+msgid "X number line xpacing"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:38
+msgid "Y number line xpacing"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:39
+msgid "Small line length"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:40
+msgid "Draw coordinate system?"
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:110
+msgid "Warning: "
+msgstr ""
+
+#: OKKCNC/plugins/function_plot.py:230
+msgid "Generated function graph"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:13
+msgid "Gear"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:161
+msgid "Generate a spur gear"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:169
+msgid "No of teeth"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:170
+msgid "Pressure angle"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:171
+msgid "Circular Pitch"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:183
+msgid "Create Spur GEAR"
+msgstr ""
+
+#: OKKCNC/plugins/gear.py:185
+msgid "Generated: Spur GEAR"
+msgstr ""
+
+#: OKKCNC/plugins/closepath.py:12
+msgid "ClosePath"
+msgstr ""
+
+#: OKKCNC/plugins/closepath.py:24
+msgid "Close the path"
+msgstr ""
+
+#: OKKCNC/plugins/closepath.py:58
+msgid "Generated: Closepath"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:13
+msgid "Flatten"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:36
+msgid "Flatten abort: Cut Direction is undefined"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:40
+msgid "Flatten abort: Pocket Type is undefined"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:44
+msgid "Flatten abort: Flatten Area dimensions must be > 0"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:48
+msgid "Flatten abort: Hey this is only for subtractive machine! Check depth!"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:85
+msgid "Flatten abort: Flatten area is too small for this End Mill."
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:252
+msgid "Flatten an area in different ways"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:260
+msgid "X start"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:261
+msgid "Y start"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:262
+msgid "Width to flatten"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:263
+msgid "Height to flatten"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:264
+msgid "Depth to flatten"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:265
+msgid "Raster border"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:266
+msgid "Cut Direction"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:267
+msgid "Pocket type"
+msgstr ""
+
+#: OKKCNC/plugins/flatten.py:293
+msgid "Flatten: Generated flatten surface"
+msgstr ""
+
+#: OKKCNC/plugins/hilbert.py:14
+msgid "Hilbert"
+msgstr ""
+
+#: OKKCNC/plugins/hilbert.py:83
+msgid "Create a Hilbert path"
+msgstr ""
+
+#: OKKCNC/plugins/hilbert.py:109
+msgid "Hilbert abort: verify the size"
+msgstr ""
+
+#: OKKCNC/plugins/hilbert.py:113
+msgid "Hilbert abort: depth must be minor or equal to zero"
+msgstr ""
+
+#: OKKCNC/plugins/hilbert.py:122
+msgid "Generated: Hilbert"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:12
+msgid "Trochoidal"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:24
+msgid "Trochoidal g-code postprocessor"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:36
+msgid "Circular"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:37
+msgid "Even spacing across segment"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:38
+msgid "Trochoid entry (prepare for helicut)"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:39
+msgid "Radial depth of cut (<= cutter D * 0.4)"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:40
+msgid "Trochoid diameter (<= cutter D)"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:41
+msgid "Feedrate"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidal.py:132
+msgid "Generated: Trochoidal"
+msgstr ""
+
+#: OKKCNC/plugins/difference.py:12
+msgid "Difference"
+msgstr ""
+
+#: OKKCNC/plugins/difference.py:27
+msgid "Difference of two shapes"
+msgstr ""
+
+#: OKKCNC/plugins/difference.py:93
+msgid "Generated: Diff"
+msgstr ""
+
+#: OKKCNC/plugins/Random.py:14
+msgid "Random"
+msgstr ""
+
+#: OKKCNC/plugins/Random.py:32 OKKCNC/plugins/tile.py:31
+msgid "Generate replicas of selected code"
+msgstr ""
+
+#: OKKCNC/plugins/Random.py:54 OKKCNC/plugins/tile.py:55
+msgid "Tile error"
+msgstr ""
+
+#: OKKCNC/plugins/Random.py:55 OKKCNC/plugins/tile.py:56
+msgid "No g-code blocks selected"
+msgstr ""
+
+#: OKKCNC/plugins/Random.py:91 OKKCNC/plugins/tile.py:97
+msgid "Tiled selected blocks"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:12
+msgid "slicemesh"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:43
+msgid "STL/PLY Slicer"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:54
+msgid ".STL/.PLY file to slice"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:55
+msgid "Get flat slice"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:56
+msgid "3D slice (devel)"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:57
+msgid "Flip upwards"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:58
+msgid "scale factor"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:59
+msgid "z offset"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:60
+msgid "layer height (0 = only single zmin)"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:61
+msgid "minimum Z height"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:62
+msgid "maximum Z height"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:107
+#, python-format
+msgid "Loading mesh: %s"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:143
+#, python-format
+msgid "Slicing %s %f in %f -> %f of %s"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:152
+msgid "Mesh sliced"
+msgstr ""
+
+#: OKKCNC/plugins/slicemesh.py:226
+#, python-format
+msgid ""
+"Calculating distance %d of %d (SciPy not installed => using SLOW fallback "
+"method)"
+msgstr ""
+
+#: OKKCNC/plugins/tile.py:13
+msgid "Tile"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:54
+msgid "This is my Helical Descent"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:65
+msgid "Selected Block"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:66
+msgid "X Initial"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:67
+msgid "Y Initial"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:68
+msgid "Z Initial"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:69
+msgid "Diameter Cut"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:72
+msgid "Drop by lap"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:73
+msgid "Final Depth"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:74
+msgid "Z Feed Multiplier"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:75
+msgid "Helical Type"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:76
+msgid "Entry and Exit"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:77
+msgid "If Eddge, Edge Clearance"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:80
+msgid "End in the Deep"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:215
+msgid "If block selected false, please make a value of x"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:219
+msgid "Helical Abort: Please select helical type"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:223
+msgid "Helical Abort: Helix diameter must be greater than the end mill"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:227
+msgid "Helical Abort: Helix diameter must be positive"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:231
+msgid "Helical Abort: Drop must be greater than 0"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:235
+msgid "Helical Abort: Z Feed Multiplier must be greater than 0"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:239
+msgid "Helical Abort: Please selecte Entry and Exit type"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:243
+msgid "Helical Abort: Entry Edge Clearence may be positive"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:266
+msgid "Helical abort: Please select some path"
+msgstr ""
+
+#: OKKCNC/plugins/Helical_Descent.py:411
+msgid "Generated: Helical_Descent Result"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:14
+msgid "Spirograph"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:98
+msgid "Create a spirograph path"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:106
+msgid "External Radius"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:107
+msgid "Internal Radius"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:108
+msgid "Offset radius"
+msgstr ""
+
+#: OKKCNC/plugins/spirograph.py:128
+msgid "Generated: Spirograph"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:16
+msgid "Sketch"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:32
+msgid "Create sketch based on picture brightness"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:41
+msgid "Grundgy, search radius"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:44
+msgid "Squiggle total count"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:45
+msgid "Squiggle Length"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:46
+msgid "Fading force"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:47
+msgid "Maximum light"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:49
+msgid "Casual first point"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:50
+msgid "Repetition of a point"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:52 OKKCNC/plugins/halftone.py:40
+msgid "Channel to analyze"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:193
+msgid "Sketch abort: This plugin requires PIL/Pillow to read image data"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:224
+msgid "Sketch abort: Too small to draw anything!"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:228
+msgid "The maximum illumination shouldn't be more than 250!"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:232
+msgid "Sketch abort: Please let me draw at least 1 squiggle"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:236
+msgid "Sketch abort: Squiggle Length must be > 0"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:243
+msgid "Sketch abort: Can't read image file"
+msgstr ""
+
+#: OKKCNC/plugins/sketch.py:343
+#, python-format
+msgid ""
+"Generated Sketch size W=%d x H=%d x distance=%d, Total line:%i, Total length:"
+"%d"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:12
+msgid "DragKnife"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:26
+msgid "Drag knife postprocessor"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:37
+msgid "dragknife offset"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:37
+msgid "distance from dragknife rotation center to the tip of the blade"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:38
+msgid "angle threshold"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:38
+msgid "do not perform pivot action for angles smaller than this"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:39
+msgid "swivel height"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:39
+msgid ""
+"retract to this height for pivots (useful for thick materials, you should "
+"enter number slightly lower than material thickness)"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:40
+msgid "initial direction"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:40
+msgid ""
+"direction that knife blade is facing before and after cut. Eg.: if you set "
+"this to X+, then the knifes rotation axis should be on the right side of the "
+"tip. Meaning that the knife is ready to cut towards right immediately "
+"without pivoting. If you cut multiple shapes in single operation, it's "
+"important to have this set consistently across all of them."
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:41
+msgid "feedrate"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:42
+msgid "simulate"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:42
+msgid ""
+"Use this option to simulate cuting of dragknife path. Resulting shape will "
+"reflect what shape will actuall be cut. This should reverse the dragknife "
+"procedure and give you back the original shape from g-code that was "
+"previously processed for dragknife."
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:43
+msgid "simulation precision"
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:43
+msgid ""
+"Simulation is currently approximated by using lots of short lines. This is "
+"the length of these lines."
+msgstr ""
+
+#: OKKCNC/plugins/dragknife.py:148
+msgid "Generated: Dragknife"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:13
+msgid "Halftone"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:30
+msgid "Create halftone pattern from a picture"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:41
+msgid "Invert Colors"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:42
+msgid "Max draw size (Width or Height)"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:43
+msgid "Cell size"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:44
+msgid "Max diameter, cap limit"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:45
+msgid "Min diameter, cut off"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:46
+msgid "Image rotation angle"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:49
+msgid "Generate for conical end mill"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:93
+msgid "Halftone abort: This plugin requires PIL/Pillow to read image data"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:113
+msgid "Halftone abort: Size too small to draw anything!"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:117
+msgid "Halftone abort: Minimum diameter must be minor then Maximum"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:121
+msgid "Halftone abort: Maximum diameter too small"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:125
+msgid "Halftone abort: Cell size too small"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:135
+msgid "Halftone abort: Angle in V-Cutting end mill is missing"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:138
+msgid "Halftone abort: Conical path need V-Cutting end mill"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:146
+msgid "Halftone abort: Can't read image file"
+msgstr ""
+
+#: OKKCNC/plugins/halftone.py:240
+#, python-format
+msgid "Generated Halftone size W=%d x H=%d x D=%d ,Total points:%i"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:21
+msgid ""
+"This plugin is for creating drilling marks with a laser engraver for manual "
+"drilling"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:29
+msgid "Drill mark size"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:30
+msgid "Mark X center"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:31
+msgid "Mark Y center"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:32
+msgid "Burn time for drillmark"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:33
+msgid "Burn power for drillmark"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:34
+msgid "Mark drawing power"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:35
+msgid "Type of the mark"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:36
+msgid "Ring mark (d/2)"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:184
+msgid "Manual drill mark"
+msgstr ""
+
+#: OKKCNC/plugins/drillmark.py:186
+msgid "Generated: MyPlugin Result"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:19
+msgid "Trochoidal Path"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:34
+msgid "Create a trochoid rute along selected blocks"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:43
+msgid "Cut Diameter"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:52
+msgid "Number of Tabs 0 = Not Tabs"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:53
+msgid "Tabs Diameter"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:54
+msgid "Tabs Height"
+msgstr ""
+
+#: OKKCNC/plugins/trochoidPath.py:87
+msgid "Generated path for trochoidal cutting"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:12
+msgid "ArcFit"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:25
+msgid "G-Code arc-fit"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:36
+msgid "arc precision (mm)"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:36
+msgid "how precisely must arc fit. set to 0 to disable arc fitting"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:37
+msgid "line precision (mm)"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:37
+msgid ""
+"how precisely must line fit. set to 0 to disable line fitting, but at least "
+"some line fitting (0.001 to 0.01) might be needed to fix arcs, so they can "
+"be fit"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:38
+msgid "minimal number of segments to create arc"
+msgstr ""
+
+#: OKKCNC/plugins/arcfit.py:87
+msgid "Generated: Arc fit"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:14
+msgid "Driller"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:37
+msgid "Create holes along selected blocks"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:46
+msgid "Distance between holes"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:48
+msgid "Peck, 0 meas None"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:49
+msgid "Dwell time, 0 means None"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:50
+msgid "Use anchor"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:51
+msgid "Excellon-File"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:192
+msgid "Driller abort: Distance must be > 0"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:196
+msgid "Driller abort: Peck must be >= 0"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:200
+msgid "Driller abort: Dwell time >= 0, here time runs only forward!"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:207
+msgid "Driller abort: Excellon-File not a file"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:217
+msgid "Driller abort: Please select some path"
+msgstr ""
+
+#: OKKCNC/plugins/driller.py:322
+#, python-format
+msgid "Generated Driller: %d holes"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:18
+msgid "Scaling"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:34
+msgid "Scaling the selected block"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:42
+msgid "X Scale"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:43
+msgid "Y Scale"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:44
+msgid "Z Scale"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:45
+msgid "X Y Center"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:164
+msgid "Scaling abort: Please select some path"
+msgstr ""
+
+#: OKKCNC/plugins/scaling.py:249
+msgid "Scaling Generated"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:13
+msgid "Box"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:292
+msgid "Generate a finger box"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:300
+msgid "Internal Dimensions"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:301
+msgid "Width Dx"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:302
+msgid "Depth Dy"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:303
+msgid "Height Dz"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:304
+msgid "Fingers Nx"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:305
+msgid "Fingers Ny"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:306
+msgid "Fingers Nz"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:344
+msgid "Create finger BOX"
+msgstr ""
+
+#: OKKCNC/plugins/box.py:346
+msgid "Generated: BOX with fingers"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:32
+msgid "Create text using a ttf font"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:40
+msgid "Text to generate"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:42
+msgid "Font size"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:43
+msgid "Font file"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:44
+msgid "Close Contours"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:45
+msgid "Image to Ascii"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:46
+msgid "Image chars width"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:63
+msgid "Text abort: please input a Font size > 0"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:66
+msgid "Text abort: please select a font file"
+msgstr ""
+
+#: OKKCNC/plugins/text.py:93
+msgid "Text abort: That embarrassing, I can't read this font file!"
+msgstr ""

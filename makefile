@@ -1,4 +1,4 @@
-NAME = bCNC
+NAME = OKKCNC
 SOURCES =	OKKCNC/*.py \
 		OKKCNC/controllers/*.py \
 		OKKCNC/lib/*.py \

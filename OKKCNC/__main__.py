@@ -1652,7 +1652,8 @@ class Application(Toplevel,Sender):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK",cmd,3):
-            self.unlock()
+            self.mcontrol.unlock(True)
+            #self.unlock()
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER",cmd,2):
