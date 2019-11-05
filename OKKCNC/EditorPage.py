@@ -284,6 +284,17 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 		b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Split selected blocks"))
 		self.addWidget(b)
+        # ---
+		row += 1
+		b = Ribbon.LabelButton(self.frame, self.app,  "<<ClearEditor>>",
+				image=Utils.icons["clear"],
+				text=_("Clear All"),
+				compound=LEFT,
+				anchor=W,
+				background=Ribbon._BACKGROUND)
+		b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+		tkExtra.Balloon.set(b, _("Clear Editor Window"))
+		self.addWidget(b)
 
 
 #===============================================================================

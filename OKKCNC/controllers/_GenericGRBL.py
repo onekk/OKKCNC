@@ -153,4 +153,4 @@ class _GenericGRBL(_GenericController):
 
 	def purgeControllerExtra(self):
 		time.sleep(1)
-		self.master.unlock(False)
+		self.master.sendGCode("$X")

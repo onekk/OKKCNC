@@ -279,15 +279,15 @@ class Application(Toplevel,Sender):
         self.bind('<<Recent8>>',    self._loadRecent8)
         self.bind('<<Recent9>>',    self._loadRecent9)
 
-        self.bind('<<TerminalClear>>',    Page.frames["Terminal"].clear)
+        self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
         self.bind('<<AlarmClear>>',    self.alarmClear)
-        self.bind('<<Help>>',        self.help)
+        self.bind('<<Help>>',          self.help)
                         # Do not send the event otherwise it will skip the feedHold/resume
-        self.bind('<<FeedHold>>',    lambda e,s=self: s.feedHold())
+        self.bind('<<FeedHold>>',      lambda e,s=self: s.feedHold())
         self.bind('<<Resume>>',        lambda e,s=self: s.resume())
-        self.bind('<<Run>>',        lambda e,s=self: s.run())
-        self.bind('<<Stop>>',        self.stopRun)
-        self.bind('<<Pause>>',        self.pause)
+        self.bind('<<Run>>',           lambda e,s=self: s.run())
+        self.bind('<<Stop>>',          self.stopRun)
+        self.bind('<<Pause>>',         self.pause)
 #        self.bind('<<TabAdded>>',    self.tabAdded)
 
         tkExtra.bindEventData(self, "<<Status>>",    self.updateStatus)
@@ -295,9 +295,10 @@ class Application(Toplevel,Sender):
 
         # Editor bindings
         self.bind("<<Add>>",            self.editor.insertItem)
-        self.bind("<<AddBlock>>",        self.editor.insertBlock)
+        self.bind("<<AddBlock>>",       self.editor.insertBlock)
         self.bind("<<AddLine>>",        self.editor.insertLine)
-        self.bind("<<Clone>>",            self.editor.clone)
+        self.bind("<<Clone>>",          self.editor.clone)
+        self.bind("<<ClearEditor>>",    self.ClearEditor)
         self.canvas.bind("<Control-Key-Prior>",    self.editor.orderUp)
         self.canvas.bind("<Control-Key-Next>",    self.editor.orderDown)
         self.canvas.bind('<Control-Key-d>',    self.editor.clone)
@@ -489,6 +490,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def updateStatus(self, event):
         self.setStatus(_(event.data))
+
 
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
@@ -723,6 +725,13 @@ class Application(Toplevel,Sender):
             self.editor.fill()
             self.drawAfter()
         return "break"
+
+    #------------------------------------------------------------------------
+    def ClearEditor(self, event=None):
+        self.editor.selectClear()
+        self.editor.selectAll()
+        self.editor.deleteBlock()
+        self.canvas.reset()
 
     #-----------------------------------------------------------------------
     def addUndo(self, undoinfo):
