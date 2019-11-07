@@ -28,6 +28,7 @@ import Sender
 import tkExtra
 import Unicode
 import CNCRibbon
+import CNCCanvas
 from Sender import ERROR_CODES
 from CNC import Block,WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
 
@@ -855,15 +856,17 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             mAx = CNC.vars["wx"]
             mAy = CNC.vars["wy"]
             mAz = CNC.vars["wz"]
+            CNC.vars["memAx"] = mAx
+            CNC.vars["memAy"] = mAy
+            CNC.vars["memAz"] = mAz
 
-            memvar =  "%f  %f %f"%(mAx,mAy,mAz)
-            Utils.addSection("Memory")
-            Utils.setStr("Memory", "mem_a", memvar)
             wdata = _("mem_A = \nX: %f \nY: %f \nZ: %f"%(mAx,mAy,mAz))
             wd = self.nametowidget("memA")
             tkExtra.Balloon.set(wd, wdata)
             self.event_generate("<<Status>>",
             data = wdata)
+            self.event_generate("<<SetMemA>>")
+
         else:
             pass
 
@@ -873,64 +876,43 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             mBx = CNC.vars["wx"]
             mBy = CNC.vars["wy"]
             mBz = CNC.vars["wz"]
+            CNC.vars["memBx"] = mBx
+            CNC.vars["memBy"] = mBy
+            CNC.vars["memBz"] = mBz
 
-            memvar = "%f  %f %f"%(mBx, mBy, mBz)
-            Utils.addSection("Memory")
-            Utils.setStr("Memory", "mem_b", memvar)
             wdata = _("mem_B = \nX: %f \nY: %f \nZ: %f"%(mBx,mBy,mBz))
             wd = self.nametowidget("memB")
             tkExtra.Balloon.set(wd, wdata)
             self.event_generate("<<Status>>",
                 data = wdata)
+            self.event_generate("<<SetMemB>>")
+
         else:
             pass
 
     def retA(self):
         if CNC.vars["state"] == "Idle":
-            try:
-                get_coord = Utils.config.get("Memory","mem_a")
-                print(get_coord)
-            except:
-                return
-
-            Acoord = get_coord.split()
             self.sendGCode("G90")
-            self.sendGCode("G0 X%f Y%f"%(float(Acoord[0]),float(Acoord[1])))
+            self.sendGCode("G0 X%f Y%f"%(CNC.vars["memAx"],CNC.vars["memAy"]))
         else:
             pass
 
     def retB(self):
         if CNC.vars["state"] == "Idle":
-            try:
-                get_coord = Utils.config.get("Memory","mem_b")
-                print(get_coord)
-            except:
-                return
-
-            Bcoord = get_coord.split()
             self.sendGCode("G90")
-            self.sendGCode("G0 X%f Y%f"%(float(Bcoord[0]),float(Bcoord[1])))
+            self.sendGCode("G0 X%f Y%f"%(CNC.vars["memBx"],CNC.vars["memBy"]))
         else:
             pass
 
 
     def line(self):
 
-        try:
-            Acoord = Utils.config.get("Memory","mem_a").split()
-            Bcoord = Utils.config.get("Memory","mem_b").split()
-        except:
-            return
+        XStart = CNC.vars["memAx"]
+        YStart = CNC.vars["memAy"]
+        currDepth = CNC.vars["memBz"]
 
-        XStart = float(Acoord[0])
-        YStart = float(Acoord[1])
-        currDepth = float(Acoord[2])
-
-        XEnd = float(Bcoord[0])
-        YEnd = float(Bcoord[1])
-
-        #f_width = float(Bcoord[0]) - float(Acoord[0])
-        #f_height = float(Bcoord[1]) - float(Acoord[1])
+        XEnd = CNC.vars["memBx"]
+        YEnd = CNC.vars["memBy"]
 
         f_depth = self.InputValue("TD")
 
@@ -1651,7 +1633,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 #===============================================================================
 class ControlPage(CNCRibbon.Page):
     __doc__ = _("CNC communication and control")
-    _name_  = _("Control") # era N_( probabile errore
+    _name_  = N_("Control")
     _icon_  = "control"
 
     #----------------------------------------------------------------------

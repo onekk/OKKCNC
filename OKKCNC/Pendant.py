@@ -124,7 +124,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
 		elif page == "/canvas":
 			if not Image: return
 			with tempfile.NamedTemporaryFile(suffix='.ps') as tmp:
-				httpd.app.canvas.postscript(
+				httpd.app.canvasFrame.canvas.postscript(
 					file=tmp.name,
 					colormode='color',
 				)

@@ -667,6 +667,7 @@ class EndMill(DataBase):
         DataBase.__init__(self, master, "EndMill")
         self.variables = [
             ("name",       "db",     "", _("Name")),
+            ("number",     "int",    "", _("Number")),
             ("comment",   "str",     "", _("Comment")),
             ("type",     "list",     "", _("Type")),
             ("shape",    "list",     "", _("Shape")),

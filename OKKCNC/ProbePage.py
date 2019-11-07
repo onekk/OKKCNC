@@ -1321,17 +1321,17 @@ class CameraGroup(CNCRibbon.ButtonGroup):
 	def switchCommand(self, event=None):
 		wx = CNC.vars["wx"]
 		wy = CNC.vars["wy"]
-		dx = self.app.canvas.cameraDx
-		dy = self.app.canvas.cameraDy
-		z  = self.app.canvas.cameraZ
+		dx = self.app.canvasFrame.canvas.cameraDx
+		dy = self.app.canvasFrame.canvas.cameraDy
+		z  = self.app.canvasFrame.canvas.cameraZ
 		if self.switch.get():
 			self.switchButton.config(image=Utils.icons["endmill32"])
 			self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-			self.app.canvas.cameraSwitch = True
+			self.app.canvasFrame.canvas.cameraSwitch = True
 		else:
 			self.switchButton.config(image=Utils.icons["camera32"])
 			self.sendGCode("G92.1")
-			self.app.canvas.cameraSwitch = False
+			self.app.canvasFrame.canvas.cameraSwitch = False
 		if z is None:
 			self.sendGCode("G0X%gY%g"%(wx,wy))
 		else:
@@ -1344,11 +1344,11 @@ class CameraGroup(CNCRibbon.ButtonGroup):
 
 	#-----------------------------------------------------------------------
 	def edgeDetection(self):
-		self.app.canvas.cameraEdge = self.edge.get()
+		self.app.canvasFrame.canvas.cameraEdge = self.edge.get()
 
 	#-----------------------------------------------------------------------
 	def freezeImage(self):
-		self.app.canvas.cameraFreeze(self.freeze.get())
+		self.app.canvasFrame.canvas.cameraFreeze(self.freeze.get())
 
 
 #===============================================================================
@@ -1511,26 +1511,26 @@ class CameraFrame(CNCRibbon.PageFrame):
 	# Update canvas with values
 	#-----------------------------------------------------------------------
 	def updateValues(self, *args):
-		self.app.canvas.cameraAnchor = self.cameraAnchor()
-		try: self.app.canvas.cameraRotation = float(self.rotation.get())
+		self.app.canvasFrame.canvas.cameraAnchor = self.cameraAnchor()
+		try: self.app.canvasFrame.canvas.cameraRotation = float(self.rotation.get())
 		except ValueError: pass
-		try: self.app.canvas.cameraXCenter = float(self.xcenter.get())
+		try: self.app.canvasFrame.canvas.cameraXCenter = float(self.xcenter.get())
 		except ValueError: pass
-		try: self.app.canvas.cameraYCenter = float(self.ycenter.get())
+		try: self.app.canvasFrame.canvas.cameraYCenter = float(self.ycenter.get())
 		except ValueError: pass
-		try: self.app.canvas.cameraScale = max(0.0001, float(self.scale.get()))
+		try: self.app.canvasFrame.canvas.cameraScale = max(0.0001, float(self.scale.get()))
 		except ValueError: pass
-		try: self.app.canvas.cameraR = float(self.diameter.get())/2.0
+		try: self.app.canvasFrame.canvas.cameraR = float(self.diameter.get())/2.0
 		except ValueError: pass
-		try: self.app.canvas.cameraDx = float(self.dx.get())
+		try: self.app.canvasFrame.canvas.cameraDx = float(self.dx.get())
 		except ValueError: pass
-		try: self.app.canvas.cameraDy = float(self.dy.get())
+		try: self.app.canvasFrame.canvas.cameraDy = float(self.dy.get())
 		except ValueError: pass
 		try:
-			self.app.canvas.cameraZ  = float(self.z.get())
+			self.app.canvasFrame.canvas.cameraZ  = float(self.z.get())
 		except ValueError:
-			self.app.canvas.cameraZ  = None
-		self.app.canvas.cameraUpdate()
+			self.app.canvasFrame.canvas.cameraZ  = None
+		self.app.canvasFrame.canvas.cameraUpdate()
 
 	#-----------------------------------------------------------------------
 	# Register spindle position
@@ -1558,30 +1558,30 @@ class CameraFrame(CNCRibbon.PageFrame):
 #	#-----------------------------------------------------------------------
 #	def findScale(self):
 #		return
-#		self.app.canvas.cameraMakeTemplate(30)
+#		self.app.canvasFrame.canvas.cameraMakeTemplate(30)
 #
 #		self.app.control.moveXup()
 #		#self.app.wait4Idle()
 #		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# right
+#		dx,dy = self.app.canvasFrame.canvas.cameraMatchTemplate()	# right
 #
 #		self.app.control.moveXdown()
 #		self.app.control.moveXdown()
 #		#self.app.wait4Idle()
 #		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# left
+#		dx,dy = self.app.canvasFrame.canvas.cameraMatchTemplate()	# left
 #
 #		self.app.control.moveXup()
 #		self.app.control.moveYup()
 #		#self.app.wait4Idle()
 #		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# top
+#		dx,dy = self.app.canvasFrame.canvas.cameraMatchTemplate()	# top
 #
 #		self.app.control.moveYdown()
 #		self.app.control.moveYdown()
 #		#self.app.wait4Idle()
 #		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# down
+#		dx,dy = self.app.canvasFrame.canvas.cameraMatchTemplate()	# down
 #
 #		self.app.control.moveYup()
 

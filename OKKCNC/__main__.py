@@ -9,9 +9,9 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 __version__ = "0.0.9-dev"
-__date__    = "26 Dec 2019"
-__author__  = "Carlo Dormeletti (onekk)"
-__email__   = "carlo.dormeletti@gmail.com"
+__date__ = "26 Dec 2019"
+__author__ = "Carlo Dormeletti (onekk)"
+__email__ = "carlo.dormeletti@gmail.com"
 
 import os
 import sys
@@ -37,7 +37,7 @@ except ImportError:
     from tkinter import *
     import tkinter.messagebox as tkMessageBox
 
-PRGPATH=os.path.abspath(os.path.dirname(__file__))
+PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
 sys.path.append(os.path.join(PRGPATH, 'lib'))
 sys.path.append(os.path.join(PRGPATH, 'plugins'))
@@ -182,8 +182,6 @@ class Application(Toplevel,Sender):
         self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
         self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
         #self.paned.add(self.canvasFrame)
-# XXX FIXME do I need the self.canvas?
-        self.canvas = self.canvasFrame.canvas
 
         # fist create Pages
         self.pages = {}
@@ -231,7 +229,8 @@ class Application(Toplevel,Sender):
         self.buffer   = Page.frames["Terminal"].buffer
 
         # XXX FIXME Do we need it or I can takes from Page every time?
-        self.autolevel = Page.frames["Probe:Autolevel"]
+        #self.autolevel = Page.frames["Probe:Autolevel"]
+        # seem to be fixed
 
         # Left side
         for name in Utils.getStr(Utils.__prg__,"ribbon").split():
@@ -253,20 +252,20 @@ class Application(Toplevel,Sender):
         self.bind('<<OrientUpdate>>',    probe.orientUpdate)
 
         # Global bindings
-        self.bind('<<Undo>>',        self.undo)
-        self.bind('<<Redo>>',        self.redo)
-        self.bind('<<Copy>>',        self.copy)
+        self.bind('<<Undo>>',       self.undo)
+        self.bind('<<Redo>>',       self.redo)
+        self.bind('<<Copy>>',       self.copy)
         self.bind('<<Cut>>',        self.cut)
-        self.bind('<<Paste>>',        self.paste)
+        self.bind('<<Paste>>',      self.paste)
 
         self.bind('<<Connect>>',    self.openClose)
 
         self.bind('<<New>>',        self.newFile)
-        self.bind('<<Open>>',        self.loadDialog)
-        self.bind('<<Import>>',        lambda x,s=self: s.importFile())
-        self.bind('<<Save>>',        self.saveAll)
-        self.bind('<<SaveAs>>',        self.saveDialog)
-        self.bind('<<Reload>>',        self.reload)
+        self.bind('<<Open>>',       self.loadDialog)
+        self.bind('<<Import>>',     lambda x,s=self: s.importFile())
+        self.bind('<<Save>>',       self.saveAll)
+        self.bind('<<SaveAs>>',     self.saveDialog)
+        self.bind('<<Reload>>',     self.reload)
 
         self.bind('<<Recent0>>',    self._loadRecent0)
         self.bind('<<Recent1>>',    self._loadRecent1)
@@ -299,19 +298,21 @@ class Application(Toplevel,Sender):
         self.bind("<<AddLine>>",        self.editor.insertLine)
         self.bind("<<Clone>>",          self.editor.clone)
         self.bind("<<ClearEditor>>",    self.ClearEditor)
-        self.canvas.bind("<Control-Key-Prior>",    self.editor.orderUp)
-        self.canvas.bind("<Control-Key-Next>",    self.editor.orderDown)
-        self.canvas.bind('<Control-Key-d>',    self.editor.clone)
-        self.canvas.bind('<Control-Key-c>',    self.copy)
-        self.canvas.bind('<Control-Key-x>',    self.cut)
-        self.canvas.bind('<Control-Key-v>',    self.paste)
+        self.canvasFrame.canvas.bind("<Control-Key-Prior>",    self.editor.orderUp)
+        self.canvasFrame.canvas.bind("<Control-Key-Next>",    self.editor.orderDown)
+        self.canvasFrame.canvas.bind('<Control-Key-d>',    self.editor.clone)
+        self.canvasFrame.canvas.bind('<Control-Key-c>',    self.copy)
+        self.canvasFrame.canvas.bind('<Control-Key-x>',    self.cut)
+        self.canvasFrame.canvas.bind('<Control-Key-v>',    self.paste)
         self.bind("<<Delete>>",            self.editor.deleteBlock)
-        self.canvas.bind("<Delete>",        self.editor.deleteBlock)
-        self.canvas.bind("<BackSpace>",        self.editor.deleteBlock)
+        self.canvasFrame.canvas.bind("<Delete>",        self.editor.deleteBlock)
+        self.canvasFrame.canvas.bind("<BackSpace>",        self.editor.deleteBlock)
+
         try:
-            self.canvas.bind("<KP_Delete>",    self.editor.deleteBlock)
+            self.canvasFrame.canvas.bind("<KP_Delete>",    self.editor.deleteBlock)
         except:
             pass
+
         self.bind('<<Invert>>',        self.editor.invertBlocks)
         self.bind('<<Expand>>',        self.editor.toggleExpand)
         self.bind('<<EnableToggle>>',    self.editor.toggleEnable)
@@ -324,27 +325,29 @@ class Application(Toplevel,Sender):
 
         # Canvas X-bindings
         self.bind("<<ViewChange>>",    self.viewChange)
-        self.bind("<<AddMarker>>",    self.canvas.setActionAddMarker)
-        self.bind('<<MoveGantry>>',    self.canvas.setActionGantry)
-        self.bind('<<SetWPOS>>',    self.canvas.setActionWPOS)
+        self.bind("<<AddMarker>>",    self.canvasFrame.canvas.setActionAddMarker)
+        self.bind('<<MoveGantry>>',    self.canvasFrame.canvas.setActionGantry)
+        self.bind('<<SetWPOS>>',    self.canvasFrame.canvas.setActionWPOS)
+        self.bind('<<SetMemA>>',    self.setMemA)
+        self.bind('<<SetMemB>>',    self.setMemB)
 
         frame = Page.frames["Probe:Tool"]
         self.bind('<<ToolCalibrate>>',    frame.calibrate)
         self.bind('<<ToolChange>>',    frame.change)
 
-        self.bind('<<AutolevelMargins>>',self.autolevel.getMargins)
-        self.bind('<<AutolevelZero>>',    self.autolevel.setZero)
-        self.bind('<<AutolevelClear>>',    self.autolevel.clear)
-        self.bind('<<AutolevelScan>>',    self.autolevel.scan)
-        self.bind('<<AutolevelScanMargins>>',    self.autolevel.scanMargins)
+        self.bind('<<AutolevelMargins>>', Page.frames["Probe:Autolevel"].getMargins)
+        self.bind('<<AutolevelZero>>',    Page.frames["Probe:Autolevel"].setZero)
+        self.bind('<<AutolevelClear>>',    Page.frames["Probe:Autolevel"].clear)
+        self.bind('<<AutolevelScan>>',    Page.frames["Probe:Autolevel"].scan)
+        self.bind('<<AutolevelScanMargins>>',    Page.frames["Probe:Autolevel"].scanMargins)
 
-        self.bind('<<CameraOn>>',    self.canvas.cameraOn)
-        self.bind('<<CameraOff>>',    self.canvas.cameraOff)
+        self.bind('<<CameraOn>>',    self.canvasFrame.canvas.cameraOn)
+        self.bind('<<CameraOff>>',    self.canvasFrame.canvas.cameraOff)
 
         self.bind('<<CanvasFocus>>',    self.canvasFocus)
         self.bind('<<Draw>>',        self.draw)
         self.bind('<<DrawProbe>>',    lambda e,c=self.canvasFrame:c.drawProbe(True))
-        self.bind('<<DrawOrient>>',    self.canvas.drawOrient)
+        self.bind('<<DrawOrient>>',    self.canvasFrame.canvas.drawOrient)
 
         self.bind("<<ListboxSelect>>",    self.selectionChange)
         self.bind("<<Modified>>",    self.drawAfter)
@@ -373,7 +376,7 @@ class Application(Toplevel,Sender):
         self.bind('<Control-Key-y>',    self.redo)
         self.bind('<Control-Key-z>',    self.undo)
         self.bind('<Control-Key-Z>',    self.redo)
-        self.canvas.bind('<Key-space>',    self.commandFocus)
+        self.canvasFrame.canvas.bind('<Key-space>',    self.commandFocus)
         self.bind('<Control-Key-space>',self.commandFocus)
         self.bind('<<CommandFocus>>',    self.commandFocus)
 
@@ -450,7 +453,7 @@ class Application(Toplevel,Sender):
         self.bind('<FocusIn>',        self.focusIn)
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
-        self.canvas.focus_set()
+        self.canvasFrame.canvas.focus_set()
 
         # Fill basic global variables
         CNC.vars["state"] = NOT_CONNECTED
@@ -491,6 +494,11 @@ class Application(Toplevel,Sender):
     def updateStatus(self, event):
         self.setStatus(_(event.data))
 
+    def setMemA(self, event=None):
+        self.canvasFrame.canvas.memARefresh()
+
+    def setMemB(self, event=None):
+        self.canvasFrame.canvas.memBRefresh()
 
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
@@ -538,7 +546,7 @@ class Application(Toplevel,Sender):
         if self.fileModified():
             return
 
-        self.canvas.cameraOff()
+        self.canvasFrame.canvas.cameraOff()
         Sender.quit(self)
         self.saveConfig()
         self.destroy()
@@ -692,21 +700,21 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def cut(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.cut()
             return "break"
 
     #-----------------------------------------------------------------------
     def copy(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.copy()
             return "break"
 
     #-----------------------------------------------------------------------
     def paste(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.paste()
             return "break"
 
@@ -731,7 +739,7 @@ class Application(Toplevel,Sender):
         self.editor.selectClear()
         self.editor.selectAll()
         self.editor.deleteBlock()
-        self.canvas.reset()
+        self.canvasFrame.canvas.reset()
 
     #-----------------------------------------------------------------------
     def addUndo(self, undoinfo):
@@ -923,7 +931,7 @@ class Application(Toplevel,Sender):
     # Display information on selected blocks
     #-----------------------------------------------------------------------
     def showInfo(self, event=None):
-        self.canvas.showInfo(self.editor.getSelectedBlocks())
+        self.canvasFrame.canvas.showInfo(self.editor.getSelectedBlocks())
         return "break"
 
     #-----------------------------------------------------------------------
@@ -1129,7 +1137,7 @@ class Application(Toplevel,Sender):
     # ----------------------------------------------------------------------
     def draw(self):
         view = CNCCanvas.VIEWS.index(self.canvasFrame.view.get())
-        self.canvas.draw(view)
+        self.canvasFrame.canvas.draw(view)
         self.selectionChange()
 
     # ----------------------------------------------------------------------
@@ -1142,13 +1150,13 @@ class Application(Toplevel,Sender):
 
     #-----------------------------------------------------------------------
     def canvasFocus(self, event=None):
-        self.canvas.focus_set()
+        self.canvasFrame.canvas.focus_set()
         return "break"
 
     #-----------------------------------------------------------------------
     def selectAll(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.copy()
             self.ribbon.changePage("Editor")
             self.editor.selectAll()
@@ -1158,7 +1166,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def unselectAll(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.ribbon.changePage("Editor")
             self.editor.selectClear()
             self.selectionChange()
@@ -1167,7 +1175,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def selectInvert(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.ribbon.changePage("Editor")
             self.editor.selectInvert()
             self.selectionChange()
@@ -1176,7 +1184,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def selectLayer(self, event=None):
         focus = self.focus_get()
-        if focus in (self.canvas, self.editor):
+        if focus in (self.canvasFrame.canvas, self.editor):
             self.ribbon.changePage("Editor")
             self.editor.selectLayer()
             self.selectionChange()
@@ -1452,7 +1460,7 @@ class Application(Toplevel,Sender):
         # move selected objects either by mouse or by coordinates
         elif rexx.abbrev("MOVE",cmd,2):
             if len(line)==1:
-                self.canvas.setActionMove()
+                self.canvasFrame.canvas.setActionMove()
                 return "break"
             line1 = line[1].upper()
             dz = 0.0
@@ -1584,7 +1592,7 @@ class Application(Toplevel,Sender):
 
         # RU*LER: measure distances with mouse ruler
         elif rexx.abbrev("RULER",cmd,2):
-            self.canvas.setActionRuler()
+            self.canvasFrame.canvas.setActionRuler()
 
         # STAT*ISTICS: show statistics of current job
         elif rexx.abbrev("STATISTICS",cmd,4):
@@ -1979,10 +1987,10 @@ class Application(Toplevel,Sender):
     # ----------------------------------------------------------------------
     def selectionChange(self, event=None):
         items = self.editor.getSelection()
-        self.canvas.clearSelection()
+        self.canvasFrame.canvas.clearSelection()
         if not items: return
-        self.canvas.select(items)
-        self.canvas.activeMarker(self.editor.getActive())
+        self.canvasFrame.canvas.select(items)
+        self.canvasFrame.canvas.activeMarker(self.editor.getActive())
 
     #-----------------------------------------------------------------------
     # Create a new file
@@ -2071,7 +2079,7 @@ class Application(Toplevel,Sender):
         Sender.load(self,filename)
 
         if ext==".probe":
-            self.autolevel.setValues()
+            Page.frames["Probe:Autolevel"].setValues()
             self.event_generate("<<DrawProbe>>")
 
         elif ext==".orient":
@@ -2082,9 +2090,9 @@ class Application(Toplevel,Sender):
         else:
             self.editor.selectClear()
             self.editor.fill()
-            self.canvas.reset()
+            self.canvasFrame.canvas.reset()
             self.draw()
-            self.canvas.fit2Screen()
+            self.canvasFrame.canvas.fit2Screen()
             Page.frames["CAM"].populate()
 
         if autoloaded:
@@ -2141,7 +2149,7 @@ class Application(Toplevel,Sender):
             del gcode
             self.editor.fill()
             self.draw()
-            self.canvas.fit2Screen()
+            self.canvasFrame.canvas.fit2Screen()
 
     #-----------------------------------------------------------------------
     def focusIn(self, event):
@@ -2240,7 +2248,7 @@ class Application(Toplevel,Sender):
 
         # the buffer of the machine should be empty?
         self.initRun()
-        self.canvas.clearSelection()
+        self.canvasFrame.canvas.clearSelection()
         self._runLines = sys.maxsize    # temporary WARNING this value is used
                         # by Sender._serialIO to check if we
                         # are still sending or we finished
@@ -2288,9 +2296,9 @@ class Application(Toplevel,Sender):
                 if not ij: continue
                 path = self.gcode[ij[0]].path(ij[1])
                 if path:
-                    color = self.canvas.itemcget(path, "fill")
+                    color = self.canvasFrame.canvas.itemcget(path, "fill")
                     if color != CNCCanvas.ENABLE_COLOR:
-                        self.canvas.itemconfig(
+                        self.canvasFrame.canvas.itemconfig(
                             path,
                             width=1,
                             fill=CNCCanvas.ENABLE_COLOR)
@@ -2454,7 +2462,7 @@ class Application(Toplevel,Sender):
             self._pause = ("Hold" in state)
             self.dro.updateState()
             self.dro.updateCoords()
-            self.canvas.gantry(CNC.vars["wx"],
+            self.canvasFrame.canvas.gantry(CNC.vars["wx"],
                        CNC.vars["wy"],
                        CNC.vars["wz"],
                        CNC.vars["mx"],
@@ -2474,7 +2482,7 @@ class Application(Toplevel,Sender):
         if self._probeUpdate:
             Page.frames["Probe:Probe"].updateProbe()
             Page.frames["ProbeCommon"].updateTlo()
-            self.canvas.drawProbe()
+            self.canvasFrame.canvas.drawProbe()
             self._probeUpdate = False
 
         # Update any possible variable?
@@ -2498,7 +2506,7 @@ class Application(Toplevel,Sender):
                         i,j = self._paths[self._selectI]
                         path = self.gcode[i].path(j)
                         if path:
-                            self.canvas.itemconfig(path,
+                            self.canvasFrame.canvas.itemconfig(path,
                                 width=2,
                                 fill=CNCCanvas.PROCESS_COLOR)
                     self._selectI += 1
