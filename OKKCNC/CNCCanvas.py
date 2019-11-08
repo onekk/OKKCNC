@@ -263,7 +263,7 @@ class CNCCanvas(Canvas, object):
         self._memAHori     = None        # cross hair items
         self._memAVert     = None
         self._memACircle   = None
-        self._memAText  = None
+        self._memAText     = None
 
         self._memBHori     = None        # cross hair items
         self._memBVert     = None
@@ -949,8 +949,10 @@ class CNCCanvas(Canvas, object):
         self.RefreshItems()
 
     def RefreshItems(self):
-        self.memARefresh()
-        self.memBRefresh()
+        if self._memAHori is not None:
+            self.memARefresh()
+        if self._memBHori is not None:
+            self.memBRefresh()
 
     # ----------------------------------------------------------------------
     def menuZoomIn(self, event=None):
@@ -1383,7 +1385,7 @@ class CNCCanvas(Canvas, object):
         self.coords(self._memAVert,    x, y-hc, x, y+hc)
         self.coords(self._memACircle,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
         i_bbox = self.bbox("memAtext")
-        i_off = i_bbox[3] - i_bbox[1]
+        i_off = (i_bbox[3] - i_bbox[1]) // 4
         #print ("bbox of memA = ",offy)
         self.coords(self._memAText, x, y + i_off)
 
@@ -1400,9 +1402,10 @@ class CNCCanvas(Canvas, object):
                                           fill=MEM_COLOR, tag="memAcross")
         self._memACircle  = self.create_oval(0, 0, r_dim, r_dim,
                                              outline=MEM_COLOR, tag="memAcross")
-        textA = "mem A X: %.f  Y: %.f"%(CNC.vars["memAx"], CNC.vars["memAy"])
+        textA = "mem A \nX: %.f  \nY: %.f \nZ: %.f"%(
+                CNC.vars["memAx"], CNC.vars["memAy"], CNC.vars["memAz"])
         self._memAText = self.create_text(0 , 0,text=textA, anchor=N,
-                            justify=CENTER, fill=MEM_COLOR, tag="memAtext")
+                            justify=LEFT, fill=MEM_COLOR, tag="memAtext")
         self.memAPosition()
 
     def memBPosition(self):
@@ -1418,7 +1421,7 @@ class CNCCanvas(Canvas, object):
         self.coords(self._memBVert,    x, y-hc, x, y+hc)
         self.coords(self._memBCircle,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
         i_bbox = self.bbox("memBtext")
-        i_off = i_bbox[3] - i_bbox[1]
+        i_off = (i_bbox[3] - i_bbox[1]) // 4
         #print ("bbox of memA = ",offy)
         self.coords(self._memBText, x, y + i_off)
 
@@ -1434,9 +1437,10 @@ class CNCCanvas(Canvas, object):
                                           fill=MEM_COLOR, tag="memBcross")
         self._memBCircle  = self.create_oval(0, 0, r_dim, r_dim,
                                              outline=MEM_COLOR, tag="memBcross")
-        textB = "mem B X: %.f  Y: %.f"%(CNC.vars["memBx"], CNC.vars["memBy"])
+        textB = "mem B \nX: %.f  \nY: %.f \nZ: %.f"%(
+                CNC.vars["memBx"], CNC.vars["memBy"], CNC.vars["memBz"])
         self._memBText = self.create_text(0 , 0,text=textB, anchor=N,
-                            justify=CENTER, fill=MEM_COLOR, tag="memBtext")
+                            justify=LEFT, fill=MEM_COLOR, tag="memBtext")
         self.memBPosition()
 
 

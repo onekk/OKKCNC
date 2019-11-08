@@ -14,6 +14,7 @@ try:
     from Tkinter import *
     import tkMessageBox
     import tkSimpleDialog
+    import tkFont
 except ImportError:
     from tkinter import *
     import tkinter.messagebox as tkMessageBox
@@ -455,8 +456,13 @@ class DROFrame(CNCRibbon.PageFrame):
 # ControlFrame
 #===============================================================================
 class ControlFrame(CNCRibbon.PageLabelFrame):
+
+    z_step_font = ('Helvetica',7,'bold')
+
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
+
+
 
         Label(self, text="Z").grid(row=3, column=0, columnspan=2)
 
@@ -468,6 +474,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         b_width = 2
         b_height = 2
+
+        z_step_font = Utils.getFont("z_step.font", ControlFrame.z_step_font)
 
         # Default steppings
 
@@ -708,20 +716,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         row = 6
 
         b = Button(self, text="%s"%(self.zstep1),
+                font =  z_step_font,
                 command=self.setZStep1,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
         b.bind("<Button-3>",self.zstep1_set)
-        tkExtra.Balloon.set(b, _("Use zstep1"))
+        tkExtra.Balloon.set(b, "Zstep1 = %s"%(self.zstep1))
         self.addWidget(b)
 
         b = Button(self, text="%s"%(self.zstep2),
+                font =  z_step_font,
                 command=self.setZStep2,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, _("Use zstep2"))
+        tkExtra.Balloon.set(b,"Zstep2 = %s"%(self.zstep2))
         self.addWidget(b)
 
 
@@ -753,14 +763,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         row = 7
 
         b = Button(self, text="%s"%(self.zstep3),
+                font =  z_step_font,
                 command=self.setZStep3,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, _("Use zstep3"))
+        tkExtra.Balloon.set(b, "Zstep3 = %s"%(self.zstep3))
         self.addWidget(b)
 
-
+        b = Button(self, text="%s"%(self.zstep4),
+                font =  z_step_font,
+                command=self.setZStep4,
+                width=2,
+                padx=1, pady=1)
+        b.grid(row=row, column=1, columnspan = 1, sticky=EW)
+        tkExtra.Balloon.set(b, "Zstep4 = %s"%(self.zstep4))
+        self.addWidget(b)
 
         row = 8
 
@@ -989,8 +1007,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             app.refresh()
             app.setStatus(_("Line Cut: Generated line cut code"))
 
-
-
     #----------------------------------------------------------------------
     # Jogging
     #----------------------------------------------------------------------
@@ -1169,6 +1185,11 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def setZStep3(self, event=None):
         if event is not None and not self.acceptKey(): return
         self.setStep(float(self.step.get()), self.zstep3)
+
+   #----------------------------------------------------------------------
+    def setZStep4(self, event=None):
+        if event is not None and not self.acceptKey(): return
+        self.setStep(float(self.step.get()), self.zstep4)
 
     #-----------------------------------------------------------------------
     def zstep1_set(self, event=None):
