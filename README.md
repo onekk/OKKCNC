@@ -9,15 +9,41 @@ An advanced fully featured g-code sender for GRBL, forked from bCNC ver 0.9.14.
 The main reason to fork, is the intention to make it resembling professional CNC controller, and adding the
 ability to operate the CNC like a "manual machining tool"
 
-The main goals are:
+So far I have removed some functions that in my opinion are better done by an appropriate CAM program.
+- all the CAM operations.
+- all the plugins
 
-- Add some memA memB buttons to make possible to memorize some "asolute positions", and operate on them
- using "functions" line "LINE" from posA to posB "SQUARE" like a "square pocket"
+I have added some button on the right of the jogging buttons
+- some preset button for XY move
+- separate Zstep controls with Z button preset
+
+- "memA" and "memB" buttons to make possible to memorize some "relative position" (relative to the working plane G54 as example).
+
+- "line" button that cut a line from memA to memB using the memB Z pos as starting depth and asking for a "final" depth in a popup window
+
+- "r_pt" for a "rectangular pocket" using memA and memB as boundaries and working like a line for the starting depth and the "final" depth
+
+- "RmA" and "RmB" buttons to return to memorized postions
+
+- "RST" button that reset the code created in the editor and the mem positions.
+
+
+The "line" and "r_pt" functions send the appropriate code in the editor window.
+
+
+
+Main goals for the future are:
 
 - add a Z override to make possible to correct the Z position by some amount, useful when pocketing os profiling
   using materials like plywood that are not perfectly stable in time, so a nominal 5mm plywood is 4.9 or 5.1 
   making diffcult to cut or ruining too much the sacrifical bed. 
 
+- add more functions but not using a Plugin mechanism 
+
+Many thanks to all the bCNC developers,
+
+
+# Old Readme from bCNC
 
 OKKCNC is a cross platform program (Windows, Linux, Mac) written in python.
 
