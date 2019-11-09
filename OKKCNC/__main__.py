@@ -330,6 +330,9 @@ class Application(Toplevel,Sender):
         self.bind('<<SetWPOS>>',    self.canvasFrame.canvas.setActionWPOS)
         self.bind('<<SetMemA>>',    self.setMemA)
         self.bind('<<SetMemB>>',    self.setMemB)
+        self.bind('<<ClrMemA>>',    self.clrMemA)
+        self.bind('<<ClrMemB>>',    self.clrMemB)
+
 
         frame = Page.frames["Probe:Tool"]
         self.bind('<<ToolCalibrate>>',    frame.calibrate)
@@ -500,6 +503,11 @@ class Application(Toplevel,Sender):
     def setMemB(self, event=None):
         self.canvasFrame.canvas.memBRefresh()
 
+    def clrMemA(self, event=None):
+        self.canvasFrame.canvas._memAHori = False
+
+    def clrMemB(self, event=None):
+        self.canvasFrame.canvas._memAHori = False
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
     #-----------------------------------------------------------------------
@@ -1538,17 +1546,6 @@ class Application(Toplevel,Sender):
             self.editor.selectAll()
             self.executeOnSelection("MOVE", False, dx,dy,dz)
 
-        # POC*KET: create pocket path
-        elif rexx.abbrev("POCKET",cmd,3):
-            self.pocket()
-
-        # PROF*ILE [offset]: create profile path
-        elif rexx.abbrev("PROFILE",cmd,3):
-            if len(line)>1:
-                self.profile(line[1])
-            else:
-                self.profile()
-
         # REV*ERSE: reverse path direction
         elif rexx.abbrev("REVERSE", cmd, 3):
             self.executeOnSelection("REVERSE", True)
@@ -1631,24 +1628,6 @@ class Application(Toplevel,Sender):
         # STOP: stop current run
         elif cmd == "STOP":
             self.stopRun()
-
-        # TAB*S [ntabs] [dtabs] [dx] [dy] [z]: create tabs on selected blocks
-        # default values are taken from the active tab
-        elif rexx.abbrev("TABS",cmd,3):
-            tabs = self.tools["TABS"]
-            try:    ntabs = int(line[1])
-            except:    ntabs = int(tabs["ntabs"])
-            try:    dtabs = float(line[2])
-            except:    dtabs = tabs.fromMm("dtabs")
-            try:    dx = float(line[3])
-            except:    dx = tabs.fromMm("dx")
-            try:    dy = float(line[4])
-            except:    dy = tabs.fromMm("dy")
-            try:    z = float(line[5])
-            except:    z = tabs.fromMm("z")
-            try:    circular = bool(line[6])
-            except:    circular = True
-            self.executeOnSelection("TABS", True, ntabs, dtabs, dx, dy, z, circular)
 
         # TERM*INAL: switch to terminal tab
         elif rexx.abbrev("TERMINAL",cmd,4):
@@ -1783,8 +1762,6 @@ class Application(Toplevel,Sender):
             self.gcode.roundLines(items, *args)
         elif cmd == "ROTATE":
             self.gcode.rotateLines(items, *args)
-        elif cmd == "TABS":
-            sel = self.gcode.createTabs(items, *args)
 
         # Fill listbox and update selection
         self.editor.fill()
@@ -1797,112 +1774,7 @@ class Application(Toplevel,Sender):
         self.notBusy()
         self.setStatus("%s %s"%(cmd," ".join([str(a) for a in args if a is not None])))
 
-    #-----------------------------------------------------------------------
-    def profile(self, direction=None, offset=0.0, overcut=False, name=None, pocket=False):
-        tool = self.tools["EndMill"]
-        ofs  = self.tools.fromMm(tool["diameter"])/2.0
-        sign = 1.0
 
-        if direction is None:
-            pass
-        elif rexx.abbrev("INSIDE",direction.upper()):
-            sign = -1.0
-        elif rexx.abbrev("OUTSIDE",direction.upper()):
-            sign = 1.0
-        else:
-            try:
-                ofs = float(direction)/2.0
-            except:
-                pass
-
-        # additional offset
-        try: ofs += float(offset)
-        except: pass
-
-        self.busy()
-        blocks = self.editor.getSelectedBlocks()
-        # on return we have the blocks with the new blocks to select
-        msg = self.gcode.profile(blocks, ofs*sign, overcut, name, pocket)
-        if msg:
-            tkMessageBox.showwarning("Open paths",
-                    "WARNING: %s"%(msg),
-                    parent=self)
-        self.editor.fill()
-        self.editor.selectBlocks(blocks)
-        self.draw()
-        self.notBusy()
-        self.setStatus(_("Profile block distance=%g")%(ofs*sign))
-
-    #-----------------------------------------------------------------------
-    def pocket(self, name=None):
-        tool = self.tools["EndMill"]
-        diameter = self.tools.fromMm(tool["diameter"])
-        try:
-            stepover = tool["stepover"] / 100.0
-        except TypeError:
-            stepover = 0.
-
-        self.busy()
-        blocks = self.editor.getSelectedBlocks()
-        # on return we have the blocks with the new blocks to select
-        msg = self.gcode.pocket(blocks, diameter, stepover, name)
-        if msg:
-            tkMessageBox.showwarning(_("Open paths"),
-                    _("WARNING: %s")%(msg),
-                    parent=self)
-        self.editor.fill()
-        self.editor.selectBlocks(blocks)
-        self.draw()
-        self.notBusy()
-#        self.setStatus(_("Pocket block distance=%g")%(ofs*sign))
-
-    #-----------------------------------------------------------------------
-    def trochprofile_bcnc(self, cutDiam=0.0, direction=None, offset=0.0, overcut=False,adaptative=False, adaptedRadius=0.0, tooldiameter=0.0,\
-        targetDepth=0.0,depthIncrement=0.0, tabsnumber=0.0, tabsWidth=0.0, tabsHeight=0.0):
-    #    tool = self.tools["EndMill"]
-    #    ofs  = self.tools.fromMm(tool["diameter"])/2.0
-        adaptedRadius = float(adaptedRadius)
-        ofs = float(cutDiam)/2.0
-        sign = 1.0
-
-        if direction is None:
-            pass
-        elif rexx.abbrev("INSIDE",direction.upper()):
-            sign = -1.0
-        elif rexx.abbrev("OUTSIDE",direction.upper()):
-            sign = 1.0
-        elif rexx.abbrev("ON",direction.upper()):
-            ofs = 0
-        else:
-            try:
-                ofs = float(direction)/2.0
-            except:
-                pass
-
-        # additional offset
-        try: ofs += float(offset)
-        except: pass
-
-        self.busy()
-        blocks = self.editor.getSelectedBlocks()
-        # on return we have the blocks with the new blocks to select
-        msg = self.gcode.trochprofile_cnc(blocks, ofs*sign, overcut, adaptative, adaptedRadius,  cutDiam, tooldiameter,\
-                targetDepth, depthIncrement, tabsnumber, tabsWidth, tabsHeight)
-        if msg:
-            tkMessageBox.showwarning("Open paths",
-                    "WARNING: %s"%(msg),
-                    parent=self)
-        msg2 = adaptative
-        if msg2:
-            tkMessageBox.showwarning("Adaptative",
-                    "WARNING: Adaptive route generated, but Trocoidal still does not implement it. Use will give wrong results in the corners!",
-                    parent=self)
-
-        self.editor.fill()
-        self.editor.selectBlocks(blocks)
-        self.draw()
-        self.notBusy()
-        self.setStatus(_("Profile block distance=%g")%(ofs*sign))
     #-----------------------------------------------------------------------
     def edit(self, event=None):
         page = self.ribbon.getActivePage()

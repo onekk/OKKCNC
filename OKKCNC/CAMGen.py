@@ -125,7 +125,6 @@ def line(self, app, endDepth):
         app.setStatus(_("Line Cut: Generated line cut code"))
 
 
-
 def pocket(self, app, endDepth):
 
     XStart = min(CNC.vars["memAx"],CNC.vars["memBx"])

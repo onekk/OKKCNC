@@ -464,13 +464,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
 
-
-
-        Label(self, text="Z").grid(row=3, column=0, columnspan=2)
-
         Label(self, text="Y").grid(row=6, column=3)
-
-        Label(self, text="X").grid(row=3,column=6, columnspan=2)
 
         Label(self,"",width=1).grid(row=1,column=10)
 
@@ -555,17 +549,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(self.step3_b, _("Use step3"))
         self.addWidget(self.step3_b)
 
-
-        b = Button(self, text="m A",
-                    name = "memA",
-                    command=self.memA,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, rowspan=1, sticky=EW)
-        tkExtra.Balloon.set(b, _("Mem A"))
-        self.addWidget(b)
-
         row = 1
 
         b = Button(self, text=u"\u00F75",
@@ -607,16 +590,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Increase step"))
         self.addWidget(b)
 
-        b = Button(self, text="m B",
-                    name = "memB",
-                    command=self.memB,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Mem B"))
-        self.addWidget(b)
-
         row = 2
 
         b = Button(self, text="-",
@@ -649,26 +622,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Increase step fine"))
         self.addWidget(b)
 
-
-        b = Button(self, text="line",
-                    command=self.line,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Cut Line from memA to memB"))
-        self.addWidget(b)
-
         row = 3
 
-        b = Button(self, text="r_pt",
-                    command=self.pocket,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Cut Pocket from memA to memB"))
-        self.addWidget(b)
+        Label(self, text="Z").grid(row=3, column=0, columnspan=2)
+        Label(self, text="X").grid(row=3,column=6, columnspan=2)
 
         row = 4
 
@@ -703,26 +660,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                     activebackground="LightYellow")
         b.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=EW)
         tkExtra.Balloon.set(b, _("Move +X +Y"))
-        self.addWidget(b)
-
-        b = Button(self, text="RmA",
-                    command=self.retA,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Return to mem A"))
-        self.addWidget(b)
-
-        row = 5
-
-        b = Button(self, text="RmB",
-                    command=self.retB,
-                    width=3,
-                    padx=1, pady=1,
-                    activebackground="LightYellow")
-        b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Return to mem B"))
         self.addWidget(b)
 
         row = 6
@@ -827,6 +764,85 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Move +X -Y"))
         self.addWidget(b)
 
+        #----------------
+        #- CAM controls -
+        #----------------
+        column = 11
+        b_padx = 0
+        b_pady = -1
+
+        b = Button(self, text="RST",
+                    name = "rst",
+                    command=self.resetAll,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    background = "salmon",
+                    activebackground="LightYellow")
+        b.grid(row=0, column=column, columnspan=2, rowspan=1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Reset Gcode"))
+        self.addWidget(b)
+
+        b = Button(self, text="m A",
+                    name = "memA",
+                    command=self.memA,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    background = "orchid1",
+                    activebackground="LightYellow")
+        b.grid(row=1, column=column, columnspan=2, rowspan=1, sticky=EW)
+        tkExtra.Balloon.set(b, _("Mem A"))
+        self.addWidget(b)
+
+
+        b = Button(self, text="m B",
+                    name = "memB",
+                    command=self.memB,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    background = "orchid1",
+                    activebackground="LightYellow")
+        b.grid(row=2, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Mem B"))
+        self.addWidget(b)
+
+        b = Button(self, text="line",
+                    command=self.line,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=3, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Cut Line from memA to memB"))
+        self.addWidget(b)
+
+        b = Button(self, text="r_pt",
+                    command=self.pocket,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=4, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Cut Pocket from memA to memB"))
+        self.addWidget(b)
+
+
+
+        b = Button(self, text="RmA",
+                    command=self.retA,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=5, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Return to mem A"))
+        self.addWidget(b)
+
+        b = Button(self, text="RmB",
+                    command=self.retB,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=6, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Return to mem B"))
+        self.addWidget(b)
+
         try:
 #            self.grid_anchor(CENTER)
             self.tk.call("grid","anchor",self,CENTER)
@@ -880,6 +896,26 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # Utils.setFloat("Control", "step1", self.step1.get())
         Utils.setFloat("Control", "zstep", self.zstep.get())
 
+    def resetAll(self):
+        self.event_generate("<<ClearEditor>>")
+        wd = self.nametowidget("memA")
+        tkExtra.Balloon.set(wd, "Empty")
+        wd.configure(background = "orchid1")
+        CNC.vars["memAx"] = 0.0
+        CNC.vars["memAy"] = 0.0
+        CNC.vars["memAz"] = 0.0
+        self.event_generate("<<ClrMemA>>")
+        self.memA_Set = False
+
+        wd = self.nametowidget("memB")
+        tkExtra.Balloon.set(wd, "Empty")
+        wd.configure(background = "orchid1")
+        CNC.vars["memBx"] = 0.0
+        CNC.vars["memBy"] = 0.0
+        CNC.vars["memBz"] = 0.0
+        self.event_generate("<<ClrMemB>>")
+        self.memB_Set = False
+
     def memA(self):
         #print("State: ", CNC.vars["state"])
         if CNC.vars["state"] == "Idle":
@@ -893,7 +929,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             wdata = _("mem_A = \nX: %f \nY: %f \nZ: %f"%(mAx,mAy,mAz))
             wd = self.nametowidget("memA")
             tkExtra.Balloon.set(wd, wdata)
-
+            wd.configure(background = "aquamarine")
             self.event_generate("<<SetMemA>>")
             self.memA_Set = True
 
@@ -914,7 +950,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
             wd = self.nametowidget("memB")
             tkExtra.Balloon.set(wd, wdata)
-
+            wd.configure(background = "aquamarine")
             self.event_generate("<<SetMemB>>")
             self.memB_Set = True
         else:

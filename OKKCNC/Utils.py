@@ -87,18 +87,8 @@ __translations__ = \
 
 LANGUAGES = {
         ""      : "<system>",
-        "de"    : "Deutsch",
         "en"    : "English",
-        "es"    : u"Espa\u00f1ol",
-        "fr"    : u"Fran\u00e7ais",
         "it"    : "Italiano",
-        "ja"    : "Japanese",
-        "kr"    : "Korean",
-        "nl"    : "Nederlands",
-        "pt_BR" : "Brazilian - Portuguese",
-        "ru"    : "Russian",
-        "zh_cn" : "Simplified Chinese",
-        "zh_tw" : "Traditional Chinese",
     }
 
 icons     = {}
