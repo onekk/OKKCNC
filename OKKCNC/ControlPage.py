@@ -14,7 +14,6 @@ try:
     from Tkinter import *
     import tkMessageBox
     import tkSimpleDialog
-    import tkFont
 except ImportError:
     from tkinter import *
     import tkinter.messagebox as tkMessageBox
@@ -29,7 +28,8 @@ import Sender
 import tkExtra
 import Unicode
 import CNCRibbon
-import CNCCanvas
+#import CNCCanvas
+import CAMGen
 from Sender import ERROR_CODES
 from CNC import Block,WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
 
@@ -458,6 +458,8 @@ class DROFrame(CNCRibbon.PageFrame):
 class ControlFrame(CNCRibbon.PageLabelFrame):
 
     z_step_font = ('Helvetica',7,'bold')
+    memA_Set = False
+    memB_Set = False
 
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
@@ -654,9 +656,19 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                     padx=1, pady=1,
                     activebackground="LightYellow")
         b.grid(row=row, column=11, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Cut Line from A to B"))
+        tkExtra.Balloon.set(b, _("Cut Line from memA to memB"))
         self.addWidget(b)
 
+        row = 3
+
+        b = Button(self, text="r_pt",
+                    command=self.pocket,
+                    width=3,
+                    padx=1, pady=1,
+                    activebackground="LightYellow")
+        b.grid(row=row, column=11, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Cut Pocket from memA to memB"))
+        self.addWidget(b)
 
         row = 4
 
@@ -881,9 +893,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             wdata = _("mem_A = \nX: %f \nY: %f \nZ: %f"%(mAx,mAy,mAz))
             wd = self.nametowidget("memA")
             tkExtra.Balloon.set(wd, wdata)
-            self.event_generate("<<Status>>",
-            data = wdata)
+
             self.event_generate("<<SetMemA>>")
+            self.memA_Set = True
 
         else:
             pass
@@ -899,12 +911,12 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             CNC.vars["memBz"] = mBz
 
             wdata = _("mem_B = \nX: %f \nY: %f \nZ: %f"%(mBx,mBy,mBz))
+
             wd = self.nametowidget("memB")
             tkExtra.Balloon.set(wd, wdata)
-            self.event_generate("<<Status>>",
-                data = wdata)
-            self.event_generate("<<SetMemB>>")
 
+            self.event_generate("<<SetMemB>>")
+            self.memB_Set = True
         else:
             pass
 
@@ -925,87 +937,27 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def line(self):
 
-        XStart = CNC.vars["memAx"]
-        YStart = CNC.vars["memAy"]
-        currDepth = CNC.vars["memBz"]
+        # avoid a dry run if both mem pos are not set
+        if (self.memA_Set == True ) and (self.memB_Set == True ):
 
-        XEnd = CNC.vars["memBx"]
-        YEnd = CNC.vars["memBy"]
+            endDepth = self.InputValue("TD")
 
-        f_depth = self.InputValue("TD")
+            if endDepth is None:
+                return
 
-        if f_depth is None:
-            return
+            CAMGen.line(self, self.app, endDepth)
 
-        toolDiam = CNC.vars['diameter']
-        #toolRadius = toolDiam / 2.
-        StepOverInUnitMax = toolDiam * CNC.vars['stepover'] / 100.0
+    def pocket(self):
 
-        stepz = CNC.vars['stepz']
-        if stepz==0 : stepz=0.001  #avoid infinite while loop
+        # avoid a dry run if both mem pos are not set
+        if (self.memA_Set == True ) and (self.memB_Set == True ):
+            endDepth = self.InputValue("TD")
 
-        msg = "Line Cut Operation: \n"
-        msg+= "Start at X: %f Y: %f \n\n"%(XStart,YStart)
-        msg+= "End at X: %f Y: %f \n\n"%(XEnd,YEnd)
-        msg+= "Depth: %f \n\n"%(f_depth)
-        msg+= "StepZ: %f T_StepOver: %f \n\n"%(stepz,StepOverInUnitMax)
+            if endDepth is None:
+                return
 
-        retval = tkMessageBox.askokcancel("Line Cut",msg)
+            CAMGen.pocket(self, self.app, endDepth)
 
-        print("RetVal",retval)
-
-        if retval is False:
-            return
-
-        # Reset the Gcode in the Editor
-        # Loading an empty file
-
-
-        # Set the Initialization file
-        blocks = []
-        block =  Block("Init")
-        # Get the current WCS as the mem are related to it
-        block.append(CNC.vars['WCS'])
-        blocks.append(block)
-
-        block = Block("Line")
-        block.append("(Line from X=%g Y=%g)"%(XStart,YStart))
-        block.append("(to X=%g Y=%g at depth=%g)"%(XEnd,YEnd,f_depth))
-
-        xP=[]
-        yP=[]
-
-        #Move safe to first point
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(XStart,YStart))
-        #Init Depth
-
-
-        #Create GCode from points
-        while True:
-            currDepth -= stepz
-            if currDepth < f_depth : currDepth = f_depth
-            block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f",CNC.vars["cutfeed"])]))
-
-            block.append(CNC.gline(XEnd,YEnd))
-
-            #Verify exit condition
-            if currDepth <= f_depth : break
-
-            #Move to the begin in a safe way
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(XStart,YStart))
-
-        blocks.append(block)
-
-        if blocks is not None:
-            app = self.app
-            active = app.activeBlock()
-            if active==0: active=1
-            app.gcode.insBlocks(active, blocks, "Line Cut")
-            app.refresh()
-            app.setStatus(_("Line Cut: Generated line cut code"))
 
     #----------------------------------------------------------------------
     # Jogging

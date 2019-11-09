@@ -1070,9 +1070,13 @@ class Tools:
         self.listbox = None
 
         # CNC should be first to load the inches
-        for cls in [ Camera, Config, Font, Color, Controller, Cut,
-                 Drill, EndMill, Events, Material, Pocket,
-                 Profile, Shortcut, Stock, Tabs]:
+        #ToolsList = [ Camera, Config, Font, Color, Controller, Cut,
+        #         Drill, EndMill, Events, Material, Pocket,
+        #         Profile, Shortcut, Stock, Tabs]
+        ToolsList = [ Camera, Config, Font, Color, Controller,
+                     EndMill, Events, Material, Shortcut, Stock]
+
+        for cls in ToolsList:
             tool = cls(self)
             self.addTool(tool)
 
@@ -1783,7 +1787,7 @@ class ToolsPage(CNCRibbon.Page):
     def register(self):
         self._register(
             (DataBaseGroup,
-             CAMGroup,
+            #CAMGroup,
             #GeneratorGroup,
             #ArtisticGroup,
             #MacrosGroup,

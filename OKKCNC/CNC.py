@@ -17,12 +17,12 @@ import pickle
 import json
 import binascii
 
-from dxf    import DXF
-from bstl    import Binary_STL_Writer
-from bpath    import eq,Path, Segment
-from bmath    import *
-from copy    import deepcopy
-from svgcode    import SVGcode
+from dxf import DXF
+from bstl import Binary_STL_Writer
+from bpath import eq,Path, Segment
+from bmath import *
+from copy import deepcopy
+from svgcode import SVGcode
 
 IDPAT    = re.compile(r".*\bid:\s*(.*?)\)")
 PARENPAT = re.compile(r"(\(.*?\))")
