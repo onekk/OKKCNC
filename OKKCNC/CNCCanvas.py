@@ -16,6 +16,7 @@ except ImportError:
     from tkinter import *
     import tkinter as Tkinter
 
+import OCV
 from CNC import CNC
 import Utils
 import Camera
@@ -49,30 +50,6 @@ GANTRY_X      = GANTRY_R*2    # 10
 GANTRY_Y      = GANTRY_R    # 5
 GANTRY_H      = GANTRY_R*5    # 20
 DRAW_TIME     = 5        # Maximum draw time permitted
-
-INSERT_COLOR  = "Blue"
-GANTRY_COLOR  = "Red"
-MARGIN_COLOR  = "Magenta"
-GRID_COLOR    = "Gray"
-BOX_SELECT    = "Cyan"
-TAB_COLOR     = "DarkOrange"
-TABS_COLOR    = "Orange"
-WORK_COLOR    = "Orange"
-CAMERA_COLOR  = "Cyan"
-CANVAS_COLOR  = "White"
-
-ENABLE_COLOR  = "Black"
-DISABLE_COLOR = "LightGray"
-SELECT_COLOR  = "Blue"
-SELECT2_COLOR = "DarkCyan"
-PROCESS_COLOR = "Green"
-MEM_COLOR     = "Orchid1"
-
-MOVE_COLOR    = "DarkCyan"
-RULER_COLOR   = "Green"
-PROBE_TEXT_COLOR = "Green"
-
-INFO_COLOR    = "Gold"
 
 SELECTION_TAGS = ("sel", "sel2", "sel3", "sel4")
 
@@ -284,6 +261,7 @@ class CNCCanvas(Canvas, object):
         self._vx1 = self._vy1 = self._vz1 = 0    # vector move coordinates
 
         self._orientSelected = None
+        self.tooltips = []
 
         #self.config(xscrollincrement=1, yscrollincrement=1)
         self.reset()
@@ -307,7 +285,7 @@ class CNCCanvas(Canvas, object):
         nargs['width'] += winc
 
         #calculate color
-        #cbg = self.winfo_rgb(CANVAS_COLOR)
+        #cbg = self.winfo_rgb(OCV.CANVAS_COLOR)
         cbg = self.winfo_rgb(self.cget("bg"))
         cfg = list(self.winfo_rgb(nargs['fill']))
         #print cbg, cfg
@@ -503,7 +481,7 @@ class CNCCanvas(Canvas, object):
             self.status(_("ERROR: Cannot set X-Y marker  with the current view"))
             return
         self._orientSelected = len(self.gcode.orient)
-        self.gcode.orient.add(CNC.vars["wx"], CNC.vars["wy"], u, v)
+        self.gcode.orient.add(OCV.CD["wx"], OCV.CD["wy"], u, v)
         self.event_generate("<<OrientSelect>>", data=self._orientSelected)
         #self.drawOrient()
         self.setAction(ACTION_SELECT)
@@ -557,13 +535,13 @@ class CNCCanvas(Canvas, object):
                     else:
                         self._mouseAction = ACTION_SELECT_SINGLE
                         return
-                    fill  = MOVE_COLOR
+                    fill  = OCV.MOVE_COLOR
                     arrow = LAST
                 except:
                     self._mouseAction = ACTION_SELECT_SINGLE
                     return
             else:
-                fill  = RULER_COLOR
+                fill  = OCV.RULER_COLOR
                 arrow = BOTH
             self._vector = self.create_line((i,j,i,j), fill=fill, arrow=arrow)
             self._vx0, self._vy0, self._vz0 = self.canvas2xyz(i,j)
@@ -734,7 +712,7 @@ class CNCCanvas(Canvas, object):
     # ----------------------------------------------------------------------
     def snapPoint(self, cx, cy):
         xs,ys = None,None
-        if CNC.inch:
+        if OCV.inch:
             dmin = (self.zoom/25.4)**2    # 1mm maximum distance ...
         else:
             dmin = (self.zoom)**2
@@ -1014,9 +992,9 @@ class CNCCanvas(Canvas, object):
             self._dz = dz
 
             if not self.draw_workarea: return
-            xmin = self._dx-CNC.travel_x
-            ymin = self._dy-CNC.travel_y
-            zmin = self._dz-CNC.travel_z
+            xmin = self._dx-OCV.travel_x
+            ymin = self._dy-OCV.travel_y
+            zmin = self._dz-OCV.travel_z
             xmax = self._dx
             ymax = self._dy
             zmax = self._dz
@@ -1049,16 +1027,16 @@ class CNCCanvas(Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = ENABLE_COLOR
+                        fill = OCV.ENABLE_COLOR
                 except IndexError:
-                    fill = ENABLE_COLOR
+                    fill = OCV.ENABLE_COLOR
             else:
-                    fill = ENABLE_COLOR
+                    fill = OCV.ENABLE_COLOR
             self.itemconfig(i,  width=1, fill=fill)
 
-        self.itemconfig("sel2", width=1, fill=DISABLE_COLOR)
-        self.itemconfig("sel3", width=1, fill=TAB_COLOR)
-        self.itemconfig("sel4", width=1, fill=DISABLE_COLOR)
+        self.itemconfig("sel2", width=1, fill=OCV.DISABLE_COLOR)
+        self.itemconfig("sel3", width=1, fill=OCV.TAB_COLOR)
+        self.itemconfig("sel4", width=1, fill=OCV.DISABLE_COLOR)
         for i in SELECTION_TAGS: self.dtag(i)
         self.delete("info")
 
@@ -1081,10 +1059,10 @@ class CNCCanvas(Canvas, object):
                     sel = block.enable and "sel" or "sel2"
                     self.addtag_withtag(sel, path)
 
-        self.itemconfig("sel",  width=2, fill=SELECT_COLOR)
-        self.itemconfig("sel2", width=2, fill=SELECT2_COLOR)
-        self.itemconfig("sel3", width=2, fill=TAB_COLOR)
-        self.itemconfig("sel4", width=2, fill=TABS_COLOR)
+        self.itemconfig("sel",  width=2, fill=OCV.SELECT_COLOR)
+        self.itemconfig("sel2", width=2, fill=OCV.SELECT2_COLOR)
+        self.itemconfig("sel3", width=2, fill=OCV.TAB_COLOR)
+        self.itemconfig("sel4", width=2, fill=OCV.TABS_COLOR)
         for i in SELECTION_TAGS: self.tag_raise(i)
         self.drawMargin()
 
@@ -1130,7 +1108,7 @@ class CNCCanvas(Canvas, object):
                    (block.xmin, block.ymax, 0.),
                    (block.xmin, block.ymin, 0.)]
             self.create_line(self.plotCoords(xyz),
-                    fill=INFO_COLOR,
+                    fill=OCV.INFO_COLOR,
                     tag="info")
             xc = (block.xmin + block.xmax)/2.0
             yc = (block.ymin + block.ymax)/2.0
@@ -1163,7 +1141,7 @@ class CNCCanvas(Canvas, object):
                 xyz.append((xc+r*math.sin(f), yc+r*math.cos(f), 0.))    # towards up
                 f += df
             self.create_line(self.plotCoords(xyz),
-                    fill=INFO_COLOR,
+                    fill=OCV.INFO_COLOR,
                     width=5,
                     arrow=LAST,
                     arrowshape=(32,40,12),
@@ -1212,10 +1190,10 @@ class CNCCanvas(Canvas, object):
             self._cameraImage = self.create_image((0,0), tag="CameraImage")
             self.lower(self._cameraImage)
             # create cross hair at dummy location we will correct latter
-            self._cameraHori    = self.create_line(0,0,1,0, fill=CAMERA_COLOR, tag="CrossHair")
-            self._cameraVert    = self.create_line(0,0,0,1, fill=CAMERA_COLOR, tag="CrossHair")
-            self._cameraCircle  = self.create_oval(0,0, 1,1, outline=CAMERA_COLOR, tag="CrossHair")
-            self._cameraCircle2 = self.create_oval(0,0, 1,1, outline=CAMERA_COLOR,
+            self._cameraHori    = self.create_line(0,0,1,0, fill=OCV.CAMERA_COLOR, tag="CrossHair")
+            self._cameraVert    = self.create_line(0,0,0,1, fill=OCV.CAMERA_COLOR, tag="CrossHair")
+            self._cameraCircle  = self.create_oval(0,0, 1,1, outline=OCV.CAMERA_COLOR, tag="CrossHair")
+            self._cameraCircle2 = self.create_oval(0,0, 1,1, outline=OCV.CAMERA_COLOR,
                             dash=(3,3), tag="CrossHair")
             self.cameraPosition()
         try:
@@ -1333,15 +1311,15 @@ class CNCCanvas(Canvas, object):
     # Initialize gantry position
     #----------------------------------------------------------------------
     def initPosition(self):
-        self.configure(background=CANVAS_COLOR)
+        self.configure(background=OCV.CANVAS_COLOR)
         self.delete(ALL)
         self._cameraImage = None
-        gr = max(3,int(CNC.vars["diameter"]/2.0*self.zoom))
+        gr = max(3,int(OCV.CD["diameter"]/2.0*self.zoom))
         mr = max(3,int(3/2.0 * self.zoom))
         if self.view == VIEW_XY:
             self._gantry1 = self.create_oval( (-gr,-gr), ( gr, gr),
                     width=2,
-                    outline=GANTRY_COLOR)
+                    outline=OCV.GANTRY_COLOR)
             self._gantry2 = None
         else:
             gx = gr
@@ -1351,14 +1329,14 @@ class CNCCanvas(Canvas, object):
                 self._gantry1 = None
                 self._gantry2 = self.create_line((-gx,-gh, 0,0, gx,-gh, -gx,-gh),
                         width=2,
-                        fill=GANTRY_COLOR)
+                        fill=OCV.GANTRY_COLOR)
             else:
                 self._gantry1 = self.create_oval((-gx,-gh-gy, gx,-gh+gy),
                         width=2,
-                        outline=GANTRY_COLOR)
+                        outline=OCV.GANTRY_COLOR)
                 self._gantry2 = self.create_line((-gx, -gh, 0, 0, gx, -gh),
                         width=2,
-                        fill=GANTRY_COLOR)
+                        fill=OCV.GANTRY_COLOR)
 
         self._lastInsert = None
         self._lastActive = None
@@ -1377,7 +1355,7 @@ class CNCCanvas(Canvas, object):
         wc = c_dim // 2
         hc = c_dim // 2
         r_dim = c_dim // 3
-        x,y = self.plotCoords([(CNC.vars["memAx"], CNC.vars["memAy"], 0.)])[0]
+        x,y = self.plotCoords([(OCV.CD["memAx"], OCV.CD["memAy"], 0.)])[0]
 
         #print ("Zoom in memA = ",self.zoom)
 
@@ -1397,15 +1375,19 @@ class CNCCanvas(Canvas, object):
         c_dim =  6
         r_dim = c_dim // 3
         self._memAHori = self.create_line(0, 0, c_dim, 0,
-                                          fill=MEM_COLOR, tag="memAcross")
+                                          fill=OCV.MEM_COLOR, tag="memAcross")
         self._memAVert = self.create_line(0, 0, 0, c_dim,
-                                          fill=MEM_COLOR, tag="memAcross")
+                                          fill=OCV.MEM_COLOR, tag="memAcross")
         self._memACircle  = self.create_oval(0, 0, r_dim, r_dim,
-                                             outline=MEM_COLOR, tag="memAcross")
-        textA = "mem A \nX: %.f  \nY: %.f \nZ: %.f"%(
-                CNC.vars["memAx"], CNC.vars["memAy"], CNC.vars["memAz"])
+                                             outline=OCV.MEM_COLOR, tag="memAcross")
+        ttextA = "Memory A \nX: %.f  \nY: %.f \nZ: %.f"%(
+                OCV.CD["memAx"], OCV.CD["memAy"], OCV.CD["memAz"])
+        textA = "M_A"
         self._memAText = self.create_text(0 , 0,text=textA, anchor=N,
-                            justify=LEFT, fill=MEM_COLOR, tag="memAtext")
+                            justify=LEFT, fill=OCV.MEM_COLOR, tag="memAtext")
+        tooltip = CanvasTooltip(self, "memAcross", text=ttextA)
+
+        self.tooltips.append(tooltip)
         self.memAPosition()
 
     def memBPosition(self):
@@ -1413,7 +1395,7 @@ class CNCCanvas(Canvas, object):
         wc = c_dim // 2
         hc = c_dim // 2
         r_dim = c_dim // 3
-        x,y = self.plotCoords([(CNC.vars["memBx"], CNC.vars["memBy"], 0.)])[0]
+        x,y = self.plotCoords([(OCV.CD["memBx"], OCV.CD["memBy"], 0.)])[0]
 
         #print ("Zoom in memA = ",self.zoom)
 
@@ -1432,15 +1414,44 @@ class CNCCanvas(Canvas, object):
         c_dim =  6
         r_dim = c_dim // 3
         self._memBHori = self.create_line(0, 0, c_dim, 0,
-                                          fill=MEM_COLOR, tag="memBcross")
+                                          fill=OCV.MEM_COLOR, tag="memBcross")
         self._memBVert = self.create_line(0, 0, 0, c_dim,
-                                          fill=MEM_COLOR, tag="memBcross")
+                                          fill=OCV.MEM_COLOR, tag="memBcross")
         self._memBCircle  = self.create_oval(0, 0, r_dim, r_dim,
-                                             outline=MEM_COLOR, tag="memBcross")
-        textB = "mem B \nX: %.f  \nY: %.f \nZ: %.f"%(
-                CNC.vars["memBx"], CNC.vars["memBy"], CNC.vars["memBz"])
+                                             outline=OCV.MEM_COLOR, tag="memBcross")
+        ttextB = "Memory B: \nX: %.f  \nY: %.f \nZ: %.f"%(
+                OCV.CD["memBx"], OCV.CD["memBy"], OCV.CD["memBz"])
+        textB ="M_B"
         self._memBText = self.create_text(0 , 0,text=textB, anchor=N,
-                            justify=LEFT, fill=MEM_COLOR, tag="memBtext")
+                            justify=LEFT, fill=OCV.MEM_COLOR, tag="memBtext")
+        tooltip = CanvasTooltip(self, "memBcross", text=ttextB)
+
+        self.tooltips.append(tooltip)
+        self.memBPosition()
+
+    def memgencreate(self, name, x,y,z):
+        obj_name = "{0}_obj".format(name)
+        obj_text = "{0}_text".format(name)
+        obj_tag = "{0}_cross".format(name)
+        self.delete(obj_name)
+        self.delete(obj_text)
+        # create cross hair at dummy location we will correct latter
+        c_dim =  6
+        r_dim = c_dim // 3
+        memBHori = self.create_line(0, 0, c_dim, 0,
+                                    fill=OCV.MEM_COLOR, tag=obj_tag)
+        memBVert = self.create_line(0, 0, 0, c_dim,
+                                          fill=OCV.MEM_COLOR, tag=obj_tag)
+        memBCircle  = self.create_oval(0, 0, r_dim, r_dim,
+                                             outline=OCV.MEM_COLOR, tag=obj_tag)
+        ttext = "Memory {0}: \nX: {1:f}  \nY: {2:f} \nZ: {3:f}".format(name,
+                x, y, z)
+        text = "M_{0}".format(name)
+        self._memBText = self.create_text(0 , 0,text=text, anchor=N,
+                            justify=LEFT, fill=OCV.MEM_COLOR, tag=obj_text)
+        tooltip = CanvasTooltip(self, obj_tag, text=ttext)
+
+        self.tooltips.append(tooltip)
         self.memBPosition()
 
 
@@ -1448,7 +1459,7 @@ class CNCCanvas(Canvas, object):
     # Draw gantry location
     #----------------------------------------------------------------------
     def _drawGantry(self, x, y):
-        gr = max(3,int(CNC.vars["diameter"]/2.0*self.zoom))
+        gr = max(3,int(OCV.CD["diameter"]/2.0*self.zoom))
         if self._gantry2 is None:
             self.coords(self._gantry1, (x-gr, y-gr, x+gr, y+gr))
         else:
@@ -1468,13 +1479,13 @@ class CNCCanvas(Canvas, object):
         self.delete("Axes")
         if not self.draw_axes: return
 
-        dx = CNC.vars["axmax"] - CNC.vars["axmin"]
-        dy = CNC.vars["aymax"] - CNC.vars["aymin"]
+        dx = OCV.CD["axmax"] - OCV.CD["axmin"]
+        dy = OCV.CD["aymax"] - OCV.CD["aymin"]
         d = min(dx,dy)
         try:
             s = math.pow(10.0, int(math.log10(d)))
         except:
-            if CNC.inch:
+            if OCV.inch:
                 s = 10.0
             else:
                 s = 100.0
@@ -1497,26 +1508,26 @@ class CNCCanvas(Canvas, object):
         if not self.draw_margin: return
 
         if CNC.isMarginValid():
-            xyz = [(CNC.vars["xmin"], CNC.vars["ymin"], 0.),
-                   (CNC.vars["xmax"], CNC.vars["ymin"], 0.),
-                   (CNC.vars["xmax"], CNC.vars["ymax"], 0.),
-                   (CNC.vars["xmin"], CNC.vars["ymax"], 0.),
-                   (CNC.vars["xmin"], CNC.vars["ymin"], 0.)]
+            xyz = [(OCV.CD["xmin"], OCV.CD["ymin"], 0.),
+                   (OCV.CD["xmax"], OCV.CD["ymin"], 0.),
+                   (OCV.CD["xmax"], OCV.CD["ymax"], 0.),
+                   (OCV.CD["xmin"], OCV.CD["ymax"], 0.),
+                   (OCV.CD["xmin"], OCV.CD["ymin"], 0.)]
             self._margin = self.create_line(
                         self.plotCoords(xyz),
-                        fill=MARGIN_COLOR)
+                        fill=OCV.MARGIN_COLOR)
             self.tag_lower(self._margin)
 
         if not CNC.isAllMarginValid(): return
-        xyz = [(CNC.vars["axmin"], CNC.vars["aymin"], 0.),
-               (CNC.vars["axmax"], CNC.vars["aymin"], 0.),
-               (CNC.vars["axmax"], CNC.vars["aymax"], 0.),
-               (CNC.vars["axmin"], CNC.vars["aymax"], 0.),
-               (CNC.vars["axmin"], CNC.vars["aymin"], 0.)]
+        xyz = [(OCV.CD["axmin"], OCV.CD["aymin"], 0.),
+               (OCV.CD["axmax"], OCV.CD["aymin"], 0.),
+               (OCV.CD["axmax"], OCV.CD["aymax"], 0.),
+               (OCV.CD["axmin"], OCV.CD["aymax"], 0.),
+               (OCV.CD["axmin"], OCV.CD["aymin"], 0.)]
         self._amargin = self.create_line(
                     self.plotCoords(xyz),
                     dash=(3,2),
-                    fill=MARGIN_COLOR)
+                    fill=OCV.MARGIN_COLOR)
         self.tag_lower(self._amargin)
 
     #----------------------------------------------------------------------
@@ -1566,14 +1577,15 @@ class CNCCanvas(Canvas, object):
         if self._workarea: self.delete(self._workarea)
         if not self.draw_workarea: return
 
-        xmin = self._dx-CNC.travel_x
-        ymin = self._dy-CNC.travel_y
-        zmin = self._dz-CNC.travel_z
+        xmin = self._dx-OCV.travel_x
+        ymin = self._dy-OCV.travel_y
+        zmin = self._dz-OCV.travel_z
         xmax = self._dx
         ymax = self._dy
         zmax = self._dz
 
-        self._workarea = self._drawRect(xmin, ymin, xmax, ymax, 0., fill=WORK_COLOR, dash=(3,2))
+        self._workarea = self._drawRect(xmin, ymin, xmax, ymax,
+                                        0., fill=OCV.WORK_COLOR, dash=(3,2))
         self.tag_lower(self._workarea)
 
     #----------------------------------------------------------------------
@@ -1583,24 +1595,24 @@ class CNCCanvas(Canvas, object):
         self.delete("Grid")
         if not self.draw_grid: return
         if self.view in (VIEW_XY, VIEW_ISO1, VIEW_ISO2, VIEW_ISO3):
-            xmin = (CNC.vars["axmin"]//10)  *10
-            xmax = (CNC.vars["axmax"]//10+1)*10
-            ymin = (CNC.vars["aymin"]//10)  *10
-            ymax = (CNC.vars["aymax"]//10+1)*10
-            for i in range(int(CNC.vars["aymin"]//10), int(CNC.vars["aymax"]//10)+2):
+            xmin = (OCV.CD["axmin"]//10)  *10
+            xmax = (OCV.CD["axmax"]//10+1)*10
+            ymin = (OCV.CD["aymin"]//10)  *10
+            ymax = (OCV.CD["aymax"]//10+1)*10
+            for i in range(int(OCV.CD["aymin"]//10), int(OCV.CD["aymax"]//10)+2):
                 y = i*10.0
                 xyz = [(xmin,y,0), (xmax,y,0)]
                 item = self.create_line(self.plotCoords(xyz),
                             tag="Grid",
-                            fill=GRID_COLOR,
+                            fill=OCV.GRID_COLOR,
                             dash=(1,3))
                 self.tag_lower(item)
 
-            for i in range(int(CNC.vars["axmin"]//10), int(CNC.vars["axmax"]//10)+2):
+            for i in range(int(OCV.CD["axmin"]//10), int(OCV.CD["axmax"]//10)+2):
                 x = i*10.0
                 xyz = [(x,ymin,0), (x,ymax,0)]
                 item = self.create_line(self.plotCoords(xyz),
-                            fill=GRID_COLOR,
+                            fill=OCV.GRID_COLOR,
                             tag="Grid",
                             dash=(1,3))
                 self.tag_lower(item)
@@ -1614,7 +1626,7 @@ class CNCCanvas(Canvas, object):
         if self.view in (VIEW_XZ, VIEW_YZ): return
 
         # Draw orient markers
-        if CNC.inch:
+        if OCV.inch:
             w = 0.1
         else:
             w = 2.5
@@ -1713,10 +1725,10 @@ class CNCCanvas(Canvas, object):
         # Draw probe points
         for i,uv in enumerate(self.plotCoords(probe.points)):
             item = self.create_text(uv,
-                        text="%.*f"%(CNC.digits,probe.points[i][2]),
+                        text="%.*f"%(OCV.digits,probe.points[i][2]),
                         tag="Probe",
                         justify=CENTER,
-                        fill=PROBE_TEXT_COLOR)
+                        fill=OCV.PROBE_TEXT_COLOR)
             self.tag_lower(item)
 
         # Draw image map if numpy exists
@@ -1909,9 +1921,9 @@ class CNCCanvas(Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = ENABLE_COLOR
+                        fill = OCV.ENABLE_COLOR
                 else:
-                    fill = DISABLE_COLOR
+                    fill = OCV.DISABLE_COLOR
                 if self.cnc.gcode == 0:
                     if self.draw_rapid:
                         return self.create_line(coords,
@@ -1960,7 +1972,7 @@ class CNCCanvas(Canvas, object):
     # Canvas to real coordinates
     #----------------------------------------------------------------------
     def canvas2xyz(self, i, j):
-        coords = None
+        #coords = None
         if self.view == VIEW_XY:
             x =  i / self.zoom
             y = -j / self.zoom
@@ -2040,10 +2052,6 @@ class CanvasFrame(Frame):
 
     #----------------------------------------------------------------------
     def loadConfig(self):
-        global INSERT_COLOR, GANTRY_COLOR, MARGIN_COLOR, GRID_COLOR
-        global BOX_SELECT, ENABLE_COLOR, DISABLE_COLOR, SELECT_COLOR
-        global SELECT2_COLOR, PROCESS_COLOR, MOVE_COLOR, RULER_COLOR
-        global CAMERA_COLOR, PROBE_TEXT_COLOR, CANVAS_COLOR
         global DRAW_TIME
 
         self.draw_axes.set(    bool(int(Utils.getBool("Canvas", "axes",    True))))
@@ -2058,22 +2066,6 @@ class CanvasFrame(Frame):
         self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
 
         DRAW_TIME     = Utils.getInt("Canvas", "drawtime",     DRAW_TIME)
-
-        INSERT_COLOR  = Utils.getStr("Color", "canvas.insert", INSERT_COLOR)
-        GANTRY_COLOR  = Utils.getStr("Color", "canvas.gantry", GANTRY_COLOR)
-        MARGIN_COLOR  = Utils.getStr("Color", "canvas.margin", MARGIN_COLOR)
-        GRID_COLOR    = Utils.getStr("Color", "canvas.grid",   GRID_COLOR)
-        BOX_SELECT    = Utils.getStr("Color", "canvas.selectbox",BOX_SELECT)
-        ENABLE_COLOR  = Utils.getStr("Color", "canvas.enable", ENABLE_COLOR)
-        DISABLE_COLOR = Utils.getStr("Color", "canvas.disable",DISABLE_COLOR)
-        SELECT_COLOR  = Utils.getStr("Color", "canvas.select", SELECT_COLOR)
-        SELECT2_COLOR = Utils.getStr("Color", "canvas.select2",SELECT2_COLOR)
-        PROCESS_COLOR = Utils.getStr("Color", "canvas.process",PROCESS_COLOR)
-        MOVE_COLOR    = Utils.getStr("Color", "canvas.move",   MOVE_COLOR)
-        RULER_COLOR   = Utils.getStr("Color", "canvas.ruler",  RULER_COLOR)
-        CAMERA_COLOR  = Utils.getStr("Color", "canvas.camera", CAMERA_COLOR)
-        PROBE_TEXT_COLOR = Utils.getStr("Color", "canvas.probetext",  PROBE_TEXT_COLOR)
-        CANVAS_COLOR  = Utils.getStr("Color", "canvas.background", CANVAS_COLOR)
 
     #----------------------------------------------------------------------
     def saveConfig(self):
@@ -2342,3 +2334,144 @@ class CanvasFrame(Frame):
         except ValueError:
             DRAW_TIME = 5*60
         self.viewChange()
+
+
+class CanvasTooltip:
+    '''
+    It creates a tooltip for a given canvas tag or id as the mouse is
+    above it.
+
+    This class has been derived from the original Tooltip class I updated
+    and posted back to StackOverflow at the following link:
+
+    https://stackoverflow.com/questions/3221956/
+           what-is-the-simplest-way-to-make-tooltips-in-tkinter/
+           41079350#41079350
+
+    Alberto Vassena on 2016.12.10.
+
+    usage:
+
+    tooltips[]
+
+    tooltip = CanvasTooltip(self, id_, text=text)
+
+    self.tooltips.append(tooltip)
+
+    '''
+
+    def __init__(self, canvas, tag_or_id,
+                 bg='#FFFFEA',
+                 pad=(5, 3, 5, 3),
+                 text='canvas info',
+                 waittime=400,
+                 wraplength=250):
+        self.waittime = waittime  # in miliseconds, originally 500
+        self.wraplength = wraplength  # in pixels, originally 180
+        self.canvas = canvas
+        self.text = text
+        self.canvas.tag_bind(tag_or_id, "<Enter>", self.onEnter)
+        self.canvas.tag_bind(tag_or_id, "<Leave>", self.onLeave)
+        self.canvas.tag_bind(tag_or_id, "<ButtonPress>", self.onLeave)
+        self.bg = bg
+        self.pad = pad
+        self.id = None
+        self.tw = None
+
+    def onEnter(self, event=None):
+        self.schedule()
+
+    def onLeave(self, event=None):
+        self.unschedule()
+        self.hide()
+
+    def schedule(self):
+        self.unschedule()
+        self.id = self.canvas.after(self.waittime, self.show)
+
+    def unschedule(self):
+        id_ = self.id
+        self.id = None
+        if id_:
+            self.canvas.after_cancel(id_)
+
+    def show(self, event=None):
+        def tip_pos_calculator(canvas, label,
+                               tip_delta=(10, 5), pad=(5, 3, 5, 3)):
+
+            c = canvas
+
+            s_width, s_height = c.winfo_screenwidth(), c.winfo_screenheight()
+
+            width, height = (pad[0] + label.winfo_reqwidth() + pad[2],
+                             pad[1] + label.winfo_reqheight() + pad[3])
+
+            mouse_x, mouse_y = c.winfo_pointerxy()
+
+            x1, y1 = mouse_x + tip_delta[0], mouse_y + tip_delta[1]
+            x2, y2 = x1 + width, y1 + height
+
+            x_delta = x2 - s_width
+            if x_delta < 0:
+                x_delta = 0
+            y_delta = y2 - s_height
+            if y_delta < 0:
+                y_delta = 0
+
+            offscreen = (x_delta, y_delta) != (0, 0)
+
+            if offscreen:
+
+                if x_delta:
+                    x1 = mouse_x - tip_delta[0] - width
+
+                if y_delta:
+                    y1 = mouse_y - tip_delta[1] - height
+
+            offscreen_again = y1 < 0  # out on the top
+
+            if offscreen_again:
+                # No further checks will be done.
+
+                # TIP:
+                # A further mod might automagically augment the
+                # wraplength when the tooltip is too high to be
+                # kept inside the screen.
+                y1 = 0
+
+            return x1, y1
+
+        bg = self.bg
+        pad = self.pad
+        canvas = self.canvas
+
+        # creates a toplevel window
+        self.tw = Tkinter.Toplevel(canvas.master)
+
+        # Leaves only the label and removes the app window
+        self.tw.wm_overrideredirect(True)
+
+        win = Tkinter.Frame(self.tw,
+                       background=bg,
+                       borderwidth=0)
+        label = Tkinter.Label(win,
+                          text=self.text,
+                          justify=Tkinter.LEFT,
+                          background=bg,
+                          relief=Tkinter.SOLID,
+                          borderwidth=0,
+                          wraplength=self.wraplength)
+
+        label.grid(padx=(pad[0], pad[2]),
+                   pady=(pad[1], pad[3]),
+                   sticky=Tkinter.NSEW)
+        win.grid()
+
+        x, y = tip_pos_calculator(canvas, label)
+
+        self.tw.wm_geometry("+%d+%d" % (x, y))
+
+    def hide(self):
+        if self.tw:
+            self.tw.destroy()
+        self.tw = None

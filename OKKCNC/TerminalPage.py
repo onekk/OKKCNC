@@ -15,6 +15,7 @@ try:
 except ImportError:
     from tkinter import *
 
+import OCV
 import Utils
 import Ribbon
 import tkExtra
@@ -33,7 +34,7 @@ class TerminalGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["clean32"],
                 text=_("Clear"),
                 compound=TOP,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.pack(fill=BOTH, expand=YES)
         tkExtra.Balloon.set(b, _("Clear terminal"))
 
@@ -62,7 +63,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 state=state,
                 command=self.app.viewSettings,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$$ Display settings of Grbl"))
         if state == NORMAL: self.addWidget(b)
@@ -74,7 +75,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=self.app.viewParameters,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$# Display parameters of Grbl"))
         self.addWidget(b)
@@ -86,7 +87,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=self.app.viewState,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$G Display state of Grbl"))
         self.addWidget(b)
@@ -100,7 +101,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=self.app.viewBuild,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$I Display build information of Grbl"))
         self.addWidget(b)
@@ -113,7 +114,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 state=state,
                 command=self.app.viewStartup,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$N Display startup configuration of Grbl"))
         if state == NORMAL: self.addWidget(b)
@@ -127,7 +128,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 state=state,
                 command=self.app.checkGcode,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$C Enable/Disable checking of gcode"))
         if state == NORMAL: self.addWidget(b)
@@ -141,7 +142,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=self.app.grblHelp,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$ Display build information of Grbl"))
         self.addWidget(b)

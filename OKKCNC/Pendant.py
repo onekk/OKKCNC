@@ -19,7 +19,7 @@ import urllib
 import tempfile
 import threading
 
-from CNC import CNC
+import OCV
 from Utils import prgpath
 
 try:
@@ -98,7 +98,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
 		elif page == "/state":
 			tmp = {}
 			for name in ["controller", "state", "pins", "color", "msg", "wx", "wy", "wz", "G", "OvFeed", "OvRapid", "OvSpindle"]:
-				tmp[name] = CNC.vars[name]
+				tmp[name] = OCV.CD[name]
 			contentToSend = json.dumps(tmp)
 			self.do_HEAD(200, content="text/text", cl=len(contentToSend))
 			self.wfile.write(contentToSend)

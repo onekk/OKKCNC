@@ -30,6 +30,7 @@ try:
 except ImportError:
     from queue import *
 
+import OCV
 from CNC import WAIT, MSG, UPDATE, WCS, CNC, GCode
 import Utils
 import Pendant
@@ -152,7 +153,7 @@ class Sender:
         #print("Activating motion controller plugin: %s"%(ctl))
         if ctl in self.controllers.keys():
             self.controller = ctl
-            CNC.vars["controller"] = ctl
+            OCV.CD["controller"] = ctl
             self.mcontrol = self.controllers[ctl]
             #self.mcontrol.test()
 
@@ -281,9 +282,9 @@ class Sender:
 
         # SAFE [z]: safe z to move
         elif cmd=="SAFE":
-            try: CNC.vars["safe"] = float(line[1])
+            try: OCV.CD["safe"] = float(line[1])
             except: pass
-            self.statusbar["text"] = "Safe Z= %g"%(CNC.vars["safe"])
+            self.statusbar["text"] = "Safe Z= %g"%(OCV.CD["safe"])
 
         # SA*VE [filename]: save to filename or to default name
         elif rexx.abbrev("SAVE",cmd,2):
@@ -478,10 +479,10 @@ class Sender:
         except IOError:
             pass
         time.sleep(1)
-        CNC.vars["state"] = CONNECTED
-        CNC.vars["color"] = STATECOLOR[CNC.vars["state"]]
-        #self.state.config(text=CNC.vars["state"],
-        #        background=CNC.vars["color"])
+        OCV.CD["state"] = CONNECTED
+        OCV.CD["color"] = STATECOLOR[OCV.CD["state"]]
+        #self.state.config(text=OCV.CD["state"],
+        #        background=OCV.CD["color"])
         # toss any data already received, see
         # http://pyserial.sourceforge.net/pyserial_api.html#serial.Serial.flushInput
         self.serial.flushInput()
@@ -514,8 +515,8 @@ class Sender:
         except:
             pass
         self.serial = None
-        CNC.vars["state"] = NOT_CONNECTED
-        CNC.vars["color"] = STATECOLOR[CNC.vars["state"]]
+        OCV.CD["state"] = NOT_CONNECTED
+        OCV.CD["color"] = STATECOLOR[OCV.CD["state"]]
 
     #----------------------------------------------------------------------
     # Send to controller a gcode or command
@@ -594,7 +595,7 @@ class Sender:
         if self.running:
             self.log.put((Sender.MSG_RUNEND,_("Run ended")))
             self.log.put((Sender.MSG_RUNEND, str(datetime.now())))
-            self.log.put((Sender.MSG_RUNEND, str(CNC.vars["msg"])))
+            self.log.put((Sender.MSG_RUNEND, str(OCV.CD["msg"])))
             if self._onStop:
                 try:
                     os.system(self._onStop)
@@ -605,7 +606,7 @@ class Sender:
         self._msg      = None
         self._pause    = False
         self.running   = False
-        CNC.vars["running"] = False
+        OCV.CD["running"] = False
 
 
     #----------------------------------------------------------------------
@@ -661,7 +662,7 @@ class Sender:
                 tr = t
 
                 #If Override change, attach feed
-                if CNC.vars["_OvChanged"]:
+                if OCV.CD["_OvChanged"]:
                     self.mcontrol.overrideSet()
 
             # Fetch new command to send if...
@@ -726,15 +727,15 @@ class Sender:
 
                     # Modify sent g-code to reflect overrided feed for controllers without override support
                     if not self.mcontrol.has_override:
-                        if CNC.vars["_OvChanged"]:
-                            CNC.vars["_OvChanged"] = False
-                            self._newFeed = float(self._lastFeed)*CNC.vars["_OvFeed"]/100.0
+                        if OCV.CD["_OvChanged"]:
+                            OCV.CD["_OvChanged"] = False
+                            self._newFeed = float(self._lastFeed)*OCV.CD["_OvFeed"]/100.0
                             if pat is None and self._newFeed!=0 \
                                and not tosend.startswith("$"):
                                 tosend = "f%g%s" % (self._newFeed, tosend)
 
                         # Apply override Feed
-                        if CNC.vars["_OvFeed"] != 100 and self._newFeed != 0:
+                        if OCV.CD["_OvFeed"] != 100 and self._newFeed != 0:
                             pat = FEEDPAT.match(tosend)
                             if pat is not None:
                                 try:

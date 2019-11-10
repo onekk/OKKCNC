@@ -22,6 +22,8 @@ from operator import attrgetter
 import os
 import time
 import glob
+
+import OCV
 import Utils
 import Ribbon
 import tkExtra
@@ -29,7 +31,7 @@ import tkExtra
 import Unicode
 import CNCRibbon
 
-from CNC import CNC
+#from CNC import CNC
 
 _EXE_FONT = ("Helvetica",12,"bold")
 
@@ -770,9 +772,9 @@ class Controller(_Base):
             v = self[n]
             try:
                 if t=="float":
-                    if v == float(CNC.vars[n]): continue
+                    if v == float(OCV.CD[n]): continue
                 else:
-                    if v == int(CNC.vars[n]): continue
+                    if v == int(OCV.CD[n]): continue
             except:
                 continue
             lines.append("$%s=%s"%(n[5:],str(v)))
@@ -791,9 +793,9 @@ class Controller(_Base):
             n, t, d, l = var[:4]
             try:
                 if t=="float":
-                    self.values[n] = float(CNC.vars[n])
+                    self.values[n] = float(OCV.CD[n])
                 else:
-                    self.values[n] = int(CNC.vars[n])
+                    self.values[n] = int(OCV.CD[n])
             except KeyError:
                 pass
         _Base.populate(self)
@@ -946,7 +948,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Stock",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=2, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Stock material currently on machine"))
         self.addWidget(b)
@@ -960,7 +962,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Material",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Editable database of material properties"))
         self.addWidget(b)
@@ -974,7 +976,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="EndMill",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Editable database of EndMills properties"))
         self.addWidget(b)
@@ -986,7 +988,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Rename"),
                 compound=LEFT,
                 anchor=W,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Edit name of current operation/object"))
         self.addWidget(b)
@@ -999,7 +1001,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Add"),
                 compound=LEFT,
                 anchor=W,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Add a new operation/object"))
         self.addWidget(b)
@@ -1012,7 +1014,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Clone"),
                 compound=LEFT,
                 anchor=W,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Clone selected operation/object"))
         self.addWidget(b)
@@ -1025,7 +1027,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Delete"),
                 compound=LEFT,
                 anchor=W,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Delete selected operation/object"))
         self.addWidget(b)
@@ -1045,7 +1047,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         f = Frame(self.frame)
         f.grid(row=row, column=col, columnspan=3, padx=0, pady=0, sticky=NSEW)
 
-        b = Label(f, image=Utils.icons["globe"], background=Ribbon._BACKGROUND)
+        b = Label(f, image=Utils.icons["globe"], background=OCV.BACKGROUND)
         b.pack(side=LEFT)
 
         self.language = Ribbon.LabelCombobox(f,
@@ -1066,7 +1068,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Camera",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Camera Configuration"))
         self.addWidget(b)
@@ -1080,7 +1082,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Color",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Color configuration"))
         self.addWidget(b)
@@ -1094,7 +1096,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="CNC",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Machine configuration for bCNC"))
         self.addWidget(b)
@@ -1108,7 +1110,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Controller",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Controller (GRBL) configuration"))
         self.addWidget(b)
@@ -1122,7 +1124,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Font",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Font configuration"))
         self.addWidget(b)
@@ -1136,7 +1138,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 anchor=W,
                 variable=app.tools.active,
                 value="Shortcut",
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Shortcuts configuration"))
         self.addWidget(b)
@@ -1150,7 +1152,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #                anchor=W,
 #                variable=app.tools.active,
 #                value="Events",
-#                background=Ribbon._BACKGROUND)
+#                background=OCV.BACKGROUND)
 #        b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
 #        tkExtra.Balloon.set(b, _("Events configuration"))
 #        self.addWidget(b)

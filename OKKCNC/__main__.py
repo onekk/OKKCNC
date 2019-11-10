@@ -46,6 +46,7 @@ sys.path.append(os.path.join(PRGPATH, 'controllers'))
 # Load configuration before anything else
 # and if needed replace the  translate function _()
 # before any string is initialized
+import OCV
 import Utils
 Utils.loadConfiguration()
 
@@ -459,8 +460,8 @@ class Application(Toplevel,Sender):
         self.canvasFrame.canvas.focus_set()
 
         # Fill basic global variables
-        CNC.vars["state"] = NOT_CONNECTED
-        CNC.vars["color"] = STATECOLOR[NOT_CONNECTED]
+        OCV.CD["state"] = NOT_CONNECTED
+        OCV.CD["color"] = STATECOLOR[NOT_CONNECTED]
         self._pendantFileUploaded = None
         self._drawAfter = None    # after handle for modification
         self._inFocus    = False
@@ -660,8 +661,23 @@ class Application(Toplevel,Sender):
         Ribbon._FONT    = Utils.getFont("ribbon.label", Ribbon._FONT)
         Ribbon._TABFONT = Utils.getFont("ribbon.tab",    Ribbon._TABFONT)
 
-        Ribbon._ACTIVE_COLOR       = Utils.getStr("Color", "ribbon.active", Ribbon._ACTIVE_COLOR)
-        Ribbon._LABEL_SELECT_COLOR = Utils.getStr("Color", "ribbon.select", Ribbon._LABEL_SELECT_COLOR)
+        OCV.ACTIVE_COLOR       = Utils.getStr("Color", "ribbon.active", OCV.ACTIVE_COLOR)
+        OCV.LABEL_SELECT_COLOR = Utils.getStr("Color", "ribbon.select", OCV.LABEL_SELECT_COLOR)
+        OCV.INSERT_COLOR  = Utils.getStr("Color", "canvas.insert", OCV.INSERT_COLOR)
+        OCV.GANTRY_COLOR  = Utils.getStr("Color", "canvas.gantry", OCV.GANTRY_COLOR)
+        OCV.MARGIN_COLOR  = Utils.getStr("Color", "canvas.margin", OCV.MARGIN_COLOR)
+        OCV.GRID_COLOR    = Utils.getStr("Color", "canvas.grid",   OCV.GRID_COLOR)
+        OCV.BOX_SELECT    = Utils.getStr("Color", "canvas.selectbox", OCV.BOX_SELECT)
+        OCV.ENABLE_COLOR  = Utils.getStr("Color", "canvas.enable", OCV.ENABLE_COLOR)
+        OCV.DISABLE_COLOR = Utils.getStr("Color", "canvas.disable", OCV.DISABLE_COLOR)
+        OCV.SELECT_COLOR  = Utils.getStr("Color", "canvas.select", OCV.SELECT_COLOR)
+        OCV.SELECT2_COLOR = Utils.getStr("Color", "canvas.select2", OCV.SELECT2_COLOR)
+        OCV.PROCESS_COLOR = Utils.getStr("Color", "canvas.process", OCV.PROCESS_COLOR)
+        OCV.MOVE_COLOR    = Utils.getStr("Color", "canvas.move", OCV.MOVE_COLOR)
+        OCV.RULER_COLOR   = Utils.getStr("Color", "canvas.ruler", OCV.RULER_COLOR)
+        OCV.CAMERA_COLOR  = Utils.getStr("Color", "canvas.camera", OCV.CAMERA_COLOR)
+        OCV.PROBE_TEXT_COLOR = Utils.getStr("Color", "canvas.probetext", OCV.PROBE_TEXT_COLOR)
+        OCV.CANVAS_COLOR  = Utils.getStr("Color", "canvas.background", OCV.CANVAS_COLOR)
 
         self.tools.loadConfig()
         Sender.loadConfig(self)
@@ -950,7 +966,7 @@ class Application(Toplevel,Sender):
         toplevel.transient(self)
         toplevel.title(_("Statistics"))
 
-        if CNC.inch:
+        if OCV.inch:
             unit = "in"
         else:
             unit = "mm"
@@ -976,8 +992,8 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["xmin"], CNC.vars["xmax"],
-             CNC.vars["xmax"] -CNC.vars["xmin"],
+            (OCV.CD["xmin"], OCV.CD["xmax"],
+             OCV.CD["xmax"] -OCV.CD["xmin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -987,8 +1003,8 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["ymin"], CNC.vars["ymax"],
-             CNC.vars["ymax"] -CNC.vars["ymin"],
+            (OCV.CD["ymin"], OCV.CD["ymax"],
+             OCV.CD["ymax"] -OCV.CD["ymin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -998,8 +1014,8 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["zmin"], CNC.vars["zmax"],
-             CNC.vars["zmax"] -CNC.vars["zmin"],
+            (OCV.CD["zmin"], OCV.CD["zmax"],
+             OCV.CD["zmax"] -OCV.CD["zmin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -1049,8 +1065,8 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["axmin"], CNC.vars["axmax"],
-             CNC.vars["axmax"] -CNC.vars["axmin"],
+            (OCV.CD["axmin"], OCV.CD["axmax"],
+             OCV.CD["axmax"] -OCV.CD["axmin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -1060,8 +1076,8 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["aymin"], CNC.vars["aymax"],
-             CNC.vars["aymax"] -CNC.vars["aymin"],
+            (OCV.CD["aymin"], OCV.CD["aymax"],
+             OCV.CD["aymax"] -OCV.CD["aymin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -1071,8 +1087,8 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="%g .. %g [%g] %s" % \
-            (CNC.vars["azmin"], CNC.vars["azmax"],
-             CNC.vars["azmax"] -CNC.vars["azmin"],
+            (OCV.CD["azmin"], OCV.CD["azmax"],
+             OCV.CD["azmax"] -OCV.CD["azmin"],
              unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
@@ -1370,10 +1386,10 @@ class Application(Toplevel,Sender):
         # FEED on/off: append feed commands on every motion line for feed override testing
         elif cmd=="FEED":
             try:
-                CNC.appendFeed = (line[1].upper()=="ON")
+                OCV.appendFeed = (line[1].upper()=="ON")
             except:
-                CNC.appendFeed = True
-            self.setStatus(CNC.appendFeed and \
+                OCV.appendFeed = True
+            self.setStatus(OCV.appendFeed and \
                 "Feed appending turned on" or \
                 "Feed appending turned off")
 
@@ -1473,40 +1489,40 @@ class Application(Toplevel,Sender):
             line1 = line[1].upper()
             dz = 0.0
             if rexx.abbrev("CENTER",line1,2):
-                dx = -(CNC.vars["xmin"] + CNC.vars["xmax"])/2.0
-                dy = -(CNC.vars["ymin"] + CNC.vars["ymax"])/2.0
+                dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
+                dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
             elif line1=="BL":
-                dx = -CNC.vars["xmin"]
-                dy = -CNC.vars["ymin"]
+                dx = -OCV.CD["xmin"]
+                dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
             elif line1=="BC":
-                dx = -(CNC.vars["xmin"] + CNC.vars["xmax"])/2.0
-                dy = -CNC.vars["ymin"]
+                dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
+                dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
             elif line1=="BR":
-                dx = -CNC.vars["xmax"]
-                dy = -CNC.vars["ymin"]
+                dx = -OCV.CD["xmax"]
+                dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
             elif line1=="TL":
-                dx = -CNC.vars["xmin"]
-                dy = -CNC.vars["ymax"]
+                dx = -OCV.CD["xmin"]
+                dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
             elif line1=="TC":
-                dx = -(CNC.vars["xmin"] + CNC.vars["xmax"])/2.0
-                dy = -CNC.vars["ymax"]
+                dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
+                dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
             elif line1=="TR":
-                dx = -CNC.vars["xmax"]
-                dy = -CNC.vars["ymax"]
+                dx = -OCV.CD["xmax"]
+                dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
             elif line1=="LC":
-                dx = -CNC.vars["xmin"]
-                dy = -(CNC.vars["ymin"] + CNC.vars["ymax"])/2.0
+                dx = -OCV.CD["xmin"]
+                dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
             elif line1=="RC":
-                dx = -CNC.vars["xmax"]
-                dy = -(CNC.vars["ymin"] + CNC.vars["ymax"])/2.0
+                dx = -OCV.CD["xmax"]
+                dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
             elif line1 in ("UP","DOWN"):
                 dx = line1
@@ -2100,7 +2116,7 @@ class Application(Toplevel,Sender):
         self.cleanAfter = True    #Clean when this operation stops
         print("Will clean after this operation")
 
-        if self.serial is None and not CNC.developer:
+        if self.serial is None and not OCV.developer:
             tkMessageBox.showerror(_("Serial Error"),
                 _("Serial is not connected"),
                 parent=self)
@@ -2116,7 +2132,7 @@ class Application(Toplevel,Sender):
 
         self.editor.selectClear()
         self.selectionChange()
-        CNC.vars["errline"] = ""
+        OCV.CD["errline"] = ""
 
         # the buffer of the machine should be empty?
         self.initRun()
@@ -2127,8 +2143,8 @@ class Application(Toplevel,Sender):
         self._gcount   = 0        # count executed lines
         self._selectI  = 0        # last selection pointer in items
         self._paths    = None        # temporary
-        CNC.vars["running"]    = True    # enable running status
-        CNC.vars["_OvChanged"] = True    # force a feed change if any
+        OCV.CD["running"]    = True    # enable running status
+        OCV.CD["_OvChanged"] = True    # force a feed change if any
         if self._onStart:
             try:
                 os.system(self._onStart)
@@ -2169,11 +2185,11 @@ class Application(Toplevel,Sender):
                 path = self.gcode[ij[0]].path(ij[1])
                 if path:
                     color = self.canvasFrame.canvas.itemcget(path, "fill")
-                    if color != CNCCanvas.ENABLE_COLOR:
+                    if color != OCV.ENABLE_COLOR:
                         self.canvasFrame.canvas.itemconfig(
                             path,
                             width=1,
-                            fill=CNCCanvas.ENABLE_COLOR)
+                            fill=OCV.ENABLE_COLOR)
                     # Force a periodic update since this loop can take time
                     if time.time() - before > 0.25:
                         self.update()
@@ -2322,24 +2338,24 @@ class Application(Toplevel,Sender):
 
         # Update position if needed
         if self._posUpdate:
-            state = CNC.vars["state"]
+            state = OCV.CD["state"]
             #print Sender.ERROR_CODES[state]
             try:
-                CNC.vars["color"] = STATECOLOR[state]
+                OCV.CD["color"] = STATECOLOR[state]
             except KeyError:
                 if self._alarm:
-                    CNC.vars["color"] = STATECOLOR["Alarm"]
+                    OCV.CD["color"] = STATECOLOR["Alarm"]
                 else:
-                    CNC.vars["color"] = STATECOLORDEF
+                    OCV.CD["color"] = STATECOLORDEF
             self._pause = ("Hold" in state)
             self.dro.updateState()
             self.dro.updateCoords()
-            self.canvasFrame.canvas.gantry(CNC.vars["wx"],
-                       CNC.vars["wy"],
-                       CNC.vars["wz"],
-                       CNC.vars["mx"],
-                       CNC.vars["my"],
-                       CNC.vars["mz"])
+            self.canvasFrame.canvas.gantry(OCV.CD["wx"],
+                       OCV.CD["wy"],
+                       OCV.CD["wz"],
+                       OCV.CD["mx"],
+                       OCV.CD["my"],
+                       OCV.CD["mz"])
             if state=="Run":
                 self.gstate.updateFeed()
                 #self.xxx.updateSpindle()
@@ -2368,7 +2384,7 @@ class Application(Toplevel,Sender):
         if self.running:
             self.statusbar.setProgress(self._runLines-self.queue.qsize(),
                         self._gcount)
-            CNC.vars["msg"] = self.statusbar.msg
+            OCV.CD["msg"] = self.statusbar.msg
             self.bufferbar.setProgress(Sender.getBufferFill(self))
             self.bufferbar.setText("%i%%"%Sender.getBufferFill(self))
 
@@ -2380,7 +2396,7 @@ class Application(Toplevel,Sender):
                         if path:
                             self.canvasFrame.canvas.itemconfig(path,
                                 width=2,
-                                fill=CNCCanvas.PROCESS_COLOR)
+                                fill=OCV.PROCESS_COLOR)
                     self._selectI += 1
 
             if self._gcount >= self._runLines:
@@ -2473,9 +2489,9 @@ def main(args=None):
             Utils.iniUser = val
             Utils.loadConfiguration()
         elif opt == "-d":
-            CNC.developer = True
+            OCV.developer = True
         elif opt == "-D":
-            CNC.developer = False
+            OCV.developer = False
         elif opt == "-g":
             geometry = val
         elif opt in ("-r", "-R", "--recent", "-l", "--list"):

@@ -14,29 +14,12 @@ try:
 except ImportError:
     from tkinter import *
 
+import OCV
 import Utils
 import tkExtra
 
 _TABFONT    = ("Sans","-14","bold")
 _FONT       = ("Sans","-11")
-
-#_BACKGROUND_DISABLE = "#D6D2D0"
-#_BACKGROUND         = "White"
-#_BACKGROUND_GROUP   = "LightGray"
-#_BACKGROUND_GROUP2  = "#D0E0E0"
-#_FOREGROUND_GROUP   = "Black"
-
-_BACKGROUND_DISABLE = "#A6A2A0"
-_BACKGROUND         = "#E6E2E0"
-_BACKGROUND_GROUP   = "#B6B2B0"
-
-_BACKGROUND_GROUP2  = "#B0C0C0"
-_BACKGROUND_GROUP3  = "#A0C0A0"
-_BACKGROUND_GROUP4  = "#B0C0A0"
-
-_FOREGROUND_GROUP   = "White"
-_ACTIVE_COLOR       = "LightYellow"
-_LABEL_SELECT_COLOR = "#C0FFC0"
 
 # Ribbon show state
 RIBBON_HIDDEN =  0    # Hidden
@@ -52,19 +35,19 @@ class LabelGroup(Frame):
         Frame.__init__(self, master, **kw)
         self.name = name
         self.config(    #bg="Green",
-                background=_BACKGROUND,
+                background=OCV.BACKGROUND,
                 borderwidth=0,
                 highlightthickness=0,
                 pady=0)
 
         # right frame as a separator
-        f = Frame(self, borderwidth=2, relief=GROOVE, background=_BACKGROUND_DISABLE)
+        f = Frame(self, borderwidth=2, relief=GROOVE, background=OCV.BACKGROUND_DISABLE)
         f.pack(side=RIGHT, fill=Y, padx=0, pady=0)
 
         # frame to insert the buttons
         self.frame = Frame(self,
                 #bg="Orange",
-                background=_BACKGROUND,
+                background=OCV.BACKGROUND,
                 padx=0,
                 pady=0)
         self.frame.pack(side=TOP, expand=TRUE, fill=BOTH, padx=0, pady=0)
@@ -73,8 +56,8 @@ class LabelGroup(Frame):
             self.label = LabelButton(self, self, "<<%s>>"%(name), text=name)
             self.label.config(command=command,
                 image=Utils.icons["triangle_down"],
-                foreground=_FOREGROUND_GROUP,
-                background=_BACKGROUND_GROUP,
+                foreground=OCV.FOREGROUND_GROUP,
+                background=OCV.BACKGROUND_GROUP,
                 highlightthickness=0,
                 borderwidth=0,
                 pady=0,
@@ -82,8 +65,8 @@ class LabelGroup(Frame):
         else:
             self.label = Label(self, text=_(name),
                     font       = _FONT,
-                    foreground = _FOREGROUND_GROUP,
-                    background = _BACKGROUND_GROUP,
+                    foreground = OCV.FOREGROUND_GROUP,
+                    background = OCV.BACKGROUND_GROUP,
                     padx=2,
                     pady=0)    # Button takes 1px for border width
         self.label.pack(side=BOTTOM, fill=X, pady=0)
@@ -110,7 +93,7 @@ class _KeyboardFocus:
     #-----------------------------------------------------------------------
     def _focusIn(self, event):
         self.__backgroundColor = self.cget("background")
-        self.config(background = _ACTIVE_COLOR)
+        self.config(background = OCV.ACTIVE_COLOR)
 
     #-----------------------------------------------------------------------
     def _focusOut(self, event):
@@ -128,7 +111,7 @@ class LabelButton(Button, _KeyboardFocus):
     def __init__(self, master, recipient=None, event=None, **kw):
         Button.__init__(self, master, **kw)
         self.config(    relief           = FLAT,
-                activebackground = _ACTIVE_COLOR,
+                activebackground = OCV.ACTIVE_COLOR,
                 font             = _FONT,
                 borderwidth      = 1,
                 highlightthickness = 0,
@@ -152,9 +135,9 @@ class LabelButton(Button, _KeyboardFocus):
 class LabelCheckbutton(Checkbutton, _KeyboardFocus):
     def __init__(self, master, **kw):
         Checkbutton.__init__(self, master, **kw)
-        self.config(    selectcolor        = _LABEL_SELECT_COLOR,
-                activebackground   = _ACTIVE_COLOR,
-                background         = _BACKGROUND,
+        self.config(    selectcolor        = OCV.LABEL_SELECT_COLOR,
+                activebackground   = OCV.ACTIVE_COLOR,
+                background         = OCV.BACKGROUND,
                 indicatoron        = FALSE,
                 relief             = FLAT,
                 borderwidth        = 0,
@@ -171,9 +154,9 @@ class LabelRadiobutton(Radiobutton, _KeyboardFocus):
     def __init__(self, master, **kw):
         Radiobutton.__init__(self, master, **kw)
         self.config(
-            selectcolor        = _LABEL_SELECT_COLOR,
-            activebackground   = _ACTIVE_COLOR,
-            background         = _BACKGROUND,
+            selectcolor        = OCV.LABEL_SELECT_COLOR,
+            activebackground   = OCV.ACTIVE_COLOR,
+            background         = OCV.BACKGROUND,
             indicatoron        = FALSE,
             borderwidth        = 0,
             highlightthickness = 0,
@@ -187,14 +170,14 @@ class LabelRadiobutton(Radiobutton, _KeyboardFocus):
 class LabelCombobox(tkExtra.Combobox, _KeyboardFocus):
     def __init__(self, master, **kw):
         tkExtra.Combobox.__init__(self, master, **kw)
-        self.config(background=_BACKGROUND, font=_FONT)
-        Frame.config(self, background=_BACKGROUND, padx=0, pady=0)
+        self.config(background=OCV.BACKGROUND, font=_FONT)
+        Frame.config(self, background=OCV.BACKGROUND, padx=0, pady=0)
         _KeyboardFocus._bind(self)
 
     #-----------------------------------------------------------------------
     def _focusOut(self, event):
-        self.config(background = _BACKGROUND) #self.__backgroundColor)
-        Frame.config(self, background= _BACKGROUND) #self.__backgroundColor)
+        self.config(background = OCV.BACKGROUND) #self.__backgroundColor)
+        Frame.config(self, background= OCV.BACKGROUND) #self.__backgroundColor)
 
 
 #===============================================================================
@@ -204,7 +187,7 @@ class MenuButton(Button, _KeyboardFocus):
     def __init__(self, master, menulist, **kw):
         Button.__init__(self, master, **kw)
         self.config(    relief           = FLAT,
-                activebackground = _ACTIVE_COLOR,
+                activebackground = OCV.ACTIVE_COLOR,
                 font             = _FONT,
                 borderwidth      = 0,
                 highlightthickness= 0,
@@ -240,7 +223,7 @@ class MenuButton(Button, _KeyboardFocus):
     #-----------------------------------------------------------------------
     @staticmethod
     def createMenuFromList(master, menulist):
-        mainmenu = menu = Menu(master, tearoff=0, activebackground=_ACTIVE_COLOR)
+        mainmenu = menu = Menu(master, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
         for item in menulist:
             if item is None:
                 menu.add_separator()
@@ -295,8 +278,8 @@ class MenuGroup(LabelGroup):
 class TabButton(Radiobutton):
     def __init__(self, master, **kw):
         Radiobutton.__init__(self, master, **kw)
-        self.config(    selectcolor        = _BACKGROUND,
-                activebackground   = _ACTIVE_COLOR,
+        self.config(selectcolor   = OCV.BACKGROUND,
+                activebackground   = OCV.ACTIVE_COLOR,
                 indicatoron        = FALSE,
                 relief             = FLAT,
                 font               = _TABFONT,
@@ -304,7 +287,7 @@ class TabButton(Radiobutton):
                 highlightthickness = 0,
                 padx               = 5,
                 pady               = 0,
-                background         = _BACKGROUND_DISABLE
+                background         = OCV.BACKGROUND_DISABLE
             )
         self.bind("<FocusIn>",        self._focusIn)
         self.bind("<FocusOut>",        self._focusOut)
@@ -325,11 +308,11 @@ class TabButton(Radiobutton):
 
     #----------------------------------------------------------------------
     def _focusIn(self, evenl=None):
-        self.config(selectcolor = _ACTIVE_COLOR)
+        self.config(selectcolor = OCV.ACTIVE_COLOR)
 
     #----------------------------------------------------------------------
     def _focusOut(self, evenl=None):
-        self.config(selectcolor = _BACKGROUND)
+        self.config(selectcolor = OCV.BACKGROUND)
 
 
 #===============================================================================
@@ -504,7 +487,7 @@ class Page:        # <--- should be possible to be a toplevel as well
 class TabRibbonFrame(Frame):
     def __init__(self, master, **kw):
         Frame.__init__(self, master, kw)
-        self.config(background=_BACKGROUND_DISABLE)
+        self.config(background=OCV.BACKGROUND_DISABLE)
 
         self.oldActive  = None
         self.activePage = StringVar(self)
@@ -512,68 +495,68 @@ class TabRibbonFrame(Frame):
         self.pages      = {}
 
         # === Top frame with buttons ===
-        frame = Frame(self, background=_BACKGROUND_DISABLE)
+        frame = Frame(self, background=OCV.BACKGROUND_DISABLE)
         frame.pack(side=TOP, fill=X)
 
         # --- Basic buttons ---
         b = LabelButton(frame, self, "<<New>>",
                 image=Utils.icons["new"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("New file"))
         b.pack(side=LEFT)
 
         b = LabelButton(frame, self, "<<Open>>",
                 image=Utils.icons["load"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("Open file [Ctrl-O]"))
         b.pack(side=LEFT)
 
         b = LabelButton(frame, self, "<<Save>>",
                 image=Utils.icons["save"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("Save all [Ctrl-S]"))
         b.pack(side=LEFT)
 
         b = LabelButton(frame, self, "<<Undo>>",
                 image=Utils.icons["undo"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("Undo [Ctrl-Z]"))
         b.pack(side=LEFT)
         self.tool["undo"] = b
 
         b = LabelButton(frame, image=Utils.icons["triangle_down"],
                 command=self.undolist,
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         b.pack(side=LEFT)
         self.tool["undolist"] = b
 
         b = LabelButton(frame, self, "<<Redo>>",
                 image=Utils.icons["redo"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("Redo [Ctrl-Y]"))
         b.pack(side=LEFT)
         self.tool["redo"] = b
 
         Label(frame, image=Utils.icons["sep"],
-                background=_BACKGROUND_DISABLE).pack(side=LEFT, padx=3)
+                background=OCV.BACKGROUND_DISABLE).pack(side=LEFT, padx=3)
 
         # --- Help ---
         b = LabelButton(frame, self, "<<Help>>",
                 image=Utils.icons["info"],
-                background=_BACKGROUND_DISABLE)
+                background=OCV.BACKGROUND_DISABLE)
         tkExtra.Balloon.set(b, _("Help [F1]"))
         b.pack(side=RIGHT, padx=2)
 
         Label(frame, image=Utils.icons["sep"],
-                background=_BACKGROUND_DISABLE).pack(side=RIGHT, padx=3)
+                background=OCV.BACKGROUND_DISABLE).pack(side=RIGHT, padx=3)
 
         # --- TabBar ---
-        self._tabFrame = Frame(frame, background=_BACKGROUND_DISABLE)
+        self._tabFrame = Frame(frame, background=OCV.BACKGROUND_DISABLE)
         self._tabFrame.pack(side=LEFT, fill=BOTH, expand=YES)
 
         # ==== Ribbon Frame ====
         self._ribbonFrame = Frame(self,
-                        background=_BACKGROUND,
+                        background=OCV.BACKGROUND,
                         pady=0,
                         relief=RAISED)
         self._ribbonFrame.pack(fill=BOTH, expand=YES, padx=0, pady=0)

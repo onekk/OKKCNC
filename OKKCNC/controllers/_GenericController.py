@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import OCV
 from CNC import CNC, WCS
 import time
 import re
@@ -62,7 +63,7 @@ class _GenericController:
 		self.master.openClose()
 		self.master.stopProbe()
 		self.master._alarm = False
-		CNC.vars["_OvChanged"] = True	# force a feed change if any
+		OCV.CD["_OvChanged"] = True	# force a feed change if any
 		self.master.notBusy()
 
 	#----------------------------------------------------------------------
@@ -71,7 +72,7 @@ class _GenericController:
 			self.master.serial.write(b"\030")
 		self.master.stopProbe()
 		if clearAlarm: self.master._alarm = False
-		CNC.vars["_OvChanged"] = True	# force a feed change if any
+		OCV.CD["_OvChanged"] = True	# force a feed change if any
 
 	#----------------------------------------------------------------------
 	def unlock(self, clearAlarm=True):
@@ -111,7 +112,7 @@ class _GenericController:
 	def _wcsSet(self, x, y, z):
 		#global wcsvar
 		#p = wcsvar.get()
-		p = WCS.index(CNC.vars["WCS"])
+		p = WCS.index(OCV.CD["WCS"])
 		if p<6:
 			cmd = "G10L20P%d"%(p+1)
 		elif p==6:
@@ -168,8 +169,8 @@ class _GenericController:
 		self.master.serial.flush()
 		time.sleep(1)
 		# remember and send all G commands
-		G = " ".join([x for x in CNC.vars["G"] if x[0]=="G"])	# remember $G
-		TLO = CNC.vars["TLO"]
+		G = " ".join([x for x in OCV.CD["G"] if x[0]=="G"])	# remember $G
+		TLO = OCV.CD["TLO"]
 		self.softReset(False)			# reset controller
 		self.purgeControllerExtra()
 		self.master.runEnded()
@@ -199,10 +200,10 @@ class _GenericController:
 			self.master._gcount += 1
 			#print "gcount ERROR=",self._gcount
 			if cline: del cline[0]
-			if sline: CNC.vars["errline"] = sline.pop(0)
+			if sline: OCV.CD["errline"] = sline.pop(0)
 			if not self.master._alarm: self.master._posUpdate = True
 			self.master._alarm = True
-			CNC.vars["state"] = line
+			OCV.CD["state"] = line
 			if self.master.running:
 				self.master._stop = True
 
@@ -221,7 +222,7 @@ class _GenericController:
 			self.master.log.put((self.master.MSG_RECEIVE, line))
 			pat = VARPAT.match(line)
 			if pat:
-				CNC.vars["grbl_%s"%(pat.group(1))] = pat.group(2)
+				OCV.CD["grbl_%s"%(pat.group(1))] = pat.group(2)
 
 		elif line[:4]=="Grbl" or line[:13]=="CarbideMotion": # and self.running:
 			#tg = time.time()
@@ -229,10 +230,10 @@ class _GenericController:
 			self.master._stop = True
 			del cline[:]	# After reset clear the buffer counters
 			del sline[:]
-			CNC.vars["version"] = line.split()[1]
+			OCV.CD["version"] = line.split()[1]
 			# Detect controller
 			if self.master.controller in ("GRBL0", "GRBL1"):
-				self.master.controllerSet("GRBL%d"%(int(CNC.vars["version"][0])))
+				self.master.controllerSet("GRBL%d"%(int(OCV.CD["version"][0])))
 
 		else:
 			#We return false in order to tell that we can't parse this line

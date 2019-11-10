@@ -19,6 +19,7 @@ try:
 except:
     import tkinter.messagebox as tkMessageBox
 
+import OCV
 #import CNC
 from CNC import Block, CNC
 
@@ -41,19 +42,19 @@ def RectPath(x,y,w,h):
 
 def line(self, app, endDepth):
 
-    XStart = min(CNC.vars["memAx"],CNC.vars["memBx"])
-    YStart = min(CNC.vars["memAy"],CNC.vars["memBy"])
+    XStart = min(OCV.CD["memAx"],OCV.CD["memBx"])
+    YStart = min(OCV.CD["memAy"],OCV.CD["memBy"])
 
-    XEnd = max(CNC.vars["memAx"],CNC.vars["memBx"])
-    YEnd = max(CNC.vars["memAy"],CNC.vars["memBy"])
+    XEnd = max(OCV.CD["memAx"],OCV.CD["memBx"])
+    YEnd = max(OCV.CD["memAy"],OCV.CD["memBy"])
 
-    startDepth = CNC.vars["memBz"]
+    startDepth = OCV.CD["memBz"]
 
-    toolDiam = CNC.vars['diameter']
+    toolDiam = OCV.CD['diameter']
     #toolRadius = toolDiam / 2.
-    StepOverInUnitMax = toolDiam * CNC.vars['stepover'] / 100.0
+    StepOverInUnitMax = toolDiam * OCV.CD['stepover'] / 100.0
 
-    ZStepOver = CNC.vars['stepz']
+    ZStepOver = OCV.CD['stepz']
     if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
 
     msg = "Line Cut Operation: \n"
@@ -79,7 +80,7 @@ def line(self, app, endDepth):
     blocks = []
     block =  Block("Init")
     # Get the current WCS as the mem are related to it
-    block.append(CNC.vars['WCS'])
+    block.append(OCV.CD['WCS'])
     blocks.append(block)
 
     block = Block("Line")
@@ -102,7 +103,7 @@ def line(self, app, endDepth):
         currDepth -= ZStepOver
         if currDepth < endDepth : currDepth = endDepth
         block.append(CNC.zenter(currDepth))
-        block.append(CNC.gcode(1, [("f",CNC.vars["cutfeed"])]))
+        block.append(CNC.gcode(1, [("f",OCV.CD["cutfeed"])]))
 
         block.append(CNC.gline(XEnd,YEnd))
 
@@ -127,20 +128,20 @@ def line(self, app, endDepth):
 
 def pocket(self, app, endDepth):
 
-    XStart = min(CNC.vars["memAx"],CNC.vars["memBx"])
-    YStart = min(CNC.vars["memAy"],CNC.vars["memBy"])
+    XStart = min(OCV.CD["memAx"],OCV.CD["memBx"])
+    YStart = min(OCV.CD["memAy"],OCV.CD["memBy"])
 
-    XEnd = max(CNC.vars["memAx"],CNC.vars["memBx"])
-    YEnd = max(CNC.vars["memAy"],CNC.vars["memBy"])
+    XEnd = max(OCV.CD["memAx"],OCV.CD["memBx"])
+    YEnd = max(OCV.CD["memAy"],OCV.CD["memBy"])
 
-    startDepth = CNC.vars["memBz"]
+    startDepth = OCV.CD["memBz"]
 
-    toolDiam = CNC.vars['diameter']
+    toolDiam = OCV.CD['diameter']
     toolRadius = toolDiam / 2.
 
-    StepOverInUnitMax = toolDiam * CNC.vars['stepover'] / 100.0
+    StepOverInUnitMax = toolDiam * OCV.CD['stepover'] / 100.0
 
-    ZStepOver = CNC.vars['stepz']
+    ZStepOver = OCV.CD['stepz']
 
     if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
 
@@ -160,7 +161,7 @@ def pocket(self, app, endDepth):
     blocks = []
     block =  Block("Init")
     # Get the current WCS as the mem are related to it
-    block.append(CNC.vars['WCS'])
+    block.append(OCV.CD['WCS'])
     blocks.append(block)
 
     block = Block("Pocket")
@@ -260,7 +261,7 @@ def pocket(self, app, endDepth):
             if currDepth < endDepth : currDepth = endDepth
 
             block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f",CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode(1, [("f",OCV.CD["cutfeed"])]))
 
             #Pocketing
             for x,y in zip(xP,yP):

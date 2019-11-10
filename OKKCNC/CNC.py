@@ -6,16 +6,18 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os
 import re
 import math
 import types
 
+import OCV
 import undo
 import Unicode
-import pickle
-import json
-import binascii
+#import pickle
+#import json
+#import binascii
 
 from dxf import DXF
 from bstl import Binary_STL_Writer
@@ -199,7 +201,7 @@ class Probe:
         self.xmin, self.xmax, self.xn = read(f)
         self.ymin, self.ymax, self.yn = read(f)
         self.zmin, self.zmax, feed    = read(f)
-        CNC.vars["prbfeed"] = feed
+        OCV.CD["prbfeed"] = feed
 
         self.xn = max(2,int(self.xn))
         self.yn = max(2,int(self.yn))
@@ -233,7 +235,7 @@ class Probe:
             self.filename = filename
             f.write("%g %g %d\n"%(self.xmin, self.xmax, self.xn))
             f.write("%g %g %d\n"%(self.ymin, self.ymax, self.yn))
-            f.write("%g %g %g\n"%(self.zmin, self.zmax, CNC.vars["prbfeed"]))
+            f.write("%g %g %g\n"%(self.zmin, self.zmax, OCV.CD["prbfeed"]))
             f.write("\n\n")
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
@@ -299,7 +301,7 @@ class Probe:
         self.makeMatrix()
         x = self.xmin
         xstep = self._xstep
-        lines = ["G0Z%.4f"%(CNC.vars["safe"]),
+        lines = ["G0Z%.4f"%(OCV.CD["safe"]),
              "G0X%.4fY%.4f"%(self.xmin, self.ymin)]
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
@@ -307,7 +309,7 @@ class Probe:
                 lines.append("G0Z%.4f"%(self.zmax))
                 lines.append("G0X%.4fY%.4f"%(x,y))
                 lines.append("%wait")    # added for smoothie
-                lines.append("%sZ%.4fF%g"%(CNC.vars["prbcmd"], self.zmin, CNC.vars["prbfeed"]))
+                lines.append("%sZ%.4fF%g"%(OCV.CD["prbcmd"], self.zmin, OCV.CD["prbfeed"]))
                 lines.append("%wait")    # added for smoothie
                 x += xstep
             x -= xstep
@@ -659,113 +661,6 @@ class Orient:
 # Command operations on a CNC
 #===============================================================================
 class CNC:
-    inch           = False
-    lasercutter    = False
-    laseradaptive  = False
-    acceleration_x = 25.0    # mm/s^2
-    acceleration_y = 25.0    # mm/s^2
-    acceleration_z = 25.0    # mm/s^2
-    feedmax_x      = 3000
-    feedmax_y      = 3000
-    feedmax_z      = 2000
-    travel_x       = 300
-    travel_y       = 300
-    travel_z       = 60
-    accuracy       = 0.01    # sagitta error during arc conversion
-    digits         = 4
-    startup        = "G90"
-    stdexpr        = False    # standard way of defining expressions with []
-    comment        = ""    # last parsed comment
-    developer      = False
-    drozeropad     = 0
-    vars           = {
-            "prbx"       : 0.0,
-            "prby"       : 0.0,
-            "prbz"       : 0.0,
-            "prbcmd"     : "G38.2",
-            "prbfeed"    : 10.,
-            "errline"    : "",
-            "wx"         : 0.0,
-            "wy"         : 0.0,
-            "wz"         : 0.0,
-            "mx"         : 0.0,
-            "my"         : 0.0,
-            "mz"         : 0.0,
-            "wcox"       : 0.0,
-            "wcoy"       : 0.0,
-            "wcoz"       : 0.0,
-            "memAx"      : 0.0,
-            "memAy"      : 0.0,
-            "memAz"      : 0.0,
-            "memBx"      : 0.0,
-            "memBy"      : 0.0,
-            "memBz"      : 0.0,
-            "curfeed"    : 0.0,
-            "curspindle" : 0.0,
-            "_camwx"     : 0.0,
-            "_camwy"     : 0.0,
-            "G"          : [],
-            "TLO"        : 0.0,
-            "motion"     : "G0",
-            "WCS"        : "G54",
-            "plane"      : "G17",
-            "feedmode"   : "G94",
-            "distance"   : "G90",
-            "arc"        : "G91.1",
-            "units"      : "G20",
-            "cutter"     : "",
-            "tlo"        : "",
-            "program"    : "M0",
-            "spindle"    : "M5",
-            "coolant"    : "M9",
-
-            "tool"       : 0,
-            "feed"       : 0.0,
-            "rpm"        : 0.0,
-
-            "planner"    : 0,
-            "rxbytes"    : 0,
-
-            "OvFeed"     : 100,    # Override status
-            "OvRapid"    : 100,
-            "OvSpindle"  : 100,
-            "_OvChanged" : False,
-            "_OvFeed"    : 100,    # Override target values
-            "_OvRapid"   : 100,
-            "_OvSpindle" : 100,
-
-            "diameter"   : 3.175,    # Tool diameter
-            "cutfeed"    : 1000.,    # Material feed for cutting
-            "cutfeedz"   : 500.,    # Material feed for cutting
-            "safe"       : 3.,
-            "state"      : "",
-            "pins"       : "",
-            "msg"        : "",
-            "stepz"      : 1.,
-            "surface"    : 0.,
-            "thickness"  : 5.,
-            "stepover"   : 40.,
-
-            "PRB"        : None,
-            "TLO"        : 0.,
-
-            "version"    : "",
-            "controller" : "",
-            "running"    : False,
-        }
-
-    drillPolicy    = 1        # Expand Canned cycles
-    toolPolicy     = 1        # Should be in sync with ProbePage
-                    # 0 - send to grbl
-                    # 1 - skip those lines
-                    # 2 - manual tool change (WCS)
-                    # 3 - manual tool change (TLO)
-                    # 4 - manual tool change (No Probe)
-
-    toolWaitAfterProbe = True    # wait at tool change position after probing
-    appendFeed       = False    # append feed on every G1/G2/G3 commands to be used
-                    # for feed override testing
-                    # FIXME will not be needed after Grbl v1.0
 
     #----------------------------------------------------------------------
     def __init__(self):
@@ -777,86 +672,86 @@ class CNC:
     #----------------------------------------------------------------------
     @staticmethod
     def updateG():
-        for g in CNC.vars["G"]:
+        for g in OCV.CD["G"]:
             if g[0] == "F":
-                CNC.vars["feed"] = float(g[1:])
+                OCV.CD["feed"] = float(g[1:])
             elif g[0] == "S":
-                CNC.vars["rpm"] = float(g[1:])
+                OCV.CD["rpm"] = float(g[1:])
             elif g[0] == "T":
-                CNC.vars["tool"] = int(g[1:])
+                OCV.CD["tool"] = int(g[1:])
             else:
                 var = MODAL_MODES.get(g)
                 if var is not None:
-                    CNC.vars[var] = g
+                    OCV.CD[var] = g
 
     #----------------------------------------------------------------------
     def __getitem__(self, name):
-        return CNC.vars[name]
+        return OCV.CD[name]
 
     #----------------------------------------------------------------------
     def __setitem__(self, name, value):
-        CNC.vars[name] = value
+        OCV.CD[name] = value
 
     #----------------------------------------------------------------------
     @staticmethod
     def loadConfig(config):
         section = "CNC"
-        try: CNC.inch           = bool(int(config.get(section, "units")))
+        try: OCV.inch           = bool(int(config.get(section, "units")))
         except: pass
-        try: CNC.lasercutter    = bool(int(config.get(section, "lasercutter")))
+        try: OCV.lasercutter    = bool(int(config.get(section, "lasercutter")))
         except: pass
-        try: CNC.laseradaptive  = bool(int(config.get(section, "laseradaptive")))
+        try: OCV.laseradaptive  = bool(int(config.get(section, "laseradaptive")))
         except: pass
-        try: CNC.doublesizeicon = bool(int(config.get(section, "doublesizeicon")))
+        try: OCV.doublesizeicon = bool(int(config.get(section, "doublesizeicon")))
         except: pass
-        try: CNC.acceleration_x = float(config.get(section, "acceleration_x"))
+        try: OCV.acceleration_x = float(config.get(section, "acceleration_x"))
         except: pass
-        try: CNC.acceleration_y = float(config.get(section, "acceleration_y"))
+        try: OCV.acceleration_y = float(config.get(section, "acceleration_y"))
         except: pass
-        try: CNC.acceleration_z = float(config.get(section, "acceleration_z"))
+        try: OCV.acceleration_z = float(config.get(section, "acceleration_z"))
         except: pass
-        try: CNC.feedmax_x      = float(config.get(section, "feedmax_x"))
+        try: OCV.feedmax_x      = float(config.get(section, "feedmax_x"))
         except: pass
-        try: CNC.feedmax_y      = float(config.get(section, "feedmax_y"))
+        try: OCV.feedmax_y      = float(config.get(section, "feedmax_y"))
         except: pass
-        try: CNC.feedmax_z      = float(config.get(section, "feedmax_z"))
+        try: OCV.feedmax_z      = float(config.get(section, "feedmax_z"))
         except: pass
-        try: CNC.travel_x       = float(config.get(section, "travel_x"))
+        try: OCV.travel_x       = float(config.get(section, "travel_x"))
         except: pass
-        try: CNC.travel_y       = float(config.get(section, "travel_y"))
+        try: OCV.travel_y       = float(config.get(section, "travel_y"))
         except: pass
-        try: CNC.travel_z       = float(config.get(section, "travel_z"))
+        try: OCV.travel_z       = float(config.get(section, "travel_z"))
         except: pass
-        try: CNC.accuracy       = float(config.get(section, "accuracy"))
+        try: OCV.accuracy       = float(config.get(section, "accuracy"))
         except: pass
-        try: CNC.digits         = int(  config.get(section, "round"))
+        try: OCV.digits         = int(  config.get(section, "round"))
         except: pass
-        try: CNC.drozeropad     = int(  config.get(section, "drozeropad"))
-        except: pass
-
-        try:
-          CNC.startup = config.get(section, "startup")
-        except: pass
-        try:
-          CNC.header  = config.get(section, "header")
-        except: pass
-        try:
-          CNC.footer  = config.get(section, "footer")
+        try: OCV.drozeropad     = int(  config.get(section, "drozeropad"))
         except: pass
 
-        if CNC.inch:
-            CNC.acceleration_x  /= 25.4
-            CNC.acceleration_y  /= 25.4
-            CNC.acceleration_z  /= 25.4
-            CNC.feedmax_x       /= 25.4
-            CNC.feedmax_y       /= 25.4
-            CNC.feedmax_z       /= 25.4
-            CNC.travel_x        /= 25.4
-            CNC.travel_y        /= 25.4
-            CNC.travel_z        /= 25.4
+        try:
+          OCV.startup = config.get(section, "startup")
+        except: pass
+        try:
+          OCV.header  = config.get(section, "header")
+        except: pass
+        try:
+          OCV.footer  = config.get(section, "footer")
+        except: pass
+
+        if OCV.inch:
+            OCV.acceleration_x  /= 25.4
+            OCV.acceleration_y  /= 25.4
+            OCV.acceleration_z  /= 25.4
+            OCV.feedmax_x       /= 25.4
+            OCV.feedmax_y       /= 25.4
+            OCV.feedmax_z       /= 25.4
+            OCV.travel_x        /= 25.4
+            OCV.travel_y        /= 25.4
+            OCV.travel_z        /= 25.4
 
         section = "Error"
-        if CNC.drillPolicy == 1:
+        if OCV.drillPolicy == 1:
             ERROR_HANDLING["G98"] = 1
             ERROR_HANDLING["G99"] = 1
 
@@ -874,15 +769,15 @@ class CNC:
     #----------------------------------------------------------------------
     def initPath(self, x=None, y=None, z=None):
         if x is None:
-            self.x = self.xval = CNC.vars['wx'] or 0
+            self.x = self.xval = OCV.CD['wx'] or 0
         else:
             self.x = self.xval = x
         if y is None:
-            self.y = self.yval = CNC.vars['wy'] or 0
+            self.y = self.yval = OCV.CD['wy'] or 0
         else:
             self.y = self.yval = y
         if z is None:
-            self.z = self.zval = CNC.vars['wz'] or 0
+            self.z = self.zval = OCV.CD['wz'] or 0
         else:
             self.z = self.zval = z
         self.ival = self.jval = self.kval = 0.0
@@ -910,36 +805,36 @@ class CNC:
     #----------------------------------------------------------------------
     def resetEnableMargins(self):
         # Selected blocks margin
-        CNC.vars["xmin"]  = CNC.vars["ymin"]  = CNC.vars["zmin"]  =  1000000.0
-        CNC.vars["xmax"]  = CNC.vars["ymax"]  = CNC.vars["zmax"]  = -1000000.0
+        OCV.CD["xmin"]  = OCV.CD["ymin"]  = OCV.CD["zmin"]  =  1000000.0
+        OCV.CD["xmax"]  = OCV.CD["ymax"]  = OCV.CD["zmax"]  = -1000000.0
 
     #----------------------------------------------------------------------
     def resetAllMargins(self):
         self.resetEnableMargins()
         # All blocks margin
-        CNC.vars["axmin"] = CNC.vars["aymin"] = CNC.vars["azmin"] =  1000000.0
-        CNC.vars["axmax"] = CNC.vars["aymax"] = CNC.vars["azmax"] = -1000000.0
+        OCV.CD["axmin"] = OCV.CD["aymin"] = OCV.CD["azmin"] =  1000000.0
+        OCV.CD["axmax"] = OCV.CD["aymax"] = OCV.CD["azmax"] = -1000000.0
 
     #----------------------------------------------------------------------
     @staticmethod
     def isMarginValid():
-        return    CNC.vars["xmin"] <= CNC.vars["xmax"] and \
-            CNC.vars["ymin"] <= CNC.vars["ymax"] and \
-            CNC.vars["zmin"] <= CNC.vars["zmax"]
+        return    OCV.CD["xmin"] <= OCV.CD["xmax"] and \
+            OCV.CD["ymin"] <= OCV.CD["ymax"] and \
+            OCV.CD["zmin"] <= OCV.CD["zmax"]
 
     #----------------------------------------------------------------------
     @staticmethod
     def isAllMarginValid():
-        return    CNC.vars["axmin"] <= CNC.vars["axmax"] and \
-            CNC.vars["aymin"] <= CNC.vars["aymax"] and \
-            CNC.vars["azmin"] <= CNC.vars["azmax"]
+        return    OCV.CD["axmin"] <= OCV.CD["axmax"] and \
+            OCV.CD["aymin"] <= OCV.CD["aymax"] and \
+            OCV.CD["azmin"] <= OCV.CD["azmax"]
 
     #----------------------------------------------------------------------
     # Number formating
     #----------------------------------------------------------------------
     @staticmethod
     def fmt(c, v, d=None):
-        if d is None: d = CNC.digits
+        if d is None: d = OCV.digits
         #Don't know why, but in some cases floats are not truncated by format string unless rounded
         #I guess it's vital idea to round them rather than truncate anyway!
         v = round(v, d)
@@ -950,7 +845,7 @@ class CNC:
     def gcode(g, pairs):
         s = "g%d"%(g)
         for c,v in pairs:
-            s += " %c%g"%(c, round(v,CNC.digits))
+            s += " %c%g"%(c, round(v,OCV.digits))
         return s
 
     #----------------------------------------------------------------------
@@ -958,18 +853,18 @@ class CNC:
     def _gcode(g, **args):
         s = "g%d"%(g)
         for n,v in args.items():
-            s += ' ' + CNC.fmt(n,v)
+            s += ' ' + OCV.fmt(n,v)
         return s
 
     #----------------------------------------------------------------------
     @staticmethod
     def _goto(g, x=None, y=None, z=None, **args):
         s = "g%d"%(g)
-        if x is not None: s += ' '+CNC.fmt('x',x)
-        if y is not None: s += ' '+CNC.fmt('y',y)
-        if z is not None: s += ' '+CNC.fmt('z',z)
+        if x is not None: s += ' '+OCV.fmt('x',x)
+        if y is not None: s += ' '+OCV.fmt('y',y)
+        if z is not None: s += ' '+OCV.fmt('z',z)
         for n,v in args.items():
-            s += ' ' + CNC.fmt(n,v)
+            s += ' ' + OCV.fmt(n,v)
         return s
 
     #----------------------------------------------------------------------
@@ -1014,18 +909,18 @@ class CNC:
     #----------------------------------------------------------------------
     @staticmethod
     def zenter(z, d=None):
-        if CNC.lasercutter:
-            if CNC.laseradaptive:
+        if OCV.lasercutter:
+            if OCV.laseradaptive:
                 return "m4"
             else:
                 return "m3"
         else:
-            return "g1 %s %s"%(CNC.fmt("z",z,d), CNC.fmt("f",CNC.vars["cutfeedz"]))
+            return "g1 %s %s"%(CNC.fmt("z",z,d), CNC.fmt("f",OCV.CD["cutfeedz"]))
 
     #----------------------------------------------------------------------
     @staticmethod
     def zexit(z, d=None):
-        if CNC.lasercutter:
+        if OCV.lasercutter:
             return "m5"
         else:
             return "g0 %s"%(CNC.fmt("z",z,d))
@@ -1036,7 +931,7 @@ class CNC:
     #----------------------------------------------------------------------
     @staticmethod
     def zsafe():
-        return CNC.zexit(CNC.vars["safe"])
+        return CNC.zexit(OCV.CD["safe"])
 
     #----------------------------------------------------------------------
     # @return line in broken a list of commands, None if empty or comment
@@ -1073,7 +968,7 @@ class CNC:
 
         # to accept #nnn variables as _nnn internally
         line = line.replace('#','_')
-        CNC.comment = ""
+        OCV.comment = ""
 
         # execute literally the line after the first character
         if line[0]=='%':
@@ -1092,7 +987,7 @@ class CNC:
                 return (MSG, args)
             elif cmd=="%update":
                 return (UPDATE, args)
-            elif line.startswith("%if running") and not CNC.vars["running"]:
+            elif line.startswith("%if running") and not OCV.CD["running"]:
                 # ignore if running lines when not running
                 return None
             else:
@@ -1112,7 +1007,7 @@ class CNC:
 
         # commented line
         if line[0] == ';':
-            CNC.comment = line[1:].strip()
+            OCV.comment = line[1:].strip()
             return None
 
         out    = []        # output list of commands
@@ -1136,7 +1031,7 @@ class CNC:
             elif ch == '[':
                 # expression start?
                 if not inComment:
-                    if CNC.stdexpr: ch='('
+                    if OCV.stdexpr: ch='('
                     braket += 1
                     if braket==1:
                         if cmd:
@@ -1145,11 +1040,11 @@ class CNC:
                     else:
                         expr += ch
                 else:
-                    CNC.comment += ch
+                    OCV.comment += ch
             elif ch == ']':
                 # expression end?
                 if not inComment:
-                    if CNC.stdexpr: ch=')'
+                    if OCV.stdexpr: ch=')'
                     braket -= 1
                     if braket==0:
                         try:
@@ -1162,7 +1057,7 @@ class CNC:
                     else:
                         expr += ch
                 else:
-                    CNC.comment += ch
+                    OCV.comment += ch
             elif ch=='=':
                 # check for assignments (FIXME very bad)
                 if not out and braket==0 and paren==0:
@@ -1179,7 +1074,7 @@ class CNC:
             elif ch == ';':
                 # Skip everything after the semicolon on normal lines
                 if not inComment and paren==0 and braket==0:
-                    CNC.comment += line[i+1:]
+                    OCV.comment += line[i+1:]
                     break
                 else:
                     expr += ch
@@ -1195,7 +1090,7 @@ class CNC:
                     cmd += ch
 
             elif inComment:
-                CNC.comment += ch
+                OCV.comment += ch
 
         if cmd: out.append(cmd)
 
@@ -1270,13 +1165,13 @@ class CNC:
                     self.plane = YZ
 
                 elif gcode==20:    # Switch to inches
-                    if CNC.inch:
+                    if OCV.inch:
                         self.unit = 1.0
                     else:
                         self.unit = 25.4
 
                 elif gcode==21:    # Switch to mm
-                    if CNC.inch:
+                    if OCV.inch:
                         self.unit = 1.0/25.4
                     else:
                         self.unit = 1.0
@@ -1300,7 +1195,7 @@ class CNC:
                         self.arcabsolute = False
 
                 elif gcode in (93,94,95):
-                    CNC.vars["feedmode"] = gcode
+                    OCV.CD["feedmode"] = gcode
 
                 elif gcode==98:
                     self.retractz = True
@@ -1454,7 +1349,7 @@ class CNC:
             phi0 = math.atan2(v0-vc, u0-uc)
             phi1 = math.atan2(v1-vc, u1-uc)
             try:
-                sagitta = 1.0-CNC.accuracy/self.rval
+                sagitta = 1.0-OCV.accuracy/self.rval
             except ZeroDivisionError:
                 sagitta = 0.0
             if sagitta>0.0:
@@ -1618,15 +1513,15 @@ class CNC:
         if self.gcode == 0:
             # FIXME calculate the correct time with the feed direction
             # and acceleration
-            block.time += length / self.feedmax_x
-            self.totalTime += length / self.feedmax_x
+            block.time += length / OCV.feedmax_x
+            self.totalTime += length / OCV.feedmax_x
             block.rapid += length
         else:
             try:
-                if CNC.vars["feedmode"] == 94:
+                if OCV.CD["feedmode"] == 94:
                     # Normal mode
                     t = length / self.feed
-                elif CNC.vars["feedmode"] == 93:
+                elif OCV.CD["feedmode"] == 93:
                     # Inverse mode
                     t = length * self.feed
 
@@ -1641,19 +1536,19 @@ class CNC:
     #----------------------------------------------------------------------
     def pathMargins(self, block):
         if block.enable:
-            CNC.vars["xmin"] = min(CNC.vars["xmin"], block.xmin)
-            CNC.vars["ymin"] = min(CNC.vars["ymin"], block.ymin)
-            CNC.vars["zmin"] = min(CNC.vars["zmin"], block.zmin)
-            CNC.vars["xmax"] = max(CNC.vars["xmax"], block.xmax)
-            CNC.vars["ymax"] = max(CNC.vars["ymax"], block.ymax)
-            CNC.vars["zmax"] = max(CNC.vars["zmax"], block.zmax)
+            OCV.CD["xmin"] = min(OCV.CD["xmin"], block.xmin)
+            OCV.CD["ymin"] = min(OCV.CD["ymin"], block.ymin)
+            OCV.CD["zmin"] = min(OCV.CD["zmin"], block.zmin)
+            OCV.CD["xmax"] = max(OCV.CD["xmax"], block.xmax)
+            OCV.CD["ymax"] = max(OCV.CD["ymax"], block.ymax)
+            OCV.CD["zmax"] = max(OCV.CD["zmax"], block.zmax)
 
-        CNC.vars["axmin"] = min(CNC.vars["axmin"], block.xmin)
-        CNC.vars["aymin"] = min(CNC.vars["aymin"], block.ymin)
-        CNC.vars["azmin"] = min(CNC.vars["azmin"], block.zmin)
-        CNC.vars["axmax"] = max(CNC.vars["axmax"], block.xmax)
-        CNC.vars["aymax"] = max(CNC.vars["aymax"], block.ymax)
-        CNC.vars["azmax"] = max(CNC.vars["azmax"], block.zmax)
+        OCV.CD["axmin"] = min(OCV.CD["axmin"], block.xmin)
+        OCV.CD["aymin"] = min(OCV.CD["aymin"], block.ymin)
+        OCV.CD["azmin"] = min(OCV.CD["azmin"], block.zmin)
+        OCV.CD["axmax"] = max(OCV.CD["axmax"], block.xmax)
+        OCV.CD["aymax"] = max(OCV.CD["aymax"], block.ymax)
+        OCV.CD["azmax"] = max(OCV.CD["azmax"], block.zmax)
 
     #----------------------------------------------------------------------
     # Instead of the current code, override with the custom user lines
@@ -1711,23 +1606,23 @@ class CNC:
         lines.append("g53 g0 x[toolchangex] y[toolchangey]")
         lines.append("%wait")
 
-        if CNC.comment:
-            lines.append("%%msg Tool change T%02d (%s)"%(self.tool,CNC.comment))
+        if OCV.comment:
+            lines.append("%%msg Tool change T%02d (%s)"%(self.tool,OCV.comment))
         else:
             lines.append("%%msg Tool change T%02d"%(self.tool))
         lines.append("m0")    # feed hold
 
-        if CNC.toolPolicy < 4:
+        if OCV.toolPolicy < 4:
             lines.append("g53 g0 x[toolprobex] y[toolprobey]")
             lines.append("g53 g0 z[toolprobez]")
 
             # fixed WCS
-            if CNC.vars["fastprbfeed"]:
+            if OCV.CD["fastprbfeed"]:
                 prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
-                CNC.vars["prbcmdreverse"] = (CNC.vars["prbcmd"][:-1] +
-                                 prb_reverse[CNC.vars["prbcmd"][-1]])
-                currentFeedrate = CNC.vars["fastprbfeed"]
-                while currentFeedrate > CNC.vars["prbfeed"]:
+                OCV.CD["prbcmdreverse"] = (OCV.CD["prbcmd"][:-1] +
+                                 prb_reverse[OCV.CD["prbcmd"][-1]])
+                currentFeedrate = OCV.CD["fastprbfeed"]
+                while currentFeedrate > OCV.CD["prbfeed"]:
                     lines.append("%wait")
                     lines.append("g91 [prbcmd] %s z[toolprobez-mz-tooldistance]" \
                             % CNC.fmt('f',currentFeedrate))
@@ -1738,14 +1633,14 @@ class CNC:
             lines.append("%wait")
             lines.append("g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")
 
-            if CNC.toolPolicy==2:
+            if OCV.toolPolicy==2:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
-                p = WCS.index(CNC.vars["WCS"])+1
+                p = WCS.index(OCV.CD["WCS"])+1
                 lines.append("g10l20p%d z[toolheight]"%(p))
                 lines.append("%wait")
 
-            elif CNC.toolPolicy==3:
+            elif OCV.toolPolicy==3:
                 # Modify the tool length, update the TLO
                 lines.append("g4 p1")    # wait a sec to get the probe info
                 lines.append("%wait")
@@ -1756,7 +1651,7 @@ class CNC:
             lines.append("g53 g0 z[toolchangez]")
             lines.append("g53 g0 x[toolchangex] y[toolchangey]")
 
-        if CNC.toolWaitAfterProbe:
+        if OCV.toolWaitAfterProbe:
             lines.append("%wait")
             lines.append("%msg Restart spindle")
             lines.append("m0")    # feed hold
@@ -2162,12 +2057,12 @@ class GCode:
         self.cnc.resetEnableMargins()
         for block in self.blocks:
             if block.enable:
-                CNC.vars["xmin"] = min(CNC.vars["xmin"], block.xmin)
-                CNC.vars["ymin"] = min(CNC.vars["ymin"], block.ymin)
-                CNC.vars["zmin"] = min(CNC.vars["zmin"], block.zmin)
-                CNC.vars["xmax"] = max(CNC.vars["xmax"], block.xmax)
-                CNC.vars["ymax"] = max(CNC.vars["ymax"], block.ymax)
-                CNC.vars["zmax"] = max(CNC.vars["zmax"], block.zmax)
+                OCV.CD["xmin"] = min(OCV.CD["xmin"], block.xmin)
+                OCV.CD["ymin"] = min(OCV.CD["ymin"], block.ymin)
+                OCV.CD["zmin"] = min(OCV.CD["zmin"], block.zmin)
+                OCV.CD["xmax"] = max(OCV.CD["xmax"], block.xmax)
+                OCV.CD["ymax"] = max(OCV.CD["ymax"], block.ymax)
+                OCV.CD["zmax"] = max(OCV.CD["zmax"], block.zmax)
 
     #----------------------------------------------------------------------
     def isModified(self): return self._modified
@@ -2191,9 +2086,9 @@ class GCode:
         elif isinstance(line,list):
             for i,expr in enumerate(line):
                 if isinstance(expr, types.CodeType):
-                    result = eval(expr,CNC.vars,self.vars)
+                    result = eval(expr,OCV.CD,self.vars)
                     if isinstance(result,float):
-                        line[i] = str(round(result,CNC.digits))
+                        line[i] = str(round(result, OCV.digits))
                     else:
                         line[i] = str(result)
             return "".join(line)
@@ -2204,7 +2099,7 @@ class GCode:
             v = self.vars
             v['os'] = os
             v['app'] = app
-            return eval(line,CNC.vars,self.vars)
+            return eval(line,OCV.CD,self.vars)
 
         else:
             return line
@@ -2357,7 +2252,7 @@ class GCode:
         empty = len(self.blocks)==0
         if empty: self.addBlockFromString("Header",self.header)
 
-        if CNC.inch:
+        if OCV.inch:
             units = DXF.INCHES
         else:
             units = DXF.MILLIMETERS
@@ -2424,7 +2319,7 @@ class GCode:
             dxf = DXF(filename,"w")
         except:
             return False
-        if CNC.inch:
+        if OCV.inch:
             dxf.units = DXF.INCHES
         else:
             dxf.units = DXF.MILLIMETERS
@@ -2457,7 +2352,7 @@ class GCode:
     #----------------------------------------------------------------------
     def SVGscale(self):
         dpi=96 #same as inkscape 0.9x (according to jscut)
-        if not CNC.inch: dpi = round(dpi/25.4,7)
+        if not OCV.inch: dpi = round(dpi/25.4,7)
         return dpi
 
     #----------------------------------------------------------------------
@@ -2473,7 +2368,7 @@ class GCode:
         if empty: self.addBlockFromString("Header",self.header)
 
         #FIXME: UI to set SVG subdivratio
-        for path in svgcode.get_gcode(self.SVGscale(), 10, CNC.digits):
+        for path in svgcode.get_gcode(self.SVGscale(), 10, OCV.digits):
             self.addBlockFromString(path['id'],path['path'])
 
         if empty: self.addBlockFromString("Footer",self.footer)
@@ -2711,7 +2606,7 @@ class GCode:
             #Generate LINE
             if segment.type == Segment.LINE:
                 x,y = segment.B
-                #rounding problem from #903 was manifesting here. Had to lower the decimal precision to CNC.digits
+                #rounding problem from #903 was manifesting here. Had to lower the decimal precision to OCV.digits
                 if z is None: block.append("g1 %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7))+cm)
                 else: block.append("g1 %s %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7),self.fmt("z",z,7))+cm)
 
@@ -2749,7 +2644,7 @@ class GCode:
             ztab = getSegmentZTab(path[0], z)
 
             #Retract to zsafe
-            if retract: block.append("g0 %s"%(self.fmt("z",CNC.vars["safe"],7)))
+            if retract: block.append("g0 %s"%(self.fmt("z",OCV.CD["safe"],7)))
 
             #Rapid to beginning of the path
             block.append("g0 %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7)))
@@ -3703,14 +3598,14 @@ class GCode:
     #----------------------------------------------------------------------
     def roundFunc(self, new, old, relative):
         for name,value in new.items():
-            new[name] = round(value,CNC.digits)
+            new[name] = round(value, OCV.digits)
         return bool(new)
 
     #----------------------------------------------------------------------
     # Round line by the amount of digits
     #----------------------------------------------------------------------
     def roundLines(self, items, acc=None):
-        if acc is not None: CNC.digits = acc
+        if acc is not None: OCV.digits = acc
         return self.modify(items, self.roundFunc, None)
 
     #----------------------------------------------------------------------
@@ -3805,8 +3700,8 @@ class GCode:
                 dx = x1-x2
                 dy = y1-y2
                 #Compensate for machines, which have different speed of X and Y:
-                dx/=CNC.feedmax_x
-                dy/=CNC.feedmax_y
+                dx/= OCV.feedmax_x
+                dy/= OXV.feedmax_y
                 matrix[i][j] = sqrt(dx*dx + dy*dy)
         #from pprint import pprint
         #pprint(matrix)
@@ -3886,7 +3781,7 @@ class GCode:
                 self.cnc.motionStart(cmds)
 
                 # FIXME append feed on cut commands. It will be obsolete in grbl v1.0
-                if CNC.appendFeed and self.cnc.gcode in (1,2,3):
+                if OCV.appendFeed and self.cnc.gcode in (1,2,3):
                     # Check is not existing in cmds
                     for c in cmds:
                         if c[0] in ('f','F'):
@@ -3928,16 +3823,16 @@ class GCode:
                 else:
                     # FIXME expansion policy here variable needed
                     # Canned cycles
-                    if CNC.drillPolicy==1 and \
+                    if OCV.drillPolicy==1 and \
                        self.cnc.gcode in (81,82,83,85,86,89):
                         expand = self.cnc.macroGroupG8X()
                     # Tool change
                     elif self.cnc.mval == 6:
-                        if CNC.toolPolicy == 0:
+                        if OCV.toolPolicy == 0:
                             pass    # send to grbl
-                        elif CNC.toolPolicy == 1:
+                        elif OCV.toolPolicy == 1:
                             skip = True    # skip whole line
-                        elif CNC.toolPolicy >= 2:
+                        elif OCV.toolPolicy >= 2:
                             expand = CNC.compile(self.cnc.toolChange())
                     self.cnc.motionEnd()
 

@@ -18,8 +18,10 @@ except ImportError:
 	from tkinter import *
 
 import tkExtra
+
+import OCV
 import Utils
-import Sender
+#import Sender
 import Ribbon
 import CNCRibbon
 
@@ -37,7 +39,7 @@ BAUDS = [2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400]
 class _RecentMenuButton(Ribbon.MenuButton):
 	#----------------------------------------------------------------------
 	def createMenu(self):
-		menu = Menu(self, tearoff=0, activebackground=Ribbon._ACTIVE_COLOR)
+		menu = Menu(self, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
 		for i in range(Utils._maxRecent):
 			filename = Utils.getRecent(i)
 			if filename is None: break
@@ -68,7 +70,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 				image=Utils.icons["new32"],
 				text=_("New"),
 				compound=TOP,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("New gcode/dxf file"))
 		self.addWidget(b)
@@ -77,7 +79,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 		col,row=1,0
 		b = Ribbon.LabelButton(self.frame, self, "<<Open>>",
 				image=Utils.icons["open32"],
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Open existing gcode/dxf file [Ctrl-O]"))
 		self.addWidget(b)
@@ -87,7 +89,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 				text=_("Open"),
 				image=Utils.icons["triangle_down"],
 				compound=RIGHT,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Open recent file"))
 		self.addWidget(b)
@@ -98,7 +100,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 				image=Utils.icons["import32"],
 				text=_("Import"),
 				compound=TOP,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Import gcode/dxf file"))
 		self.addWidget(b)
@@ -108,7 +110,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 		b = Ribbon.LabelButton(self.frame, self, "<<Save>>",
 				image=Utils.icons["save32"],
 				command=app.save,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Save gcode/dxf file [Ctrl-S]"))
 		self.addWidget(b)
@@ -118,7 +120,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 				text=_("Save"),
 				image=Utils.icons["triangle_down"],
 				compound=RIGHT,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Save gcode/dxf AS"))
 		self.addWidget(b)
@@ -141,7 +143,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #				state=DISABLED,
 #				compound=TOP,
 #				anchor=W,
-#				background=Ribbon._BACKGROUND)
+#				background=OCV.BACKGROUND)
 #		b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NS)
 #		tkExtra.Balloon.set(b, _("Open configuration dialog"))
 
@@ -153,7 +155,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #				compound=LEFT,
 #				command=Utils.ReportDialog.sendErrorReport,
 #				anchor=W,
-#				background=Ribbon._BACKGROUND)
+#				background=OCV.BACKGROUND)
 #		b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #		tkExtra.Balloon.set(b, _("Send Error Report"))
 #
@@ -165,7 +167,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #				compound=LEFT,
 #				command=self.app.checkUpdates,
 #				anchor=W,
-#				background=Ribbon._BACKGROUND)
+#				background=OCV.BACKGROUND)
 #		b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #		tkExtra.Balloon.set(b, _("Check Updates"))
 
@@ -176,7 +178,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 				compound=LEFT,
 				command=self.app.about,
 				anchor=W,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 		tkExtra.Balloon.set(b, _("About the program"))
 
@@ -196,7 +198,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
 				compound=LEFT,
 				anchor=W,
 				command=app.startPendant,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Start pendant"))
 
@@ -207,7 +209,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
 				compound=LEFT,
 				anchor=W,
 				command=app.stopPendant,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(b, _("Stop pendant"))
 
@@ -226,7 +228,7 @@ class CloseGroup(CNCRibbon.ButtonGroup):
 				compound=TOP,
 				command=app.quit,
 				anchor=W,
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		b.pack(fill=BOTH, expand=YES)
 		tkExtra.Balloon.set(b, _("Close program [Ctrl-Q]"))
 
@@ -297,7 +299,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 				text=_("Refresh"),
 				compound=TOP,
 				command=lambda s=self : s.comportRefresh(True),
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		self.comrefBtn.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(self.comrefBtn, _("Refresh list of serial ports"))
 
@@ -310,7 +312,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 				text=_("Open"),
 				compound=TOP,
 				command=lambda s=self : s.event_generate("<<Connect>>"),
-				background=Ribbon._BACKGROUND)
+				background=OCV.BACKGROUND)
 		self.connectBtn.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
 		tkExtra.Balloon.set(self.connectBtn, _("Open/Close serial port"))
 		self.grid_columnconfigure(1, weight=1)

@@ -2,8 +2,11 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+
+import OCV
 from _GenericGRBL import _GenericGRBL
 from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, VARPAT
+
 from CNC import CNC
 import time
 
@@ -40,28 +43,28 @@ class Controller(_GenericGRBL):
 		self.master.sendGCode("$J=G91 %s F100000"%(dir))
 
 	def overrideSet(self):
-		CNC.vars["_OvChanged"] = False	# Temporary
+		OCV.CD["_OvChanged"] = False	# Temporary
 		# Check feed
-		diff = CNC.vars["_OvFeed"] - CNC.vars["OvFeed"]
+		diff = OCV.CD["_OvFeed"] - OCV.CD["OvFeed"]
 		if diff==0:
 			pass
-		elif CNC.vars["_OvFeed"] == 100:
+		elif OCV.CD["_OvFeed"] == 100:
 			self.master.serial.write(OV_FEED_100)
 		elif diff >= 10:
 			self.master.serial.write(OV_FEED_i10)
-			CNC.vars["_OvChanged"] = diff>10
+			OCV.CD["_OvChanged"] = diff>10
 		elif diff <= -10:
 			self.master.serial.write(OV_FEED_d10)
-			CNC.vars["_OvChanged"] = diff<-10
+			OCV.CD["_OvChanged"] = diff<-10
 		elif diff >= 1:
 			self.master.serial.write(OV_FEED_i1)
-			CNC.vars["_OvChanged"] = diff>1
+			OCV.CD["_OvChanged"] = diff>1
 		elif diff <= -1:
 			self.master.serial.write(OV_FEED_d1)
-			CNC.vars["_OvChanged"] = diff<-1
+			OCV.CD["_OvChanged"] = diff<-1
 		# Check rapid
-		target  = CNC.vars["_OvRapid"]
-		current = CNC.vars["OvRapid"]
+		target  = OCV.CD["_OvRapid"]
+		current = OCV.CD["OvRapid"]
 		if target == current:
 			pass
 		elif target == 100:
@@ -73,102 +76,102 @@ class Controller(_GenericGRBL):
 		elif target == 25:
 			self.master.serial.write(OV_RAPID_25)
 		# Check Spindle
-		diff = CNC.vars["_OvSpindle"] - CNC.vars["OvSpindle"]
+		diff = OCV.CD["_OvSpindle"] - OCV.CD["OvSpindle"]
 		if diff==0:
 			pass
-		elif CNC.vars["_OvSpindle"] == 100:
+		elif OCV.CD["_OvSpindle"] == 100:
 			self.master.serial.write(OV_SPINDLE_100)
 		elif diff >= 10:
 			self.master.serial.write(OV_SPINDLE_i10)
-			CNC.vars["_OvChanged"] = diff>10
+			OCV.CD["_OvChanged"] = diff>10
 		elif diff <= -10:
 			self.master.serial.write(OV_SPINDLE_d10)
-			CNC.vars["_OvChanged"] = diff<-10
+			OCV.CD["_OvChanged"] = diff<-10
 		elif diff >= 1:
 			self.master.serial.write(OV_SPINDLE_i1)
-			CNC.vars["_OvChanged"] = diff>1
+			OCV.CD["_OvChanged"] = diff>1
 		elif diff <= -1:
 			self.master.serial.write(OV_SPINDLE_d1)
-			CNC.vars["_OvChanged"] = diff<-1
+			OCV.CD["_OvChanged"] = diff<-1
 
 
 	def parseBracketAngle(self, line, cline):
 		self.master.sio_status = False
 		fields = line[1:-1].split("|")
-		CNC.vars["pins"] = ""
+		OCV.CD["pins"] = ""
 
 
 		#Report if state has changed
-		if CNC.vars["state"] != fields[0] or self.master.runningPrev != self.master.running:
+		if OCV.CD["state"] != fields[0] or self.master.runningPrev != self.master.running:
 			self.master.controllerStateChange(fields[0])
 		self.master.runningPrev = self.master.running
-		CNC.vars["state"] = fields[0]
+		OCV.CD["state"] = fields[0]
 
 		for field in fields[1:]:
 			word = SPLITPAT.split(field)
 			if word[0] == "MPos":
 				try:
-					CNC.vars["mx"] = float(word[1])
-					CNC.vars["my"] = float(word[2])
-					CNC.vars["mz"] = float(word[3])
-					CNC.vars["wx"] = round(CNC.vars["mx"]-CNC.vars["wcox"], CNC.digits)
-					CNC.vars["wy"] = round(CNC.vars["my"]-CNC.vars["wcoy"], CNC.digits)
-					CNC.vars["wz"] = round(CNC.vars["mz"]-CNC.vars["wcoz"], CNC.digits)
+					OCV.CD["mx"] = float(word[1])
+					OCV.CD["my"] = float(word[2])
+					OCV.CD["mz"] = float(word[3])
+					OCV.CD["wx"] = round(OCV.CD["mx"]-OCV.CD["wcox"], OCV.digits)
+					OCV.CD["wy"] = round(OCV.CD["my"]-OCV.CD["wcoy"], OCV.digits)
+					OCV.CD["wz"] = round(OCV.CD["mz"]-OCV.CD["wcoz"], OCV.digits)
 					self.master._posUpdate = True
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "F":
 				try:
-					CNC.vars["curfeed"] = float(word[1])
+					OCV.CD["curfeed"] = float(word[1])
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "FS":
 				try:
-					CNC.vars["curfeed"]    = float(word[1])
-					CNC.vars["curspindle"] = float(word[2])
+					OCV.CD["curfeed"]    = float(word[1])
+					OCV.CD["curspindle"] = float(word[2])
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "Bf":
 				try:
-					CNC.vars["planner"] = int(word[1])
-					CNC.vars["rxbytes"] = int(word[2])
+					OCV.CD["planner"] = int(word[1])
+					OCV.CD["rxbytes"] = int(word[2])
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "Ov":
 				try:
-					CNC.vars["OvFeed"]    = int(word[1])
-					CNC.vars["OvRapid"]   = int(word[2])
-					CNC.vars["OvSpindle"] = int(word[3])
+					OCV.CD["OvFeed"]    = int(word[1])
+					OCV.CD["OvRapid"]   = int(word[2])
+					OCV.CD["OvSpindle"] = int(word[3])
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "WCO":
 				try:
-					CNC.vars["wcox"] = float(word[1])
-					CNC.vars["wcoy"] = float(word[2])
-					CNC.vars["wcoz"] = float(word[3])
+					OCV.CD["wcox"] = float(word[1])
+					OCV.CD["wcoy"] = float(word[2])
+					OCV.CD["wcoz"] = float(word[3])
 				except (ValueError,IndexError):
-					CNC.vars["state"] = "Garbage receive %s: %s"%(word[0],line)
-					self.master.log.put((self.master.MSG_RECEIVE, CNC.vars["state"]))
+					OCV.CD["state"] = "Garbage receive %s: %s"%(word[0],line)
+					self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
 					break
 			elif word[0] == "Pn":
 				try:
-					CNC.vars["pins"] = word[1]
+					OCV.CD["pins"] = word[1]
 					if 'S' in word[1]:
-						if CNC.vars["state"] == 'Idle' and not self.master.running:
+						if OCV.CD["state"] == 'Idle' and not self.master.running:
 							print("Stream requested by CYCLE START machine button")
 							self.master.event_generate("<<Run>>", when = 'tail')
 						else:
-							print("Ignoring machine stream request, because of state: ", CNC.vars["state"], self.master.running)
+							print("Ignoring machine stream request, because of state: ", OCV.CD["state"], self.master.running)
 				except (ValueError,IndexError):
 					break
 
@@ -183,41 +186,41 @@ class Controller(_GenericGRBL):
 		word = SPLITPAT.split(line[1:-1])
 		#print word
 		if word[0] == "PRB":
-			CNC.vars["prbx"] = float(word[1])
-			CNC.vars["prby"] = float(word[2])
-			CNC.vars["prbz"] = float(word[3])
+			OCV.CD["prbx"] = float(word[1])
+			OCV.CD["prby"] = float(word[2])
+			OCV.CD["prbz"] = float(word[3])
 			#if self.running:
 			self.master.gcode.probe.add(
-				 CNC.vars["prbx"]-CNC.vars["wcox"],
-				 CNC.vars["prby"]-CNC.vars["wcoy"],
-				 CNC.vars["prbz"]-CNC.vars["wcoz"])
+				 OCV.CD["prbx"]-OCV.CD["wcox"],
+				 OCV.CD["prby"]-OCV.CD["wcoy"],
+				 OCV.CD["prbz"]-OCV.CD["wcoz"])
 			self.master._probeUpdate = True
-			CNC.vars[word[0]] = word[1:]
+			OCV.CD[word[0]] = word[1:]
 		if word[0] == "G92":
-			CNC.vars["G92X"] = float(word[1])
-			CNC.vars["G92Y"] = float(word[2])
-			CNC.vars["G92Z"] = float(word[3])
-			CNC.vars[word[0]] = word[1:]
+			OCV.CD["G92X"] = float(word[1])
+			OCV.CD["G92Y"] = float(word[2])
+			OCV.CD["G92Z"] = float(word[3])
+			OCV.CD[word[0]] = word[1:]
 			self.master._gUpdate = True
 		if word[0] == "G28":
-			CNC.vars["G28X"] = float(word[1])
-			CNC.vars["G28Y"] = float(word[2])
-			CNC.vars["G28Z"] = float(word[3])
-			CNC.vars[word[0]] = word[1:]
+			OCV.CD["G28X"] = float(word[1])
+			OCV.CD["G28Y"] = float(word[2])
+			OCV.CD["G28Z"] = float(word[3])
+			OCV.CD[word[0]] = word[1:]
 			self.master._gUpdate = True
 		if word[0] == "G30":
-			CNC.vars["G30X"] = float(word[1])
-			CNC.vars["G30Y"] = float(word[2])
-			CNC.vars["G30Z"] = float(word[3])
-			CNC.vars[word[0]] = word[1:]
+			OCV.CD["G30X"] = float(word[1])
+			OCV.CD["G30Y"] = float(word[2])
+			OCV.CD["G30Z"] = float(word[3])
+			OCV.CD[word[0]] = word[1:]
 			self.master._gUpdate = True
 		elif word[0] == "GC":
-			CNC.vars["G"] = word[1].split()
+			OCV.CD["G"] = word[1].split()
 			CNC.updateG()
 			self.master._gUpdate = True
 		elif word[0] == "TLO":
-			CNC.vars[word[0]] = word[1]
+			OCV.CD[word[0]] = word[1]
 			self.master._probeUpdate = True
 			self.master._gUpdate = True
 		else:
-			CNC.vars[word[0]] = word[1:]
+			OCV.CD[word[0]] = word[1:]

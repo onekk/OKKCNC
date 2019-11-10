@@ -37,6 +37,8 @@ try:
 except:
     serial = None
 
+import OCV
+
 __prg__     = "OKKCNC"
 prgpath   = os.path.abspath(os.path.dirname(__file__))
 if getattr( sys, 'frozen', False ):
@@ -250,6 +252,47 @@ def getBool(section, name, default=False):
     global config
     try: return bool(int(config.get(section, name)))
     except: return default
+
+#------------------------------------
+# set the steps used in ControlPage -
+#------------------------------------
+def SetSteps():
+    # Default steppings
+    try:
+        OCV.step1 = getFloat("Control","step1")
+    except:
+        OCV.step1 = 1.0
+    try:
+        OCV.step2 = getFloat("Control","step2")
+    except:
+        OCV.step2 = 1.0
+
+    try:
+        OCV.step3 = getFloat("Control","step3")
+    except:
+        OCV.step3 = 10.0
+
+    # Default z-steppings
+    try:
+        OCV.zstep1 = getFloat("Control","zstep1")
+    except:
+        OCV.zstep1 = 0.1
+
+    try:
+        OCV.zstep2 = getFloat("Control","zstep2")
+    except:
+        OCV.zstep2 = 1.0
+
+    try:
+        OCV.zstep3 = getFloat("Control","zstep3")
+    except:
+        OCV.zstep3 = 5.0
+
+    try:
+        OCV.zstep4 = getFloat("Control","zstep4")
+    except:
+        OCV.zstep4 = 10.0
+
 
 
 #-------------------------------------------------------------------------------
@@ -645,3 +688,4 @@ class UserButtonDialog(Toplevel):
     # ----------------------------------------------------------------------
     def iconChange(self):
         self.icon["image"] = icons.get(self.iconCombo.get(),"")
+

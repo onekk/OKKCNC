@@ -21,7 +21,8 @@ except ImportError:
 import math
 from math import * #Math in DRO
 
-from CNC import CNC
+import OCV
+#from CNC import CNC
 import Utils
 import Ribbon
 import Sender
@@ -58,7 +59,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
                 compound=TOP,
                 anchor=W,
                 command=app.home,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Perform a homing cycle [$H]"))
         self.addWidget(b)
@@ -71,7 +72,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=app.mcontrol.unlock(True),
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Unlock controller [$X]"))
         self.addWidget(b)
@@ -83,7 +84,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=lambda s=self : s.event_generate("<<Connect>>"),
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Open/Close connection"))
         self.addWidget(b)
@@ -95,7 +96,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 command=app.mcontrol.softReset(True),
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Software reset of controller [ctrl-x]"))
         self.addWidget(b)
@@ -113,7 +114,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         for i in range(1,n):
             b = Utils.UserButton(self.frame, self.app, i,
                     anchor=W,
-                    background=Ribbon._BACKGROUND)
+                    background=OCV.BACKGROUND)
             col,row = divmod(i-1,3)
             b.grid(row=row, column=col, sticky=NSEW)
             self.addWidget(b)
@@ -130,7 +131,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["start32"],
                 text=_("Start"),
                 compound=TOP,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.pack(side=LEFT, fill=BOTH)
         tkExtra.Balloon.set(b, _("Run g-code commands from editor to controller"))
         self.addWidget(b)
@@ -139,7 +140,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["pause32"],
                 text=_("Pause"),
                 compound=TOP,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.pack(side=LEFT, fill=BOTH)
         tkExtra.Balloon.set(b, _("Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"))
 
@@ -147,7 +148,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["stop32"],
                 text=_("Stop"),
                 compound=TOP,
-                background=Ribbon._BACKGROUND)
+                background=OCV.BACKGROUND)
         b.pack(side=LEFT, fill=BOTH)
         tkExtra.Balloon.set(b, _("Pause running program and soft reset controller to empty the buffer."))
 
@@ -347,10 +348,10 @@ class DROFrame(CNCRibbon.PageFrame):
 
     #----------------------------------------------------------------------
     def updateState(self):
-        msg = self.app._msg or CNC.vars["state"]
-        if CNC.vars["pins"] is not None and CNC.vars["pins"] != "":
-            msg += " ["+CNC.vars["pins"]+"]"
-        self.state.config(text=msg, background=CNC.vars["color"])
+        msg = self.app._msg or OCV.CD["state"]
+        if OCV.CD["pins"] is not None and OCV.CD["pins"] != "":
+            msg += " ["+OCV.CD["pins"]+"]"
+        self.state.config(text=msg, background=OCV.CD["color"])
 
     #----------------------------------------------------------------------
     def updateCoords(self):
@@ -360,17 +361,17 @@ class DROFrame(CNCRibbon.PageFrame):
             focus = None
         if focus is not self.xwork:
             self.xwork.delete(0,END)
-            self.xwork.insert(0,self.padFloat(CNC.drozeropad,CNC.vars["wx"]))
+            self.xwork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wx"]))
         if focus is not self.ywork:
             self.ywork.delete(0,END)
-            self.ywork.insert(0,self.padFloat(CNC.drozeropad,CNC.vars["wy"]))
+            self.ywork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wy"]))
         if focus is not self.zwork:
             self.zwork.delete(0,END)
-            self.zwork.insert(0,self.padFloat(CNC.drozeropad,CNC.vars["wz"]))
+            self.zwork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wz"]))
 
-        self.xmachine["text"] = self.padFloat(CNC.drozeropad,CNC.vars["mx"])
-        self.ymachine["text"] = self.padFloat(CNC.drozeropad,CNC.vars["my"])
-        self.zmachine["text"] = self.padFloat(CNC.drozeropad,CNC.vars["mz"])
+        self.xmachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["mx"])
+        self.ymachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["my"])
+        self.zmachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["mz"])
 
     #----------------------------------------------------------------------
     def padFloat(self, decimals, value):
@@ -410,7 +411,7 @@ class DROFrame(CNCRibbon.PageFrame):
     def setX(self, event=None):
         if self.app.running: return
         try:
-            value = round(eval(self.xwork.get(), None, CNC.vars), 3)
+            value = round(eval(self.xwork.get(), None, OCV.CD), 3)
             self.app.mcontrol._wcsSet(value,None,None)
         except:
             pass
@@ -419,7 +420,7 @@ class DROFrame(CNCRibbon.PageFrame):
     def setY(self, event=None):
         if self.app.running: return
         try:
-            value = round(eval(self.ywork.get(), None, CNC.vars), 3)
+            value = round(eval(self.ywork.get(), None, OCV.CD), 3)
             self.app.mcontrol._wcsSet(None,value,None)
         except:
             pass
@@ -428,26 +429,19 @@ class DROFrame(CNCRibbon.PageFrame):
     def setZ(self, event=None):
         if self.app.running: return
         try:
-            value = round(eval(self.zwork.get(), None, CNC.vars), 3)
+            value = round(eval(self.zwork.get(), None, OCV.CD), 3)
             self.app.mcontrol._wcsSet(None,None,value)
         except:
             pass
 
-    #----------------------------------------------------------------------
-    #def wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
-
-    #----------------------------------------------------------------------
-    #def _wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
-
-    #----------------------------------------------------------------------
     def showState(self):
-        err = CNC.vars["errline"]
+        err = OCV.CD["errline"]
         if err:
-            msg  = _("Last error: %s\n")%(CNC.vars["errline"])
+            msg  = _("Last error: %s\n")%(OCV.CD["errline"])
         else:
             msg = ""
 
-        state = CNC.vars["state"]
+        state = OCV.CD["state"]
         msg += ERROR_CODES.get(state,
                 _("No info available.\nPlease contact the author."))
         tkMessageBox.showinfo(_("State: %s")%(state), msg, parent=self)
@@ -473,81 +467,49 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         z_step_font = Utils.getFont("z_step.font", ControlFrame.z_step_font)
 
-        # Default steppings
-
-        try:
-            self.step1 = Utils.getFloat("Control","step1")
-        except:
-            self.step1 = 1
-        try:
-            self.step2 = Utils.getFloat("Control","step2")
-        except:
-            self.step2 = 1
-
-        try:
-            self.step3 = Utils.getFloat("Control","step3")
-        except:
-            self.step3 = 10
-
-        # Default z-steppings
-        try:
-            self.zstep1 = Utils.getFloat("Control","zstep1")
-        except:
-            self.zstep1 = 0.1
-
-        try:
-            self.zstep2 = Utils.getFloat("Control","zstep2")
-        except:
-            self.zstep2 = 1
-
-        try:
-            self.zstep3 = Utils.getFloat("Control","zstep3")
-        except:
-            self.zstep3 = 5
-
-        try:
-            self.zstep4 = Utils.getFloat("Control","zstep4")
-        except:
-            self.zstep4 = 10
+        Utils.SetSteps()
 
         row = 0
 
         zstep = Utils.config.get("Control","zstep")
         self.zstep = tkExtra.Combobox(self, width=4, background="White")
-        self.zstep.grid(row=row, column=0, columnspan=3, sticky=EW)
+        self.zstep.grid(row=row, column=0, columnspan=4, sticky=EW)
         self.zstep.set(zstep)
         self.zstep.fill(map(float, Utils.config.get("Control","zsteplist").split()))
         tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
         self.addWidget(self.zstep)
 
-        self.step1_b = Button(self, text="%s"%(self.step1),
+        b = Button(self, text="%s"%(OCV.step1),
+                name="step_1",
                 command=self.setStep1,
                 width=2,
                 padx=1, pady=1)
-        self.step1_b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
-        self.step1_b.bind("<Button-3>", lambda event: self.InputValue("S0"))
-        tkExtra.Balloon.set(self.step1_b, _("Use step1"))
-        self.addWidget(self.step1_b)
+        b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
+        b.bind("<Button-3>", lambda event: self.InputValue("S0"))
+        tkExtra.Balloon.set(b, _("Use step1"))
+        self.addWidget(b)
 
 
-        self.step2_b = Button(self, text="%s"%(self.step2),
+        b = Button(self, text="%s"%(OCV.step2),
+                name="step_2",
                 command=self.setStep2,
                 width=2,
                 padx=1, pady=1)
-        self.step2_b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
-        self.step2_b.bind("<Button-3>", lambda event: self.InputValue("S1"))
-        tkExtra.Balloon.set(self.step2_b, _("Use step2"))
-        self.addWidget(self.step2_b)
+        b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
+        b.bind("<Button-3>", lambda event: self.InputValue("S1"))
+        tkExtra.Balloon.set(b, _("Use step2"))
+        self.addWidget(b)
 
 
-        self.step3_b = Button(self, text="%s"%(self.step3),
+        b = Button(self, text="%s"%(OCV.step3),
+                name="step_3",
                 command=self.setStep3,
                 width=2,
                 padx=1, pady=1)
-        self.step3_b.grid(row=row, column=8, columnspan = 2, sticky=EW)
-        self.step3_b.bind("<Button-3>", lambda event: self.InputValue("S2"))
-        tkExtra.Balloon.set(self.step3_b, _("Use step3"))
-        self.addWidget(self.step3_b)
+        b.grid(row=row, column=8, columnspan = 2, sticky=EW)
+        b.bind("<Button-3>", lambda event: self.InputValue("S2"))
+        tkExtra.Balloon.set(b, _("Use step3"))
+        self.addWidget(b)
 
         row = 1
 
@@ -664,23 +626,25 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 6
 
-        b = Button(self, text="%s"%(self.zstep1),
+        b = Button(self, text="%s"%(OCV.zstep1),
+                name="zstep_1",
                 font =  z_step_font,
                 command=self.setZStep1,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        b.bind("<Button-3>",self.zstep1_set)
-        tkExtra.Balloon.set(b, "Zstep1 = %s"%(self.zstep1))
+        b.bind("<Button-3>" ,lambda event: self.InputValue("ZS0"))
+        tkExtra.Balloon.set(b, "Zstep1 = %s"%(OCV.zstep1))
         self.addWidget(b)
 
-        b = Button(self, text="%s"%(self.zstep2),
+        b = Button(self, text="%s"%(OCV.zstep2),
+                name="zstep_2",
                 font =  z_step_font,
                 command=self.setZStep2,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b,"Zstep2 = %s"%(self.zstep2))
+        tkExtra.Balloon.set(b,"Zstep2 = %s"%(OCV.zstep2))
         self.addWidget(b)
 
 
@@ -711,22 +675,24 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 7
 
-        b = Button(self, text="%s"%(self.zstep3),
+        b = Button(self, text="%s"%(OCV.zstep3),
+                name="zstep_3",
                 font =  z_step_font,
                 command=self.setZStep3,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, "Zstep3 = %s"%(self.zstep3))
+        tkExtra.Balloon.set(b, "Zstep3 = %s"%(OCV.zstep3))
         self.addWidget(b)
 
-        b = Button(self, text="%s"%(self.zstep4),
+        b = Button(self, text="%s"%(OCV.zstep4),
+                name="zstep_4",
                 font =  z_step_font,
                 command=self.setZStep4,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, "Zstep4 = %s"%(self.zstep4))
+        tkExtra.Balloon.set(b, "Zstep4 = %s"%(OCV.zstep4))
         self.addWidget(b)
 
         row = 8
@@ -843,6 +809,25 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Return to mem B"))
         self.addWidget(b)
 
+        b = Button(self, text="A2M",
+                    command=self.A2M,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=7, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Store memA to mem N"))
+        self.addWidget(b)
+
+        b = Button(self, text="M_X",
+                    command=self.memX,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=8, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Store position to mem N"))
+        self.addWidget(b)
+
+
         try:
 #            self.grid_anchor(CENTER)
             self.tk.call("grid","anchor",self,CENTER)
@@ -864,6 +849,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             title_c = "Enter Value for Step3:"
             min_value = 0.001
             max_value = 1000.0
+        if caller == "ZS0":
+            title_c = "Enter Value for Z Step1:"
+            min_value = 0.001
+            max_value = 10.0
         elif caller == "TD":
             title_c = "Enter Target Depth "
             min_value = -35.0
@@ -871,29 +860,35 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         else:
             title_c = "Enter a float Value"
             min_value = 0.001
-            max_value = 0.0
+            max_value = 100.0
 
         retval = tkSimpleDialog.askfloat("Value","%s (min: %f max: %f)"%(title_c,min_value,max_value),parent = self, minvalue = min_value, maxvalue = max_value)
 
         if caller == "S0":
-            self.step1_b.configure(text = retval)
-            self.step1 = retval
+            wd = self.nametowidget("step_1")
+            OCV.step1 = retval
             Utils.setFloat("Control", "step1", retval)
         elif caller == "S1":
-            self.step2_b.configure(text = retval)
-            self.step2 = retval
+            wd = self.nametowidget("step_2")
+            OCV.step2 = retval
             Utils.setFloat("Control", "step2", retval)
         elif caller == "S2":
-            self.step3_b.configure(text = retval)
-            self.step3 = retval
+            wd = self.nametowidget("step_3")
+            OCV.step3 = retval
             Utils.setFloat("Control", "step3", retval)
+        elif caller == "ZS0":
+            wd = self.nametowidget("zstep_1")
+            OCV.zstep1 = retval
+            Utils.setFloat("Control", "zstep1", retval)
         else:
             return retval
+
+        if wd is not None:
+            wd.configure(text = retval)
 
 
     def saveConfig(self):
         Utils.setFloat("Control", "step", self.step.get())
-        # Utils.setFloat("Control", "step1", self.step1.get())
         Utils.setFloat("Control", "zstep", self.zstep.get())
 
     def resetAll(self):
@@ -901,32 +896,32 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         wd = self.nametowidget("memA")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")
-        CNC.vars["memAx"] = 0.0
-        CNC.vars["memAy"] = 0.0
-        CNC.vars["memAz"] = 0.0
+        OCV.CD["memAx"] = 0.0
+        OCV.CD["memAy"] = 0.0
+        OCV.CD["memAz"] = 0.0
         self.event_generate("<<ClrMemA>>")
         self.memA_Set = False
 
         wd = self.nametowidget("memB")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")
-        CNC.vars["memBx"] = 0.0
-        CNC.vars["memBy"] = 0.0
-        CNC.vars["memBz"] = 0.0
+        OCV.CD["memBx"] = 0.0
+        OCV.CD["memBy"] = 0.0
+        OCV.CD["memBz"] = 0.0
         self.event_generate("<<ClrMemB>>")
         self.memB_Set = False
 
     def memA(self):
-        #print("State: ", CNC.vars["state"])
-        if CNC.vars["state"] == "Idle":
-            mAx = CNC.vars["wx"]
-            mAy = CNC.vars["wy"]
-            mAz = CNC.vars["wz"]
-            CNC.vars["memAx"] = mAx
-            CNC.vars["memAy"] = mAy
-            CNC.vars["memAz"] = mAz
+        #print("State: ", OCV.CD["state"])
+        if OCV.CD["state"] == "Idle":
+            mAx = OCV.CD["wx"]
+            mAy = OCV.CD["wy"]
+            mAz = OCV.CD["wz"]
+            OCV.CD["memAx"] = mAx
+            OCV.CD["memAy"] = mAy
+            OCV.CD["memAz"] = mAz
 
-            wdata = _("mem_A = \nX: %f \nY: %f \nZ: %f"%(mAx,mAy,mAz))
+            wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format("mem_A",mAx, mAy, mAz)
             wd = self.nametowidget("memA")
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
@@ -938,36 +933,54 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
 
     def memB(self):
-        if CNC.vars["state"] == "Idle":
-            mBx = CNC.vars["wx"]
-            mBy = CNC.vars["wy"]
-            mBz = CNC.vars["wz"]
-            CNC.vars["memBx"] = mBx
-            CNC.vars["memBy"] = mBy
-            CNC.vars["memBz"] = mBz
+        if OCV.CD["state"] == "Idle":
+            mBx = OCV.CD["wx"]
+            mBy = OCV.CD["wy"]
+            mBz = OCV.CD["wz"]
+            OCV.CD["memBx"] = mBx
+            OCV.CD["memBy"] = mBy
+            OCV.CD["memBz"] = mBz
 
-            wdata = _("mem_B = \nX: %f \nY: %f \nZ: %f"%(mBx,mBy,mBz))
+            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format("mem_B",mBx, mBy, mBz)
 
             wd = self.nametowidget("memB")
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
+
             self.event_generate("<<SetMemB>>")
             self.memB_Set = True
         else:
             pass
 
     def retA(self):
-        if CNC.vars["state"] == "Idle":
+        if OCV.CD["state"] == "Idle":
             self.sendGCode("G90")
-            self.sendGCode("G0 X%f Y%f"%(CNC.vars["memAx"],CNC.vars["memAy"]))
+            self.sendGCode("G0 X{0:f} Y{1:f}".format(OCV.CD["memAx"],OCV.CD["memAy"]))
         else:
             pass
 
     def retB(self):
-        if CNC.vars["state"] == "Idle":
+        if OCV.CD["state"] == "Idle":
             self.sendGCode("G90")
-            self.sendGCode("G0 X%f Y%f"%(CNC.vars["memBx"],CNC.vars["memBy"]))
+            self.sendGCode("G0 X{0:f} Y{1:f}".format(OCV.CD["memBx"],OCV.CD["memBy"]))
         else:
+            pass
+
+    def A2M(self):
+        if OCV.CD["state"] == "Idle":
+            #OCV.CD["memAx"] = mBx
+            #OCV.CD["memAy"] = mBy
+            #OCV.CD["memAz"] = mBz
+            pass
+
+    def memX(self):
+        # WIP #
+        if OCV.CD["state"] == "Idle":
+
+            mx = OCV.CD["wx"]
+            my = OCV.CD["wy"]
+            mz = OCV.CD["wz"]
+            OCV.WK_mem = 0
             pass
 
 
@@ -1001,75 +1014,72 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def moveXup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X%s"%(self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("X", float(self.step.get())))
 
     def moveXdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X-%s"%(self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("X-", float(self.step.get())))
 
     def moveYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0Y%s"%(self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("Y",float(self.step.get())))
 
     def moveYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0Y-%s"%(self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("Y-", float(self.step.get())))
 
     def moveXdownYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X-%sY%s"%(self.step.get(),self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X-", float(self.step.get()),
+                "Y", float(self.step.get())))
 
     def moveXupYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X%sY%s"%(self.step.get(),self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X", float(self.step.get()),
+                "Y", float(self.step.get())))
 
     def moveXdownYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X-%sY-%s"%(self.step.get(),self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X-", float(self.step.get()),
+                "Y-", float(self.step.get())))
 
     def moveXupYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0X%sY-%s"%(self.step.get(),self.step.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X", float(self.step.get()),
+                "Y-", float(self.step.get())))
 
     def moveZup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0Z%s"%(self.zstep.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
 
     def moveZdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.sendGCode("G91G0Z-%s"%(self.zstep.get()))
-        self.sendGCode("G90")
+        self.app.mcontrol.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
 
     def go2origin(self, event=None):
         self.sendGCode("G90")
+        self.sendGCode("G0Z{0:.{1}f}".format(OCV.CD['safe'], OCV.digits))
         self.sendGCode("G0X0Y0")
         self.sendGCode("G0Z0")
 
 
     def setStep(self, s, zs=None,fs=None):
-        self.step.set("%.4g"%(s))
+        self.step.set("{0:.4f}".format(float(s)))
 
         if fs is not None:
-            self.stepf.set("%.4g"%(fs))
+            self.stepf.set("{0:.4f}".format(fs))
 
         if self.zstep is self.step or zs is None:
             self.event_generate("<<Status>>",
-                data=_("Step: %g")%(s))
-                #data=(_("Step: %g")%(s)).encode("utf8"))
+                data=_("Step: {0:.4f}".format(float(s))))
         else:
-            self.zstep.set("%.4g"%(zs))
+            self.zstep.set("{0:.4f}".format(float(zs)))
             self.event_generate("<<Status>>",
-                data=_("Step: %g    Zstep:%g ")%(s,zs))
-                #data=(_("Step: %g    Zstep:%g ")%(s,zs)).encode("utf8"))
+                data=_("Step: {0:.4f}    Zstep: {1:.4f} ".format(float(s),float(zs))))
 
     #----------------------------------------------------------------------
     @staticmethod
@@ -1094,7 +1104,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def incStepF(self, event=None):
         if event is not None and not self.acceptKey(): return
-        step, power = ControlFrame._stepPower(self.step1.get())
+        step, power = ControlFrame._stepPower(OCV.step1)
         s = float(self.step.get()) + power
         zs = None
         if s<_LOWSTEP: s = _LOWSTEP
@@ -1122,7 +1132,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def decStepF(self, event=None):
         if event is not None and not self.acceptKey(): return
-        step, power = ControlFrame._stepPower(self.step1.get())
+        step, power = ControlFrame._stepPower(OCV.step1)
         s = float(self.step.get()) - power
         zs = None
         if s<=0.0: s = step-power/10.0
@@ -1162,45 +1172,45 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def setZStep1(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(float(self.step.get()), self.zstep1)
+        self.setStep(float(self.step.get()), OCV.zstep1)
 
     #----------------------------------------------------------------------
     def setZStep2(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(float(self.step.get()), self.zstep2)
+        self.setStep(float(self.step.get()), OCV.zstep2)
 
     #----------------------------------------------------------------------
     def setZStep3(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(float(self.step.get()), self.zstep3)
+        self.setStep(float(self.step.get()), OCV.zstep3)
 
    #----------------------------------------------------------------------
     def setZStep4(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(float(self.step.get()), self.zstep4)
+        self.setStep(float(self.step.get()), OCV.zstep4)
 
     #-----------------------------------------------------------------------
     def zstep1_set(self, event=None):
         return
         """
-        self.zstep1 = float(self.zstep.get())
-        self.setStep(float(self.step.get()), self.zstep1)
+        OCV.zstep1 = float(self.zstep.get())
+        self.setStep(float(self.step.get()), OCV.zstep1)
         return
         """
     #----------------------------------------------------------------------
     def setStep1(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(self.step1, float(self.zstep.get()))
+        self.setStep(OCV.step1, float(self.zstep.get()))
 
     #----------------------------------------------------------------------
     def setStep2(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(self.step2, float(self.zstep.get()))
+        self.setStep(OCV.step2, float(self.zstep.get()))
 
     #----------------------------------------------------------------------
     def setStep3(self, event=None):
         if event is not None and not self.acceptKey(): return
-        self.setStep(self.step3, float(self.zstep.get()))
+        self.setStep(OCV.step3, float(self.zstep.get()))
 
 #===============================================================================
 # StateFrame
@@ -1482,8 +1492,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def overrideChange(self, event=None):
         n = self.overrideCombo.get()
         c = self.override.get()
-        CNC.vars["_Ov"+n] = c
-        CNC.vars["_OvChanged"] = True
+        OCV.CD["_Ov"+n] = c
+        OCV.CD["_OvChanged"] = True
 
     #----------------------------------------------------------------------
     def resetOverride(self, event=None):
@@ -1497,7 +1507,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             self.overrideScale.config(to_=100, resolution=25)
         else:
             self.overrideScale.config(to_=200, resolution=1)
-        self.override.set(CNC.vars["_Ov"+n])
+        self.override.set(OCV.CD["_Ov"+n])
 
     #----------------------------------------------------------------------
     def _gChange(self, value, dictionary):
@@ -1556,7 +1566,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def spindleControl(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if CNC.vars["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED): return
+        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED): return
         if self.spindle.get():
             self.sendGCode("M3 S%d"%(self.spindleSpeed.get()))
         else:
@@ -1566,7 +1576,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantMist(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if CNC.vars["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.mist.set(FALSE)
             return
         self.coolant.set(FALSE)
@@ -1577,7 +1587,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantFlood(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if CNC.vars["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.flood.set(FALSE)
             return
         self.coolant.set(FALSE)
@@ -1588,7 +1598,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantOff(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if CNC.vars["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.coolant.set(FALSE)
             return
         self.flood.set(FALSE)
@@ -1606,17 +1616,17 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             focus = None
 
         try:
-            wcsvar.set(WCS.index(CNC.vars["WCS"]))
-            self.feedRate.set(str(CNC.vars["feed"]))
-            self.feedMode.set(FEED_MODE[CNC.vars["feedmode"]])
-            self.spindle.set(CNC.vars["spindle"]=="M3")
-            self.spindleSpeed.set(int(CNC.vars["rpm"]))
-            self.toolEntry.set(CNC.vars["tool"])
-            self.units.set(UNITS[CNC.vars["units"]])
-            self.distance.set(DISTANCE_MODE[CNC.vars["distance"]])
-            self.plane.set(PLANE[CNC.vars["plane"]])
-            self.tlo.set(str(CNC.vars["TLO"]))
-            self.g92.config(text=str(CNC.vars["G92"]))
+            wcsvar.set(WCS.index(OCV.CD["WCS"]))
+            self.feedRate.set(str(OCV.CD["feed"]))
+            self.feedMode.set(FEED_MODE[OCV.CD["feedmode"]])
+            self.spindle.set(OCV.CD["spindle"]=="M3")
+            self.spindleSpeed.set(int(OCV.CD["rpm"]))
+            self.toolEntry.set(OCV.CD["tool"])
+            self.units.set(UNITS[OCV.CD["units"]])
+            self.distance.set(DISTANCE_MODE[OCV.CD["distance"]])
+            self.plane.set(PLANE[OCV.CD["plane"]])
+            self.tlo.set(str(OCV.CD["TLO"]))
+            self.g92.config(text=str(OCV.CD["G92"]))
         except KeyError:
             pass
 
@@ -1627,7 +1637,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         if self.feedRate.cget("state") == DISABLED:
             self.feedRate.config(state=NORMAL)
             self.feedRate.delete(0,END)
-            self.feedRate.insert(0, CNC.vars["curfeed"])
+            self.feedRate.insert(0, OCV.CD["curfeed"])
             self.feedRate.config(state=DISABLED)
 
     #----------------------------------------------------------------------

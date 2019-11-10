@@ -4,6 +4,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 from _GenericController import _GenericController
 from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, VARPAT
+
+import OCV
 from CNC import CNC
 import time
 
@@ -50,21 +52,21 @@ class Controller(_GenericController):
 		l= ln.split('|')
 
 		# strip off status
-		CNC.vars["state"]= l[0]
+		OCV.CD["state"]= l[0]
 
 		# strip of rest into a dict of name: [values,...,]
 		d= { a: [float(y) for y in b.split(',')] for a, b in [x.split(':') for x in l[1:]] }
-		CNC.vars["mx"] = float(d['MPos'][0])
-		CNC.vars["my"] = float(d['MPos'][1])
-		CNC.vars["mz"] = float(d['MPos'][2])
-		CNC.vars["wx"] = float(d['WPos'][0])
-		CNC.vars["wy"] = float(d['WPos'][1])
-		CNC.vars["wz"] = float(d['WPos'][2])
-		CNC.vars["wcox"] = CNC.vars["mx"] - CNC.vars["wx"]
-		CNC.vars["wcoy"] = CNC.vars["my"] - CNC.vars["wy"]
-		CNC.vars["wcoz"] = CNC.vars["mz"] - CNC.vars["wz"]
+		OCV.CD["mx"] = float(d['MPos'][0])
+		OCV.CD["my"] = float(d['MPos'][1])
+		OCV.CD["mz"] = float(d['MPos'][2])
+		OCV.CD["wx"] = float(d['WPos'][0])
+		OCV.CD["wy"] = float(d['WPos'][1])
+		OCV.CD["wz"] = float(d['WPos'][2])
+		OCV.CD["wcox"] = OCV.CD["mx"] - OCV.CD["wx"]
+		OCV.CD["wcoy"] = OCV.CD["my"] - OCV.CD["wy"]
+		OCV.CD["wcoz"] = OCV.CD["mz"] - OCV.CD["wz"]
 		if 'F' in d:
-		        CNC.vars["curfeed"] = float(d['F'][0])
+		        OCV.CD["curfeed"] = float(d['F'][0])
 		self.master._posUpdate = True
 
 		# Machine is Idle buffer is empty
@@ -77,31 +79,31 @@ class Controller(_GenericController):
 		pat = POSPAT.match(line)
 		if pat:
 			if pat.group(1) == "PRB":
-				CNC.vars["prbx"] = float(pat.group(2))
-				CNC.vars["prby"] = float(pat.group(3))
-				CNC.vars["prbz"] = float(pat.group(4))
+				OCV.CD["prbx"] = float(pat.group(2))
+				OCV.CD["prby"] = float(pat.group(3))
+				OCV.CD["prbz"] = float(pat.group(4))
 				#if self.running:
 				self.master.gcode.probe.add(
-					 CNC.vars["prbx"]
-					+CNC.vars["wx"]
-					-CNC.vars["mx"],
-					 CNC.vars["prby"]
-					+CNC.vars["wy"]
-					-CNC.vars["my"],
-					 CNC.vars["prbz"]
-					+CNC.vars["wz"]
-					-CNC.vars["mz"])
+					 OCV.CD["prbx"]
+					+OCV.CD["wx"]
+					-OCV.CD["mx"],
+					 OCV.CD["prby"]
+					+OCV.CD["wy"]
+					-OCV.CD["my"],
+					 OCV.CD["prbz"]
+					+OCV.CD["wz"]
+					-OCV.CD["mz"])
 				self.master._probeUpdate = True
-			CNC.vars[pat.group(1)] = \
+			OCV.CD[pat.group(1)] = \
 				[float(pat.group(2)),
 				 float(pat.group(3)),
 				 float(pat.group(4))]
 		else:
 			pat = TLOPAT.match(line)
 			if pat:
-				CNC.vars[pat.group(1)] = pat.group(2)
+				OCV.CD[pat.group(1)] = pat.group(2)
 				self.master._probeUpdate = True
 			elif DOLLARPAT.match(line):
-				CNC.vars["G"] = line[1:-1].split()
+				OCV.CD["G"] = line[1:-1].split()
 				CNC.updateG()
 				self.master._gUpdate = True
