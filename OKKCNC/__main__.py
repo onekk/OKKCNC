@@ -329,10 +329,9 @@ class Application(Toplevel,Sender):
         self.bind("<<AddMarker>>",    self.canvasFrame.canvas.setActionAddMarker)
         self.bind('<<MoveGantry>>',    self.canvasFrame.canvas.setActionGantry)
         self.bind('<<SetWPOS>>',    self.canvasFrame.canvas.setActionWPOS)
-        self.bind('<<SetMemA>>',    self.setMemA)
-        self.bind('<<SetMemB>>',    self.setMemB)
-        self.bind('<<ClrMemA>>',    self.clrMemA)
-        self.bind('<<ClrMemB>>',    self.clrMemB)
+        self.bind('<<SetMem>>',    self.setMem)
+        self.bind('<<ClrMem>>',    self.clrMem)
+
 
 
         frame = Page.frames["Probe:Tool"]
@@ -498,17 +497,13 @@ class Application(Toplevel,Sender):
     def updateStatus(self, event):
         self.setStatus(_(event.data))
 
-    def setMemA(self, event=None):
-        self.canvasFrame.canvas.memARefresh()
+    def setMem(self, event=None):
+        self.canvasFrame.canvas.memCreate(OCV.WK_mem)
+        self.canvasFrame.canvas.memPosition(OCV.WK_mem)
 
-    def setMemB(self, event=None):
-        self.canvasFrame.canvas.memBRefresh()
+    def clrMem(self, event=None):
+        self.canvasFrame.canvas.memDelete(OCV.WK_mem)
 
-    def clrMemA(self, event=None):
-        self.canvasFrame.canvas._memAHori = False
-
-    def clrMemB(self, event=None):
-        self.canvasFrame.canvas._memAHori = False
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
     #-----------------------------------------------------------------------
@@ -763,7 +758,6 @@ class Application(Toplevel,Sender):
         self.editor.selectClear()
         self.editor.selectAll()
         self.editor.deleteBlock()
-        self.canvasFrame.canvas.reset()
 
     #-----------------------------------------------------------------------
     def addUndo(self, undoinfo):

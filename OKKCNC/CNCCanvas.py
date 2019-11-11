@@ -237,16 +237,6 @@ class CNCCanvas(Canvas, object):
         self._cameraCircle   = None
         self._cameraCircle2  = None
 
-        self._memAHori     = None        # cross hair items
-        self._memAVert     = None
-        self._memACircle   = None
-        self._memAText     = None
-
-        self._memBHori     = None        # cross hair items
-        self._memBVert     = None
-        self._memBCircle   = None
-        self._memBText     = None
-
         self.draw_axes    = True        # Drawing flags
         self.draw_grid    = True
         self.draw_margin  = True
@@ -927,10 +917,8 @@ class CNCCanvas(Canvas, object):
         self.RefreshItems()
 
     def RefreshItems(self):
-        if self._memAHori is not None:
-            self.memARefresh()
-        if self._memBHori is not None:
-            self.memBRefresh()
+        #here hust in case some actions are needed
+        pass
 
     # ----------------------------------------------------------------------
     def menuZoomIn(self, event=None):
@@ -1350,110 +1338,87 @@ class CNCCanvas(Canvas, object):
     # ----------------------------------------------------------------------
     # Reposition mem and crosshair
     # ----------------------------------------------------------------------
-    def memAPosition(self):
+    def memCreate(self, mem_num):
+        mem_name = "mem_{0}".format(mem_num)
+        mem_cross_h = mem_name + "Cross_H"
+        mem_cross_v = mem_name + "Cross_V"
+        mem_cross_c = mem_name + "Cross_C"
+        mem_text = mem_name +"Text"
+        mem_tt = mem_name +"Tt"
+
+        self.delete(mem_cross_h)
+        self.delete(mem_cross_v)
+        self.delete(mem_cross_c)
+        self.delete(mem_text)
+        self.delete(mem_tt)
+
+        # create cross hair at dummy location we will correct latter
+        c_dim =  6
+        r_dim = c_dim // 3
+        objA = self.create_line(0, 0, c_dim, 0, fill=OCV.MEM_COLOR,
+                                tag=mem_cross_h)
+        objB = self.create_line(0, 0, 0, c_dim, fill=OCV.MEM_COLOR,
+                                tag=mem_cross_v)
+        objC  = self.create_oval(0, 0, r_dim, r_dim, outline=OCV.MEM_COLOR,
+                                 tag=mem_cross_c)
+        if mem_num == 0:
+            mem_id = "mem_A"
+        elif mem_num == 1:
+            mem_id = "mem_B"
+        else:
+            mem_id = mem_name
+
+
+        ttext = "Memory {0} \nX: {1:.04f}  \nY: {2:.04f} \nZ: {3:.04f}".format(
+                mem_id, OCV.WK_mems[mem_name][0], OCV.WK_mems[mem_name][1], OCV.WK_mems[mem_name][2])
+        text = mem_id
+        objD = self.create_text(0 , 0,text=text, anchor=N,
+                            justify=LEFT, fill=OCV.MEM_COLOR, tag=mem_text)
+        CanvasTooltip(self, objD, text=ttext,tag=mem_tt)
+
+
+    def memDelete(self, mem_num):
+        mem_name = "mem_{0}".format(mem_num)
+        mem_cross_h = mem_name + "Cross_H"
+        mem_cross_v = mem_name + "Cross_V"
+        mem_cross_c = mem_name + "Cross_C"
+        mem_text = mem_name +"Text"
+        mem_tt = mem_name +"Tt"
+
+        self.delete(mem_cross_h)
+        self.delete(mem_cross_v)
+        self.delete(mem_cross_c)
+        self.delete(mem_text)
+        self.delete(mem_tt)
+
+
+    def memPosition(self,mem_num):
+        mem_name = "mem_{0}".format(mem_num)
+        mem_cross_h = mem_name + "Cross_H"
+        mem_cross_v = mem_name + "Cross_V"
+        mem_cross_c = mem_name + "Cross_C"
+        mem_text = mem_name +"Text"
         c_dim =  6
         wc = c_dim // 2
         hc = c_dim // 2
         r_dim = c_dim // 3
-        x,y = self.plotCoords([(OCV.CD["memAx"], OCV.CD["memAy"], 0.)])[0]
+        x,y = self.plotCoords([(OCV.WK_mems[mem_name][0],
+                                OCV.WK_mems[mem_name][1],
+                                OCV.WK_mems[mem_name][2])])[0]
 
         #print ("Zoom in memA = ",self.zoom)
+        wd0 = self.find_withtag(mem_cross_h)[0]
+        wd1 = self.find_withtag(mem_cross_v)[0]
+        wd2 = self.find_withtag(mem_cross_c)[0]
+        wd3 = self.find_withtag(mem_text)[0]
 
-        self.coords(self._memAHori,    x-wc, y, x+wc, y)
-        self.coords(self._memAVert,    x, y-hc, x, y+hc)
-        self.coords(self._memACircle,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
-        i_bbox = self.bbox("memAtext")
+        self.coords(wd0,    x-wc, y, x+wc, y)
+        self.coords(wd1,    x, y-hc, x, y+hc)
+        self.coords(wd2,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
+        i_bbox = self.bbox(wd3)
         i_off = (i_bbox[3] - i_bbox[1]) // 4
         #print ("bbox of memA = ",offy)
-        self.coords(self._memAText, x, y + i_off)
-
-
-    def memARefresh(self):
-        self.delete("memAcross")
-        self.delete("memAtext")
-        # create cross hair at dummy location we will correct latter
-        c_dim =  6
-        r_dim = c_dim // 3
-        self._memAHori = self.create_line(0, 0, c_dim, 0,
-                                          fill=OCV.MEM_COLOR, tag="memAcross")
-        self._memAVert = self.create_line(0, 0, 0, c_dim,
-                                          fill=OCV.MEM_COLOR, tag="memAcross")
-        self._memACircle  = self.create_oval(0, 0, r_dim, r_dim,
-                                             outline=OCV.MEM_COLOR, tag="memAcross")
-        ttextA = "Memory A \nX: %.f  \nY: %.f \nZ: %.f"%(
-                OCV.CD["memAx"], OCV.CD["memAy"], OCV.CD["memAz"])
-        textA = "M_A"
-        self._memAText = self.create_text(0 , 0,text=textA, anchor=N,
-                            justify=LEFT, fill=OCV.MEM_COLOR, tag="memAtext")
-        tooltip = CanvasTooltip(self, "memAcross", text=ttextA)
-
-        self.tooltips.append(tooltip)
-        self.memAPosition()
-
-    def memBPosition(self):
-        c_dim =  6
-        wc = c_dim // 2
-        hc = c_dim // 2
-        r_dim = c_dim // 3
-        x,y = self.plotCoords([(OCV.CD["memBx"], OCV.CD["memBy"], 0.)])[0]
-
-        #print ("Zoom in memA = ",self.zoom)
-
-        self.coords(self._memBHori,    x-wc, y, x+wc, y)
-        self.coords(self._memBVert,    x, y-hc, x, y+hc)
-        self.coords(self._memBCircle,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
-        i_bbox = self.bbox("memBtext")
-        i_off = (i_bbox[3] - i_bbox[1]) // 4
-        #print ("bbox of memA = ",offy)
-        self.coords(self._memBText, x, y + i_off)
-
-    def memBRefresh(self):
-        self.delete("memBcross")
-        self.delete("memBtext")
-        # create cross hair at dummy location we will correct latter
-        c_dim =  6
-        r_dim = c_dim // 3
-        self._memBHori = self.create_line(0, 0, c_dim, 0,
-                                          fill=OCV.MEM_COLOR, tag="memBcross")
-        self._memBVert = self.create_line(0, 0, 0, c_dim,
-                                          fill=OCV.MEM_COLOR, tag="memBcross")
-        self._memBCircle  = self.create_oval(0, 0, r_dim, r_dim,
-                                             outline=OCV.MEM_COLOR, tag="memBcross")
-        ttextB = "Memory B: \nX: %.f  \nY: %.f \nZ: %.f"%(
-                OCV.CD["memBx"], OCV.CD["memBy"], OCV.CD["memBz"])
-        textB ="M_B"
-        self._memBText = self.create_text(0 , 0,text=textB, anchor=N,
-                            justify=LEFT, fill=OCV.MEM_COLOR, tag="memBtext")
-        tooltip = CanvasTooltip(self, "memBcross", text=ttextB)
-
-        self.tooltips.append(tooltip)
-        self.memBPosition()
-
-    def memgencreate(self, name, x,y,z):
-        obj_name = "{0}_obj".format(name)
-        obj_text = "{0}_text".format(name)
-        obj_tag = "{0}_cross".format(name)
-        self.delete(obj_name)
-        self.delete(obj_text)
-        # create cross hair at dummy location we will correct latter
-        c_dim =  6
-        r_dim = c_dim // 3
-        memBHori = self.create_line(0, 0, c_dim, 0,
-                                    fill=OCV.MEM_COLOR, tag=obj_tag)
-        memBVert = self.create_line(0, 0, 0, c_dim,
-                                          fill=OCV.MEM_COLOR, tag=obj_tag)
-        memBCircle  = self.create_oval(0, 0, r_dim, r_dim,
-                                             outline=OCV.MEM_COLOR, tag=obj_tag)
-        ttext = "Memory {0}: \nX: {1:f}  \nY: {2:f} \nZ: {3:f}".format(name,
-                x, y, z)
-        text = "M_{0}".format(name)
-        self._memBText = self.create_text(0 , 0,text=text, anchor=N,
-                            justify=LEFT, fill=OCV.MEM_COLOR, tag=obj_text)
-        tooltip = CanvasTooltip(self, obj_tag, text=ttext)
-
-        self.tooltips.append(tooltip)
-        self.memBPosition()
-
+        self.coords(wd3, x, y + i_off)
 
     #----------------------------------------------------------------------
     # Draw gantry location
@@ -2365,7 +2330,8 @@ class CanvasTooltip:
                  pad=(5, 3, 5, 3),
                  text='canvas info',
                  waittime=400,
-                 wraplength=250):
+                 wraplength=250,
+                 tag=None):
         self.waittime = waittime  # in miliseconds, originally 500
         self.wraplength = wraplength  # in pixels, originally 180
         self.canvas = canvas
@@ -2377,6 +2343,7 @@ class CanvasTooltip:
         self.pad = pad
         self.id = None
         self.tw = None
+        self.tag = tag
 
     def onEnter(self, event=None):
         self.schedule()

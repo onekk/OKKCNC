@@ -40,15 +40,15 @@ def RectPath(x,y,w,h):
         return (xR,yR)
 
 
-def line(self, app, endDepth):
+def line(self, app, endDepth, mem_0, mem_1):
 
-    XStart = min(OCV.CD["memAx"],OCV.CD["memBx"])
-    YStart = min(OCV.CD["memAy"],OCV.CD["memBy"])
+    XStart = min(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
+    YStart = min(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
 
-    XEnd = max(OCV.CD["memAx"],OCV.CD["memBx"])
-    YEnd = max(OCV.CD["memAy"],OCV.CD["memBy"])
+    XEnd = max(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
+    YEnd = max(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
 
-    startDepth = OCV.CD["memBz"]
+    startDepth = OCV.WK_mems[mem_1][2]
 
     toolDiam = OCV.CD['diameter']
     #toolRadius = toolDiam / 2.
@@ -126,15 +126,15 @@ def line(self, app, endDepth):
         app.setStatus(_("Line Cut: Generated line cut code"))
 
 
-def pocket(self, app, endDepth):
+def pocket(self, app, endDepth, mem_0, mem_1):
 
-    XStart = min(OCV.CD["memAx"],OCV.CD["memBx"])
-    YStart = min(OCV.CD["memAy"],OCV.CD["memBy"])
+    XStart = min(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
+    YStart = min(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
 
-    XEnd = max(OCV.CD["memAx"],OCV.CD["memBx"])
-    YEnd = max(OCV.CD["memAy"],OCV.CD["memBy"])
+    XEnd = max(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
+    YEnd = max(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
 
-    startDepth = OCV.CD["memBz"]
+    startDepth = OCV.WK_mems[mem_1][2]
 
     toolDiam = OCV.CD['diameter']
     toolRadius = toolDiam / 2.

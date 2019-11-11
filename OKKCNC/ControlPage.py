@@ -809,22 +809,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Return to mem B"))
         self.addWidget(b)
 
-        b = Button(self, text="A2M",
-                    command=self.A2M,
-                    width=3,
-                    padx=b_padx, pady=b_pady,
-                    activebackground="LightYellow")
-        b.grid(row=7, column=column, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Store memA to mem N"))
-        self.addWidget(b)
-
         b = Button(self, text="M_X",
                     command=self.memX,
                     width=3,
                     padx=b_padx, pady=b_pady,
                     activebackground="LightYellow")
-        b.grid(row=8, column=column, columnspan=2, sticky=EW)
+        b.grid(row=7, column=column, columnspan=2, sticky=EW)
         tkExtra.Balloon.set(b, _("Store position to mem N"))
+        self.addWidget(b)
+
+        b = Button(self, text="D_X",
+                    command=self.del_memX,
+                    width=3,
+                    padx=b_padx, pady=b_pady,
+                    activebackground="LightYellow")
+        b.grid(row=8, column=column, columnspan=2, sticky=EW)
+        tkExtra.Balloon.set(b, _("Delete mem N"))
         self.addWidget(b)
 
 
@@ -836,12 +836,14 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     #----------------------------------------------------------------------
     def InputValue(self,caller):
+        title_d = _("Enter A Value")
         title_c = ""
+        c_t = 0
         if caller == "S0":
             title_c = "Enter Value for Step1:"
             min_value = 0.001
             max_value = 100.0
-        if caller == "S1":
+        elif caller == "S1":
             title_c = "Enter Value for Step2:"
             min_value = 0.001
             max_value = 1000.0
@@ -849,7 +851,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             title_c = "Enter Value for Step3:"
             min_value = 0.001
             max_value = 1000.0
-        if caller == "ZS0":
+        elif caller == "ZS0":
             title_c = "Enter Value for Z Step1:"
             min_value = 0.001
             max_value = 10.0
@@ -857,12 +859,30 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             title_c = "Enter Target Depth "
             min_value = -35.0
             max_value = 0.0
+        elif caller == "MN":
+            title_c = "Enter Memory Number"
+            min_value = 2
+            max_value = 99
+            c_t = 1
         else:
             title_c = "Enter a float Value"
             min_value = 0.001
             max_value = 100.0
 
-        retval = tkSimpleDialog.askfloat("Value","%s (min: %f max: %f)"%(title_c,min_value,max_value),parent = self, minvalue = min_value, maxvalue = max_value)
+        if c_t == 0:
+            prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(title_c,
+                      min_value,
+                      max_value)
+            retval = tkSimpleDialog.askfloat(title_d, prompt, parent = self,
+                                             minvalue = min_value,
+                                             maxvalue = max_value)
+        elif c_t == 1:
+            prompt = "{0}\n (min: {1:d} max: {2:d})".format(title_c,
+                      min_value,
+                      max_value)
+            retval = tkSimpleDialog.askinteger(title_d, prompt, parent = self,
+                                               minvalue = min_value,
+                                               maxvalue = max_value)
 
         if caller == "S0":
             wd = self.nametowidget("step_1")
@@ -896,38 +916,37 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         wd = self.nametowidget("memA")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")
-        OCV.CD["memAx"] = 0.0
-        OCV.CD["memAy"] = 0.0
-        OCV.CD["memAz"] = 0.0
-        self.event_generate("<<ClrMemA>>")
+
+        OCV.WK_mem = 0 # memA
+        self.event_generate("<<ClrMem>>")
         self.memA_Set = False
 
+        OCV.WK_mem = 1 # memB
         wd = self.nametowidget("memB")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")
-        OCV.CD["memBx"] = 0.0
-        OCV.CD["memBy"] = 0.0
-        OCV.CD["memBz"] = 0.0
-        self.event_generate("<<ClrMemB>>")
+
+        self.event_generate("<<ClrMem>>")
         self.memB_Set = False
 
     def memA(self):
-        #print("State: ", OCV.CD["state"])
         if OCV.CD["state"] == "Idle":
-            mAx = OCV.CD["wx"]
-            mAy = OCV.CD["wy"]
-            mAz = OCV.CD["wz"]
-            OCV.CD["memAx"] = mAx
-            OCV.CD["memAy"] = mAy
-            OCV.CD["memAz"] = mAz
+            mBx = OCV.CD["wx"]
+            mBy = OCV.CD["wy"]
+            mBz = OCV.CD["wz"]
+            OCV.WK_mem = 0 # 1= memB
 
-            wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format("mem_A",mAx, mAy, mAz)
-            wd = self.nametowidget("memA")
+            mem_name = "memA"
+            OCV.WK_mems["mem_0"] = [mBx,mBy,mBz]
+            wd = self.nametowidget(mem_name)
+
+            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
+
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
-            self.event_generate("<<SetMemA>>")
-            self.memA_Set = True
 
+            self.event_generate("<<SetMem>>")
+            self.memA_Set = True
         else:
             pass
 
@@ -937,55 +956,82 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             mBx = OCV.CD["wx"]
             mBy = OCV.CD["wy"]
             mBz = OCV.CD["wz"]
-            OCV.CD["memBx"] = mBx
-            OCV.CD["memBy"] = mBy
-            OCV.CD["memBz"] = mBz
+            OCV.WK_mem = 1 # 1= memB
 
-            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format("mem_B",mBx, mBy, mBz)
+            mem_name = "memB"
+            OCV.WK_mems["mem_1"] = [mBx,mBy,mBz]
+            wd = self.nametowidget(mem_name)
 
-            wd = self.nametowidget("memB")
+            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
+
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
 
-            self.event_generate("<<SetMemB>>")
+            self.event_generate("<<SetMem>>")
             self.memB_Set = True
+        else:
+            pass
+
+    def memX(self):
+        if OCV.CD["state"] == "Idle":
+            mBx = OCV.CD["wx"]
+            mBy = OCV.CD["wy"]
+            mBz = OCV.CD["wz"]
+
+            OCV.WK_mem = self.InputValue("MN")
+
+            if OCV.WK_mem == None:
+                return
+            elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
+                return
+            else:
+                pass
+
+            mem_name = "mem_{0}".format(OCV.WK_mem)
+            OCV.WK_mems[mem_name] = [mBx,mBy,mBz]
+
+            self.event_generate("<<SetMem>>")
+
+        else:
+            pass
+
+    def del_memX(self):
+        if OCV.CD["state"] == "Idle":
+
+            OCV.WK_mem = self.InputValue("MN")
+
+            if OCV.WK_mem == None:
+                return
+            elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
+                return
+            else:
+                pass
+
+            mem_name = "mem_{0}".format(OCV.WK_mem)
+            OCV.WK_mems[mem_name] = [None,None,None]
+
+            self.event_generate("<<ClrMem>>")
+
         else:
             pass
 
     def retA(self):
         if OCV.CD["state"] == "Idle":
             self.sendGCode("G90")
-            self.sendGCode("G0 X{0:f} Y{1:f}".format(OCV.CD["memAx"],OCV.CD["memAy"]))
+            self.sendGCode("G0 X{0:f} Y{1:f}".format( OCV.WK_mems["mem_0"][0],
+                            OCV.WK_mems["mem_0"][1]))
         else:
             pass
 
     def retB(self):
         if OCV.CD["state"] == "Idle":
             self.sendGCode("G90")
-            self.sendGCode("G0 X{0:f} Y{1:f}".format(OCV.CD["memBx"],OCV.CD["memBy"]))
+            self.sendGCode("G0 X{0:f} Y{1:f}".format( OCV.WK_mems["mem_1"][0],
+                            OCV.WK_mems["mem_1"][1]))
         else:
             pass
 
-    def A2M(self):
-        if OCV.CD["state"] == "Idle":
-            #OCV.CD["memAx"] = mBx
-            #OCV.CD["memAy"] = mBy
-            #OCV.CD["memAz"] = mBz
-            pass
-
-    def memX(self):
-        # WIP #
-        if OCV.CD["state"] == "Idle":
-
-            mx = OCV.CD["wx"]
-            my = OCV.CD["wy"]
-            mz = OCV.CD["wz"]
-            OCV.WK_mem = 0
-            pass
-
-
     def line(self):
-
         # avoid a dry run if both mem pos are not set
         if (self.memA_Set == True ) and (self.memB_Set == True ):
 
@@ -994,7 +1040,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             if endDepth is None:
                 return
 
-            CAMGen.line(self, self.app, endDepth)
+            CAMGen.line(self, self.app, endDepth, "mem_0", "mem_1")
 
     def pocket(self):
 
@@ -1005,7 +1051,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             if endDepth is None:
                 return
 
-            CAMGen.pocket(self, self.app, endDepth)
+            CAMGen.pocket(self, self.app, endDepth, "mem_0", "mem_1")
 
 
     #----------------------------------------------------------------------

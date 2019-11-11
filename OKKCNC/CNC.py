@@ -853,18 +853,18 @@ class CNC:
     def _gcode(g, **args):
         s = "g%d"%(g)
         for n,v in args.items():
-            s += ' ' + OCV.fmt(n,v)
+            s += ' ' + CNC.fmt(n,v)
         return s
 
     #----------------------------------------------------------------------
     @staticmethod
     def _goto(g, x=None, y=None, z=None, **args):
         s = "g%d"%(g)
-        if x is not None: s += ' '+OCV.fmt('x',x)
-        if y is not None: s += ' '+OCV.fmt('y',y)
-        if z is not None: s += ' '+OCV.fmt('z',z)
+        if x is not None: s += ' '+ CNC.fmt('x',x)
+        if y is not None: s += ' '+ CNC.fmt('y',y)
+        if z is not None: s += ' '+ CNC.fmt('z',z)
         for n,v in args.items():
-            s += ' ' + OCV.fmt(n,v)
+            s += ' ' + CNC.fmt(n,v)
         return s
 
     #----------------------------------------------------------------------
