@@ -484,6 +484,7 @@ class Application(Toplevel,Sender):
             if filename is None: break
             bFileDialog.append2History(os.path.dirname(filename))
 
+
     #-----------------------------------------------------------------------
     def setStatus(self, msg, force_update=False):
         self.statusbar.configText(text=msg, fill="DarkBlue")

@@ -67,7 +67,14 @@ zstep4 = 0.0
 
 # W #
 WK_mem = 0 # used to pass the memory number across the different program part
-WK_mems = {} # dictionary containing memories
+
+# dictionary containing memories data
+# WK_mems[mem_name] = [mBx,mBy,mBz,set]
+# where mem_name a string like mem_N with N 0 > N < 99
+# mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
+# memories are saved in the configuration file <TODO>
+WK_mems = {}
+WK_bank = 0;
 
 ACTIVE_COLOR       = "LightYellow"
 BACKGROUND         = "#E6E2E0"

@@ -34,6 +34,8 @@ import CAMGen
 from Sender import ERROR_CODES
 from CNC import Block,WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
 
+_FONT       = ("Sans","-10")
+
 _LOWSTEP   = 0.0001
 _HIGHSTEP  = 1000.0
 _HIGHZSTEP = 10.0
@@ -446,14 +448,138 @@ class DROFrame(CNCRibbon.PageFrame):
                 _("No info available.\nPlease contact the author."))
         tkMessageBox.showinfo(_("State: %s")%(state), msg, parent=self)
 
+
+#===============================================================================
+# Memory Group
+#===============================================================================
+class MemoryGroup(CNCRibbon.ButtonGroup):
+
+    mem_buttons = {}
+
+    def __init__(self, master, app):
+        CNCRibbon.ButtonGroup.__init__(self, master, "Memory", app)
+
+        col, row = 0,0
+        b = Button(self.frame,
+                #image=Utils.icons["start32"],
+                font = _FONT,
+                text=_("M_X"),
+                command =  self.memX,
+                background=OCV.BACKGROUND)
+        b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Store position to mem _X"))
+        self.addWidget(b)
+
+        row +=1
+        b = Button(self.frame,
+                #image=Utils.icons["pause32"],
+                font = _FONT,
+                text=_("R_X"),
+                command = self.clrX,
+                background=OCV.BACKGROUND)
+        b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Goto Position in mem X"))
+        self.addWidget(b)
+
+        row +=1
+        b = Button(self.frame,
+                #image=Utils.icons["stop32"],
+                font = _FONT,
+                text=_("C_X"),
+                command = self.gotoX,
+                background=OCV.BACKGROUND)
+        b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Cancel mem X"))
+        self.addWidget(b)
+
+        row, col = 0, 1
+        b = Button(self.frame,
+                #image=Utils.icons["pause32"],
+                font = _FONT,
+                text=_("B +"),
+                background=OCV.BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
+        b.bind("<1>", lambda event, obj="B+": self.onClickBank(event, obj))
+        tkExtra.Balloon.set(b, _("Upper Memory Bank"))
+        self.addWidget(b)
+
+        row +=1
+        b = Label(self.frame, text = "B {0}".format(OCV.WK_bank),
+                  background=OCV.BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Bank Number"))
+        self.addWidget(b)
+
+        row +=1
+        b = Button(self.frame,
+                #image=Utils.icons["stop32"],
+                font = _FONT,
+                text=_("B -"),
+                compound=TOP,
+                background=OCV.BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
+        b.bind("<1>", lambda event, obj="B-": self.onClickBank(event, obj))
+        tkExtra.Balloon.set(b, _("Lower Memory Bank"))
+        self.addWidget(b)
+
+
+        for x in range(0, 12, 3):
+            col +=1
+            rows = 0
+            for xa in range(x, x+3):
+                but_name = "but_m_{0}".format(str(xa))
+                print("creation", but_name)
+                self.mem_buttons[but_name] = Button(self.frame,
+                    #image=Utils.icons["pause32"],
+                    font = _FONT,
+                    name = but_name,
+                    text="M_",
+                    command = self.memX,
+                    compound=TOP,
+                    background=OCV.BACKGROUND)
+
+                self.mem_buttons[but_name].grid(row=rows, column=col, padx=0, pady=0, sticky=NSEW)
+                self.mem_buttons[but_name].bind("<1>", lambda event, obj=but_name: self.onClickMemB(event, obj))
+                tkExtra.Balloon.set(self.mem_buttons[but_name], _("Set {0}"))
+                self.addWidget(self.mem_buttons[but_name])
+                rows +=1
+
+    def onClickMemB(self, event, obj):
+        print("you clicked on", obj)
+
+    def onClickBank(self, event, obj):
+        print("you clicked on", obj)
+
+    def memX(self):
+        Utils.memX(self.app)
+
+    def clrX(self):
+        pass
+
+    def gotoX(self):
+        pass
+
+    def ch_bank_label(self, start):
+        if start == 1:
+            self.mod_bank(2)
+
+    def mod_bank(self, enum):
+        try:
+            for x in range(0,11):
+                but_name = "but_m_{0}".format(str(x))
+                label = "M_{0}".format(enum + x)
+                print("iteration",but_name)
+                self.mem_buttons[but_name].config(name=label)
+        except:
+            pass
+
+
 #===============================================================================
 # ControlFrame
 #===============================================================================
 class ControlFrame(CNCRibbon.PageLabelFrame):
 
     z_step_font = ('Helvetica',7,'bold')
-    memA_Set = False
-    memB_Set = False
 
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
@@ -485,7 +611,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: self.InputValue("S0"))
+        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S0"))
         tkExtra.Balloon.set(b, _("Use step1"))
         self.addWidget(b)
 
@@ -496,7 +622,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: self.InputValue("S1"))
+        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S1"))
         tkExtra.Balloon.set(b, _("Use step2"))
         self.addWidget(b)
 
@@ -507,7 +633,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=8, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: self.InputValue("S2"))
+        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S2"))
         tkExtra.Balloon.set(b, _("Use step3"))
         self.addWidget(b)
 
@@ -633,7 +759,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        b.bind("<Button-3>" ,lambda event: self.InputValue("ZS0"))
+        b.bind("<Button-3>" ,lambda event: Utils.InputValue(self, "ZS0"))
         tkExtra.Balloon.set(b, "Zstep1 = %s"%(OCV.zstep1))
         self.addWidget(b)
 
@@ -789,8 +915,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Cut Pocket from memA to memB"))
         self.addWidget(b)
 
-
-
         b = Button(self, text="RmA",
                     command=self.retA,
                     width=3,
@@ -809,102 +933,11 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, _("Return to mem B"))
         self.addWidget(b)
 
-        b = Button(self, text="M_X",
-                    command=self.memX,
-                    width=3,
-                    padx=b_padx, pady=b_pady,
-                    activebackground="LightYellow")
-        b.grid(row=7, column=column, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Store position to mem N"))
-        self.addWidget(b)
-
-        b = Button(self, text="D_X",
-                    command=self.del_memX,
-                    width=3,
-                    padx=b_padx, pady=b_pady,
-                    activebackground="LightYellow")
-        b.grid(row=8, column=column, columnspan=2, sticky=EW)
-        tkExtra.Balloon.set(b, _("Delete mem N"))
-        self.addWidget(b)
-
-
         try:
 #            self.grid_anchor(CENTER)
             self.tk.call("grid","anchor",self,CENTER)
         except TclError:
             pass
-
-    #----------------------------------------------------------------------
-    def InputValue(self,caller):
-        title_d = _("Enter A Value")
-        title_c = ""
-        c_t = 0
-        if caller == "S0":
-            title_c = "Enter Value for Step1:"
-            min_value = 0.001
-            max_value = 100.0
-        elif caller == "S1":
-            title_c = "Enter Value for Step2:"
-            min_value = 0.001
-            max_value = 1000.0
-        elif caller == "S2":
-            title_c = "Enter Value for Step3:"
-            min_value = 0.001
-            max_value = 1000.0
-        elif caller == "ZS0":
-            title_c = "Enter Value for Z Step1:"
-            min_value = 0.001
-            max_value = 10.0
-        elif caller == "TD":
-            title_c = "Enter Target Depth "
-            min_value = -35.0
-            max_value = 0.0
-        elif caller == "MN":
-            title_c = "Enter Memory Number"
-            min_value = 2
-            max_value = 99
-            c_t = 1
-        else:
-            title_c = "Enter a float Value"
-            min_value = 0.001
-            max_value = 100.0
-
-        if c_t == 0:
-            prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(title_c,
-                      min_value,
-                      max_value)
-            retval = tkSimpleDialog.askfloat(title_d, prompt, parent = self,
-                                             minvalue = min_value,
-                                             maxvalue = max_value)
-        elif c_t == 1:
-            prompt = "{0}\n (min: {1:d} max: {2:d})".format(title_c,
-                      min_value,
-                      max_value)
-            retval = tkSimpleDialog.askinteger(title_d, prompt, parent = self,
-                                               minvalue = min_value,
-                                               maxvalue = max_value)
-
-        if caller == "S0":
-            wd = self.nametowidget("step_1")
-            OCV.step1 = retval
-            Utils.setFloat("Control", "step1", retval)
-        elif caller == "S1":
-            wd = self.nametowidget("step_2")
-            OCV.step2 = retval
-            Utils.setFloat("Control", "step2", retval)
-        elif caller == "S2":
-            wd = self.nametowidget("step_3")
-            OCV.step3 = retval
-            Utils.setFloat("Control", "step3", retval)
-        elif caller == "ZS0":
-            wd = self.nametowidget("zstep_1")
-            OCV.zstep1 = retval
-            Utils.setFloat("Control", "zstep1", retval)
-        else:
-            return retval
-
-        if wd is not None:
-            wd.configure(text = retval)
 
 
     def saveConfig(self):
@@ -918,26 +951,28 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         wd.configure(background = "orchid1")
 
         OCV.WK_mem = 0 # memA
+        self.clrMem(0)
         self.event_generate("<<ClrMem>>")
-        self.memA_Set = False
 
         OCV.WK_mem = 1 # memB
+        self.clrMem(1)
         wd = self.nametowidget("memB")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")
 
         self.event_generate("<<ClrMem>>")
-        self.memB_Set = False
+
 
     def memA(self):
         if OCV.CD["state"] == "Idle":
+            print("mem_A 1st")
             mBx = OCV.CD["wx"]
             mBy = OCV.CD["wy"]
             mBz = OCV.CD["wz"]
             OCV.WK_mem = 0 # 1= memB
 
             mem_name = "memA"
-            OCV.WK_mems["mem_0"] = [mBx,mBy,mBz]
+            OCV.WK_mems["mem_0"] = [mBx,mBy,mBz,1]
             wd = self.nametowidget(mem_name)
 
             wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
@@ -946,7 +981,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             wd.configure(background = "aquamarine")
 
             self.event_generate("<<SetMem>>")
-            self.memA_Set = True
         else:
             pass
 
@@ -959,7 +993,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             OCV.WK_mem = 1 # 1= memB
 
             mem_name = "memB"
-            OCV.WK_mems["mem_1"] = [mBx,mBy,mBz]
+            OCV.WK_mems["mem_1"] = [mBx,mBy,mBz,1]
             wd = self.nametowidget(mem_name)
 
             wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
@@ -968,74 +1002,32 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             wd.configure(background = "aquamarine")
 
             self.event_generate("<<SetMem>>")
-            self.memB_Set = True
-        else:
-            pass
-
-    def memX(self):
-        if OCV.CD["state"] == "Idle":
-            mBx = OCV.CD["wx"]
-            mBy = OCV.CD["wy"]
-            mBz = OCV.CD["wz"]
-
-            OCV.WK_mem = self.InputValue("MN")
-
-            if OCV.WK_mem == None:
-                return
-            elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
-                return
-            else:
-                pass
-
-            mem_name = "mem_{0}".format(OCV.WK_mem)
-            OCV.WK_mems[mem_name] = [mBx,mBy,mBz]
-
-            self.event_generate("<<SetMem>>")
-
-        else:
-            pass
-
-    def del_memX(self):
-        if OCV.CD["state"] == "Idle":
-
-            OCV.WK_mem = self.InputValue("MN")
-
-            if OCV.WK_mem == None:
-                return
-            elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
-                return
-            else:
-                pass
-
-            mem_name = "mem_{0}".format(OCV.WK_mem)
-            OCV.WK_mems[mem_name] = [None,None,None]
-
-            self.event_generate("<<ClrMem>>")
-
         else:
             pass
 
     def retA(self):
         if OCV.CD["state"] == "Idle":
-            self.sendGCode("G90")
-            self.sendGCode("G0 X{0:f} Y{1:f}".format( OCV.WK_mems["mem_0"][0],
-                            OCV.WK_mems["mem_0"][1]))
+            if (OCV.WK_mems["mem_0"][3] == 1):
+                self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X-", OCV.WK_mems["mem_0"][0],
+                "Y", OCV.WK_mems["mem_0"][1]))
         else:
             pass
 
     def retB(self):
         if OCV.CD["state"] == "Idle":
-            self.sendGCode("G90")
-            self.sendGCode("G0 X{0:f} Y{1:f}".format( OCV.WK_mems["mem_1"][0],
-                            OCV.WK_mems["mem_1"][1]))
+            if (OCV.WK_mems["mem_1"][3] == 1):
+                self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+                "X-", OCV.WK_mems["mem_1"][0],
+                "Y", OCV.WK_mems["mem_1"][1]))
         else:
             pass
 
     def line(self):
         # avoid a dry run if both mem pos are not set
-        if (self.memA_Set == True ) and (self.memB_Set == True ):
+        if (OCV.WK_mems["mem_0"][3] == 1 and OCV.WK_mems["mem_1"][3] == 1):
 
-            endDepth = self.InputValue("TD")
+            endDepth = Utils.InputValue(self.app, "TD")
 
             if endDepth is None:
                 return
@@ -1045,8 +1037,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def pocket(self):
 
         # avoid a dry run if both mem pos are not set
-        if (self.memA_Set == True ) and (self.memB_Set == True ):
-            endDepth = self.InputValue("TD")
+        if (OCV.WK_mems["mem_0"][3] == 1 and OCV.WK_mems["mem_1"][3] == 1):
+            endDepth = Utils.InputValue(self.app, "TD")
 
             if endDepth is None:
                 return
@@ -1709,5 +1701,5 @@ class ControlPage(CNCRibbon.Page):
         wcsvar = IntVar()
         wcsvar.set(0)
 
-        self._register((ConnectionGroup, UserGroup, RunGroup),
+        self._register((ConnectionGroup, UserGroup, RunGroup, MemoryGroup),
             (DROFrame, ControlFrame, StateFrame))

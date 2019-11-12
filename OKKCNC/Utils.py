@@ -18,6 +18,7 @@ try:
     from Tkinter import *
     import tkFont
     import tkMessageBox
+    import tkSimpleDialog
     import ConfigParser
 except ImportError:
     from tkinter import *
@@ -294,6 +295,127 @@ def SetSteps():
         OCV.zstep4 = 10.0
 
 
+#----------------------------------------------------------------------
+def InputValue(app, caller):
+    title_d = _("Enter A Value")
+    title_c = ""
+    c_t = 0
+    if caller == "S0":
+        title_c = "Enter Value for Step1:"
+        min_value = 0.001
+        max_value = 100.0
+    elif caller == "S1":
+        title_c = "Enter Value for Step2:"
+        min_value = 0.001
+        max_value = 1000.0
+    elif caller == "S2":
+        title_c = "Enter Value for Step3:"
+        min_value = 0.001
+        max_value = 1000.0
+    elif caller == "ZS0":
+        title_c = "Enter Value for Z Step1:"
+        min_value = 0.001
+        max_value = 10.0
+    elif caller == "TD":
+        title_c = "Enter Target Depth "
+        min_value = -35.0
+        max_value = 0.0
+    elif caller == "MN":
+        title_c = "Enter Memory Number"
+        min_value = 2
+        max_value = 99
+        c_t = 1
+    else:
+        title_c = "Enter a float Value"
+        min_value = 0.001
+        max_value = 100.0
+
+    if c_t == 0:
+        prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(title_c,
+                  min_value,
+                  max_value)
+        retval = tkSimpleDialog.askfloat(title_d, prompt, parent = app,
+                                         minvalue = min_value,
+                                         maxvalue = max_value)
+    elif c_t == 1:
+        prompt = "{0}\n (min: {1:d} max: {2:d})".format(title_c,
+                  min_value,
+                  max_value)
+        retval = tkSimpleDialog.askinteger(title_d, prompt, parent = app,
+                                           minvalue = min_value,
+                                           maxvalue = max_value)
+
+    if caller == "S0":
+        wd = app.nametowidget("step_1")
+        OCV.step1 = retval
+        setFloat("Control", "step1", retval)
+    elif caller == "S1":
+        wd = app.nametowidget("step_2")
+        OCV.step2 = retval
+        setFloat("Control", "step2", retval)
+    elif caller == "S2":
+        wd = app.nametowidget("step_3")
+        OCV.step3 = retval
+        setFloat("Control", "step3", retval)
+    elif caller == "ZS0":
+        wd = app.nametowidget("zstep_1")
+        OCV.zstep1 = retval
+        setFloat("Control", "zstep1", retval)
+    else:
+        return retval
+
+    if wd is not None:
+        wd.configure(text = retval)
+
+
+
+def memX(app):
+    if OCV.CD["state"] == "Idle":
+        mBx = OCV.CD["wx"]
+        mBy = OCV.CD["wy"]
+        mBz = OCV.CD["wz"]
+
+        OCV.WK_mem = InputValue(app, "MN")
+
+        if OCV.WK_mem == None:
+            return
+        elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
+            return
+        else:
+            pass
+
+        mem_name = "mem_{0}".format(OCV.WK_mem)
+        OCV.WK_mems[mem_name] = [mBx,mBy,mBz,1]
+
+        app.event_generate("<<SetMem>>")
+
+    else:
+        pass
+
+def del_memX(app):
+    if OCV.CD["state"] == "Idle":
+
+        OCV.WK_mem = InputValue(app, "MN")
+
+        if OCV.WK_mem == None:
+            return
+        elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
+            return
+        else:
+            pass
+        clrMem(app, OCV.WK_mem)
+
+    else:
+        pass
+
+def clrMem(app,mem_num):
+        mem_name = "mem_{0}".format(mem_num)
+        OCV.WK_mems[mem_name] = [0.0,0.0,0.0,0]
+        app.event_generate("<<ClrMem>>")
+
+
+def do_nothing():
+    pass
 
 #-------------------------------------------------------------------------------
 # Return a font from a string
