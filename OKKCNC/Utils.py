@@ -375,7 +375,7 @@ def memX(app):
         mBy = OCV.CD["wy"]
         mBz = OCV.CD["wz"]
 
-        OCV.WK_mem = InputValue(app, "MN")
+        #OCV.WK_mem = InputValue(app, "MN")
 
         if OCV.WK_mem == None:
             return
@@ -386,6 +386,7 @@ def memX(app):
 
         mem_name = "mem_{0}".format(OCV.WK_mem)
         OCV.WK_mems[mem_name] = [mBx,mBy,mBz,1]
+        #config.set("Buttons", "icon.%d"%(n), icon)
 
         app.event_generate("<<SetMem>>")
 

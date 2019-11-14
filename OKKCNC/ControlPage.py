@@ -454,8 +454,6 @@ class DROFrame(CNCRibbon.PageFrame):
 #===============================================================================
 class MemoryGroup(CNCRibbon.ButtonGroup):
 
-    mem_buttons = {}
-
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Memory", app)
 
@@ -464,7 +462,7 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
                 #image=Utils.icons["start32"],
                 font = _FONT,
                 text=_("M_X"),
-                command =  self.memX,
+                #command =  self.memX,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
         tkExtra.Balloon.set(b, _("Store position to mem _X"))
@@ -493,6 +491,15 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         self.addWidget(b)
 
         row, col = 0, 1
+
+        b = Label(self.frame, name = "lab_bank", text = "B {0}".format(OCV.WK_bank),
+                  background=OCV.BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
+        tkExtra.Balloon.set(b, _("Bank Number"))
+        self.addWidget(b)
+
+        row +=1
+
         b = Button(self.frame,
                 #image=Utils.icons["pause32"],
                 font = _FONT,
@@ -504,13 +511,7 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         self.addWidget(b)
 
         row +=1
-        b = Label(self.frame, text = "B {0}".format(OCV.WK_bank),
-                  background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Bank Number"))
-        self.addWidget(b)
 
-        row +=1
         b = Button(self.frame,
                 #image=Utils.icons["stop32"],
                 font = _FONT,
@@ -529,28 +530,55 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
             for xa in range(x, x+3):
                 but_name = "but_m_{0}".format(str(xa))
                 print("creation", but_name)
-                self.mem_buttons[but_name] = Button(self.frame,
+                b = Button(self.frame,
                     #image=Utils.icons["pause32"],
                     font = _FONT,
                     name = but_name,
-                    text="M_",
-                    command = self.memX,
+                    text="M_{0}".format(xa + 2),
                     compound=TOP,
                     background=OCV.BACKGROUND)
 
-                self.mem_buttons[but_name].grid(row=rows, column=col, padx=0, pady=0, sticky=NSEW)
-                self.mem_buttons[but_name].bind("<1>", lambda event, obj=but_name: self.onClickMemB(event, obj))
-                tkExtra.Balloon.set(self.mem_buttons[but_name], _("Set {0}"))
-                self.addWidget(self.mem_buttons[but_name])
+                b.grid(row=rows, column=col, padx=0, pady=0, sticky=NSEW)
+                b.bind("<Button-1>",
+                       lambda event, obj=xa: self.onClickMemB(event, obj))
+                b.bind("<Button-3>",
+                       lambda event, obj=xa: self.onClickMemB(event, obj))
+                tkExtra.Balloon.set(b, _("Set {0}"))
+                self.addWidget(b)
                 rows +=1
 
+
+
     def onClickMemB(self, event, obj):
-        print("you clicked on", obj)
+        print(event.num)
+        print("Button {0} CLicked".format(obj))
+        mem_clicked = (OCV.WK_bank * 12) + 2 + obj
+        print ("memory {0}".format(mem_clicked))
 
     def onClickBank(self, event, obj):
         print("you clicked on", obj)
+        if (obj == "B+"):
+            mem_bank = OCV.WK_bank + 1
+        elif (obj == "B-"):
+            mem_bank = OCV.WK_bank - 1
+        else:
+            return
+
+        if (mem_bank < 0):
+            OCV.WK_bank = 0
+            mem_bank = 0
+        elif (mem_bank > 3):
+            OCV.WK_bank = 3
+            mem_bank = 3
+        # assign the proper values
+        OCV.WK_bank = mem_bank
+        mem_start = (mem_bank * 12) + 2
+        wd = self.frame.nametowidget("lab_bank")
+        wd.config(text="<{0}>".format(mem_bank))
+        self.mod_bank(mem_start)
 
     def memX(self):
+        #OCV.WK_mem =
         Utils.memX(self.app)
 
     def clrX(self):
@@ -564,14 +592,12 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
             self.mod_bank(2)
 
     def mod_bank(self, enum):
-        try:
-            for x in range(0,11):
-                but_name = "but_m_{0}".format(str(x))
-                label = "M_{0}".format(enum + x)
-                print("iteration",but_name)
-                self.mem_buttons[but_name].config(name=label)
-        except:
-            pass
+        #print (self.frame.children)
+        for x in range(0,12):
+            but_name = "but_m_{0}".format(str(x))
+            label = "M_{0}".format(enum + x)
+            wd = self.frame.nametowidget(but_name)
+            wd.config(text=label)
 
 
 #===============================================================================
