@@ -596,8 +596,15 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         for x in range(0,12):
             but_name = "but_m_{0}".format(str(x))
             label = "M_{0}".format(enum + x)
+            mem_addr = "mem_{0}".format(enum + x)
+            mem_tt = "{0} \n\n name: {5}\n\n X: {1}\n\nY: {2}\n\nX: {3}"
             wd = self.frame.nametowidget(but_name)
             wd.config(text=label)
+            if mem_addr in OCV.WK_mems:
+                md = OCV.WK_mems[mem_addr]
+                tkExtra.Balloon.set(wd,mem_tt.format(mem_addr, *md))
+            else:
+                tkExtra.Balloon.set(wd,"Empty")
 
 
 #===============================================================================

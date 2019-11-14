@@ -69,7 +69,7 @@ zstep4 = 0.0
 WK_mem = 0 # used to pass the memory number across the different program part
 
 # dictionary containing memories data
-# WK_mems[mem_name] = [mBx,mBy,mBz,set]
+# WK_mems[mem_name] = [mBx,mBy,mBz,set, desc]
 # where mem_name a string like mem_N with N 0 > N < 99
 # mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
 # memories are saved in the configuration file <TODO>
