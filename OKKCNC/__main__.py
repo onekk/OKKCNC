@@ -625,7 +625,12 @@ class Application(Toplevel,Sender):
         for name, value in Utils.config.items("Memory"):
             content = value.split()
             print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
-            OCV.WK_mems[name] = [content[1], content[2], content[3],1,content[0]]
+            OCV.WK_mems[name] = [
+                    float(content[1]),
+                    float(content[2]),
+                    float(content[3]),
+                    1,
+                    content[0]]
 
     #-----------------------------------------------------------------------
     def showUserFile(self):

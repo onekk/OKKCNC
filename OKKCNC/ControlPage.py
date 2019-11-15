@@ -558,14 +558,14 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
             if mem_key in OCV.WK_mems:
                 md = OCV.WK_mems[mem_key]
                 if md[3] == 1:
-                    self.sendGCode("$J=G53 {0}{1:f} {2}{3:f} F100000".format(
+                    self.sendGCode("$J=G90 G53 {0}{1:f} {2}{3:f} F100000".format(
                             "X", md[0],
                             "Y", md[1]))
         # Right Button Clicked, set mem
         if event.num == 3:
             OCV.WK_mem = mem_clicked
             OCV.WK_mems[mem_key] = [OCV.CD["mx"], OCV.CD["my"], OCV.CD["mz"],
-                        1, "mem name", OCV.CD["wx"], OCV.CD["wy"]]
+                        1, "mem name"]
             self.event_generate("<<SetMem>>")
 
 
@@ -1015,7 +1015,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             OCV.WK_mem = 0 # 1= memB
 
             mem_name = "memA"
-            OCV.WK_mems["mem_0"] = [px, py, pz, 1,"mem A", px, py]
+            OCV.WK_mems["mem_0"] = [px, py, pz, 1,"mem A"]
             wd = self.nametowidget(mem_name)
 
             wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name, px, py, pz)
@@ -1036,7 +1036,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             OCV.WK_mem = 1 # 1= memB
 
             mem_name = "memB"
-            OCV.WK_mems["mem_1"] = [px, py, pz,1, "mem B", px, py]
+            OCV.WK_mems["mem_1"] = [px, py, pz,1, "mem B"]
             wd = self.nametowidget(mem_name)
 
             wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name, px, py, pz)
@@ -1052,8 +1052,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if OCV.CD["state"] == "Idle":
             if ("mem_0" in OCV.WK_mems):
                 md = OCV.WK_mems["mem_0"]
-                self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
-                "X", md[0], "Y", md[1]))
+                #print ("RmA {0} {1}".format(md[0],md[1]))
+                self.sendGCode("$J=G90 {0}{1:f} {2}{3:f} F100000".format(
+                            "X", md[0],
+                            "Y", md[1]))
         else:
             pass
 
@@ -1061,8 +1063,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if OCV.CD["state"] == "Idle":
             if ("mem_1" in OCV.WK_mems):
                 md = OCV.WK_mems["mem_1"]
-                self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
-                "X", md[0], "Y", md[1]))
+                #print ("RmB {0} {1}".format(md[0],md[1]))
+                self.sendGCode("$J=G90 {0}{1:f} {2}{3:f} F100000".format(
+                            "X", md[0],
+                            "Y", md[1]))
         else:
             pass
 
