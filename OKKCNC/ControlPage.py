@@ -462,7 +462,6 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
                 #image=Utils.icons["start32"],
                 font = _FONT,
                 text=_("M_X"),
-                #command =  self.memX,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
         tkExtra.Balloon.set(b, _("Store position to mem _X"))
@@ -547,13 +546,28 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
                 self.addWidget(b)
                 rows +=1
 
-
-
     def onClickMemB(self, event, obj):
         print(event.num)
         print("Button {0} CLicked".format(obj))
         mem_clicked = (OCV.WK_bank * 12) + 2 + obj
-        print ("memory {0}".format(mem_clicked))
+        mem_key = "mem_{0}".format(mem_clicked)
+        print ("{0} clicked".format(mem_key))
+        mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
+        # Left Button Clicked, goto position
+        if event.num == 1:
+            if mem_key in OCV.WK_mems:
+                md = OCV.WK_mems[mem_key]
+                if md[3] == 1:
+                    self.sendGCode("$J=G53 {0}{1:f} {2}{3:f} F100000".format(
+                            "X", md[0],
+                            "Y", md[1]))
+        # Right Button Clicked, set mem
+        if event.num == 3:
+            OCV.WK_mem = mem_clicked
+            OCV.WK_mems[mem_key] = [OCV.CD["mx"], OCV.CD["my"], OCV.CD["mz"],
+                        1, "mem name", OCV.CD["wx"], OCV.CD["wy"]]
+            self.event_generate("<<SetMem>>")
+
 
     def onClickBank(self, event, obj):
         print("you clicked on", obj)
@@ -577,10 +591,6 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         wd.config(text="<{0}>".format(mem_bank))
         self.mod_bank(mem_start)
 
-    def memX(self):
-        #OCV.WK_mem =
-        Utils.memX(self.app)
-
     def clrX(self):
         pass
 
@@ -597,7 +607,7 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
             but_name = "but_m_{0}".format(str(x))
             label = "M_{0}".format(enum + x)
             mem_addr = "mem_{0}".format(enum + x)
-            mem_tt = "{0} \n\n name: {5}\n\n X: {1}\n\nY: {2}\n\nX: {3}"
+            mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
             wd = self.frame.nametowidget(but_name)
             wd.config(text=label)
             if mem_addr in OCV.WK_mems:
@@ -999,16 +1009,16 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def memA(self):
         if OCV.CD["state"] == "Idle":
             print("mem_A 1st")
-            mBx = OCV.CD["wx"]
-            mBy = OCV.CD["wy"]
-            mBz = OCV.CD["wz"]
+            px = OCV.CD["wx"]
+            py = OCV.CD["wy"]
+            pz = OCV.CD["wz"]
             OCV.WK_mem = 0 # 1= memB
 
             mem_name = "memA"
-            OCV.WK_mems["mem_0"] = [mBx,mBy,mBz,1]
+            OCV.WK_mems["mem_0"] = [px, py, pz, 1,"mem A", px, py]
             wd = self.nametowidget(mem_name)
 
-            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
+            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name, px, py, pz)
 
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
@@ -1020,16 +1030,16 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def memB(self):
         if OCV.CD["state"] == "Idle":
-            mBx = OCV.CD["wx"]
-            mBy = OCV.CD["wy"]
-            mBz = OCV.CD["wz"]
+            px = OCV.CD["wx"]
+            py = OCV.CD["wy"]
+            pz = OCV.CD["wz"]
             OCV.WK_mem = 1 # 1= memB
 
             mem_name = "memB"
-            OCV.WK_mems["mem_1"] = [mBx,mBy,mBz,1]
+            OCV.WK_mems["mem_1"] = [px, py, pz,1, "mem B", px, py]
             wd = self.nametowidget(mem_name)
 
-            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name,mBx, mBy, mBz)
+            wdata =  "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(mem_name, px, py, pz)
 
             tkExtra.Balloon.set(wd, wdata)
             wd.configure(background = "aquamarine")
@@ -1040,19 +1050,19 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def retA(self):
         if OCV.CD["state"] == "Idle":
-            if (OCV.WK_mems["mem_0"][3] == 1):
+            if ("mem_0" in OCV.WK_mems):
+                md = OCV.WK_mems["mem_0"]
                 self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
-                "X-", OCV.WK_mems["mem_0"][0],
-                "Y", OCV.WK_mems["mem_0"][1]))
+                "X", md[0], "Y", md[1]))
         else:
             pass
 
     def retB(self):
         if OCV.CD["state"] == "Idle":
-            if (OCV.WK_mems["mem_1"][3] == 1):
+            if ("mem_1" in OCV.WK_mems):
+                md = OCV.WK_mems["mem_1"]
                 self.app.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
-                "X-", OCV.WK_mems["mem_1"][0],
-                "Y", OCV.WK_mems["mem_1"][1]))
+                "X", md[0], "Y", md[1]))
         else:
             pass
 

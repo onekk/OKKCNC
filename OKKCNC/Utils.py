@@ -375,19 +375,15 @@ def memX(app):
         mBy = OCV.CD["wy"]
         mBz = OCV.CD["wz"]
 
-        #OCV.WK_mem = InputValue(app, "MN")
-
         if OCV.WK_mem == None:
             return
-        elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
+        elif OCV.WK_mem < 2 or OCV.WK_mem > 49:
             return
         else:
             pass
 
-        mem_name = "mem_{0}".format(OCV.WK_mem)
-        OCV.WK_mems[mem_name] = [mBx,mBy,mBz,1]
-        #config.set("Buttons", "icon.%d"%(n), icon)
-
+        mem_key = "mem_{0}".format(OCV.WK_mem)
+        OCV.WK_mems[mem_key] = [mBx,mBy,mBz,1, OCV.WK_mem_name]
         app.event_generate("<<SetMem>>")
 
     else:

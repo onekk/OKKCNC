@@ -66,12 +66,17 @@ zstep3 = 0.0
 zstep4 = 0.0
 
 # W #
-WK_mem = 0 # used to pass the memory number across the different program part
+WK_mem = 0 # pass memory number across the different program part
+WK_mem_name = "" # pass memory name across the different program part
 
 # dictionary containing memories data
-# WK_mems[mem_name] = [mBx,mBy,mBz,set, desc]
-# where mem_name a string like mem_N with N 0 > N < 99
+# WK_mems[mem_name] = [mx,my,mz, set, desc,wx,wy]
+# where mem_name a string like mem_N with N 0 > N < 49
+# set is a flag 0 mem non set (used to inactivate a memory)
+# desc is the memory name in tooltips (button and canvas)
+# wx and wy are used to correctly display the memory in the canvas widget
 # mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
+# they are working memories and not saved in the user file
 # memories are saved in the configuration file <TODO>
 WK_mems = {}
 WK_bank = 0;

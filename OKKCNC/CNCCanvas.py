@@ -1368,9 +1368,12 @@ class CNCCanvas(Canvas, object):
         else:
             mem_id = mem_name
 
+        md = OCV.WK_mems[mem_name]
+        ttext = "Memory {0}\n\nName: {1}\n\nX: {2:.04f}  \nY: {3:.04f} \nZ: {4:.04f}".format(
+                mem_id, md[4], md[0], md[1], md[2])
 
-        ttext = "Memory {0} \nX: {1:.04f}  \nY: {2:.04f} \nZ: {3:.04f}".format(
-                mem_id, OCV.WK_mems[mem_name][0], OCV.WK_mems[mem_name][1], OCV.WK_mems[mem_name][2])
+        print("memCreate ", ttext)
+
         text = mem_id
         objD = self.create_text(0 , 0,text=text, anchor=N,
                             justify=LEFT, fill=OCV.MEM_COLOR, tag=mem_text)
@@ -1392,18 +1395,19 @@ class CNCCanvas(Canvas, object):
         self.delete(mem_tt)
 
 
-    def memPosition(self,mem_num):
+    def memPosition(self, mem_num):
         mem_name = "mem_{0}".format(mem_num)
         mem_cross_h = mem_name + "Cross_H"
         mem_cross_v = mem_name + "Cross_V"
         mem_cross_c = mem_name + "Cross_C"
         mem_text = mem_name +"Text"
+
         c_dim =  6
         wc = c_dim // 2
         hc = c_dim // 2
         r_dim = c_dim // 3
-        x,y = self.plotCoords([(OCV.WK_mems[mem_name][0],
-                                OCV.WK_mems[mem_name][1],
+        x,y = self.plotCoords([(OCV.WK_mems[mem_name][5],
+                                OCV.WK_mems[mem_name][6],
                                 OCV.WK_mems[mem_name][2])])[0]
 
         #print ("Zoom in memA = ",self.zoom)
