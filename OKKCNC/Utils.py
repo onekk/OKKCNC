@@ -323,7 +323,7 @@ def InputValue(app, caller):
     elif caller == "MN":
         title_c = "Enter Memory Number"
         min_value = 2
-        max_value = 99
+        max_value = OCV.WK_mem_num
         c_t = 1
     else:
         title_c = "Enter a float Value"
@@ -366,12 +366,6 @@ def InputValue(app, caller):
 
     if wd is not None:
         wd.configure(text = retval)
-
-def clrMem(app,mem_num):
-        mem_name = "mem_{0}".format(mem_num)
-        OCV.WK_mems[mem_name] = [0.0,0.0,0.0,0]
-        app.event_generate("<<ClrMem>>")
-
 
 def do_nothing():
     pass

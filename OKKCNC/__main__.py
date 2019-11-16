@@ -331,7 +331,7 @@ class Application(Toplevel,Sender):
         self.bind('<<SetWPOS>>',    self.canvasFrame.canvas.setActionWPOS)
         self.bind('<<SetMem>>',    self.setMem)
         self.bind('<<ClrMem>>',    self.clrMem)
-
+        self.bind('<<SaveMems>>',    self.saveMems)
 
 
         frame = Page.frames["Probe:Tool"]
@@ -500,17 +500,15 @@ class Application(Toplevel,Sender):
 
     def setMem(self, event=None):
         self.canvasFrame.canvas.memDraw(OCV.WK_mem)
-        OCV.WK_active_mems.append(OCV.WK_mem)
+        OCV.WK_active_mems[OCV.WK_mem] = 2
 
     def clrMem(self, event=None):
+        # delete the marker
         self.canvasFrame.canvas.memDelete(OCV.WK_mem)
+        OCV.WK_active_mems[OCV.WK_mem] = 1
 
-        try:
-            i = OCV.WK_active_mems.index(OCV.WK_mem)
-            OCV.WK_active_mems.remove[i]
-        except ValueError:
-            i = -1 # no match
-
+    def saveMems(self, event=None):
+        print("Save mMms")
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
     #-----------------------------------------------------------------------

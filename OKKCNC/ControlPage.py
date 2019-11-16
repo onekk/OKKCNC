@@ -452,17 +452,19 @@ class DROFrame(CNCRibbon.PageFrame):
 #===============================================================================
 # Memory Group
 #===============================================================================
-class MemoryGroup(CNCRibbon.ButtonGroup):
+class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def __init__(self, master, app):
-        CNCRibbon.ButtonGroup.__init__(self, master, "Memory", app)
+        CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Memory"), app,
+            [(_("Save Memories"),     "save", lambda a=app:a.event_generate("<<SaveMems>>")),])
 
         col, row = 0,0
         b = Button(self.frame,
                 #image=Utils.icons["start32"],
                 font = _FONT,
                 text=_("VB"),
-                background=OCV.BACKGROUND)
+                background=OCV.BACKGROUND,
+                command = self.showBankMem)
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
         tkExtra.Balloon.set(b, _("View bank Memory"))
         self.addWidget(b)
@@ -539,9 +541,9 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
 
                 b.grid(row=rows, column=col, padx=0, pady=0, sticky=NSEW)
                 b.bind("<Button-1>",
-                       lambda event, obj=xa: self.onClickMemB(event, obj))
+                       lambda event, obj=xa: self.onClickMem(event, obj))
                 b.bind("<Button-3>",
-                       lambda event, obj=xa: self.onClickMemB(event, obj))
+                       lambda event, obj=xa: self.onClickMem(event, obj))
                 tkExtra.Balloon.set(b, _("Set {0}"))
                 self.addWidget(b)
                 rows +=1
@@ -549,13 +551,13 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         print("MemoryGroup: Init end")
         self.selectBank(0)
 
-    def onClickMemB(self, event, obj):
+    def onClickMem(self, event, obj):
         if OCV.CD["state"] == "Idle":
-            print(event.num)
-            print("Button {0} CLicked".format(obj))
+            #print(event.num)
+            #print("Button {0} CLicked".format(obj))
             mem_clicked = (OCV.WK_bank * 12) + 2 + obj
             mem_key = "mem_{0}".format(mem_clicked)
-            print ("{0} clicked".format(mem_key))
+            #print ("{0} clicked".format(mem_key))
             mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
 
             # Left Button Clicked, goto position
@@ -607,7 +609,8 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         mem_start = (mem_bank * 12) + 2
         wd = self.frame.nametowidget("lab_bank")
         wd.config(text="B {0}".format(mem_bank))
-        #print (self.frame.children)
+        but_color = OCV.BACKGROUND
+
         for x in range(0,12):
             but_name = "but_m_{0}".format(str(x))
             label = "M_{0}".format(mem_start + x)
@@ -616,9 +619,11 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
             wd = self.frame.nametowidget(but_name)
 
             if mem_addr in OCV.WK_mems:
-                but_color = "aquamarine"
-                md = OCV.WK_mems[mem_addr]
-                tkExtra.Balloon.set(wd,mem_tt.format(mem_addr, *md))
+                if OCV.WK_mems[mem_addr][3] == 1:
+                    but_color = "aquamarine"
+                    md = OCV.WK_mems[mem_addr]
+                    #print("Select Bank ", md)
+                    tkExtra.Balloon.set(wd,mem_tt.format(mem_addr, *md))
             else:
                 but_color = OCV.BACKGROUND
                 tkExtra.Balloon.set(wd,"Empty")
@@ -627,10 +632,66 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
 
     def clrX(self):
         mem_num = Utils.InputValue(self.app, "MN")
-        pass
+
+        #print("clrX >", mem_num)
+
+        if mem_num is not None:
+            mem_addr = "mem_{0}".format(mem_num)
+            OCV.WK_mems[mem_addr] = [0,0,0,0,"Empty"]
+            # clear the marker on canvas
+            # and the canvas memnory shown list
+            OCV.WK_mem = mem_num
+            self.event_generate("<<ClrMem>>")
+            #check if the button is shown
+            b_check = self.checkBtnV(mem_num)
+
+            #print ("clrX check > ",b_check)
+
+            if ( b_check > 0):
+                # reset the button state
+                mem_start = (OCV.WK_bank * 12) + 2
+                but_name = "but_m_{0}".format(mem_num - mem_start)
+                label = "M_{0}".format(mem_num)
+                print("clrX but_name > ", but_name)
+                wd = self.frame.nametowidget(but_name)
+                but_color = OCV.BACKGROUND
+                tkExtra.Balloon.set(wd,"Empty")
+                wd.config(text=label, background=but_color)
+
+        #print(OCV.WK_mems)
+
+    def checkBtnV(self, mem_num):
+        low_mem = (OCV.WK_bank * 12) + 2
+        upp_mem = low_mem + 12 # range is not checking the last value
+        print ("check Button {0} in range {1} {2}".format(mem_num, low_mem, upp_mem))
+        if mem_num in range(low_mem, upp_mem):
+            return mem_num
+        else:
+            return -1
+
+    def showBankMem(self):
+        mem_start = (OCV.WK_bank * 12) + 2
+
+        for x in range(0, 12):
+            mem_num = mem_start + x
+            mem_addr = "mem_{0}".format(mem_num)
+
+            # check the presence of the key in dictionary
+            if mem_addr in OCV.WK_mems:
+                # chek if the memory is valid
+                if OCV.WK_mems[mem_addr][3] == 1:
+                    OCV.WK_mem = mem_num
+                    self.event_generate("<<SetMem>>")
+
 
     def resetMemView(self):
-        pass
+        indices = [i for i, x in enumerate(OCV.WK_active_mems) if x == 2]
+        for mem in indices:
+            print("resetMemView index = ", mem)
+            OCV.WK_mem = mem
+            self.event_generate("<<ClrMem>>")
+
+
 
 #===============================================================================
 # ControlFrame
@@ -1009,11 +1070,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         wd.configure(background = "orchid1")
 
         OCV.WK_mem = 0 # memA
-        self.clrMem(0)
         self.event_generate("<<ClrMem>>")
 
         OCV.WK_mem = 1 # memB
-        self.clrMem(1)
         wd = self.nametowidget("memB")
         tkExtra.Balloon.set(wd, "Empty")
         wd.configure(background = "orchid1")

@@ -66,6 +66,7 @@ zstep3 = 0.0
 zstep4 = 0.0
 
 # W #
+WK_mem_num = 49
 WK_mem = 0 # pass memory number across the different program part
 WK_mem_name = "" # pass memory name across the different program part
 
@@ -78,10 +79,22 @@ WK_mem_name = "" # pass memory name across the different program part
 # they are working memories and not saved in the user file
 # memories are saved in the configuration file <TODO>
 WK_mems = {}
-# List containing the active mems, used to refresh the display
-WK_active_mems = []
+# List containing the active mems
+# one position for each mem
+# hold the mem status
+# 0 empty
+# 1 set but not shown
+# 2 set and shown
+WK_active_mems = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+# index of the bank shown
 WK_bank = 0;
+# Toggle used to whow the memory bank
+WK_bank_show = [0,0,0]
 
 ACTIVE_COLOR       = "LightYellow"
 BACKGROUND         = "#E6E2E0"

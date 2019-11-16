@@ -1358,8 +1358,6 @@ class CNCCanvas(Canvas, object):
         wc = c_dim // 2
         hc = c_dim // 2
 
-
-
         objA = self.create_line(0, 0, c_dim, 0, fill=OCV.MEM_COLOR,
                                 tag=mem_cross_h)
         objB = self.create_line(0, 0, 0, c_dim, fill=OCV.MEM_COLOR,
@@ -1407,10 +1405,10 @@ class CNCCanvas(Canvas, object):
         self.delete(mem_text)
         self.delete(mem_tt)
 
-
     def RefreshMemories(self):
-        for i in OCV.WK_active_mems:
-            self.memDraw(i)
+        for i in range(2, OCV.WK_mem_num):
+            if OCV.WK_active_mems[i] == 2:
+                self.memDraw(i)
 
     #----------------------------------------------------------------------
     # Draw gantry location
