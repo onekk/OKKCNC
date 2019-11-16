@@ -70,19 +70,22 @@ WK_mem = 0 # pass memory number across the different program part
 WK_mem_name = "" # pass memory name across the different program part
 
 # dictionary containing memories data
-# WK_mems[mem_name] = [mx,my,mz, set, desc,wx,wy]
+# WK_mems[mem_name] = [mx,my,mz, set, desc]
 # where mem_name a string like mem_N with N 0 > N < 49
 # set is a flag 0 mem non set (used to inactivate a memory)
 # desc is the memory name in tooltips (button and canvas)
-# wx and wy are used to correctly display the memory in the canvas widget
 # mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
 # they are working memories and not saved in the user file
 # memories are saved in the configuration file <TODO>
 WK_mems = {}
+# List containing the active mems, used to refresh the display
+WK_active_mems = []
+
 WK_bank = 0;
 
 ACTIVE_COLOR       = "LightYellow"
 BACKGROUND         = "#E6E2E0"
+BACKGROUND_LABELS  = "pale green"
 BACKGROUND_DISABLE = "#A6A2A0"
 BACKGROUND_GROUP   = "#B6B2B0"
 BACKGROUND_GROUP2  = "#B0C0C0"

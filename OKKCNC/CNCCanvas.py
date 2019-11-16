@@ -579,7 +579,7 @@ class CNCCanvas(Canvas, object):
                         self.canvasy(self._y),
                         self.canvasx(event.x),
                         self.canvasy(event.y),
-                        outline=BOX_SELECT)
+                        outline=OCV.BOX_SELECT)
 
         elif self._mouseAction in (ACTION_MOVE, ACTION_RULER):
             coords = self.coords(self._vector)
@@ -917,7 +917,7 @@ class CNCCanvas(Canvas, object):
         self.RefreshItems()
 
     def RefreshItems(self):
-        #here hust in case some actions are needed
+        self.RefreshMemories()
         pass
 
     # ----------------------------------------------------------------------
@@ -1338,7 +1338,7 @@ class CNCCanvas(Canvas, object):
     # ----------------------------------------------------------------------
     # Reposition mem and crosshair
     # ----------------------------------------------------------------------
-    def memCreate(self, mem_num):
+    def memDraw(self, mem_num):
         mem_name = "mem_{0}".format(mem_num)
         mem_cross_h = mem_name + "Cross_H"
         mem_cross_v = mem_name + "Cross_V"
@@ -1353,8 +1353,13 @@ class CNCCanvas(Canvas, object):
         self.delete(mem_tt)
 
         # create cross hair at dummy location we will correct latter
-        c_dim =  6
+        c_dim =  max(6, int(6 * self.zoom))
         r_dim = c_dim // 3
+        wc = c_dim // 2
+        hc = c_dim // 2
+
+
+
         objA = self.create_line(0, 0, c_dim, 0, fill=OCV.MEM_COLOR,
                                 tag=mem_cross_h)
         objB = self.create_line(0, 0, 0, c_dim, fill=OCV.MEM_COLOR,
@@ -1369,16 +1374,24 @@ class CNCCanvas(Canvas, object):
             mem_id = mem_name
 
         md = OCV.WK_mems[mem_name]
-        ttext = "Memory {0}\n\nName: {1}\n\nX: {2:.04f}  \nY: {3:.04f} \nZ: {4:.04f}".format(
-                mem_id, md[4], md[0], md[1], md[2])
-
-        print("memCreate ", ttext)
+        m_text = "Memory {0}\n\nName: {1}\n\nX: {2:.04f}  \nY: {3:.04f} \nZ: {4:.04f}"
+        ttext = m_text.format(mem_id, md[4], md[0], md[1], md[2])
 
         text = mem_id
         objD = self.create_text(0 , 0,text=text, anchor=N,
                             justify=LEFT, fill=OCV.MEM_COLOR, tag=mem_text)
         CanvasTooltip(self, objD, text=ttext,tag=mem_tt)
 
+        # Position created objects
+
+        x,y = self.plotCoords([(md[0], md[1], md[2])])[0]
+        self.coords(objA,    x-wc, y, x+wc, y)
+        self.coords(objB,    x, y-hc, x, y+hc)
+        self.coords(objC,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
+        i_bbox = self.bbox(objD)
+        i_off = (i_bbox[3] - i_bbox[1]) // 4
+        #print ("bbox of memA = ",offy)
+        self.coords(objD, x, (y + wc + i_off))
 
     def memDelete(self, mem_num):
         mem_name = "mem_{0}".format(mem_num)
@@ -1395,34 +1408,9 @@ class CNCCanvas(Canvas, object):
         self.delete(mem_tt)
 
 
-    def memPosition(self, mem_num):
-        mem_name = "mem_{0}".format(mem_num)
-        mem_cross_h = mem_name + "Cross_H"
-        mem_cross_v = mem_name + "Cross_V"
-        mem_cross_c = mem_name + "Cross_C"
-        mem_text = mem_name +"Text"
-
-        c_dim =  6
-        wc = c_dim // 2
-        hc = c_dim // 2
-        r_dim = c_dim // 3
-        x,y = self.plotCoords([(OCV.WK_mems[mem_name][5],
-                                OCV.WK_mems[mem_name][6],
-                                OCV.WK_mems[mem_name][2])])[0]
-
-        #print ("Zoom in memA = ",self.zoom)
-        wd0 = self.find_withtag(mem_cross_h)[0]
-        wd1 = self.find_withtag(mem_cross_v)[0]
-        wd2 = self.find_withtag(mem_cross_c)[0]
-        wd3 = self.find_withtag(mem_text)[0]
-
-        self.coords(wd0,    x-wc, y, x+wc, y)
-        self.coords(wd1,    x, y-hc, x, y+hc)
-        self.coords(wd2,  x-r_dim, y-r_dim, x+r_dim, y+r_dim)
-        i_bbox = self.bbox(wd3)
-        i_off = (i_bbox[3] - i_bbox[1]) // 4
-        #print ("bbox of memA = ",offy)
-        self.coords(wd3, x, y + i_off)
+    def RefreshMemories(self):
+        for i in OCV.WK_active_mems:
+            self.memDraw(i)
 
     #----------------------------------------------------------------------
     # Draw gantry location

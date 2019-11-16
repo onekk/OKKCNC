@@ -499,11 +499,17 @@ class Application(Toplevel,Sender):
         self.setStatus(_(event.data))
 
     def setMem(self, event=None):
-        self.canvasFrame.canvas.memCreate(OCV.WK_mem)
-        self.canvasFrame.canvas.memPosition(OCV.WK_mem)
+        self.canvasFrame.canvas.memDraw(OCV.WK_mem)
+        OCV.WK_active_mems.append(OCV.WK_mem)
 
     def clrMem(self, event=None):
         self.canvasFrame.canvas.memDelete(OCV.WK_mem)
+
+        try:
+            i = OCV.WK_active_mems.index(OCV.WK_mem)
+            OCV.WK_active_mems.remove[i]
+        except ValueError:
+            i = -1 # no match
 
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
@@ -631,6 +637,7 @@ class Application(Toplevel,Sender):
                     float(content[3]),
                     1,
                     content[0]]
+        #print("Load Memory ended")
 
     #-----------------------------------------------------------------------
     def showUserFile(self):

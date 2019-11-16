@@ -461,29 +461,29 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         b = Button(self.frame,
                 #image=Utils.icons["start32"],
                 font = _FONT,
-                text=_("M_X"),
+                text=_("VB"),
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Store position to mem _X"))
+        tkExtra.Balloon.set(b, _("View bank Memory"))
         self.addWidget(b)
 
         row +=1
         b = Button(self.frame,
                 #image=Utils.icons["pause32"],
                 font = _FONT,
-                text=_("R_X"),
-                command = self.clrX,
+                text=_("RV"),
+                command = self.resetMemView,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Goto Position in mem X"))
+        tkExtra.Balloon.set(b, _("Reset View"))
         self.addWidget(b)
 
         row +=1
         b = Button(self.frame,
                 #image=Utils.icons["stop32"],
                 font = _FONT,
-                text=_("C_X"),
-                command = self.gotoX,
+                text=_("C_M"),
+                command = self.clrX,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
         tkExtra.Balloon.set(b, _("Cancel mem X"))
@@ -492,7 +492,7 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         row, col = 0, 1
 
         b = Label(self.frame, name = "lab_bank", text = "B {0}".format(OCV.WK_bank),
-                  background=OCV.BACKGROUND)
+                  background=OCV.BACKGROUND_LABELS)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
         tkExtra.Balloon.set(b, _("Bank Number"))
         self.addWidget(b)
@@ -546,28 +546,41 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
                 self.addWidget(b)
                 rows +=1
 
-    def onClickMemB(self, event, obj):
-        print(event.num)
-        print("Button {0} CLicked".format(obj))
-        mem_clicked = (OCV.WK_bank * 12) + 2 + obj
-        mem_key = "mem_{0}".format(mem_clicked)
-        print ("{0} clicked".format(mem_key))
-        mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
-        # Left Button Clicked, goto position
-        if event.num == 1:
-            if mem_key in OCV.WK_mems:
-                md = OCV.WK_mems[mem_key]
-                if md[3] == 1:
-                    self.sendGCode("$J=G90 G53 {0}{1:f} {2}{3:f} F100000".format(
-                            "X", md[0],
-                            "Y", md[1]))
-        # Right Button Clicked, set mem
-        if event.num == 3:
-            OCV.WK_mem = mem_clicked
-            OCV.WK_mems[mem_key] = [OCV.CD["mx"], OCV.CD["my"], OCV.CD["mz"],
-                        1, "mem name"]
-            self.event_generate("<<SetMem>>")
+        print("MemoryGroup: Init end")
+        self.selectBank(0)
 
+    def onClickMemB(self, event, obj):
+        if OCV.CD["state"] == "Idle":
+            print(event.num)
+            print("Button {0} CLicked".format(obj))
+            mem_clicked = (OCV.WK_bank * 12) + 2 + obj
+            mem_key = "mem_{0}".format(mem_clicked)
+            print ("{0} clicked".format(mem_key))
+            mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
+
+            # Left Button Clicked, goto position
+            if event.num == 1:
+                if mem_key in OCV.WK_mems:
+                    md = OCV.WK_mems[mem_key]
+                    if md[3] == 1:
+                        self.sendGCode("$J=G90 G53 {0}{1:f} {2}{3:f} F100000".format(
+                                "X", md[0],
+                                "Y", md[1]))
+
+            # Right Button Clicked, set mem
+            if event.num == 3:
+                OCV.WK_mem = mem_clicked
+                OCV.WK_mems[mem_key] = [OCV.CD["mx"], OCV.CD["my"], OCV.CD["mz"],
+                            1, "mem name"]
+
+                # refresh buttons
+                # force the refres of all buttons as the creation is done
+                # in batch
+                self.selectBank(OCV.WK_bank)
+
+                self.event_generate("<<SetMem>>")
+        else:
+            return
 
     def onClickBank(self, event, obj):
         print("you clicked on", obj)
@@ -584,38 +597,40 @@ class MemoryGroup(CNCRibbon.ButtonGroup):
         elif (mem_bank > 3):
             OCV.WK_bank = 3
             mem_bank = 3
+
+        self.selectBank(mem_bank)
+
+
+    def selectBank(self, mem_bank):
         # assign the proper values
         OCV.WK_bank = mem_bank
         mem_start = (mem_bank * 12) + 2
         wd = self.frame.nametowidget("lab_bank")
-        wd.config(text="<{0}>".format(mem_bank))
-        self.mod_bank(mem_start)
-
-    def clrX(self):
-        pass
-
-    def gotoX(self):
-        pass
-
-    def ch_bank_label(self, start):
-        if start == 1:
-            self.mod_bank(2)
-
-    def mod_bank(self, enum):
+        wd.config(text="B {0}".format(mem_bank))
         #print (self.frame.children)
         for x in range(0,12):
             but_name = "but_m_{0}".format(str(x))
-            label = "M_{0}".format(enum + x)
-            mem_addr = "mem_{0}".format(enum + x)
+            label = "M_{0}".format(mem_start + x)
+            mem_addr = "mem_{0}".format(mem_start + x)
             mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
             wd = self.frame.nametowidget(but_name)
-            wd.config(text=label)
+
             if mem_addr in OCV.WK_mems:
+                but_color = "aquamarine"
                 md = OCV.WK_mems[mem_addr]
                 tkExtra.Balloon.set(wd,mem_tt.format(mem_addr, *md))
             else:
+                but_color = OCV.BACKGROUND
                 tkExtra.Balloon.set(wd,"Empty")
 
+            wd.config(text=label, background=but_color)
+
+    def clrX(self):
+        mem_num = Utils.InputValue(self.app, "MN")
+        pass
+
+    def resetMemView(self):
+        pass
 
 #===============================================================================
 # ControlFrame

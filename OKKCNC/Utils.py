@@ -367,44 +367,6 @@ def InputValue(app, caller):
     if wd is not None:
         wd.configure(text = retval)
 
-
-
-def memX(app):
-    if OCV.CD["state"] == "Idle":
-        mBx = OCV.CD["wx"]
-        mBy = OCV.CD["wy"]
-        mBz = OCV.CD["wz"]
-
-        if OCV.WK_mem == None:
-            return
-        elif OCV.WK_mem < 2 or OCV.WK_mem > 49:
-            return
-        else:
-            pass
-
-        mem_key = "mem_{0}".format(OCV.WK_mem)
-        OCV.WK_mems[mem_key] = [mBx,mBy,mBz,1, OCV.WK_mem_name]
-        app.event_generate("<<SetMem>>")
-
-    else:
-        pass
-
-def del_memX(app):
-    if OCV.CD["state"] == "Idle":
-
-        OCV.WK_mem = InputValue(app, "MN")
-
-        if OCV.WK_mem == None:
-            return
-        elif OCV.WK_mem < 2 or OCV.WK_mem > 99:
-            return
-        else:
-            pass
-        clrMem(app, OCV.WK_mem)
-
-    else:
-        pass
-
 def clrMem(app,mem_num):
         mem_name = "mem_{0}".format(mem_num)
         OCV.WK_mems[mem_name] = [0.0,0.0,0.0,0]
