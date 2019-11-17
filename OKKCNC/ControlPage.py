@@ -13,7 +13,6 @@ __email__   = "carlo.dormeletti@gmail.com"
 try:
     from Tkinter import *
     import tkMessageBox
-    import tkSimpleDialog
 except ImportError:
     from tkinter import *
     import tkinter.messagebox as tkMessageBox
@@ -32,7 +31,7 @@ import CNCRibbon
 #import CNCCanvas
 import CAMGen
 from Sender import ERROR_CODES
-from CNC import Block,WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
+from CNC import Block, WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
 
 _FONT       = ("Sans","-10")
 
@@ -456,28 +455,34 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def __init__(self, master, app):
         CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Memory"), app,
-            [(_("Save Memories"),     "save", lambda a=app:a.event_generate("<<SaveMems>>")),])
+            [(_("Save Memories"), "save", lambda a=app:a.event_generate("<<SaveMems>>")),
+             (_("Show this Bank"), "view", self.showBankMem),
+             (_("Don't Show this Bank"), "view", self.showBankMem),
+             (_("Don't Show Memories"), "view", self.resetMemView),
+
+             ])
 
         col, row = 0,0
         b = Button(self.frame,
                 #image=Utils.icons["start32"],
                 font = _FONT,
-                text=_("VB"),
+                text=_("B1"),
                 background=OCV.BACKGROUND,
-                command = self.showBankMem)
+                command = None
+                )
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("View bank Memory"))
+        tkExtra.Balloon.set(b, _("Button 1"))
         self.addWidget(b)
 
         row +=1
         b = Button(self.frame,
                 #image=Utils.icons["pause32"],
                 font = _FONT,
-                text=_("RV"),
-                command = self.resetMemView,
-                background=OCV.BACKGROUND)
+                text=_("B2"),
+                background=OCV.BACKGROUND,
+                command = None)
         b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Reset View"))
+        tkExtra.Balloon.set(b, _("Button 2"))
         self.addWidget(b)
 
         row +=1
@@ -572,8 +577,17 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # Right Button Clicked, set mem
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
-                OCV.WK_mems[mem_key] = [OCV.CD["mx"], OCV.CD["my"], OCV.CD["mz"],
-                            1, "mem name"]
+                mem_name = Utils.InputValue(self.app, "ME")
+                print("MG mem_name = ", mem_name)
+                if mem_name is None:
+                    mem_name = mem_key
+
+                OCV.WK_mems[mem_key] = [
+                        OCV.CD["mx"],
+                        OCV.CD["my"],
+                        OCV.CD["mz"],
+                        1,
+                        mem_name]
 
                 # refresh buttons
                 # force the refres of all buttons as the creation is done
@@ -671,7 +685,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def showBankMem(self):
         mem_start = (OCV.WK_bank * 12) + 2
-
+        print("sBM Bank >> ", mem_start)
         for x in range(0, 12):
             mem_num = mem_start + x
             mem_addr = "mem_{0}".format(mem_num)
@@ -679,9 +693,11 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # check the presence of the key in dictionary
             if mem_addr in OCV.WK_mems:
                 # chek if the memory is valid
-                if OCV.WK_mems[mem_addr][3] == 1:
+                md = OCV.WK_mems[mem_addr]
+                print("sBM md >> ", md)
+                if  md[3] == 1:
                     OCV.WK_mem = mem_num
-                    self.event_generate("<<SetMem>>")
+                    OCV._app.event_generate("<<SetMem>>")
 
 
     def resetMemView(self):
@@ -689,9 +705,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         for mem in indices:
             print("resetMemView index = ", mem)
             OCV.WK_mem = mem
-            self.event_generate("<<ClrMem>>")
-
-
+            OCV._app.event_generate("<<ClrMem>>")
 
 #===============================================================================
 # ControlFrame
@@ -1376,7 +1390,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 #===============================================================================
 class StateFrame(CNCRibbon.PageExLabelFrame):
     def __init__(self, master, app):
-        global wcsvar
         CNCRibbon.PageExLabelFrame.__init__(self, master, "State", _("State"), app)
         self._gUpdate = False
 
@@ -1394,7 +1407,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                     foreground="DarkRed",
                     font = "Helvetica,14",
                     padx=1, pady=1,
-                    variable=wcsvar,
+                    variable=OCV.wcsvar,
                     value=p,
                     indicatoron=FALSE,
                     activebackground="LightYellow",
@@ -1767,7 +1780,6 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
     #----------------------------------------------------------------------
     def updateG(self):
-        global wcsvar
         self._gUpdate = True
         try:
             focus = self.focus_get()
@@ -1775,7 +1787,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             focus = None
 
         try:
-            wcsvar.set(WCS.index(OCV.CD["WCS"]))
+            OCV.wcsvar.set(WCS.index(OCV.CD["WCS"]))
             self.feedRate.set(str(OCV.CD["feed"]))
             self.feedMode.set(FEED_MODE[OCV.CD["feedmode"]])
             self.spindle.set(OCV.CD["spindle"]=="M3")
@@ -1801,8 +1813,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
     #----------------------------------------------------------------------
     def wcsChange(self):
-        global wcsvar
-        self.sendGCode(WCS[wcsvar.get()])
+        self.sendGCode(WCS[OCV.wcsvar.get()])
         self.app.mcontrol.viewState()
 
 
@@ -1818,9 +1829,8 @@ class ControlPage(CNCRibbon.Page):
     # Add a widget in the widgets list to enable disable during the run
     #----------------------------------------------------------------------
     def register(self):
-        global wcsvar
-        wcsvar = IntVar()
-        wcsvar.set(0)
+        OCV.wcsvar = IntVar()
+        OCV.wcsvar.set(0)
 
         self._register((ConnectionGroup, UserGroup, RunGroup, MemoryGroup),
             (DROFrame, ControlFrame, StateFrame))

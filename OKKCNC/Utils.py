@@ -76,17 +76,7 @@ __credits__ = \
         "@SteveMoto\n" \
         "@willadams William Adams"
 __translations__ = \
-        "Dutch - @hypothermic\n" \
-        "French - @ThierryM\n" \
-        "German - @feistus, @SteveMoto\n" \
         "Italian - @onekk\n" \
-        "Japanese - @stm32f1\n" \
-        "Korean - @jjayd\n" \
-        "Portuguese - @moacirbmn \n" \
-        "Russian - @minithc\n" \
-        "Simplified Chinese - @Bluermen\n" \
-        "Spanish - @carlosgs\n" \
-        "Traditional Chinese - @Engineer2Designer\n"
 
 LANGUAGES = {
         ""      : "<system>",
@@ -97,7 +87,8 @@ LANGUAGES = {
 icons     = {}
 images     = {}
 config    = ConfigParser.ConfigParser()
-print("new-config", __name__, config) #This is here to debug the fact that config is sometimes instantiated twice
+#This is here to debug the fact that config is sometimes instantiated twice
+print("new-config", __name__, config)
 language  = ""
 
 _errorReport = True
@@ -300,18 +291,17 @@ def InputValue(app, caller):
     title_d = _("Enter A Value")
     title_c = ""
     c_t = 0
-    if caller == "S0":
-        title_c = "Enter Value for Step1:"
+    if caller in ["S0", "S1", "S2"]:
+        if caller == "S1":
+            title_c = "Enter Value for Step1:"
+        elif caller == "S1":
+            title_c = "Enter Value for Step2:"
+        elif caller == "S2":
+            title_c = "Enter Value for Step3:"
+        else:
+            return
         min_value = 0.001
         max_value = 100.0
-    elif caller == "S1":
-        title_c = "Enter Value for Step2:"
-        min_value = 0.001
-        max_value = 1000.0
-    elif caller == "S2":
-        title_c = "Enter Value for Step3:"
-        min_value = 0.001
-        max_value = 1000.0
     elif caller == "ZS0":
         title_c = "Enter Value for Z Step1:"
         min_value = 0.001
@@ -325,6 +315,9 @@ def InputValue(app, caller):
         min_value = 2
         max_value = OCV.WK_mem_num
         c_t = 1
+    elif caller == "ME":
+        title_c = "Enter Memory {0} Name".format(OCV.WK_mem)
+        c_t = 2
     else:
         title_c = "Enter a float Value"
         min_value = 0.001
@@ -344,6 +337,9 @@ def InputValue(app, caller):
         retval = tkSimpleDialog.askinteger(title_d, prompt, parent = app,
                                            minvalue = min_value,
                                            maxvalue = max_value)
+    elif c_t == 2:
+        prompt = title_c
+        retval = tkSimpleDialog.askstring(title_d, prompt, parent = app)
 
     if caller == "S0":
         wd = app.nametowidget("step_1")

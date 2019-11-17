@@ -49,7 +49,7 @@ GANTRY_R      =  4
 GANTRY_X      = GANTRY_R*2    # 10
 GANTRY_Y      = GANTRY_R    # 5
 GANTRY_H      = GANTRY_R*5    # 20
-DRAW_TIME     = 5        # Maximum draw time permitted
+
 
 SELECTION_TAGS = ("sel", "sel2", "sel3", "sel4")
 
@@ -1818,7 +1818,7 @@ class CNCCanvas(Canvas, object):
                 for j,line in enumerate(block):
                     n -= 1
                     if n==0:
-                        if time.time() - startTime > DRAW_TIME:
+                        if time.time() - startTime > OCV.DRAW_TIME:
                             raise AlarmException()
                         # Force a periodic update since this loop can take time
                         if time.time() - before > 1.0:
@@ -2007,7 +2007,6 @@ class CanvasFrame(Frame):
 
     #----------------------------------------------------------------------
     def loadConfig(self):
-        global DRAW_TIME
 
         self.draw_axes.set(    bool(int(Utils.getBool("Canvas", "axes",    True))))
         self.draw_grid.set(    bool(int(Utils.getBool("Canvas", "grid",    True))))
@@ -2020,19 +2019,19 @@ class CanvasFrame(Frame):
 
         self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
 
-        DRAW_TIME     = Utils.getInt("Canvas", "drawtime",     DRAW_TIME)
+        OCV.DRAW_TIME     = Utils.getInt("Canvas", "drawtime", OCV.DRAW_TIME)
 
     #----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setInt( "Canvas", "drawtime",DRAW_TIME)
-        Utils.setStr( "Canvas", "view",    self.view.get())
-        Utils.setBool("Canvas", "axes",    self.draw_axes.get())
-        Utils.setBool("Canvas", "grid",    self.draw_grid.get())
-        Utils.setBool("Canvas", "margin",  self.draw_margin.get())
-        Utils.setBool("Canvas", "probe",   self.draw_probe.get())
-        Utils.setBool("Canvas", "paths",   self.draw_paths.get())
-        Utils.setBool("Canvas", "rapid",   self.draw_rapid.get())
-        Utils.setBool("Canvas", "workarea",self.draw_workarea.get())
+        Utils.setInt( "Canvas", "drawtime", OCV.DRAW_TIME)
+        Utils.setStr( "Canvas", "view", self.view.get())
+        Utils.setBool("Canvas", "axes", self.draw_axes.get())
+        Utils.setBool("Canvas", "grid", self.draw_grid.get())
+        Utils.setBool("Canvas", "margin", self.draw_margin.get())
+        Utils.setBool("Canvas", "probe", self.draw_probe.get())
+        Utils.setBool("Canvas", "paths", self.draw_paths.get())
+        Utils.setBool("Canvas", "rapid", self.draw_rapid.get())
+        Utils.setBool("Canvas", "workarea", self.draw_workarea.get())
         #Utils.setBool("Canvas", "camera",  self.draw_camera.get())
 
     #----------------------------------------------------------------------
@@ -2195,7 +2194,7 @@ class CanvasFrame(Frame):
                 command=self.drawTimeChange)
         tkExtra.Balloon.set(self.drawTime, _("Draw timeout in seconds"))
         self.drawTime.fill(["inf", "1", "2", "3", "5", "10", "20", "30", "60", "120"])
-        self.drawTime.set(DRAW_TIME)
+        self.drawTime.set(OCV.DRAW_TIME)
         self.drawTime.pack(side=RIGHT)
         Label(toolbar, text=_("Timeout:")).pack(side=RIGHT)
 
@@ -2283,11 +2282,10 @@ class CanvasFrame(Frame):
 
     #----------------------------------------------------------------------
     def drawTimeChange(self):
-        global DRAW_TIME
         try:
-            DRAW_TIME = int(self.drawTime.get())
+            OCV.DRAW_TIME = int(self.drawTime.get())
         except ValueError:
-            DRAW_TIME = 5*60
+            OCV.DRAW_TIME = 5*60
         self.viewChange()
 
 

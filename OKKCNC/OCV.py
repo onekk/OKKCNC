@@ -5,29 +5,35 @@ Created on Sun Nov 10 15:21:49 2019
 
 @author: carlo
 """
+_app = None
 
-acceleration_x = 25.0    # mm/s^2
-acceleration_y = 25.0    # mm/s^2
-acceleration_z = 25.0    # mm/s^2
-accuracy       = 0.01    # sagitta error during arc conversion
-appendFeed       = False    # append feed on every G1/G2/G3 commands to be used
-                # for feed override testing
-                # FIXME will not be needed after Grbl v1.0
+# A #
+acceleration_x = 25.0 # mm/s^2
+acceleration_y = 25.0 # mm/s^2
+acceleration_z = 25.0 # mm/s^2
+accuracy = 0.01 # sagitta error during arc conversion
+appendFeed = False # append feed on every G1/G2/G3 commands to be used
+                   # for feed override testing
+                   # FIXME will not be needed after Grbl v1.0
 
 # C #
-comment        = ""    # last parsed comment
+comment = "" # last parsed comment
 
 # D #
-developer      = False
-digits         = 4
-drillPolicy    = 1        # Expand Canned cycles
-drozeropad     = 0
+DRAW_TIME = 5 # Maximum draw time permitted
+developer = False
+digits = 4
+drillPolicy = 1 # Expand Canned cycles
+drozeropad = 0
 
 # F #
 feedmax_x      = 3000
 feedmax_y      = 3000
 feedmax_z      = 2000
 
+
+# G #
+geometry = None
 # I #
 inch           = False
 
@@ -66,6 +72,7 @@ zstep3 = 0.0
 zstep4 = 0.0
 
 # W #
+wcsvar = 0
 WK_mem_num = 49
 WK_mem = 0 # pass memory number across the different program part
 WK_mem_name = "" # pass memory name across the different program part

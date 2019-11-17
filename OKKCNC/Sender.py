@@ -51,24 +51,24 @@ NOT_CONNECTED = "Not connected"
 
 STATECOLORDEF = "LightYellow" #Default color for unknown types?
 STATECOLOR = {
-        "Idle"        : "Yellow",
-        "Run"        : "LightGreen",
-        "Alarm"        : "Red",
-        "Jog"        : "Green",
-        "Home"        : "Green",
-        "Check"        : "Magenta2",
-        "Sleep"        : "LightBlue",
-        "Hold"        : "Orange",
-        "Hold:0"    : "Orange",
-        "Hold:1"    : "OrangeRed",
-        "Queue"        : "OrangeRed",
-        "Door"        : "Red",
-        "Door:0"    : "OrangeRed",
-        "Door:1"    : "Red",
-        "Door:2"    : "Red",
-        "Door:3"    : "OrangeRed",
-        CONNECTED    : "Yellow",
-        NOT_CONNECTED    : "OrangeRed"
+        "Idle"   : "Yellow",
+        "Run"    : "LightGreen",
+        "Alarm"  : "Red",
+        "Jog"    : "Green",
+        "Home"   : "Green",
+        "Check"  : "Magenta2",
+        "Sleep"  : "LightBlue",
+        "Hold"   : "Orange",
+        "Hold:0" : "Orange",
+        "Hold:1" : "OrangeRed",
+        "Queue"  : "OrangeRed",
+        "Door"   : "Red",
+        "Door:0" : "OrangeRed",
+        "Door:1" : "Red",
+        "Door:2" : "Red",
+        "Door:3" : "OrangeRed",
+        CONNECTED : "Yellow",
+        NOT_CONNECTED : "OrangeRed"
         }
 
 
@@ -80,7 +80,7 @@ class Sender:
     MSG_BUFFER  =  0    # write to buffer one command
     MSG_SEND    =  1    # send message
     MSG_RECEIVE =  2    # receive message from controller
-    MSG_OK        =  3    # ok response from controller, move top most command to terminal
+    MSG_OK      =  3    # ok response from controller, move top most command to terminal
     MSG_ERROR   =  4    # error message or exception
     MSG_RUNEND  =  5    # run ended
     MSG_CLEAR   =  6    # clear buffer

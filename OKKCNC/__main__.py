@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__version__ = "0.0.9-dev"
+__version__ = "0.1.0-dev"
 __date__ = "26 Dec 2019"
 __author__ = "Carlo Dormeletti (onekk)"
 __email__ = "carlo.dormeletti@gmail.com"
@@ -67,7 +67,7 @@ import webbrowser
 from CNCRibbon    import Page
 from ToolsPage    import Tools, ToolsPage
 from FilePage     import FilePage
-from ControlPage  import ControlPage
+from ControlPage  import ControlPage, MemoryGroup
 from TerminalPage import TerminalPage
 from ProbePage    import ProbePage
 from EditorPage   import EditorPage
@@ -105,6 +105,7 @@ class Application(Toplevel,Sender):
         Toplevel.__init__(self, master, **kw)
         Sender.__init__(self)
 
+        OCV._app = self
         if sys.platform == "win32":
             self.iconbitmap("%s\\OKKCNC.ico"%(Utils.prgpath))
         else:
@@ -458,7 +459,6 @@ class Application(Toplevel,Sender):
 
         self.canvasFrame.canvas.focus_set()
 
-        # Fill basic global variables
         OCV.CD["state"] = NOT_CONNECTED
         OCV.CD["color"] = STATECOLOR[NOT_CONNECTED]
         self._pendantFileUploaded = None
@@ -508,7 +508,7 @@ class Application(Toplevel,Sender):
         OCV.WK_active_mems[OCV.WK_mem] = 1
 
     def saveMems(self, event=None):
-        print("Save mMms")
+        self.saveMemory()
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
     #-----------------------------------------------------------------------
@@ -625,31 +625,17 @@ class Application(Toplevel,Sender):
                 self.bind("<%s>"%(key), lambda e,s=self,c=value : s.execute(c))
 
     #-----------------------------------------------------------------------
-    def loadMemory(self):
-        for name, value in Utils.config.items("Memory"):
-            content = value.split()
-            print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
-            OCV.WK_mems[name] = [
-                    float(content[1]),
-                    float(content[2]),
-                    float(content[3]),
-                    1,
-                    content[0]]
-        #print("Load Memory ended")
-
-    #-----------------------------------------------------------------------
     def showUserFile(self):
         webbrowser.open(Utils.iniUser)
         #os.startfile(Utils.iniUser)
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        global geometry
 
-        if geometry is None:
-            geometry = "%sx%s" % (Utils.getInt(Utils.__prg__, "width",  900),
+        if OCV.geometry is None:
+            OCV.geometry = "%sx%s" % (Utils.getInt(Utils.__prg__, "width",  900),
                           Utils.getInt(Utils.__prg__, "height", 650))
-        try: self.geometry(geometry)
+        try: self.geometry(OCV.geometry)
         except: pass
 
         #restore windowsState
@@ -715,6 +701,7 @@ class Application(Toplevel,Sender):
         Sender.saveConfig(self)
         self.tools.saveConfig()
         self.canvasFrame.saveConfig()
+        self.saveMemory()
 
     #-----------------------------------------------------------------------
     def loadHistory(self):
@@ -734,6 +721,28 @@ class Application(Toplevel,Sender):
             return
         f.write("\n".join(self.history))
         f.close()
+
+
+    def loadMemory(self):
+        for name, value in Utils.config.items("Memory"):
+            content = value.split(",")
+            #print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
+            OCV.WK_mems[name] = [
+                    float(content[1]),
+                    float(content[2]),
+                    float(content[3]),
+                    1,
+                    content[0]]
+        #print("Load Memory ended")
+
+
+    def saveMemory(self):
+        for mem_name in OCV.WK_mems:
+            md = OCV.WK_mems[mem_name]
+            if md[3] is not 0:
+                mem_value = "{0},{1:.4f},{2:.4f},{3:.4f},{4:d}".format(md[4],md[0], md[1], md[2], md[3])
+                Utils.setStr("Memory", mem_name, mem_value )
+
 
     #-----------------------------------------------------------------------
     def cut(self, event=None):
@@ -939,15 +948,6 @@ class Application(Toplevel,Sender):
         toplevel.bind('<Escape>',   closeFunc)
         toplevel.bind('<Return>',   closeFunc)
         toplevel.bind('<KP_Enter>', closeFunc)
-
-        #Center to the screen
-        #toplevel.update_idletasks()
-        #w = toplevel.winfo_screenwidth()
-        #h = toplevel.winfo_screenheight()
-        #size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
-        #x = w/2 - size[0]/2
-        #y = h/2 - size[1]/2
-        #toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
         toplevel.deiconify()
         toplevel.wait_visibility()
