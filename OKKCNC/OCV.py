@@ -7,6 +7,10 @@ Created on Sun Nov 10 15:21:49 2019
 """
 _app = None
 
+
+_version = "0.1.0-dev"
+_date = "26 Dec 2019"
+
 # A #
 acceleration_x = 25.0 # mm/s^2
 acceleration_y = 25.0 # mm/s^2
@@ -73,7 +77,23 @@ zstep4 = 0.0
 
 # W #
 wcsvar = 0
-WK_mem_num = 49
+
+# List containing the active mems
+# one position for each mem
+# hold the mem status
+# 0 empty
+# 1 set but not shown
+# 2 set and shown
+WK_active_mems = []
+# variables to manage the memory bank
+WK_bank = 0;
+WK_bank_max = 3;
+WK_bank_start = 0
+# number of memories in Bank
+WK_bank_mem = 9
+# Toggle used to whow the memory bank
+WK_bank_show = []
+
 WK_mem = 0 # pass memory number across the different program part
 WK_mem_name = "" # pass memory name across the different program part
 
@@ -86,55 +106,8 @@ WK_mem_name = "" # pass memory name across the different program part
 # they are working memories and not saved in the user file
 # memories are saved in the configuration file <TODO>
 WK_mems = {}
-# List containing the active mems
-# one position for each mem
-# hold the mem status
-# 0 empty
-# 1 set but not shown
-# 2 set and shown
-WK_active_mems = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+WK_mem_num = 0
 
-# index of the bank shown
-WK_bank = 0;
-# Toggle used to whow the memory bank
-WK_bank_show = [0,0,0]
-
-ACTIVE_COLOR       = "LightYellow"
-BACKGROUND         = "#E6E2E0"
-BACKGROUND_LABELS  = "pale green"
-BACKGROUND_DISABLE = "#A6A2A0"
-BACKGROUND_GROUP   = "#B6B2B0"
-BACKGROUND_GROUP2  = "#B0C0C0"
-BACKGROUND_GROUP3  = "#A0C0A0"
-BACKGROUND_GROUP4  = "#B0C0A0"
-BLOCK_COLOR   = "LightYellow"
-BOX_SELECT    = "Cyan"
-CAMERA_COLOR  = "Cyan"
-CANVAS_COLOR  = "White"
-COMMENT_COLOR = "Blue"
-DISABLE_COLOR = "LightGray"
-ENABLE_COLOR  = "Black"
-FOREGROUND_GROUP   = "White"
-GANTRY_COLOR  = "Red"
-GRID_COLOR    = "Gray"
-INFO_COLOR    = "Gold"
-INSERT_COLOR  = "Blue"
-LABEL_SELECT_COLOR = "#C0FFC0"
-MARGIN_COLOR  = "Magenta"
-MEM_COLOR     = "Orchid1"
-MOVE_COLOR    = "DarkCyan"
-PROBE_TEXT_COLOR = "Green"
-PROCESS_COLOR = "Green"
-RULER_COLOR   = "Green"
-SELECT_COLOR  = "Blue"
-SELECT2_COLOR = "DarkCyan"
-TAB_COLOR     = "DarkOrange"
-TABS_COLOR    = "Orange"
-WORK_COLOR    = "Orange"
 
 
 CD = {
@@ -207,3 +180,37 @@ CD = {
     "running"    : False,
     }
 
+
+# INTERFACE COLORS #
+ACTIVE_COLOR       = "LightYellow"
+BACKGROUND         = "#E6E2E0"
+BACKGROUND_LABELS  = "pale green"
+BACKGROUND_DISABLE = "#A6A2A0"
+BACKGROUND_GROUP   = "#B6B2B0"
+BACKGROUND_GROUP2  = "#B0C0C0"
+BACKGROUND_GROUP3  = "#A0C0A0"
+BACKGROUND_GROUP4  = "#B0C0A0"
+BLOCK_COLOR   = "LightYellow"
+BOX_SELECT    = "Cyan"
+CAMERA_COLOR  = "Cyan"
+CANVAS_COLOR  = "White"
+COMMENT_COLOR = "Blue"
+DISABLE_COLOR = "LightGray"
+ENABLE_COLOR  = "Black"
+FOREGROUND_GROUP   = "White"
+GANTRY_COLOR  = "Red"
+GRID_COLOR    = "Gray"
+INFO_COLOR    = "Gold"
+INSERT_COLOR  = "Blue"
+LABEL_SELECT_COLOR = "#C0FFC0"
+MARGIN_COLOR  = "Magenta"
+MEM_COLOR     = "Orchid1"
+MOVE_COLOR    = "DarkCyan"
+PROBE_TEXT_COLOR = "Green"
+PROCESS_COLOR = "Green"
+RULER_COLOR   = "Green"
+SELECT_COLOR  = "Blue"
+SELECT2_COLOR = "DarkCyan"
+TAB_COLOR     = "DarkOrange"
+TABS_COLOR    = "Orange"
+WORK_COLOR    = "Orange"

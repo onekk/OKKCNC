@@ -8,8 +8,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__version__ = "0.1.0-dev"
-__date__ = "26 Dec 2019"
+
 __author__ = "Carlo Dormeletti (onekk)"
 __email__ = "carlo.dormeletti@gmail.com"
 
@@ -110,7 +109,7 @@ class Application(Toplevel,Sender):
             self.iconbitmap("%s\\OKKCNC.ico"%(Utils.prgpath))
         else:
             self.iconbitmap("@%s/OKKCNC.xbm"%(Utils.prgpath))
-        self.title("%s %s"%(Utils.__prg__, __version__))
+        self.title("%s %s"%(Utils.__prg__, OCV._version))
         self.widgets = []
 
         # Global variables
@@ -613,7 +612,7 @@ class Application(Toplevel,Sender):
     # ----------------------------------------------------------------------
     def checkUpdates(self):
         # Find OKKCNC version
-        Updates.CheckUpdateDialog(self, __version__)
+        Updates.CheckUpdateDialog(self, OCV._version)
 
     #-----------------------------------------------------------------------
     def loadShortcuts(self):
@@ -724,6 +723,21 @@ class Application(Toplevel,Sender):
 
 
     def loadMemory(self):
+
+        # maybe soem values in Memory
+        #relative to WK_bank_max and WK_bank_num
+        # init the memory vars
+        OCV.WK_mem_num = ((OCV.WK_bank_max + 1) * OCV.WK_bank_mem) + 1
+        OCV.WK_active_mems = []
+
+        for i in range(0, OCV.WK_mem_num + 1):
+            OCV.WK_active_mems.append(0)
+
+        OCV.WK_bank_show = []
+
+        for i in range(0, OCV.WK_bank_max + 1):
+            OCV.WK_bank_show.append(0)
+
         for name, value in Utils.config.items("Memory"):
             content = value.split(",")
             #print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
@@ -795,7 +809,7 @@ class Application(Toplevel,Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About %s v%s") % (Utils.__prg__,__version__))
+        toplevel.title(_("About %s v%s") % (Utils.__prg__,OCV._version))
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
@@ -831,7 +845,8 @@ class Application(Toplevel,Sender):
         row += 1
         l = Label(frame, text=\
                 _("OKKCNC/\tAn advanced fully featured\n" \
-                  "\tg-code sender for GRBL."),
+                  "\t\tg-code sender for GRBL. \n\n"\
+                  "\t\tForked from bCNC"),
                 font = font3,
                 foreground=fg, background=bg, justify=LEFT)
         l.grid(row=row, column=0, columnspan=2, sticky=W, padx=10, pady=1)
@@ -923,7 +938,7 @@ class Application(Toplevel,Sender):
                 font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=__version__,
+        l = Label(frame, text=OCV._version,
                 foreground=fg, background=bg, justify=LEFT,
                 font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
@@ -935,7 +950,7 @@ class Application(Toplevel,Sender):
                 font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=__date__,
+        l = Label(frame, text=OCV._date,
                 foreground=fg, background=bg, justify=LEFT,
                 font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
@@ -1903,7 +1918,7 @@ class Application(Toplevel,Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title("%s %s"%(Utils.__prg__,__version__))
+        self.title("%s %s"%(Utils.__prg__, OCV._version))
 
     #-----------------------------------------------------------------------
     # load dialog
@@ -2000,13 +2015,13 @@ class Application(Toplevel,Sender):
             self.setStatus(_("'%s' reloaded at '%s'").decode("utf8")%(filename,str(datetime.now())))
         else:
             self.setStatus(_("'%s' loaded").decode("utf8")%(filename))
-        self.title("%s %s: %s"%(Utils.__prg__,__version__,self.gcode.filename))
+        self.title("%s %s: %s"%(Utils.__prg__, OCV._version, self.gcode.filename))
 
     #-----------------------------------------------------------------------
     def save(self, filename):
         Sender.save(self, filename)
         self.setStatus(_("'%s' saved").decode("utf8")%(filename))
-        self.title("%s %s: %s"%(Utils.__prg__,__version__,self.gcode.filename))
+        self.title("%s %s: %s"%(Utils.__prg__, OCV._version ,self.gcode.filename))
 
     #-----------------------------------------------------------------------
     def saveAll(self, event=None):
@@ -2438,7 +2453,7 @@ class Application(Toplevel,Sender):
 
 #------------------------------------------------------------------------------
 def usage(rc):
-    sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, __version__, __date__))
+    sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, OCV._version, OCV._date))
     sys.stdout.write("%s <%s>\n\n"%(__author__, __email__))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")

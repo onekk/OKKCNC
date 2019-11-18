@@ -52,7 +52,7 @@ hisFile   = os.path.expanduser("~/.%s.history" % (__prg__))
 
 # dirty way of substituting the "_" on the builtin namespace
 #__builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
-__builtin__._ = gettext.translation('bCNC', os.path.join(prgpath,'locale'), fallback=True).gettext
+__builtin__._ = gettext.translation('OKKCNC', os.path.join(prgpath,'locale'), fallback=True).gettext
 __builtin__.N_ = lambda message: message
 
 import Ribbon
@@ -62,19 +62,10 @@ __www__     = "https://github.com/onekk/OKKCNC"
 __contribute__ = ""
 
 __credits__ = \
-        "@vvlachoudis vvlachoudis@gmail.com" \
-        "@effer Filippo Rivato\n" \
-        "@carlosgs Carlos Garcia Saura\n" \
-        "@dguerizec\n" \
-        "@buschhardt\n" \
-        "@MARIOBASZ\n" \
-        "@harvie Tomas Mudrunka" \
-        "@1bigpig\n" \
-        "@chamnit Sonny Jeon\n" \
-        "@harvie Tomas Mudrunka\n" \
-        "@onekk Carlo\n" \
-        "@SteveMoto\n" \
-        "@willadams William Adams"
+        "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
+        "@effer Filippo Rivato , " \
+        "@harvie Tomas Mudrunka\n\n" \
+        "And all the contributors of bCNC"
 __translations__ = \
         "Italian - @onekk\n" \
 
@@ -289,37 +280,53 @@ def SetSteps():
 #----------------------------------------------------------------------
 def InputValue(app, caller):
     title_d = _("Enter A Value")
+    title_p = _("Enter Value for {0} :")
     title_c = ""
     c_t = 0
-    if caller in ["S0", "S1", "S2"]:
+    if caller in ("S1", "S2", "S3"):
         if caller == "S1":
-            title_c = "Enter Value for Step1:"
-        elif caller == "S1":
-            title_c = "Enter Value for Step2:"
+            title_c = tile_p.format("Step1")
         elif caller == "S2":
-            title_c = "Enter Value for Step3:"
+            title_c = tile_p.format("Step2")
+        elif caller == "S3":
+            title_c = tile_p.format("Step3")
         else:
             return
         min_value = 0.001
         max_value = 100.0
-    elif caller == "ZS0":
-        title_c = "Enter Value for Z Step1:"
+
+    elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
+        if caller == "ZS1":
+            title_c = tile_p.format("Z Step1")
+        elif caller == "ZS2":
+            title_c = tile_p.format("Z Step2")
+        elif caller == "ZS3":
+            title_c = tile_p.format("Z Step3")
+        elif caller == "ZS4":
+            title_c = tile_p.format("Z Step3")
+        else:
+            return
         min_value = 0.001
         max_value = 10.0
+
     elif caller == "TD":
-        title_c = "Enter Target Depth "
+        title_c = _("Enter Target Depth :")
         min_value = -35.0
         max_value = 0.0
+
     elif caller == "MN":
-        title_c = "Enter Memory Number"
+        title_c = _("Enter Memory Number :")
         min_value = 2
         max_value = OCV.WK_mem_num
         c_t = 1
+
     elif caller == "ME":
-        title_c = "Enter Memory {0} Name".format(OCV.WK_mem)
+        title_p = _("Enter Memory {0} Description :")
+        title_c = title_p.format(OCV.WK_mem)
         c_t = 2
+
     else:
-        title_c = "Enter a float Value"
+        title_c = _("Enter a float Value :")
         min_value = 0.001
         max_value = 100.0
 
@@ -341,27 +348,12 @@ def InputValue(app, caller):
         prompt = title_c
         retval = tkSimpleDialog.askstring(title_d, prompt, parent = app)
 
-    if caller == "S0":
-        wd = app.nametowidget("step_1")
-        OCV.step1 = retval
-        setFloat("Control", "step1", retval)
-    elif caller == "S1":
-        wd = app.nametowidget("step_2")
-        OCV.step2 = retval
-        setFloat("Control", "step2", retval)
-    elif caller == "S2":
-        wd = app.nametowidget("step_3")
-        OCV.step3 = retval
-        setFloat("Control", "step3", retval)
-    elif caller == "ZS0":
-        wd = app.nametowidget("zstep_1")
-        OCV.zstep1 = retval
-        setFloat("Control", "zstep1", retval)
+    # early check for null value
+
+    if retval == None:
+        return None
     else:
         return retval
-
-    if wd is not None:
-        wd.configure(text = retval)
 
 def do_nothing():
     pass

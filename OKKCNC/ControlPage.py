@@ -21,14 +21,12 @@ import math
 from math import * #Math in DRO
 
 import OCV
-#from CNC import CNC
 import Utils
 import Ribbon
 import Sender
 import tkExtra
 import Unicode
 import CNCRibbon
-#import CNCCanvas
 import CAMGen
 from Sender import ERROR_CODES
 from CNC import Block, WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
@@ -52,7 +50,6 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             [(_("Hard Reset"), "reset", app.hardReset)])
         self.grid2rows()
 
-        # ---
         col,row = 0, 0
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["home32"],
@@ -466,23 +463,23 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         b = Button(self.frame,
                 #image=Utils.icons["start32"],
                 font = _FONT,
-                text=_("B1"),
+                text=_("M2A"),
                 background=OCV.BACKGROUND,
                 command = None
                 )
         b.grid(row=row, column=col)# padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Button 1"))
+        tkExtra.Balloon.set(b, _("Memory to A"))
         self.addWidget(b)
 
         row +=1
         b = Button(self.frame,
                 #image=Utils.icons["pause32"],
                 font = _FONT,
-                text=_("B2"),
+                text=_("M2B"),
                 background=OCV.BACKGROUND,
                 command = None)
         b.grid(row=row, column=col)#, padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Button 2"))
+        tkExtra.Balloon.set(b, _("Memory to B"))
         self.addWidget(b)
 
         row +=1
@@ -501,7 +498,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         b = Label(self.frame, name = "lab_bank", text = "B {0}".format(OCV.WK_bank),
                   background=OCV.BACKGROUND_LABELS)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
-        tkExtra.Balloon.set(b, _("Bank Number"))
+        tkExtra.Balloon.set(b, _("Bank Number \n Mem {0}".format(OCV.WK_mem_num)))
         self.addWidget(b)
 
         row +=1
@@ -530,7 +527,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
 
 
-        for x in range(0, 12, 3):
+        for x in range(0, OCV.WK_bank_mem, 3):
             col +=1
             rows = 0
             for xa in range(x, x+3):
@@ -560,10 +557,9 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         if OCV.CD["state"] == "Idle":
             #print(event.num)
             #print("Button {0} CLicked".format(obj))
-            mem_clicked = (OCV.WK_bank * 12) + 2 + obj
+            mem_clicked = (OCV.WK_bank * OCV.WK_bank_mem) + 2 + obj
             mem_key = "mem_{0}".format(mem_clicked)
             #print ("{0} clicked".format(mem_key))
-            mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
 
             # Left Button Clicked, goto position
             if event.num == 1:
@@ -578,7 +574,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
                 mem_name = Utils.InputValue(self.app, "ME")
-                print("MG mem_name = ", mem_name)
+                #print("MG mem_name = ", mem_name)
                 if mem_name is None:
                     mem_name = mem_key
 
@@ -599,7 +595,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             return
 
     def onClickBank(self, event, obj):
-        print("you clicked on", obj)
+        #print("you clicked on", obj)
         if (obj == "B+"):
             mem_bank = OCV.WK_bank + 1
         elif (obj == "B-"):
@@ -620,15 +616,15 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
     def selectBank(self, mem_bank):
         # assign the proper values
         OCV.WK_bank = mem_bank
-        mem_start = (mem_bank * 12) + 2
+        OCV.WK_bank_start = (OCV.WK_bank * OCV.WK_bank_mem) + 2
         wd = self.frame.nametowidget("lab_bank")
-        wd.config(text="B {0}".format(mem_bank))
+        wd.config(text="B {0}".format(OCV.WK_bank))
         but_color = OCV.BACKGROUND
 
-        for x in range(0,12):
+        for x in range(0, OCV.WK_bank_mem):
             but_name = "but_m_{0}".format(str(x))
-            label = "M_{0}".format(mem_start + x)
-            mem_addr = "mem_{0}".format(mem_start + x)
+            label = "M_{0}".format(OCV.WK_bank_start + x)
+            mem_addr = "mem_{0}".format(OCV.WK_bank_start + x)
             mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
             wd = self.frame.nametowidget(but_name)
 
@@ -663,8 +659,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
             if ( b_check > 0):
                 # reset the button state
-                mem_start = (OCV.WK_bank * 12) + 2
-                but_name = "but_m_{0}".format(mem_num - mem_start)
+                but_name = "but_m_{0}".format(mem_num - OCV.WK_bank_start)
                 label = "M_{0}".format(mem_num)
                 print("clrX but_name > ", but_name)
                 wd = self.frame.nametowidget(but_name)
@@ -675,30 +670,28 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         #print(OCV.WK_mems)
 
     def checkBtnV(self, mem_num):
-        low_mem = (OCV.WK_bank * 12) + 2
-        upp_mem = low_mem + 12 # range is not checking the last value
-        print ("check Button {0} in range {1} {2}".format(mem_num, low_mem, upp_mem))
-        if mem_num in range(low_mem, upp_mem):
+        upp_mem = OCV.WK_bank_start + OCV.WK_bank_mem
+        #print ("check Button {0} in range {1} {2}".format(
+        #        mem_num, OCV.WK_bank_start, upp_mem))
+        if mem_num in range(OCV.WK_bank_start, upp_mem):
             return mem_num
         else:
             return -1
 
     def showBankMem(self):
-        mem_start = (OCV.WK_bank * 12) + 2
-        print("sBM Bank >> ", mem_start)
-        for x in range(0, 12):
-            mem_num = mem_start + x
+        #print("sBM Bank >> ", OCV.WK_bank)
+        for x in range(0, WK_bank_mem):
+            mem_num = OCV.WK_bank_start + x
             mem_addr = "mem_{0}".format(mem_num)
 
             # check the presence of the key in dictionary
             if mem_addr in OCV.WK_mems:
                 # chek if the memory is valid
                 md = OCV.WK_mems[mem_addr]
-                print("sBM md >> ", md)
+                #print("sBM md >> ", md)
                 if  md[3] == 1:
                     OCV.WK_mem = mem_num
                     OCV._app.event_generate("<<SetMem>>")
-
 
     def resetMemView(self):
         indices = [i for i, x in enumerate(OCV.WK_active_mems) if x == 2]
@@ -744,8 +737,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S0"))
-        tkExtra.Balloon.set(b, _("Use step1"))
+        b.bind("<Button-3>", lambda event: self.editStep("S1"))
+        bal_text = _("Step1 = %s")%(OCV.step1)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
 
@@ -755,8 +749,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S1"))
-        tkExtra.Balloon.set(b, _("Use step2"))
+        b.bind("<Button-3>", lambda event: self.editStep("S2"))
+        bal_text = _("Step2 = %s")%(OCV.step2)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
 
@@ -766,8 +761,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=8, columnspan = 2, sticky=EW)
-        b.bind("<Button-3>", lambda event: Utils.InputValue(self, "S2"))
-        tkExtra.Balloon.set(b, _("Use step3"))
+        b.bind("<Button-3>", lambda event: self.editStep("S3"))
+        bal_text = _("Step3 = %s")%(OCV.step3)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
         row = 1
@@ -892,8 +888,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        b.bind("<Button-3>" ,lambda event: Utils.InputValue(self, "ZS0"))
-        tkExtra.Balloon.set(b, "Zstep1 = %s"%(OCV.zstep1))
+        b.bind("<Button-3>" ,lambda event: self.editStep("ZS1"))
+        bal_text = _("Z Step1 = %s")%(OCV.zstep1)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
         b = Button(self, text="%s"%(OCV.zstep2),
@@ -903,7 +900,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b,"Zstep2 = %s"%(OCV.zstep2))
+        b.bind("<Button-3>" ,lambda event: self.editStep("ZS2"))
+        bal_text = _("Z Step2 = %s")%(OCV.zstep2)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
 
@@ -941,7 +940,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, "Zstep3 = %s"%(OCV.zstep3))
+        b.bind("<Button-3>" ,lambda event: self.editStep("ZS3"))
+        bal_text = _("Z Step3 = %s")%(OCV.zstep3)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
         b = Button(self, text="%s"%(OCV.zstep4),
@@ -951,7 +952,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
-        tkExtra.Balloon.set(b, "Zstep4 = %s"%(OCV.zstep4))
+        b.bind("<Button-3>" ,lambda event: self.editStep("ZS4"))
+        bal_text = _("Z Step4 = %s")%(OCV.zstep4)
+        tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
         row = 8
@@ -1160,7 +1163,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def line(self):
         # avoid a dry run if both mem pos are not set
-        if (OCV.WK_mems["mem_0"][3] == 1 and OCV.WK_mems["mem_1"][3] == 1):
+        if (OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0):
 
             endDepth = Utils.InputValue(self.app, "TD")
 
@@ -1172,7 +1175,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def pocket(self):
 
         # avoid a dry run if both mem pos are not set
-        if (OCV.WK_mems["mem_0"][3] == 1 and OCV.WK_mems["mem_1"][3] == 1):
+        if (OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0):
             endDepth = Utils.InputValue(self.app, "TD")
 
             if endDepth is None:
@@ -1362,14 +1365,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey(): return
         self.setStep(float(self.step.get()), OCV.zstep4)
 
-    #-----------------------------------------------------------------------
-    def zstep1_set(self, event=None):
-        return
-        """
-        OCV.zstep1 = float(self.zstep.get())
-        self.setStep(float(self.step.get()), OCV.zstep1)
-        return
-        """
     #----------------------------------------------------------------------
     def setStep1(self, event=None):
         if event is not None and not self.acceptKey(): return
@@ -1384,6 +1379,56 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def setStep3(self, event=None):
         if event is not None and not self.acceptKey(): return
         self.setStep(OCV.step3, float(self.zstep.get()))
+
+    def editStep(self, caller):
+        print ("caller > ", caller)
+        retval = Utils.InputValue(self, caller)
+        if retval == None: return
+
+        print ("retval > ", retval)
+        if caller in ("S1", "S2", "S3"):
+            if caller == "S1":
+                wd = self.nametowidget("step_1")
+                OCV.step1 = retval
+                bal_text = "Step1 = %s"%(OCV.step1)
+                Utils.setFloat("Control", "step1", retval)
+            elif caller == "S2":
+                wd = self.nametowidget("step_2")
+                OCV.step2 = retval
+                bal_text = "Step2 = %s"%(OCV.step2)
+                Utils.setFloat("Control", "step2", retval)
+            elif caller == "S3":
+                wd = self.nametowidget("step_3")
+                OCV.step3 = retval
+                Utils.setFloat("Control", "step3", retval)
+                bal_text = "Step2 = %s"%(OCV.step3)
+
+        elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
+            if caller == "ZS1":
+                wd = self.nametowidget("zstep_1")
+                OCV.zstep1 = retval
+                bal_text = "Zstep1 = %s"%(OCV.zstep1)
+                Utils.setFloat("Control", "zstep1", retval)
+            elif caller == "ZS2":
+                wd = self.nametowidget("zstep_2")
+                OCV.zstep2 = retval
+                bal_text = "Zstep2 = %s"%(OCV.zstep2)
+                Utils.setFloat("Control", "zstep2", retval)
+            elif caller == "ZS3":
+                wd = self.nametowidget("zstep_3")
+                OCV.zstep3 = retval
+                bal_text = "Zstep2 = %s"%(OCV.zstep3)
+                Utils.setFloat("Control", "zstep3", retval)
+            elif caller == "ZS4":
+                wd = self.nametowidget("zstep_4")
+                OCV.zstep4 = retval
+                bal_text = "Zstep4 = %s"%(OCV.zstep4)
+                Utils.setFloat("Control", "zstep4", retval)
+
+        if wd is not None:
+            wd.configure(text = retval)
+            tkExtra.Balloon.set(wd, bal_text)
+
 
 #===============================================================================
 # StateFrame
