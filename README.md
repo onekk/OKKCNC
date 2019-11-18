@@ -14,7 +14,7 @@ So far I have removed some functions that in my opinion are better done by an ap
 - all the plugins
 
 I have added some button on the right of the jogging buttons
-- some preset button for XY move
+- some preset button for XY steps
 - separate Zstep controls with Z button preset
 
 - "memA" and "memB" buttons to make possible to memorize some "relative position" (relative to the working plane G54 as example).
@@ -25,11 +25,11 @@ I have added some button on the right of the jogging buttons
 
 - "RmA" and "RmB" buttons to return to memorized postions
 
-- "RST" button that reset the code created in the editor and the mem positions.
+- "RST" button that reset the code created in the editor and the memA e memB positions.
 
+- a new Memory Panel, to store a number of memory position and (WIP) to pass them to memA and memB 
 
 The "line" and "r_pt" functions send the appropriate code in the editor window.
-
 
 
 Main goals for the future are:
@@ -38,12 +38,26 @@ Main goals for the future are:
   using materials like plywood that are not perfectly stable in time, so a nominal 5mm plywood is 4.9 or 5.1 
   making diffcult to cut or ruining too much the sacrifical bed. 
 
-- add more functions but not using a Plugin mechanism 
+- add more "Simple CAM functions" but not using a Plugin mechanism, a proper CAM program is better for complex operations,
+  but for cutting along a line or pocketing (surfacing) some area a simple button on the interface is more suited.
+  Not much complexity has to be added, like in the "professional" controller, nowadays no one program the machine by the
+  machine keyboard, but if you want to:
+  
+  - Surface a raw stock it's a common practice to "touch down" the stock with the tools and then surface it increasing
+    the Z quotw until it is surfaced.
+
+  - "Drill" some holes in the stock at a predefined positions, using the tools for doing "helical pocketing" with a proper
+    tool engaging
+
+
+Last but not least.
 
 Many thanks to all the bCNC developers,
 
 
 # Old Readme from bCNC
+
+Note: these functions, may or not be present in OKKCNC, most are untouched, but many may be eliminated without warnings
 
 OKKCNC is a cross platform program (Windows, Linux, Mac) written in python.
 
@@ -105,15 +119,7 @@ installation directory.
 - Various Tools:
   - user configurable database of materials, endmills, stock
   - properties database of materials, stock, end mills etc..
-  - basic **CAM** features (profiling, pocketing, drilling, flat/helical/ramp cutting, thread milling, cutout tabs, drag knife)
-  - User g-code plugins:
-    - bowl generator
-    - finger joint box generator
-    - simple spur gear generator
-    - spirograph generator
-    - surface flatten
-    - play melody from MIDI file using stepper motor frequency
-    - ...
+
 - G-Code editor and display
     - graphical display of the g-code, and workspace
     - graphically moving and editing g-code
