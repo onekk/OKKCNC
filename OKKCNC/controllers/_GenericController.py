@@ -97,22 +97,22 @@ class _GenericController:
     #----------------------------------------------------------------------
     def jog(self, dir):
         #print("jog",dir)
-        self.master.sendGCode("G91G0%s"%(dir))
+        self.master.sendGCode("G91G0{0}".format(dir))
         self.master.sendGCode("G90")
 
     #----------------------------------------------------------------------
     def goto(self, x=None, y=None, z=None):
         cmd = "G90G0"
-        if x is not None: cmd += "X%g"%(x)
-        if y is not None: cmd += "Y%g"%(y)
-        if z is not None: cmd += "Z%g"%(z)
-        self.master.sendGCode("%s"%(cmd))
+        if x is not None: cmd += "X{0:0.f}".format(x)
+        if y is not None: cmd += "Y{0:0.f}".format(y)
+        if z is not None: cmd += "Z{0:0.f}".format(z)
+        self.master.sendGCode("{0}".format(cmd))
 
     #----------------------------------------------------------------------
     def _wcsSet(self, x, y, z):
         p = WCS.index(OCV.CD["WCS"])
         if p<6:
-            cmd = "G10L20P%d"%(p+1)
+            cmd = "G10L20P{0:d}".format(p+1)
         elif p==6:
             cmd = "G28.1"
         elif p==7:
@@ -128,7 +128,7 @@ class _GenericController:
         self.master.sendGCode(cmd)
         self.viewParameters()
         self.master.event_generate("<<Status>>",
-            data=(_("Set workspace %s to %s")%(WCS[p],pos)))
+            data=(_("Set workspace {0} to {1}").format(WCS[p],pos)))
             #data=(_("Set workspace %s to %s")%(WCS[p],pos)).encode("utf8"))
         self.master.event_generate("<<CanvasFocus>>")
 
@@ -174,7 +174,7 @@ class _GenericController:
         self.master.runEnded()
         self.master.stopProbe()
         if G: self.master.sendGCode(G)            # restore $G
-        self.master.sendGCode("G43.1Z%s"%(TLO))    # restore TLO
+        self.master.sendGCode("G43.1Z{0}".format(TLO))    # restore TLO
         self.viewState()
 
 
@@ -220,7 +220,7 @@ class _GenericController:
             self.master.log.put((self.master.MSG_RECEIVE, line))
             pat = VARPAT.match(line)
             if pat:
-                OCV.CD["grbl_%s"%(pat.group(1))] = pat.group(2)
+                OCV.CD["grbl_{0}".format(pat.group(1))] = pat.group(2)
 
         elif line[:4]=="Grbl" or line[:13]=="CarbideMotion": # and self.running:
             #tg = time.time()
@@ -231,7 +231,7 @@ class _GenericController:
             OCV.CD["version"] = line.split()[1]
             # Detect controller
             if self.master.controller in ("GRBL0", "GRBL1"):
-                self.master.controllerSet("GRBL%d"%(int(OCV.CD["version"][0])))
+                self.master.controllerSet("GRBL{0:d}".format(int(OCV.CD["version"][0])))
 
         else:
             #We return false in order to tell that we can't parse this line

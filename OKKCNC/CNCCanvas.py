@@ -308,7 +308,9 @@ class CNCCanvas(Canvas, object):
 
     # ----------------------------------------------------------------------
     def setMouseStatus(self, event):
-        data="%.4f %.4f %.4f" % self.canvas2xyz(self.canvasx(event.x), self.canvasy(event.y))
+        data="{0:.4f} {1:.4f} {2:.4f}".format(*self.canvas2xyz(
+                self.canvasx(event.x),
+                self.canvasy(event.y)))
         self.event_generate("<<Coords>>", data=data)
 
     # ----------------------------------------------------------------------
@@ -1201,7 +1203,7 @@ class CNCCanvas(Canvas, object):
             self._count += 1
         except:
             self._count = 1
-        self.camera.save("camera%02d.png"%(self._count))
+        self.camera.save("camera{0:02d}.png".format(self._count))
 
     # ----------------------------------------------------------------------
     # Reposition camera and crosshair
@@ -1680,7 +1682,7 @@ class CNCCanvas(Canvas, object):
         # Draw probe points
         for i,uv in enumerate(self.plotCoords(probe.points)):
             item = self.create_text(uv,
-                        text="%.*f"%(OCV.digits,probe.points[i][2]),
+                        text="{0:.{1}f}".format(probe.points[i][2], OCV.digits),
                         tag="Probe",
                         justify=CENTER,
                         fill=OCV.PROBE_TEXT_COLOR)
@@ -1987,7 +1989,7 @@ class CanvasFrame(Frame):
         toolbar.grid(row=0, column=0, columnspan=2, sticky=EW)
 
         self.canvas = CNCCanvas(self, app, takefocus=True, background="White")
-        print("self.canvas.winfo_id(): %s"%(self.canvas.winfo_id())) #OpenGL context
+        print("self.canvas.winfo_id(): {0}".format(self.canvas.winfo_id())) #OpenGL context
         self.canvas.grid(row=1, column=0, sticky=NSEW)
         sb = Scrollbar(self, orient=VERTICAL, command=self.canvas.yview)
         sb.grid(row=1, column=1, sticky=NS)

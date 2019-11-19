@@ -58,11 +58,11 @@ def line(self, app, endDepth, mem_0, mem_1):
     if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
 
     msg = "Line Cut Operation: \n"
-    msg+= "Tooldiam: %f \n\n"%(toolDiam)
-    msg+= "Start: \n\nX: %f \n Y: %f \n Z: %f\n\n"%(XStart, YStart, startDepth)
-    msg+= "End: \n\nX: %f \nY: %f \nZ: %f\n\n"%(XEnd, YEnd, endDepth)
-    msg+= "Z StepOver: %f \n\n"%(ZStepOver)
-    msg+= "T_StepOver: %f \n\n"%(StepOverInUnitMax)
+    msg+= "Start: \n\n{0}\n\n".format(OCV.showC(XStart, YStart, startDepth))
+    msg+= "End: \n\n{0}\n\n".format(OCV.showC(XEnd, YEnd, endDepth))
+    msg+= "Tooldiam: {0:.{1}f} \n\n".format(toolDiam, OCV.digits)
+    msg+= "StepDown: {0:.{1}f} \n\n".format(ZStepOver, OCV.digits)
+    msg+= "StepOver: {0:.{1}f} \n\n".format(StepOverInUnitMax, OCV.digits)
 
 
     retval = tkMessageBox.askokcancel("Line Cut",msg)
@@ -84,8 +84,12 @@ def line(self, app, endDepth, mem_0, mem_1):
     blocks.append(block)
 
     block = Block("Line")
-    block.append("(Line from X: %g Y: %g Z: %g)"%(XStart, YStart, startDepth))
-    block.append("(to X: %g Y: %g Z: %g)"%(XEnd,YEnd,endDepth))
+    block.append("(Line Cut)")
+    block.append("(From: {0})".format(OCV.gcodeCC(XStart, YStart, startDepth)))
+    block.append("(To: {0})".format(OCV.gcodeCC(XEnd, YEnd, endDepth)))
+    block.append("(StepDown: {0:.{1}f} )".format(ZStepOver, OCV.digits))
+    block.append("(StepOver: {0:.{1}f} )".format(StepOverInUnitMax, OCV.digits))
+    block.append("(Tool diameter = {0:.{1}f})".format(toolDiam,  OCV.digits))
 
     #Safe move to first point
     block.append(CNC.zsafe())
@@ -103,7 +107,7 @@ def line(self, app, endDepth, mem_0, mem_1):
         currDepth -= ZStepOver
         if currDepth < endDepth : currDepth = endDepth
         block.append(CNC.zenter(currDepth))
-        block.append(CNC.gcode(1, [("f",OCV.CD["cutfeed"])]))
+        block.append(CNC.gcode(1, [("F",OCV.CD["cutfeed"])]))
 
         block.append(CNC.gline(XEnd,YEnd))
 
@@ -146,11 +150,11 @@ def pocket(self, app, endDepth, mem_0, mem_1):
     if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
 
     msg = "Pocket Cut Operation: \n"
-    msg+= "Tooldiam: %f \n\n"%(toolDiam)
-    msg+= "Start: \n\nX: %f \n Y: %f \n Z: %f\n\n"%(XStart, YStart, startDepth)
-    msg+= "End: \n\nX: %f \nY: %f \nZ: %f\n\n"%(XEnd, YEnd, endDepth)
-    msg+= "Z StepOver: %f \n\n"%(ZStepOver)
-    msg+= "T_StepOver: %f \n\n"%(StepOverInUnitMax)
+    msg+= "Start: \n\n{0}\n\n".format(OCV.showC(XStart, YStart, startDepth))
+    msg+= "End: \n\n{0}\n\n".format(OCV.showC(XEnd, YEnd, endDepth))
+    msg+= "Tooldiam: {0:.{1}f} \n\n".format(toolDiam, OCV.digits)
+    msg+= "StepDown: {0:.{1}f} \n\n".format(ZStepOver, OCV.digits)
+    msg+= "StepOver: {0:.{1}f} \n\n".format(StepOverInUnitMax, OCV.digits)
 
     retval = tkMessageBox.askokcancel("Pocket Cut",msg)
 
@@ -166,10 +170,11 @@ def pocket(self, app, endDepth, mem_0, mem_1):
 
     block = Block("Pocket")
     block.append("(Pocket)")
-    block.append("(from: X: %g Y: %g Z: %g)"%(XStart, YStart, startDepth))
-    block.append("(to:   X: %g Y: %g Z: %g)"%(XEnd,YEnd,endDepth))
-    block.append("(StepDown = %g)"%(ZStepOver))
-    block.append("(Using tool diameter = %g)"%(toolDiam))
+    block.append("(Start: {0})".format(OCV.gcodeCC(XStart, YStart, startDepth)))
+    block.append("(End: {0})".format(OCV.gcodeCC(XEnd, YEnd, endDepth)))
+    block.append("(StepDown: {0:.{1}f} )".format(ZStepOver, OCV.digits))
+    block.append("(StepOver: {0:.{1}f} )".format(StepOverInUnitMax, OCV.digits))
+    block.append("(Tool diameter = {0:.{1}f})".format(toolDiam,  OCV.digits))
 
     #Move safe to first point
     block.append(CNC.zsafe())
@@ -261,7 +266,7 @@ def pocket(self, app, endDepth, mem_0, mem_1):
             if currDepth < endDepth : currDepth = endDepth
 
             block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f",OCV.CD["cutfeed"])]))
+            block.append(CNC.gcode(1, [("F",OCV.CD["cutfeed"])]))
 
             #Pocketing
             for x,y in zip(xP,yP):
@@ -282,6 +287,7 @@ def pocket(self, app, endDepth, mem_0, mem_1):
 
     if blocks is not None:
         active = app.activeBlock()
+
         if active==0: active=1
         app.gcode.insBlocks(active, blocks, "Line Cut")
         app.refresh()

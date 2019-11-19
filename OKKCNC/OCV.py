@@ -11,6 +11,9 @@ _app = None
 _version = "0.1.0-dev"
 _date = "26 Dec 2019"
 
+_sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
+_gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
+
 # A #
 acceleration_x = 25.0 # mm/s^2
 acceleration_y = 25.0 # mm/s^2
@@ -26,7 +29,7 @@ comment = "" # last parsed comment
 # D #
 DRAW_TIME = 5 # Maximum draw time permitted
 developer = False
-digits = 4
+digits = 3
 drillPolicy = 1 # Expand Canned cycles
 drozeropad = 0
 
@@ -203,6 +206,10 @@ GRID_COLOR    = "Gray"
 INFO_COLOR    = "Gold"
 INSERT_COLOR  = "Blue"
 LABEL_SELECT_COLOR = "#C0FFC0"
+LISTBOX_NUMBER = "khaki1"
+LISTBOX_SEP = "aquamarine"
+LISTBOX_TEXT = "azure"
+LISTBOX_VAL = "AntiqueWhite1"
 MARGIN_COLOR  = "Magenta"
 MEM_COLOR     = "Orchid1"
 MOVE_COLOR    = "DarkCyan"
@@ -214,3 +221,9 @@ SELECT2_COLOR = "DarkCyan"
 TAB_COLOR     = "DarkOrange"
 TABS_COLOR    = "Orange"
 WORK_COLOR    = "Orange"
+
+def showC(X, Y, Z):
+    return _sh_coord.format(X, Y, Z, digits)
+
+def gcodeCC(X, Y, Z):
+    return _gc_coord.format(X, Y, Z, digits)

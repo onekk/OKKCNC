@@ -106,10 +106,10 @@ class Application(Toplevel,Sender):
 
         OCV._app = self
         if sys.platform == "win32":
-            self.iconbitmap("%s\\OKKCNC.ico"%(Utils.prgpath))
+            self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
         else:
-            self.iconbitmap("@%s/OKKCNC.xbm"%(Utils.prgpath))
-        self.title("%s %s"%(Utils.__prg__, OCV._version))
+            self.iconbitmap("@{0}/OKKCNC.xbm".format(Utils.prgpath))
+        self.title("{0} {1}".format(Utils.__prg__, OCV._version))
         self.widgets = []
 
         # Global variables
@@ -198,13 +198,13 @@ class Application(Toplevel,Sender):
         # then add their properties (in separate loop)
         errors = []
         for name,page in self.pages.items():
-            for n in Utils.getStr(Utils.__prg__,"%s.ribbon"%(page.name)).split():
+            for n in Utils.getStr(Utils.__prg__,"{0}.ribbon".format(page.name)).split():
                 try:
                     page.addRibbonGroup(n)
                 except KeyError:
                     errors.append(n)
 
-            for n in Utils.getStr(Utils.__prg__,"%s.page"%(page.name)).split():
+            for n in Utils.getStr(Utils.__prg__,"{0}.page".format(page.name)).split():
                 last = n[-1]
                 try:
                     if last == "*":
@@ -216,10 +216,10 @@ class Application(Toplevel,Sender):
 
         if errors:
             tkMessageBox.showwarning("OKKCNC configuration",
-                    "The following pages \"%s\" are found in your " \
+                    "The following pages \"{0}\" are found in your " \
                     "${HOME}/.OKKCNC initialization " \
                     "file, which are either spelled wrongly or " \
-                    "no longer exist in OKKCNC"%(" ".join(errors)),parent=self)
+                    "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
         # remember the editor list widget
         self.dro      = Page.frames["DRO"]
@@ -619,9 +619,9 @@ class Application(Toplevel,Sender):
         for name, value in Utils.config.items("Shortcut"):
             # Convert to uppercase
             key = name.title()
-            self.unbind("<%s>"%(key))    # unbind any possible old value
+            self.unbind("<{0}>".format(key))    # unbind any possible old value
             if value:
-                self.bind("<%s>"%(key), lambda e,s=self,c=value : s.execute(c))
+                self.bind("<{0}>".format(key), lambda e,s=self,c=value : s.execute(c))
 
     #-----------------------------------------------------------------------
     def showUserFile(self):
@@ -632,8 +632,9 @@ class Application(Toplevel,Sender):
     def loadConfig(self):
 
         if OCV.geometry is None:
-            OCV.geometry = "%sx%s" % (Utils.getInt(Utils.__prg__, "width",  900),
-                          Utils.getInt(Utils.__prg__, "height", 650))
+            OCV.geometry = "{0:d}x{1:d}".format(
+                    Utils.getInt(Utils.__prg__, "width", 900),
+                    Utils.getInt(Utils.__prg__, "height", 650))
         try: self.geometry(OCV.geometry)
         except: pass
 
@@ -754,7 +755,7 @@ class Application(Toplevel,Sender):
         for mem_name in OCV.WK_mems:
             md = OCV.WK_mems[mem_name]
             if md[3] is not 0:
-                mem_value = "{0},{1:.4f},{2:.4f},{3:.4f},{4:d}".format(md[4],md[0], md[1], md[2], md[3])
+                mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(md[4],md[0], md[1], md[2], md[3])
                 Utils.setStr("Memory", mem_name, mem_value )
 
 
@@ -809,11 +810,11 @@ class Application(Toplevel,Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About %s v%s") % (Utils.__prg__,OCV._version))
+        toplevel.title(_("About {0} v{1}").format(Utils.__prg__,OCV._version))
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
-            self.iconbitmap("@%s/OKKCNC.xbm"%(Utils.prgpath))
+            self.iconbitmap("@{0}/OKKCNC.xbm".format(Utils.prgpath))
 
         bg = "#707070"
         fg = "#ffffff"
@@ -1019,10 +1020,10 @@ class Application(Toplevel,Sender):
         row, col = 0,0
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["xmin"], OCV.CD["xmax"],
-             OCV.CD["xmax"] -OCV.CD["xmin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["xmin"], OCV.CD["xmax"],
+                OCV.CD["xmax"] -OCV.CD["xmin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1030,10 +1031,10 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["ymin"], OCV.CD["ymax"],
-             OCV.CD["ymax"] -OCV.CD["ymin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["ymin"], OCV.CD["ymax"],
+                OCV.CD["ymax"] -OCV.CD["ymin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1041,10 +1042,10 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["zmin"], OCV.CD["zmax"],
-             OCV.CD["zmax"] -OCV.CD["zmin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["zmin"], OCV.CD["zmax"],
+                OCV.CD["zmax"] -OCV.CD["zmin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1060,7 +1061,7 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g %s" % (l, unit),
+        Label(frame, text="{0:.f} {1}".format(l, unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1068,7 +1069,7 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text=_("Rapid:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g %s" % (r, unit),
+        Label(frame, text="{0:.f} {1}".format(r, unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1078,7 +1079,7 @@ class Application(Toplevel,Sender):
         col += 1
         h,m = divmod(t, 60)    # t in min
         s = (m-int(m))*60
-        Label(frame, text="%d:%02d:%02d s" % (int(h),int(m),int(s)),
+        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h),int(m),int(s)),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         frame.grid_columnconfigure(1, weight=1)
@@ -1092,10 +1093,10 @@ class Application(Toplevel,Sender):
         row, col = 0,0
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["axmin"], OCV.CD["axmax"],
-             OCV.CD["axmax"] -OCV.CD["axmin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["axmin"], OCV.CD["axmax"],
+                OCV.CD["axmax"] -OCV.CD["axmin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1103,10 +1104,10 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["aymin"], OCV.CD["aymax"],
-             OCV.CD["aymax"] -OCV.CD["aymin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["aymin"], OCV.CD["aymax"],
+                OCV.CD["aymax"] -OCV.CD["aymin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1114,10 +1115,10 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g .. %g [%g] %s" % \
-            (OCV.CD["azmin"], OCV.CD["azmax"],
-             OCV.CD["azmax"] -OCV.CD["azmin"],
-             unit),
+        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["azmin"], OCV.CD["azmax"],
+                OCV.CD["azmax"] -OCV.CD["azmin"],
+                unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1132,7 +1133,7 @@ class Application(Toplevel,Sender):
         col = 0
         Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="%g %s" % (self.cnc.totalLength, unit),
+        Label(frame, text="{0:.f} {1}".format(self.cnc.totalLength, unit),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
@@ -1142,7 +1143,7 @@ class Application(Toplevel,Sender):
         col += 1
         h,m = divmod(self.cnc.totalTime, 60)    # t in min
         s = (m-int(m))*60
-        Label(frame, text="%d:%02d:%02d s" % (int(h),int(m),int(s)),
+        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h),int(m),int(s)),
             foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         frame.grid_columnconfigure(1, weight=1)
@@ -1393,7 +1394,7 @@ class Application(Toplevel,Sender):
                 direction =  -1
             else:
                 tkMessageBox.showerror(_("Direction command error"),
-                    _("Invalid direction %s specified"%(line[1])),
+                    _("Invalid direction {0} specified".format(line[1])),
                     parent=self)
                 return "break"
             self.executeOnSelection("DIRECTION", True, direction)
@@ -1704,15 +1705,15 @@ class Application(Toplevel,Sender):
                 try:
                     name = line[1].upper()
                     for i in range(n):
-                        if name == Utils.getStr("Buttons","name.%d"%(i),"").upper():
+                        if name == Utils.getStr("Buttons","name. {0:d}".format(i),"").upper():
                             idx = i
                             break
                 except:
                     return "break"
             if idx<0 or idx>=n:
-                self.setStatus(_("Invalid user command %s")%(line[1]))
+                self.setStatus(_("Invalid user command {0}").format(line[1]))
                 return "break"
-            cmd = Utils.getStr("Buttons","command.%d"%(idx),"")
+            cmd = Utils.getStr("Buttons","command. {0:d}".format(idx),"")
             for line in cmd.splitlines():
                 self.execute(line)
 
@@ -1816,7 +1817,7 @@ class Application(Toplevel,Sender):
                 self.editor.select(sel,clear=True)
         self.drawAfter()
         self.notBusy()
-        self.setStatus("%s %s"%(cmd," ".join([str(a) for a in args if a is not None])))
+        self.setStatus("{0} {1}".format(cmd," ".join([str(a) for a in args if a is not None])))
 
 
     #-----------------------------------------------------------------------
@@ -1918,7 +1919,7 @@ class Application(Toplevel,Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title("%s %s"%(Utils.__prg__, OCV._version))
+        self.title("{0}{1}".format(Utils.__prg__, OCV._version))
 
     #-----------------------------------------------------------------------
     # load dialog
@@ -2015,13 +2016,13 @@ class Application(Toplevel,Sender):
             self.setStatus(_("'%s' reloaded at '%s'").decode("utf8")%(filename,str(datetime.now())))
         else:
             self.setStatus(_("'%s' loaded").decode("utf8")%(filename))
-        self.title("%s %s: %s"%(Utils.__prg__, OCV._version, self.gcode.filename))
+        self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
 
     #-----------------------------------------------------------------------
     def save(self, filename):
         Sender.save(self, filename)
         self.setStatus(_("'%s' saved").decode("utf8")%(filename))
-        self.title("%s %s: %s"%(Utils.__prg__, OCV._version ,self.gcode.filename))
+        self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version ,self.gcode.filename))
 
     #-----------------------------------------------------------------------
     def saveAll(self, event=None):
@@ -2252,7 +2253,7 @@ class Application(Toplevel,Sender):
     def startPendant(self, showInfo=True):
         started=Pendant.start(self)
         if showInfo:
-            hostName="http://%s:%d"%(socket.gethostname(),Pendant.port)
+            hostName="http://{0}:{1:d}".format(socket.gethostname(),Pendant.port)
             if started:
                 tkMessageBox.showinfo(_("Pendant"),
                     _("Pendant started:\n")+hostName,
@@ -2414,7 +2415,7 @@ class Application(Toplevel,Sender):
                         self._gcount)
             OCV.CD["msg"] = self.statusbar.msg
             self.bufferbar.setProgress(Sender.getBufferFill(self))
-            self.bufferbar.setText("%i%%"%Sender.getBufferFill(self))
+            self.bufferbar.setText("{0:+d}%".format(Sender.getBufferFill(self)))
 
             if self._selectI>=0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI<len(self._paths):
@@ -2453,8 +2454,8 @@ class Application(Toplevel,Sender):
 
 #------------------------------------------------------------------------------
 def usage(rc):
-    sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, OCV._version, OCV._date))
-    sys.stdout.write("%s <%s>\n\n"%(__author__, __email__))
+    sys.stdout.write("{0} V{2} [{2}]\n".format(Utils.__prg__, OCV._version, OCV._date))
+    sys.stdout.write("{0} <{1}>\n\n".format(__author__, __email__))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
     sys.stdout.write("\t-b # | --baud #\t\tSet the baud rate\n")
@@ -2511,6 +2512,7 @@ def main(args=None):
     run        = False
     fullscreen = False
     for opt, val in optlist:
+        print("Opt, val ",opt,val)
         if opt in ("-h", "-?", "--help"):
             usage(0)
         elif opt in ("-i", "--ini"):
@@ -2544,9 +2546,13 @@ def main(args=None):
                 # display list of recent files
                 maxlen = 10
                 for i in range(Utils._maxRecent):
-                    try: filename = Utils.getRecent(i)
+
+                    try:
+                        filename = Utils.getRecent(i)
+                        print ("Recent = ",i, maxlen, filename)
                     except: continue
-                    maxlen = max(maxlen, len(os.path.basename(filename)))
+                    if (filename is not None):
+                        maxlen = max(maxlen, len(os.path.basename(filename)))
 
                 sys.stdout.write("Recent files:\n")
                 for i in range(Utils._maxRecent):
@@ -2554,7 +2560,7 @@ def main(args=None):
                     if filename is None: break
                     d  = os.path.dirname(filename)
                     fn = os.path.basename(filename)
-                    sys.stdout.write("  %2d: %-*s  %s\n"%(i+1,maxlen,fn,d))
+                    sys.stdout.write("  {0:2d}: {1:d} {3}{2}\n".format(i+1, maxlen, fn,d))
 
                 try:
                     sys.stdout.write("Select one: ")

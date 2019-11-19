@@ -233,15 +233,15 @@ class Probe:
         f = open(filename,"w")
         if ext != '.xyz':
             self.filename = filename
-            f.write("%g %g %d\n"%(self.xmin, self.xmax, self.xn))
-            f.write("%g %g %d\n"%(self.ymin, self.ymax, self.yn))
-            f.write("%g %g %g\n"%(self.zmin, self.zmax, OCV.CD["prbfeed"]))
+            f.write("{0:0.f} {1:0.f} {2:d}".format(self.xmin, self.xmax, self.xn))
+            f.write("{0:0.f} {1:0.f} {2:d}".format(self.ymin, self.ymax, self.yn))
+            f.write("{0:0.f} {1:0.f} {2:0.f}".format(self.zmin, self.zmax, OCV.CD["prbfeed"]))
             f.write("\n\n")
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
             for i in range(self.xn):
                 x = self.xmin + self._xstep*i
-                f.write("%g %g %g\n"%(x,y,self.matrix[j][i]))
+                f.write("{0:0.f} {1:0.f} {2:0.f}".format(x,y,self.matrix[j][i]))
             f.write("\n")
         f.close()
         self.saved = True
@@ -285,11 +285,11 @@ class Probe:
     #----------------------------------------------------------------------
     def scanMargins(self):
         lines = []
-        lines.append("G0 X%.4f Y%.4f"%(self.xmin, self.ymin))
-        lines.append("G0 X%.4f Y%.4f"%(self.xmin, self.ymax))
-        lines.append("G0 X%.4f Y%.4f"%(self.xmax, self.ymax))
-        lines.append("G0 X%.4f Y%.4f"%(self.xmax, self.ymin))
-        lines.append("G0 X%.4f Y%.4f"%(self.xmin, self.ymin))
+        lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymin))
+        lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymax))
+        lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmax, self.ymax))
+        lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmax, self.ymin))
+        lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymin))
         return lines
 
     #----------------------------------------------------------------------
@@ -301,21 +301,21 @@ class Probe:
         self.makeMatrix()
         x = self.xmin
         xstep = self._xstep
-        lines = ["G0Z%.4f"%(OCV.CD["safe"]),
-             "G0X%.4fY%.4f"%(self.xmin, self.ymin)]
+        lines = ["G0 Z{0:0.f}".format(OCV.CD["safe"]),
+             "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)]
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
             for i in range(self.xn):
-                lines.append("G0Z%.4f"%(self.zmax))
-                lines.append("G0X%.4fY%.4f"%(x,y))
+                lines.append("G0 Z{0:0.f}".format(self.zmax))
+                lines.append("G0 X{0:0.f} Y{1:0.f}".format(x,y))
                 lines.append("%wait")    # added for smoothie
-                lines.append("%sZ%.4fF%g"%(OCV.CD["prbcmd"], self.zmin, OCV.CD["prbfeed"]))
+                lines.append("{0}Z{1:0.f} F{2:0.f}".format(OCV.CD["prbcmd"], self.zmin, OCV.CD["prbfeed"]))
                 lines.append("%wait")    # added for smoothie
                 x += xstep
             x -= xstep
             xstep = -xstep
-        lines.append("G0Z%.4f"%(self.zmax))
-        lines.append("G0X%.4fY%.4f"%(self.xmin,self.ymin))
+        lines.append("G0 Z{0:0.f}".format(self.zmax))
+        lines.append("G0 X{0:0.f} Y{1:0.f}".format(self.xmin,self.ymin))
         return lines
 
     #----------------------------------------------------------------------
@@ -652,7 +652,7 @@ class Orient:
             self.filename = filename
         f = open(self.filename,"w")
         for xm,ym,x,y in self.markers:
-            f.write("%g %g %g %g\n"%(xm,ym,x,y))
+            f.write("{0:0.f} {1:0.f} {2:0.f} {3:0.f} ".format(xm,ym,x,y))
         f.close()
         self.saved = True
 
@@ -838,20 +838,21 @@ class CNC:
         #Don't know why, but in some cases floats are not truncated by format string unless rounded
         #I guess it's vital idea to round them rather than truncate anyway!
         v = round(v, d)
-        return ("%s%*f"%(c,d,v)).rstrip("0").rstrip(".")
+        #return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
+        return ("{0}{2:0.{1}f}".format(c,d,v))
 
     #----------------------------------------------------------------------
     @staticmethod
     def gcode(g, pairs):
-        s = "g%d"%(g)
+        s = "G{0}".format(g)
         for c,v in pairs:
-            s += " %c%g"%(c, round(v,OCV.digits))
+            s += " {0}{1:0.{2}f}".format(c, round(v,OCV.digits),OCV.digits)
         return s
 
     #----------------------------------------------------------------------
     @staticmethod
     def _gcode(g, **args):
-        s = "g%d"%(g)
+        s = "G{0}".format(g)
         for n,v in args.items():
             s += ' ' + CNC.fmt(n,v)
         return s
@@ -859,10 +860,10 @@ class CNC:
     #----------------------------------------------------------------------
     @staticmethod
     def _goto(g, x=None, y=None, z=None, **args):
-        s = "g%d"%(g)
-        if x is not None: s += ' '+ CNC.fmt('x',x)
-        if y is not None: s += ' '+ CNC.fmt('y',y)
-        if z is not None: s += ' '+ CNC.fmt('z',z)
+        s = "G{0}".format(g)
+        if x is not None: s += ' '+ CNC.fmt('X',x)
+        if y is not None: s += ' '+ CNC.fmt('Y',y)
+        if z is not None: s += ' '+ CNC.fmt('Z',z)
         for n,v in args.items():
             s += ' ' + CNC.fmt(n,v)
         return s
@@ -880,26 +881,26 @@ class CNC:
     #----------------------------------------------------------------------
     @staticmethod
     def glinev(g, v, feed=None):
-        pairs = zip("xyz",v)
+        pairs = zip("XYZ",v)
         if feed is not None:
-            pairs.append(("f",feed))
+            pairs.append(("F",feed))
         return CNC.gcode(g, pairs)
 
     #----------------------------------------------------------------------
     @staticmethod
     def garcv(g, v, ijk):
-        return CNC.gcode(g, zip("xyz",v) + zip("ij",ijk[:2]))
+        return CNC.gcode(g, zip("XYZ",v) + zip("IJ",ijk[:2]))
 
     #----------------------------------------------------------------------
     @staticmethod
     def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
-        s = "g%d"%(g)
-        if x is not None: s += ' '+CNC.fmt('x',x)
-        if y is not None: s += ' '+CNC.fmt('y',y)
-        if z is not None: s += ' '+CNC.fmt('z',z)
-        if i is not None: s += ' '+CNC.fmt('i',i)
-        if j is not None: s += ' '+CNC.fmt('j',j)
-        if k is not None: s += ' '+CNC.fmt('k',k)
+        s = "G{0}".format(g)
+        if x is not None: s += ' '+CNC.fmt('X',x)
+        if y is not None: s += ' '+CNC.fmt('Y',y)
+        if z is not None: s += ' '+CNC.fmt('Z',z)
+        if i is not None: s += ' '+CNC.fmt('I',i)
+        if j is not None: s += ' '+CNC.fmt('J',j)
+        if k is not None: s += ' '+CNC.fmt('K',k)
         for n,v in args.items():
             s += ' ' + CNC.fmt(n,v)
         return s
@@ -911,19 +912,19 @@ class CNC:
     def zenter(z, d=None):
         if OCV.lasercutter:
             if OCV.laseradaptive:
-                return "m4"
+                return "M4"
             else:
-                return "m3"
+                return "M3"
         else:
-            return "g1 %s %s"%(CNC.fmt("z",z,d), CNC.fmt("f",OCV.CD["cutfeedz"]))
+            return "G1 {0} {1}".format(CNC.fmt("Z",z,d), CNC.fmt("F", OCV.CD["cutfeedz"]))
 
     #----------------------------------------------------------------------
     @staticmethod
     def zexit(z, d=None):
         if OCV.lasercutter:
-            return "m5"
+            return "M5"
         else:
-            return "g0 %s"%(CNC.fmt("z",z,d))
+            return "G0 {0}".format(CNC.fmt("Z",z,d))
 
     #----------------------------------------------------------------------
     # gcode to go to z-safe
@@ -1599,22 +1600,22 @@ class CNC:
         # create the necessary code
         lines = []
         lines.append("$g")    # remember state and populate variables, FIXME: move to ./controllers/_GenericController.py
-        lines.append("m5")    # stop spindle
+        lines.append("M5")    # stop spindle
         lines.append("%wait")
         lines.append("%_x,_y,_z = wx,wy,wz")    # remember position
-        lines.append("g53 g0 z[toolchangez]")
-        lines.append("g53 g0 x[toolchangex] y[toolchangey]")
+        lines.append("G53 G0 z[toolchangez]")
+        lines.append("G53 G0 x[toolchangex] y[toolchangey]")
         lines.append("%wait")
 
         if OCV.comment:
             lines.append("%%msg Tool change T%02d (%s)"%(self.tool,OCV.comment))
         else:
             lines.append("%%msg Tool change T%02d"%(self.tool))
-        lines.append("m0")    # feed hold
+        lines.append("M0")    # feed hold
 
         if OCV.toolPolicy < 4:
-            lines.append("g53 g0 x[toolprobex] y[toolprobey]")
-            lines.append("g53 g0 z[toolprobez]")
+            lines.append("G53 G0 x[toolprobex] y[toolprobey]")
+            lines.append("G53 G0 z[toolprobez]")
 
             # fixed WCS
             if OCV.CD["fastprbfeed"]:
@@ -1624,44 +1625,44 @@ class CNC:
                 currentFeedrate = OCV.CD["fastprbfeed"]
                 while currentFeedrate > OCV.CD["prbfeed"]:
                     lines.append("%wait")
-                    lines.append("g91 [prbcmd] %s z[toolprobez-mz-tooldistance]" \
+                    lines.append("G91 [prbcmd] %s z[toolprobez-mz-tooldistance]" \
                             % CNC.fmt('f',currentFeedrate))
                     lines.append("%wait")
                     lines.append("[prbcmdreverse] %s z[toolprobez-mz]" \
                             % CNC.fmt('f',currentFeedrate))
                     currentFeedrate /= 10
             lines.append("%wait")
-            lines.append("g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")
+            lines.append("G91 [prbcmd] F[prbfeed] Z[toolprobez-mz-tooldistance]")
 
             if OCV.toolPolicy==2:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
                 p = WCS.index(OCV.CD["WCS"])+1
-                lines.append("g10l20p%d z[toolheight]"%(p))
+                lines.append("G10L20P%d Z[toolheight]"%(p))
                 lines.append("%wait")
 
             elif OCV.toolPolicy==3:
                 # Modify the tool length, update the TLO
-                lines.append("g4 p1")    # wait a sec to get the probe info
+                lines.append("G4 P1")    # wait a sec to get the probe info
                 lines.append("%wait")
                 lines.append("%global TLO; TLO=prbz-toolmz")
-                lines.append("g43.1z[TLO]")
+                lines.append("G43.1 Z[TLO]")
                 lines.append("%update TLO")
 
-            lines.append("g53 g0 z[toolchangez]")
-            lines.append("g53 g0 x[toolchangex] y[toolchangey]")
+            lines.append("G53 G0 z[toolchangez]")
+            lines.append("G53 G0 x[toolchangex] y[toolchangey]")
 
         if OCV.toolWaitAfterProbe:
             lines.append("%wait")
             lines.append("%msg Restart spindle")
-            lines.append("m0")    # feed hold
+            lines.append("M0")    # feed hold
 
         # restore state
-        lines.append("g90")        # restore mode
-        lines.append("g0 x[_x] y[_y]")    # ... x,y position
-        lines.append("g0 z[_z]")    # ... z position
-        lines.append("f[feed] [spindle]")# ... feed and spindle
-        lines.append("g4 p5")        # wait 5s for spindle to speed up
+        lines.append("G90")        # restore mode
+        lines.append("G0 x[_x] y[_y]")    # ... x,y position
+        lines.append("G0 z[_z]")    # ... z position
+        lines.append("F[feed] [spindle]")# ... feed and spindle
+        lines.append("G4 P5")        # wait 5s for spindle to speed up
 
         # remember present tool
         self._lastTool = self.tool
@@ -1897,7 +1898,6 @@ class Block(list):
     # Add a new operation to the block's name
     #----------------------------------------------------------------------
     def addOperation(self, operation, remove=None):
-        n = self.name()
         self._name = Block.operationName(self.name(), operation, remove)
 
     #----------------------------------------------------------------------
@@ -1906,26 +1906,30 @@ class Block(list):
                 or  Unicode.BLACK_RIGHT_POINTING_TRIANGLE
         v = self.enable and Unicode.BALLOT_BOX_WITH_X \
                 or  Unicode.BALLOT_BOX
+
         try:
             return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
+            #return "{0} {1} {2} - [{3:d}]".format(e, v, self.name(), len(self))
         except UnicodeDecodeError:
             return "%s %s %s - [%d]"%(e, v, self.name().decode("ascii","replace"), len(self))
-
+            #return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().decode("ascii","replace"), len(self))
+        #except UnicodeEncodeError:
+        #    return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().encode('ascii', 'ignore').decode("ascii","replace"), len(self))
     #----------------------------------------------------------------------
     def write_header(self):
         header = ''
-        header += "(Block-name: %s)\n"%(self.name())
-        header += "(Block-expand: %d)\n"%(int(self.expand))
-        header += "(Block-enable: %d)\n"%(int(self.enable))
+        header += "(Block-name: {0})\n".format(self.name())
+        header += "(Block-expand: {0:d})\n".format(int(self.expand))
+        header += "(Block-enable: {0:d})\n".format(int(self.enable))
         if self.color:
-            header += "(Block-color: %s)\n"%(self.color)
+            header += "(Block-color: {0})\n".format(self.color)
         return header
 
     def write(self, f):
         f.write(self.write_header())
         for line in self:
-            if self.enable: f.write("%s\n"%(line))
-            else: f.write("(Block-X: %s)\n"%(line.replace('(','[').replace(')',']')))
+            if self.enable: f.write("{0}\n".format(line))
+            else: f.write("(Block-X: {0})\n".format(line.replace('(','[').replace(')',']')))
 
     #----------------------------------------------------------------------
     # Return a dump object for pickler
@@ -2125,7 +2129,7 @@ class GCode:
             if pat:
                 value = pat.group(2).strip()
                 items = map(float,value.split())
-                tablock = Block("legacy [tab,island,minz:%f]"%(items[4]))
+                tablock = Block("legacy [tab,island,minz:{0:0.f}]".format(items[4]))
                 tablock.color = "orange"
                 tablock.extend(self.createTab(*items))
                 self.insBlocks(-1, [tablock], "Legacy tab")
@@ -2204,7 +2208,7 @@ class GCode:
                 for line in block:
                     cmds = CNC.parseLine(line)
                     if cmds is None: continue
-                    txt.write("%s\n"%line.upper())
+                    txt.write("{0}\n".format(line.upper()))
         txt.close()
         return True
 
@@ -2221,7 +2225,7 @@ class GCode:
     def headerFooter(self):
         if not self.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
-            curr_header = "(Created By OKKCNC) \n"
+            curr_header = "(Created By OKKCNC version {0}) \n".format(OCV._version)
             curr_header += "(Date: {0})\n".format(currDate)
             curr_header += self.header
 
@@ -2405,11 +2409,15 @@ class GCode:
         #centery = (miny+maxy)/2
 
         svg.write('<!-- SVG generated by OKKCNC: https://github.com/onekk/OKKCNC -->\n')
-        svg.write('<svg viewBox="%s %s %s %s">\n'%((minx*scale)-padding, (-maxy*scale)-padding, ((maxx-minx)*scale)+padding*2, ((maxy-miny)*scale)+padding*2))
+        svg.write('<svg viewBox="{0} {1} {2} {3}">\n'.format(
+                (minx*scale)-padding,
+                (-maxy*scale)-padding,
+                ((maxx-minx)*scale)+padding*2,
+                ((maxy-miny)*scale)+padding*2))
         #svg.write('\t<path d="M %s %s L %s %s" stroke="%s" stroke-width="%s" fill="none" />\n'%(minx*scale, -miny*scale, maxx*scale, -maxy*scale, "pink", 2)) #Bounding box debug
 
         def svgLine(scale, px, py, type='L'):
-            return('\t%s %s %s\n'%(type, px*scale, py*scale))
+            return('\t{0} {1} {2}\n'.format(type, px*scale, py*scale))
 
         def svgArc(scale, gcode, r, ax, ay, bx, by, cx, cy):
             sphi = math.atan2(ay-yc, ax-xc)
@@ -2417,16 +2425,30 @@ class GCode:
             arcSweep = ephi - sphi
             arcSweep = 0 if arcSweep <= math.radians(180) else 1
             #Arc
-            if gcode==2:
+            if gcode == 2:
                 if ephi<=sphi+1e-10: ephi += 2.0*math.pi
                 #dxf.arc(xc,yc,self.cnc.rval, math.degrees(ephi), math.degrees(sphi),name)
                 #return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 1, bx*scale, by*scale))
-                return('\tA %s %s %s %s %s %s %s\n'%(r*scale, r*scale, 0, arcSweep, 1, bx*scale, by*scale))
+                return('\tA {0} {1} {2} {3} {4} {5} {6}\n'.format(
+                        r*scale,
+                        r*scale,
+                        0,
+                        arcSweep,
+                        1,
+                        bx*scale,
+                        by*scale))
             else:
                 if ephi<=sphi+1e-10: ephi += 2.0*math.pi
                 #dxf.arc(xc,yc,self.cnc.rval, math.degrees(sphi), math.degrees(ephi),name)
                 #return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 0, bx*scale, by*scale))
-                return('\tA %s %s %s %s %s %s %s\n'%(r*scale, r*scale, 0, arcSweep, 0, bx*scale, by*scale))
+                return('\tA {0} {1} {2} {3} {4} {5} {6}\n'.format(
+                        r*scale,
+                        r*scale,
+                        0,
+                        arcSweep,
+                        0,
+                        bx*scale,
+                        by*scale))
 
 
         for block in self.blocks:
@@ -2475,8 +2497,8 @@ class GCode:
 
             if len(svgpath) > 0:
                 for line in block.write_header().splitlines():
-                    svg.write("\t<!-- %s -->\n"%(line))
-                svg.write('\t<path d="\n%s\t" stroke="%s" stroke-width="%s" fill="none" />\n'%(svgpath, color, width))
+                    svg.write("\t<!-- {0} -->\n".format(line))
+                svg.write('\t<path d="\n{0}\t" stroke="{1}" stroke-width="{2}" fill="none" />\n'.format(svgpath, color, width))
 
         #dxf.writeEOF()
         svg.write('</svg>\n')
@@ -2502,7 +2524,7 @@ class GCode:
                 block.color = color
 
             x,y = entities[i].start()
-            block.append("g0 %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7)))
+            block.append("G0 {0} {1}}".format(self.fmt("X",x,7),self.fmt("Y",y,7)))
             block.append(CNC.zenter(self.cnc["surface"]))
             block.append(CNC.zsafe())
             undoinfo.append(self.addBlockUndo(pos,block))
@@ -2607,8 +2629,13 @@ class GCode:
             if segment.type == Segment.LINE:
                 x,y = segment.B
                 #rounding problem from #903 was manifesting here. Had to lower the decimal precision to OCV.digits
-                if z is None: block.append("g1 %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7))+cm)
-                else: block.append("g1 %s %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7),self.fmt("z",z,7))+cm)
+                if z is None: block.append("G1 {0} {1}".format(
+                        self.fmt("X",x,7),
+                        self.fmt("Y",y,7))+cm)
+                else: block.append("G1 {0} {1} {2}".format(
+                        self.fmt("X",x,7),
+                        self.fmt("Y",y,7),
+                        self.fmt("Z",z,7))+cm)
 
             #Generate ARCS
             elif segment.type in (Segment.CW, Segment.CCW):
@@ -2616,15 +2643,20 @@ class GCode:
                 if abs(ij[0])<1e-5: ij[0] = 0.
                 if abs(ij[1])<1e-5: ij[1] = 0.
                 if z is None:
-                    block.append("g%d %s %s %s %s" % \
-                        (segment.type,
-                         self.fmt("x",x,7), self.fmt("y",y,7),
-                         self.fmt("i",ij[0],7),self.fmt("j",ij[1],7))+cm)
+                    block.append("G{0:d} {1} {2} {3} {4}".format(
+                            segment.type,
+                            self.fmt("X",x,7),
+                            self.fmt("Y",y,7),
+                            self.fmt("I",ij[0],7),
+                            self.fmt("J",ij[1],7))+cm)
                 else:
-                    block.append("g%d %s %s %s %s %s" % \
-                        (segment.type,
-                         self.fmt("x",x,7), self.fmt("y",y,7),
-                         self.fmt("i",ij[0],7),self.fmt("j",ij[1],7),self.fmt("z",z,7))+cm)
+                    block.append("G{0:d} {1} {2} {3} {4} {5}".format(
+                            segment.type,
+                            self.fmt("X",x,7),
+                            self.fmt("Y",y,7),
+                            self.fmt("I",ij[0],7),
+                            self.fmt("J",ij[1],7),
+                            self.fmt("Z",z,7))+cm)
 
         #Get island height of segment
         def getSegmentZTab(segment, altz=None):
@@ -2637,17 +2669,17 @@ class GCode:
             x,y = path[0].A
 
             #decide if flat or ramp/helical:
-            if z == zstart:    zh=z
+            if z == zstart: zh = z
             elif zstart is not None: zh = zstart
 
             #test if not starting in tab/island!
             ztab = getSegmentZTab(path[0], z)
 
             #Retract to zsafe
-            if retract: block.append("g0 %s"%(self.fmt("z",OCV.CD["safe"],7)))
+            if retract: block.append("G0 {0}".format(self.fmt("Z",OCV.CD["safe"],7)))
 
             #Rapid to beginning of the path
-            block.append("g0 %s %s"%(self.fmt("x",x,7),self.fmt("y",y,7)))
+            block.append("G0 {0} {1}".format(self.fmt("X",x,7),self.fmt("Y",y,7)))
 
             #Descend to pass (plunge to the beginning of path)
             if entry:
@@ -2655,7 +2687,7 @@ class GCode:
                 block.append(CNC.zenter(max(zh, ztab),7))
             else:
                 #without entry just rapid to Z
-                block.append("g0 %s"%(self.fmt("z",max(zh, ztab),7)))
+                block.append("G0 {0}".format(self.fmt("Z",max(zh, ztab),7)))
 
             #Begin pass
             #if comments: block.append("(pass %f)"%(max(zh, ztab)))
@@ -3616,8 +3648,6 @@ class GCode:
     # FIXME needs re-working...
     #----------------------------------------------------------------------
     def inkscapeLines(self):
-        undoinfo = []
-
         # Loop over all blocks
         self.initPath()
         newlines = []
@@ -3641,29 +3671,13 @@ class GCode:
             if self.cnc.dx==0.0 and self.cnc.dy==0.0:
                 if self.cnc.z>0.0 and self.cnc.dz>0.0:
                     last = len(newlines)
-                    #last = bid, li
-
-                #elif self.cnc.z<0.0 and self.cnc.dz<0.0 and last is not None:
                 elif self.cnc.z<0.0 and self.cnc.dz<0.0 and last>=0:
-                    # comment out all lines from last
-                    #lb, ll = last
-                    #while bid!=lb or li!=ll:
-                    #    b = self.blocks[lb]
-                    #    line = b[ll]
-                    #    if line and line[0] not in ("(","%"):
-                    #        undoinfo.append(b.setLineUndo(ll,"(%s)"%(line)))
-                    #    ll += 1
-                    #    if ll>=len(b):
-                    #        lb += 1
-                    #        ll = 0
-                    # last = None
                     for i in range(last,len(newlines)):
                         s = newlines[i]
                         if s and s[0] != '(':
-                            newlines[i] = "(%s)"%(s)
+                            newlines[i] = "({0})".format(s)
                     last = -1
             else:
-                #last = None
                 last = -1
             newlines.append(line)
             self.cnc.motionEnd()

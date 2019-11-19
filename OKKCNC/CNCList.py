@@ -929,7 +929,7 @@ class CNCListbox(Listbox):
         if not OCV.developer: return
         print("*** LIST ***")
         for i,sel in enumerate(self.get(0,END)):
-            print(i,sel.encode("ascii","replace"))
+            print(i,sel.encode("ascii", "replace"))
 
         print("\n*** ITEMS ***")
         for i,item in enumerate(self._items):
@@ -939,6 +939,6 @@ class CNCListbox(Listbox):
         for i, block in enumerate(self.gcode.blocks):
             print("Block:",i,block.name())
             for j,line in enumerate(block):
-                print("   %3d %s"%(j,line))
+                print("   {0:3d} {1}".format(j, line))
 
         print("\nBLOCKPOS=",self._blockPos)

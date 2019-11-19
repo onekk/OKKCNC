@@ -374,7 +374,7 @@ class DROFrame(CNCRibbon.PageFrame):
     #----------------------------------------------------------------------
     def padFloat(self, decimals, value):
         if decimals>0:
-            return "%0.*f"%(decimals, value)
+            return "{0:0.{1}f".format(value, decimals)
         else:
             return value
 
@@ -532,7 +532,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             rows = 0
             for xa in range(x, x+3):
                 but_name = "but_m_{0}".format(str(xa))
-                print("creation", but_name)
+                #print("creation", but_name)
                 b = Button(self.frame,
                     #image=Utils.icons["pause32"],
                     font = _FONT,
@@ -731,38 +731,38 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
         self.addWidget(self.zstep)
 
-        b = Button(self, text="%s"%(OCV.step1),
+        b = Button(self, text="{0}".format(OCV.step1),
                 name="step_1",
                 command=self.setStep1,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 4, columnspan = 2, sticky=EW)
         b.bind("<Button-3>", lambda event: self.editStep("S1"))
-        bal_text = _("Step1 = %s")%(OCV.step1)
+        bal_text = _("Step1 = {0}").format(OCV.step1)
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
 
-        b = Button(self, text="%s"%(OCV.step2),
+        b = Button(self, text="{0}".format(OCV.step2),
                 name="step_2",
                 command=self.setStep2,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column = 6, columnspan = 2, sticky=EW)
         b.bind("<Button-3>", lambda event: self.editStep("S2"))
-        bal_text = _("Step2 = %s")%(OCV.step2)
+        bal_text = _("Step2 = {0}").format(OCV.step2)
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
 
-        b = Button(self, text="%s"%(OCV.step3),
+        b = Button(self, text="{0}".format(OCV.step3),
                 name="step_3",
                 command=self.setStep3,
                 width=2,
                 padx=1, pady=1)
         b.grid(row=row, column=8, columnspan = 2, sticky=EW)
         b.bind("<Button-3>", lambda event: self.editStep("S3"))
-        bal_text = _("Step3 = %s")%(OCV.step3)
+        bal_text = _("Step3 = {0}").format(OCV.step3)
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
@@ -881,7 +881,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 6
 
-        b = Button(self, text="%s"%(OCV.zstep1),
+        b = Button(self, text="{0}".format(OCV.zstep1),
                 name="zstep_1",
                 font =  z_step_font,
                 command=self.setZStep1,
@@ -889,11 +889,11 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
         b.bind("<Button-3>" ,lambda event: self.editStep("ZS1"))
-        bal_text = _("Z Step1 = %s")%(OCV.zstep1)
+        bal_text = _("Z Step1 = {0}".format(OCV.zstep1))
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
-        b = Button(self, text="%s"%(OCV.zstep2),
+        b = Button(self, text="{0}".format(OCV.zstep2),
                 name="zstep_2",
                 font =  z_step_font,
                 command=self.setZStep2,
@@ -901,7 +901,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
         b.bind("<Button-3>" ,lambda event: self.editStep("ZS2"))
-        bal_text = _("Z Step2 = %s")%(OCV.zstep2)
+        bal_text = _("Z Step2 = {0}".format(OCV.zstep2))
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
@@ -933,7 +933,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 7
 
-        b = Button(self, text="%s"%(OCV.zstep3),
+        b = Button(self, text="{0}".format(OCV.zstep3),
                 name="zstep_3",
                 font =  z_step_font,
                 command=self.setZStep3,
@@ -941,11 +941,11 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 padx=1, pady=1)
         b.grid(row=row, column=0, columnspan = 1, sticky=EW)
         b.bind("<Button-3>" ,lambda event: self.editStep("ZS3"))
-        bal_text = _("Z Step3 = %s")%(OCV.zstep3)
+        bal_text = _("Z Step3 = {0}".format(OCV.zstep3))
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
-        b = Button(self, text="%s"%(OCV.zstep4),
+        b = Button(self, text="{0}".format(OCV.zstep4),
                 name="zstep_4",
                 font =  z_step_font,
                 command=self.setZStep4,
@@ -953,7 +953,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 padx=1, pady=1)
         b.grid(row=row, column=1, columnspan = 1, sticky=EW)
         b.bind("<Button-3>" ,lambda event: self.editStep("ZS4"))
-        bal_text = _("Z Step4 = %s")%(OCV.zstep4)
+        bal_text = _("Z Step4 = {0}".format(OCV.zstep4))
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
@@ -1390,39 +1390,39 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             if caller == "S1":
                 wd = self.nametowidget("step_1")
                 OCV.step1 = retval
-                bal_text = "Step1 = %s"%(OCV.step1)
+                bal_text = "Step1 = {0}".format(OCV.step1)
                 Utils.setFloat("Control", "step1", retval)
             elif caller == "S2":
                 wd = self.nametowidget("step_2")
                 OCV.step2 = retval
-                bal_text = "Step2 = %s"%(OCV.step2)
+                bal_text = "Step2 = {0}".format(OCV.step2)
                 Utils.setFloat("Control", "step2", retval)
             elif caller == "S3":
                 wd = self.nametowidget("step_3")
                 OCV.step3 = retval
                 Utils.setFloat("Control", "step3", retval)
-                bal_text = "Step2 = %s"%(OCV.step3)
+                bal_text = "Step2 = {0}".format(OCV.step3)
 
         elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
             if caller == "ZS1":
                 wd = self.nametowidget("zstep_1")
                 OCV.zstep1 = retval
-                bal_text = "Zstep1 = %s"%(OCV.zstep1)
+                bal_text = "Zstep1 = {0}".format(OCV.zstep1)
                 Utils.setFloat("Control", "zstep1", retval)
             elif caller == "ZS2":
                 wd = self.nametowidget("zstep_2")
                 OCV.zstep2 = retval
-                bal_text = "Zstep2 = %s"%(OCV.zstep2)
+                bal_text = "Zstep2 = {0}".format(OCV.zstep2)
                 Utils.setFloat("Control", "zstep2", retval)
             elif caller == "ZS3":
                 wd = self.nametowidget("zstep_3")
                 OCV.zstep3 = retval
-                bal_text = "Zstep2 = %s"%(OCV.zstep3)
+                bal_text = "Zstep2 = {0}".format(OCV.zstep3)
                 Utils.setFloat("Control", "zstep3", retval)
             elif caller == "ZS4":
                 wd = self.nametowidget("zstep_4")
                 OCV.zstep4 = retval
-                bal_text = "Zstep4 = %s"%(OCV.zstep4)
+                bal_text = "Zstep4 = {0}".format(OCV.zstep4)
                 Utils.setFloat("Control", "zstep4", retval)
 
         if wd is not None:
@@ -1758,7 +1758,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         if self._gUpdate: return
         try:
             feed = float(self.feedRate.get())
-            self.sendGCode("F%g"%(feed))
+            self.sendGCode("F{0:.{1}f}".format(feed, OCV.digits))
             self.event_generate("<<CanvasFocus>>")
         except ValueError:
             pass
@@ -1768,8 +1768,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         #if self._probeUpdate: return
         try:
             tlo = float(self.tlo.get())
-            #print("G43.1Z%g"%(tlo))
-            self.sendGCode("G43.1Z%g"%(tlo))
+            self.sendGCode("G43.1Z{0:.{1}f}".format(tlo, OCV.digits))
             self.app.mcontrol.viewParameters()
             self.event_generate("<<CanvasFocus>>")
         except ValueError:
@@ -1785,7 +1784,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         # Avoid sending commands before unlocking
         if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED): return
         if self.spindle.get():
-            self.sendGCode("M3 S%d"%(self.spindleSpeed.get()))
+            self.sendGCode("M3 S{0:d}".format(self.spindleSpeed.get()))
         else:
             self.sendGCode("M5")
 

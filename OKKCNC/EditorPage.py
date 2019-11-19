@@ -141,7 +141,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
     #-----------------------------------------------------------------------
     def filter(self, event=None):
         txt = self.filterString.get()
-        self.app.insertCommand("FILTER %s"%(txt), True)
+        self.app.insertCommand("FILTER {0}".format(txt), True)
 
 
 #===============================================================================

@@ -55,7 +55,7 @@ class _Base:
         self.variables = []        # name, type, default, label
         self.values    = {}        # database of values
         self.listdb    = {}        # lists database
-        self.current   = None        # currently editing index
+        self.current   = None      # currently editing index
         self.n         = 0
         self.buttons   = []
 
@@ -133,20 +133,34 @@ class _Base:
                 else:
                     value = Unicode.BALLOT_BOX
             elif t == "mm" and self.master.inches:
+                ivalue = OCV.LISTBOX_NUMBER
                 try:
                     value /= 25.4
                     value = round(value, self.master.digits)
                 except:
                     value = ""
             elif t == "float":
+                ivalue = OCV.LISTBOX_NUMBER
                 try:
                     value = round(value, self.master.digits)
                 except:
                     value = ""
+            elif t == "sep":
+                value = "------"
             #elif t == "list":
             #    value += " " + Unicode.BLACK_DOWN_POINTING_TRIANGLE
             self.master.listbox.insert(END, (l, value))
 
+            if t in ("mm", "float", "int"):
+                ivalue = OCV.LISTBOX_NUMBER
+            elif t in ("text", "str"):
+                ivalue = OCV.LISTBOX_TEXT
+            elif t == "sep":
+                ivalue = OCV.LISTBOX_SEP
+            else:
+                ivalue = OCV.LISTBOX_VAL
+
+            self.master.listbox.listbox(0).itemconfig(END, background = ivalue)
             if t=="color":
                 try:
                     self.master.listbox.listbox(1).itemconfig(END, background=value)
@@ -279,12 +293,18 @@ class _Base:
                 except TclError:
                     pass
         else:
-            edit = tkExtra.InPlaceEdit(lb)
+            if t == "sep":
+                edit = None
+            else:
+                edit = tkExtra.InPlaceEdit(lb)
 
         if edit is not None:
             value = edit.value
             if value is None:
                 return
+        # just in case
+        else:
+            return
 
         if value == save:
             if edit.lastkey == "Up":
@@ -643,9 +663,10 @@ class Material(DataBase):
         self.variables = [
             ("name",    "db",    "", _("Name")),
             ("comment","str",    "", _("Comment")),
+            ("separator","sep",    "", _("-- Dati --")),
             ("feed",    "mm"  , 10., _("Feed")),
             ("feedz",   "mm"  ,  1., _("Plunge Feed")),
-            ("stepz",   "mm"  ,  1., _("Depth Increment"))
+
          ]
 
     # ----------------------------------------------------------------------
@@ -657,7 +678,6 @@ class Material(DataBase):
         if stockmat=="" or stockmat==self["name"]:
             self.master.cnc()["cutfeed"]  = self.fromMm("feed")
             self.master.cnc()["cutfeedz"] = self.fromMm("feedz")
-            self.master.cnc()["stepz"]    = self.fromMm("stepz")
         return False
 
 
@@ -680,7 +700,6 @@ class EndMill(DataBase):
             ("flutes",    "int",      2, _("Flutes")),
             ("length",     "mm",   20.0, _("Length")),
             ("angle",   "float",     "", _("Angle")),
-            ("stepover","float",   40.0, _("Stepover %"))
         ]
 
     # ----------------------------------------------------------------------
@@ -688,7 +707,7 @@ class EndMill(DataBase):
     # ----------------------------------------------------------------------
     def update(self):
         self.master.cnc()["diameter"] = self.fromMm("diameter")
-        self.master.cnc()["stepover"] = self["stepover"]
+
         return False
 
 
@@ -704,7 +723,9 @@ class Stock(DataBase):
             ("material",  "db" ,    "", _("Material")),
             ("safe"  ,    "mm" ,   3.0, _("Safe Z")),
             ("surface",   "mm" ,   0.0, _("Surface Z")),
-            ("thickness", "mm" ,   5.0, _("Thickness"))
+            ("thickness", "mm" ,   5.0, _("Thickness")),
+            ("stepover","float",   40.0, _("Stepover %")),
+            ("stepz",   "mm"  ,  1., _("Depth Increment"))
         ]
 
     # ----------------------------------------------------------------------
@@ -714,6 +735,8 @@ class Stock(DataBase):
         self.master.cnc()["safe"]      = self.fromMm("safe")
         self.master.cnc()["surface"]   = self.fromMm("surface")
         self.master.cnc()["thickness"] = self.fromMm("thickness")
+        self.master.cnc()["stepover"] = self["stepover"]
+        self.master.cnc()["stepz"]    = self.fromMm("stepz")
         if self["material"]:
             self.master["material"].makeCurrent(self["material"])
         return False

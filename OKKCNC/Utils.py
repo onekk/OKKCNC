@@ -285,11 +285,11 @@ def InputValue(app, caller):
     c_t = 0
     if caller in ("S1", "S2", "S3"):
         if caller == "S1":
-            title_c = tile_p.format("Step1")
+            title_c = title_p.format("Step1")
         elif caller == "S2":
-            title_c = tile_p.format("Step2")
+            title_c = title_p.format("Step2")
         elif caller == "S3":
-            title_c = tile_p.format("Step3")
+            title_c = title_p.format("Step3")
         else:
             return
         min_value = 0.001
@@ -297,13 +297,13 @@ def InputValue(app, caller):
 
     elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
         if caller == "ZS1":
-            title_c = tile_p.format("Z Step1")
+            title_c = title_p.format("Z Step1")
         elif caller == "ZS2":
-            title_c = tile_p.format("Z Step2")
+            title_c = title_p.format("Z Step2")
         elif caller == "ZS3":
-            title_c = tile_p.format("Z Step3")
+            title_c = title_p.format("Z Step3")
         elif caller == "ZS4":
-            title_c = tile_p.format("Z Step3")
+            title_c = title_p.format("Z Step3")
         else:
             return
         min_value = 0.001
