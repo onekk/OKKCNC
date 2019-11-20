@@ -103,9 +103,9 @@ class _GenericController:
     #----------------------------------------------------------------------
     def goto(self, x=None, y=None, z=None):
         cmd = "G90G0"
-        if x is not None: cmd += "X{0:0.f}".format(x)
-        if y is not None: cmd += "Y{0:0.f}".format(y)
-        if z is not None: cmd += "Z{0:0.f}".format(z)
+        if x is not None: cmd += "X{0:0.{1}f}".format(x, OCV.digits)
+        if y is not None: cmd += "Y{0:0.{1}f}".format(y, OCV.digits)
+        if z is not None: cmd += "Z{0:0.{1}f}".format(z, OCV.digits)
         self.master.sendGCode("{0}".format(cmd))
 
     #----------------------------------------------------------------------

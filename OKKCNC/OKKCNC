@@ -20,4 +20,4 @@ export DIR PYTHONPATH
 [ .$PYTHON = . ] && PYTHON=python
 
 ${PYTHON} ${DIR}/__main__.py $*
-#python -m cProfile -o bCNC.out ${DIR}/__main__.py $*
+#python -m cProfile -o OKKCNC.out ${DIR}/__main__.py $*

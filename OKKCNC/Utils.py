@@ -51,7 +51,7 @@ iniUser   = os.path.expanduser("~/.%s" % (__prg__))
 hisFile   = os.path.expanduser("~/.%s.history" % (__prg__))
 
 # dirty way of substituting the "_" on the builtin namespace
-#__builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
+#__builtin__.__dict__["_"] = gettext.translation('OKKCNC', 'locale', fallback=True).ugettext
 __builtin__._ = gettext.translation('OKKCNC', os.path.join(prgpath,'locale'), fallback=True).gettext
 __builtin__.N_ = lambda message: message
 

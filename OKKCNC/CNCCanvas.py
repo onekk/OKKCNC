@@ -98,7 +98,8 @@ MOUSE_CURSOR = {
 
     ACTION_MOVE          : "hand1",
     ACTION_ROTATE        : "exchange",
-    ACTION_GANTRY        : "target",
+#    ACTION_GANTRY        : "target", # no  proper cursor
+    ACTION_GANTRY        : "crosshair",
     ACTION_WPOS          : "diamond_cross",
 
     ACTION_RULER         : "tcross",

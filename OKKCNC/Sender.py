@@ -38,9 +38,9 @@ from _GenericGRBL import ERROR_CODES
 
 #WIKI = "https://github.com/vlachoudis/bCNC/wiki"
 
-SERIAL_POLL    = 0.125    # s
-SERIAL_TIMEOUT = 0.10    # s
-G_POLL           = 10    # s
+SERIAL_POLL    = 0.125
+SERIAL_TIMEOUT = 0.10
+G_POLL           = 10
 RX_BUFFER_SIZE = 128
 
 GPAT      = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
@@ -73,7 +73,7 @@ STATECOLOR = {
 
 
 #==============================================================================
-# bCNC Sender class
+# OKKCNC Sender class
 #==============================================================================
 class Sender:
     # Messages types for log Queue
@@ -108,7 +108,7 @@ class Sender:
         self._posUpdate   = False    # Update position
         self._probeUpdate = False    # Update probe
         self._gUpdate     = False    # Update $G
-        self._update      = None        # Generic update
+        self._update      = None     # Generic update
 
         self.running     = False
         self.runningPrev = None
@@ -117,7 +117,7 @@ class Sender:
         self._quit    = 0        # Quit counter to exit program
         self._stop    = False    # Raise to stop current run
         self._pause   = False    # machine is on Hold
-        self._alarm   = True        # Display alarm message if true
+        self._alarm   = True     # Display alarm message if true
         self._msg     = None
         self._sumcline  = 0
         self._lastFeed  = 0
@@ -442,7 +442,7 @@ class Sender:
         elif ext == ".svg":
             return self.gcode.saveSVG(filename)
         elif ext == ".txt":
-            #save gcode as txt (only enabled blocks and no bCNC metadata)
+            #save gcode as txt (only enabled blocks and no OKKCNC metadata)
             return self.gcode.saveTXT(filename)
         else:
             if filename is not None:
@@ -625,7 +625,7 @@ class Sender:
     # See https://github.com/vlachoudis/bCNC/issues/1035
     #----------------------------------------------------------------------
     def jobDone(self):
-        print("Job done. Purging the controller. (Running: %s)"%(self.running))
+        print("Job done. Purging the controller. (Running: {0})".format(self.running))
         self.purgeController()
 
     #----------------------------------------------------------------------
@@ -634,7 +634,7 @@ class Sender:
     # Right now the primary idea of this is to detect when job stopped running
     #----------------------------------------------------------------------
     def controllerStateChange(self, state):
-        print("Controller state changed to: %s (Running: %s)"%(state, self.running))
+        print("Controller state changed to: {0} (Running: {1})".format(state, self.running))
         if state in ("Idle"):
             self.mcontrol.viewParameters()
             self.mcontrol.viewState()
@@ -669,7 +669,7 @@ class Sender:
             if tosend is None and not self.sio_wait and not self._pause and self.queue.qsize()>0:
                 try:
                     tosend = self.queue.get_nowait()
-                    #print "+++",repr(tosend)
+                    print( "+++",repr(tosend))
                     if isinstance(tosend, tuple):
                         #print "gcount tuple=",self._gcount
                         # wait to empty the grbl buffer and status is Idle
@@ -705,7 +705,7 @@ class Sender:
                                 # Count executed commands as well
                                 self._gcount += 1
                                 #print "gcount str=",self._gcount
-                            #print "+++ eval=",repr(tosend),type(tosend)
+                            #print( "+++ eval=",repr(tosend),type(tosend))
                         except:
                             for s in str(sys.exc_info()[1]).splitlines():
                                 self.log.put((Sender.MSG_ERROR,s))
@@ -725,7 +725,8 @@ class Sender:
                     if pat is not None:
                         self._lastFeed = pat.group(2)
 
-                    # Modify sent g-code to reflect overrided feed for controllers without override support
+                    # Modify sent g-code to reflect overrided feed
+                    # for controllers without override support
                     if not self.mcontrol.has_override:
                         if OCV.CD["_OvChanged"]:
                             OCV.CD["_OvChanged"] = False
@@ -760,8 +761,8 @@ class Sender:
                     self.close()
                     return
 
-                #print "<R<",repr(line)
-                #print "*-* stack=",sline,"sum=",sum(cline),"wait=",wait,"pause=",self._pause
+                #print ("<R<",repr(line))
+                #print ("*-* stack=",sline,"sum=",sum(cline),"pause=",self._pause)
                 if not line:
                     pass
                 elif self.mcontrol.parseLine(line, cline, sline):
@@ -775,7 +776,7 @@ class Sender:
                 tosend = None
                 self.log.put((Sender.MSG_CLEAR, ""))
                 # WARNING if runLines==maxint then it means we are
-                # still preparing/sending lines from from bCNC.run(),
+                # still preparing/sending lines from from OKKCNC.run(),
                 # so don't stop
                 if self._runLines != sys.maxsize:
                     self._stop = False

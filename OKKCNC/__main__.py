@@ -182,6 +182,9 @@ class Application(Toplevel,Sender):
         # --- Canvas ---
         self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
         self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
+        self.linebuffer = Text(frame, background = "khaki")
+        self.linebuffer.configure(height=2)
+        self.linebuffer.pack(side=BOTTOM, fill=X)
         #self.paned.add(self.canvasFrame)
 
         # fist create Pages
@@ -1246,24 +1249,20 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def find(self, event=None):
         self.ribbon.changePage("Editor")
-####        self.editor.findDialog()
-#        return "break"
-#
-#
+        #self.editor.findDialog()
+        #return "break"
 
     #-----------------------------------------------------------------------
     def findNext(self, event=None):
         self.ribbon.changePage("Editor")
-####        self.editor.findNext()
-#        return "break"
-#
-#
+        #self.editor.findNext()
+        #return "break"
 
     #-----------------------------------------------------------------------
     def replace(self, event=None):
         self.ribbon.changePage("Editor")
-####        self.editor.replaceDialog()
-#        return "break"
+        #self.editor.replaceDialog()
+        #return "break"
 
     #-----------------------------------------------------------------------
     def activeBlock(self):
@@ -2414,8 +2413,10 @@ class Application(Toplevel,Sender):
             self.statusbar.setProgress(self._runLines-self.queue.qsize(),
                         self._gcount)
             OCV.CD["msg"] = self.statusbar.msg
-            self.bufferbar.setProgress(Sender.getBufferFill(self))
-            self.bufferbar.setText("{0:+d}%".format(Sender.getBufferFill(self)))
+            b_fill = Sender.getBufferFill(self)
+            #print ("Buffer = ", b_fill)
+            self.bufferbar.setProgress(b_fill)
+            self.bufferbar.setText("{0:02.2f}".format(b_fill))
 
             if self._selectI>=0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI<len(self._paths):

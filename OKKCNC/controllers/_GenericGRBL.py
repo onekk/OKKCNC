@@ -8,7 +8,7 @@ import time
 
 # From https://github.com/grbl/grbl/wiki/Interfacing-with-Grbl
 ERROR_CODES = {
-	"Run"		: _("bCNC is currently sending a gcode program to Grbl"),
+	"Run"		: _("OKKCNC is currently sending a gcode program to Grbl"),
 	"Idle"		: _("Grbl is in idle state and waiting for user commands"),
 	"Hold"		: _("Grbl is on hold state. Click on resume (pause) to continue"),
 	"Alarm"		: _("Alarm is an emergency state. Something has gone terribly wrong when these occur. Typically, they are caused by limit error when the machine has moved or wants to move outside the machine space and crash into something. They also report problems if Grbl is lost and can't guarantee positioning or a probe command has failed. Once in alarm-mode, Grbl will lock out and shut down everything until the user issues a reset. Even after a reset, Grbl will remain in alarm-mode, block all G-code from being executed, but allows the user to override the alarm manually. This is to ensure the user knows and acknowledges the problem and has taken steps to fix or account for it."),

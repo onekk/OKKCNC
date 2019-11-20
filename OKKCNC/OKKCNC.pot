@@ -743,7 +743,7 @@ msgid "Color configuration"
 msgstr ""
 
 #: OKKCNC/ToolsPage.py:1552
-msgid "Machine configuration for bCNC"
+msgid "Machine configuration for OKKCNC"
 msgstr ""
 
 #: OKKCNC/ToolsPage.py:1559
@@ -2998,7 +2998,7 @@ msgid "Set workspace %s to %s"
 msgstr ""
 
 #: OKKCNC/controllers/_GenericGRBL.py:11
-msgid "bCNC is currently sending a gcode program to Grbl"
+msgid "OKKCNC is currently sending a gcode program to Grbl"
 msgstr ""
 
 #: OKKCNC/controllers/_GenericGRBL.py:12

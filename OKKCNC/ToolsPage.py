@@ -1121,7 +1121,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 value="CNC",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Machine configuration for bCNC"))
+        tkExtra.Balloon.set(b, _("Machine configuration for OKKCNC"))
         self.addWidget(b)
 
         # ---
