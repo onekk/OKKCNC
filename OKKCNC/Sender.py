@@ -669,7 +669,7 @@ class Sender:
             if tosend is None and not self.sio_wait and not self._pause and self.queue.qsize()>0:
                 try:
                     tosend = self.queue.get_nowait()
-                    print( "+++",repr(tosend))
+                    #print( "+++",repr(tosend))
                     if isinstance(tosend, tuple):
                         #print "gcount tuple=",self._gcount
                         # wait to empty the grbl buffer and status is Idle
