@@ -1625,11 +1625,11 @@ class CNC:
                 currentFeedrate = OCV.CD["fastprbfeed"]
                 while currentFeedrate > OCV.CD["prbfeed"]:
                     lines.append("%wait")
-                    lines.append("G91 [prbcmd] %s z[toolprobez-mz-tooldistance]" \
-                            % CNC.fmt('f',currentFeedrate))
+                    lines.append("G91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
+                            CNC.fmt('f',currentFeedrate))
                     lines.append("%wait")
-                    lines.append("[prbcmdreverse] %s z[toolprobez-mz]" \
-                            % CNC.fmt('f',currentFeedrate))
+                    lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
+                            CNC.fmt('f',currentFeedrate))
                     currentFeedrate /= 10
             lines.append("%wait")
             lines.append("G91 [prbcmd] F[prbfeed] Z[toolprobez-mz-tooldistance]")
@@ -1638,7 +1638,7 @@ class CNC:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
                 p = WCS.index(OCV.CD["WCS"])+1
-                lines.append("G10L20P%d Z[toolheight]"%(p))
+                lines.append("G10L20P{0:d} Z[toolheight]".format(p))
                 lines.append("%wait")
 
             elif OCV.toolPolicy==3:
@@ -1658,11 +1658,11 @@ class CNC:
             lines.append("M0")    # feed hold
 
         # restore state
-        lines.append("G90")        # restore mode
-        lines.append("G0 x[_x] y[_y]")    # ... x,y position
-        lines.append("G0 z[_z]")    # ... z position
-        lines.append("F[feed] [spindle]")# ... feed and spindle
-        lines.append("G4 P5")        # wait 5s for spindle to speed up
+        lines.append("G90") # restore mode
+        lines.append("G0 x[_x] y[_y]") # ... x,y position
+        lines.append("G0 z[_z]") # ... z position
+        lines.append("F[feed] [spindle]") #.. feed and spindle
+        lines.append("G4 P5") # wait 5s for spindle to speed up
 
         # remember present tool
         self._lastTool = self.tool

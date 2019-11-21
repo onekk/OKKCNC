@@ -4,6 +4,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+from tkinter.constants import END
+
 import OCV
 from CNC import CNC, WCS
 import time
@@ -17,7 +19,11 @@ SPLITPAT  = re.compile(r"[:,]")
 VARPAT    = re.compile(r"^\$(\d+)=(\d*\.?\d*) *\(?.*")
 
 
+
 class _GenericController:
+
+    line_sent = 0
+
     def test(self):
         print("test supergen")
 
@@ -209,12 +215,17 @@ class _GenericController:
             self.master.log.put((self.master.MSG_OK, line))
             self.master._gcount += 1
             if cline: del cline[0]
-            if sline: del sline[0]
-            #print "SLINE:",sline
-#            if  self._alarm and not self.running:
-#                # turn off alarm for connected status once
-#                # a valid gcode event occurs
-#                self._alarm = False
+            if sline:
+                #print (">",sline[0],"<")
+                if sline[0].strip() not in ("$G","$#"):
+                    ldesc = "{0:4s} > {1}".format(
+                            str(self.line_sent),
+                            sline[0].strip())
+                    self.line_sent += 1
+                    self.master.proc_line.set(ldesc)
+
+                del sline[0]
+
 
         elif line[0] == "$":
             self.master.log.put((self.master.MSG_RECEIVE, line))
@@ -226,7 +237,7 @@ class _GenericController:
             #tg = time.time()
             self.master.log.put((self.master.MSG_RECEIVE, line))
             self.master._stop = True
-            del cline[:]    # After reset clear the buffer counters
+            del cline[:] # After reset clear the buffer counters
             del sline[:]
             OCV.CD["version"] = line.split()[1]
             # Detect controller

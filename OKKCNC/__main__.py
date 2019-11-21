@@ -71,35 +71,38 @@ from TerminalPage import TerminalPage
 from ProbePage    import ProbePage
 from EditorPage   import EditorPage
 
-_openserial = True    # override ini parameters
-_device     = None
-_baud       = None
+_openserial = True # override ini parameters
+_device = None
+_baud = None
 
-MONITOR_AFTER =  200    # ms
-DRAW_AFTER    =  300    # ms
+MONITOR_AFTER = 200 # ms
+DRAW_AFTER = 300 # ms
 
 RX_BUFFER_SIZE = 128
 
-MAX_HISTORY  = 500
+MAX_HISTORY = 500
 
 #ZERO = ["G28", "G30", "G92"]
 
-FILETYPES = [    (_("All accepted"), ("*.ngc","*.cnc","*.nc", "*.tap", "*.gcode", "*.dxf", "*.probe", "*.orient", "*.stl", "*.svg")),
-        (_("G-Code"),("*.ngc","*.cnc","*.nc", "*.tap", "*.gcode")),
-        (_("G-Code clean"),("*.txt")),
-        ("DXF",       "*.dxf"),
-        ("SVG",       "*.svg"),
-        (_("Probe"),  ("*.probe", "*.xyz")),
-        (_("Orient"), "*.orient"),
-        ("STL",       "*.stl"),
-        (_("All"),    "*")]
+FILETYPES = [
+    (_("All accepted"),
+     ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode", "*.dxf", "*.probe",
+      "*.orient", "*.stl", "*.svg")),
+    (_("G-Code"), ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode")),
+    (_("G-Code clean"), ("*.txt")),
+    ("DXF", "*.dxf"),
+    ("SVG", "*.svg"),
+    (_("Probe"), ("*.probe", "*.xyz")),
+    (_("Orient"), "*.orient"),
+    ("STL", "*.stl"),
+    (_("All"), "*")]
 
 geometry = None
 
 #==============================================================================
 # Main Application window
 #==============================================================================
-class Application(Toplevel,Sender):
+class Application(Toplevel, Sender):
     def __init__(self, master, **kw):
         Toplevel.__init__(self, master, **kw)
         Sender.__init__(self)
@@ -143,7 +146,7 @@ class Application(Toplevel,Sender):
         self.bufferbar = tkExtra.ProgressBar(frame, height=20, width=40, relief=SUNKEN)
         self.bufferbar.pack(side=RIGHT, expand=NO)
         self.bufferbar.setLimits(0, 100)
-        tkExtra.Balloon.set(self.bufferbar,_("Controller buffer fill"))
+        tkExtra.Balloon.set(self.bufferbar, _("Controller buffer fill"))
 
         # --- Left side ---
         frame = Frame(self.paned)
@@ -160,15 +163,15 @@ class Application(Toplevel,Sender):
         self.cmdlabel.pack(side=LEFT)
         self.command = Entry(f, relief=SUNKEN, background="White")#!!!
         self.command.pack(side=RIGHT, fill=X, expand=YES)
-        self.command.bind("<Return>",        self.cmdExecute)
-        self.command.bind("<Up>",        self.commandHistoryUp)
-        self.command.bind("<Down>",        self.commandHistoryDown)
-        self.command.bind("<FocusIn>",        self.commandFocusIn)
-        self.command.bind("<FocusOut>",        self.commandFocusOut)
-        self.command.bind("<Key>",        self.commandKey)
-        self.command.bind("<Control-Key-z>",    self.undo)
-        self.command.bind("<Control-Key-Z>",    self.redo)
-        self.command.bind("<Control-Key-y>",    self.redo)
+        self.command.bind("<Return>", self.cmdExecute)
+        self.command.bind("<Up>", self.commandHistoryUp)
+        self.command.bind("<Down>", self.commandHistoryDown)
+        self.command.bind("<FocusIn>", self.commandFocusIn)
+        self.command.bind("<FocusOut>", self.commandFocusOut)
+        self.command.bind("<Key>", self.commandKey)
+        self.command.bind("<Control-Key-z>", self.undo)
+        self.command.bind("<Control-Key-Z>", self.redo)
+        self.command.bind("<Control-Key-y>", self.redo)
         tkExtra.Balloon.set(self.command,
             _("MDI Command line: Accept g-code commands or macro " \
               "commands (RESET/HOME...) or editor commands " \
@@ -182,36 +185,34 @@ class Application(Toplevel,Sender):
         # --- Canvas ---
         self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
         self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
-        self.linebuffer = Text(frame, background = "khaki")
-        self.linebuffer.configure(height=2)
+        self.linebuffer = Label(frame, background="khaki")
+        self.proc_line = StringVar()
+        self.linebuffer.configure(height=1, anchor=W,
+                                  textvariable=self.proc_line)
         self.linebuffer.pack(side=BOTTOM, fill=X)
         #self.paned.add(self.canvasFrame)
 
         # fist create Pages
         self.pages = {}
-        for cls in (    ControlPage,
-                EditorPage,
-                FilePage,
-                ProbePage,
-                TerminalPage,
-                ToolsPage):
+        for cls in (ControlPage, EditorPage, FilePage, ProbePage,
+                    TerminalPage, ToolsPage):
             page = cls(self.ribbon, self)
             self.pages[page.name] = page
 
         # then add their properties (in separate loop)
         errors = []
-        for name,page in self.pages.items():
-            for n in Utils.getStr(Utils.__prg__,"{0}.ribbon".format(page.name)).split():
+        for name, page in self.pages.items():
+            for n in Utils.getStr(Utils.__prg__, "{0}.ribbon".format(page.name)).split():
                 try:
                     page.addRibbonGroup(n)
                 except KeyError:
                     errors.append(n)
 
-            for n in Utils.getStr(Utils.__prg__,"{0}.page".format(page.name)).split():
+            for n in Utils.getStr(Utils.__prg__, "{0}.page".format(page.name)).split():
                 last = n[-1]
                 try:
                     if last == "*":
-                        page.addPageFrame(n[:-1],fill=BOTH,expand=TRUE)
+                        page.addPageFrame(n[:-1], fill=BOTH, expand=TRUE)
                     else:
                         page.addPageFrame(n)
                 except KeyError:
@@ -225,238 +226,240 @@ class Application(Toplevel,Sender):
                     "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
         # remember the editor list widget
-        self.dro      = Page.frames["DRO"]
-        self.gstate   = Page.frames["State"]
-        self.control  = Page.frames["Control"]
-        self.editor   = Page.frames["Editor"].editor
+        self.dro = Page.frames["DRO"]
+        self.gstate = Page.frames["State"]
+        self.control = Page.frames["Control"]
+        self.editor = Page.frames["Editor"].editor
         self.terminal = Page.frames["Terminal"].terminal
-        self.buffer   = Page.frames["Terminal"].buffer
+        self.buffer = Page.frames["Terminal"].buffer
 
         # XXX FIXME Do we need it or I can takes from Page every time?
         #self.autolevel = Page.frames["Probe:Autolevel"]
         # seem to be fixed
 
         # Left side
-        for name in Utils.getStr(Utils.__prg__,"ribbon").split():
+        for name in Utils.getStr(Utils.__prg__, "ribbon").split():
             last = name[-1]
             if last == '>':
                 name = name[:-1]
                 side = RIGHT
             else:
                 side = LEFT
-            self.ribbon.addPage(self.pages[name],side)
+            self.ribbon.addPage(self.pages[name], side)
 
         # Restore last page
         self.pages["Probe"].tabChange()    # Select "Probe:Probe" tab to show the dialogs!
-        self.ribbon.changePage(Utils.getStr(Utils.__prg__,"page", "File"))
+        self.ribbon.changePage(Utils.getStr(Utils.__prg__, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
-        tkExtra.bindEventData(self, "<<OrientSelect>>", lambda e,f=probe: f.selectMarker(int(e.data)))
-        tkExtra.bindEventData(self, '<<OrientChange>>',    lambda e,s=self: s.canvas.orientChange(int(e.data)))
-        self.bind('<<OrientUpdate>>',    probe.orientUpdate)
+        tkExtra.bindEventData(self, "<<OrientSelect>>",
+                              lambda e, f=probe: f.selectMarker(int(e.data)))
+        tkExtra.bindEventData(self, '<<OrientChange>>',
+                              lambda e, s=self: s.canvas.orientChange(int(e.data)))
+        self.bind('<<OrientUpdate>>', probe.orientUpdate)
 
         # Global bindings
-        self.bind('<<Undo>>',       self.undo)
-        self.bind('<<Redo>>',       self.redo)
-        self.bind('<<Copy>>',       self.copy)
-        self.bind('<<Cut>>',        self.cut)
-        self.bind('<<Paste>>',      self.paste)
+        self.bind('<<Undo>>', self.undo)
+        self.bind('<<Redo>>', self.redo)
+        self.bind('<<Copy>>', self.copy)
+        self.bind('<<Cut>>', self.cut)
+        self.bind('<<Paste>>', self.paste)
 
-        self.bind('<<Connect>>',    self.openClose)
+        self.bind('<<Connect>>', self.openClose)
 
-        self.bind('<<New>>',        self.newFile)
-        self.bind('<<Open>>',       self.loadDialog)
-        self.bind('<<Import>>',     lambda x,s=self: s.importFile())
-        self.bind('<<Save>>',       self.saveAll)
-        self.bind('<<SaveAs>>',     self.saveDialog)
-        self.bind('<<Reload>>',     self.reload)
+        self.bind('<<New>>', self.newFile)
+        self.bind('<<Open>>', self.loadDialog)
+        self.bind('<<Import>>', lambda x, s=self: s.importFile())
+        self.bind('<<Save>>', self.saveAll)
+        self.bind('<<SaveAs>>', self.saveDialog)
+        self.bind('<<Reload>>', self.reload)
 
-        self.bind('<<Recent0>>',    self._loadRecent0)
-        self.bind('<<Recent1>>',    self._loadRecent1)
-        self.bind('<<Recent2>>',    self._loadRecent2)
-        self.bind('<<Recent3>>',    self._loadRecent3)
-        self.bind('<<Recent4>>',    self._loadRecent4)
-        self.bind('<<Recent5>>',    self._loadRecent5)
-        self.bind('<<Recent6>>',    self._loadRecent6)
-        self.bind('<<Recent7>>',    self._loadRecent7)
-        self.bind('<<Recent8>>',    self._loadRecent8)
-        self.bind('<<Recent9>>',    self._loadRecent9)
+        self.bind('<<Recent0>>', self._loadRecent0)
+        self.bind('<<Recent1>>', self._loadRecent1)
+        self.bind('<<Recent2>>', self._loadRecent2)
+        self.bind('<<Recent3>>', self._loadRecent3)
+        self.bind('<<Recent4>>', self._loadRecent4)
+        self.bind('<<Recent5>>', self._loadRecent5)
+        self.bind('<<Recent6>>', self._loadRecent6)
+        self.bind('<<Recent7>>', self._loadRecent7)
+        self.bind('<<Recent8>>', self._loadRecent8)
+        self.bind('<<Recent9>>', self._loadRecent9)
 
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
-        self.bind('<<AlarmClear>>',    self.alarmClear)
-        self.bind('<<Help>>',          self.help)
+        self.bind('<<AlarmClear>>', self.alarmClear)
+        self.bind('<<Help>>', self.help)
                         # Do not send the event otherwise it will skip the feedHold/resume
-        self.bind('<<FeedHold>>',      lambda e,s=self: s.feedHold())
-        self.bind('<<Resume>>',        lambda e,s=self: s.resume())
-        self.bind('<<Run>>',           lambda e,s=self: s.run())
-        self.bind('<<Stop>>',          self.stopRun)
-        self.bind('<<Pause>>',         self.pause)
+        self.bind('<<FeedHold>>', lambda e, s=self: s.feedHold())
+        self.bind('<<Resume>>', lambda e, s=self: s.resume())
+        self.bind('<<Run>>', lambda e, s=self: s.run())
+        self.bind('<<Stop>>', self.stopRun)
+        self.bind('<<Pause>>', self.pause)
 #        self.bind('<<TabAdded>>',    self.tabAdded)
 
-        tkExtra.bindEventData(self, "<<Status>>",    self.updateStatus)
-        tkExtra.bindEventData(self, "<<Coords>>",    self.updateCanvasCoords)
+        tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
+        tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
 
         # Editor bindings
-        self.bind("<<Add>>",            self.editor.insertItem)
-        self.bind("<<AddBlock>>",       self.editor.insertBlock)
-        self.bind("<<AddLine>>",        self.editor.insertLine)
-        self.bind("<<Clone>>",          self.editor.clone)
-        self.bind("<<ClearEditor>>",    self.ClearEditor)
-        self.canvasFrame.canvas.bind("<Control-Key-Prior>",    self.editor.orderUp)
-        self.canvasFrame.canvas.bind("<Control-Key-Next>",    self.editor.orderDown)
-        self.canvasFrame.canvas.bind('<Control-Key-d>',    self.editor.clone)
-        self.canvasFrame.canvas.bind('<Control-Key-c>',    self.copy)
-        self.canvasFrame.canvas.bind('<Control-Key-x>',    self.cut)
-        self.canvasFrame.canvas.bind('<Control-Key-v>',    self.paste)
-        self.bind("<<Delete>>",            self.editor.deleteBlock)
-        self.canvasFrame.canvas.bind("<Delete>",        self.editor.deleteBlock)
-        self.canvasFrame.canvas.bind("<BackSpace>",        self.editor.deleteBlock)
+        self.bind("<<Add>>", self.editor.insertItem)
+        self.bind("<<AddBlock>>", self.editor.insertBlock)
+        self.bind("<<AddLine>>", self.editor.insertLine)
+        self.bind("<<Clone>>", self.editor.clone)
+        self.bind("<<ClearEditor>>", self.ClearEditor)
+        self.canvasFrame.canvas.bind("<Control-Key-Prior>", self.editor.orderUp)
+        self.canvasFrame.canvas.bind("<Control-Key-Next>", self.editor.orderDown)
+        self.canvasFrame.canvas.bind('<Control-Key-d>', self.editor.clone)
+        self.canvasFrame.canvas.bind('<Control-Key-c>', self.copy)
+        self.canvasFrame.canvas.bind('<Control-Key-x>', self.cut)
+        self.canvasFrame.canvas.bind('<Control-Key-v>', self.paste)
+        self.bind("<<Delete>>", self.editor.deleteBlock)
+        self.canvasFrame.canvas.bind("<Delete>", self.editor.deleteBlock)
+        self.canvasFrame.canvas.bind("<BackSpace>", self.editor.deleteBlock)
 
         try:
-            self.canvasFrame.canvas.bind("<KP_Delete>",    self.editor.deleteBlock)
+            self.canvasFrame.canvas.bind("<KP_Delete>", self.editor.deleteBlock)
         except:
             pass
 
-        self.bind('<<Invert>>',        self.editor.invertBlocks)
-        self.bind('<<Expand>>',        self.editor.toggleExpand)
-        self.bind('<<EnableToggle>>',    self.editor.toggleEnable)
-        self.bind('<<Enable>>',        self.editor.enable)
-        self.bind('<<Disable>>',    self.editor.disable)
-        self.bind('<<ChangeColor>>',    self.editor.changeColor)
-        self.bind('<<Comment>>',    self.editor.commentRow)
-        self.bind('<<Join>>',        self.editor.joinBlocks)
-        self.bind('<<Split>>',        self.editor.splitBlocks)
+        self.bind('<<Invert>>', self.editor.invertBlocks)
+        self.bind('<<Expand>>', self.editor.toggleExpand)
+        self.bind('<<EnableToggle>>', self.editor.toggleEnable)
+        self.bind('<<Enable>>', self.editor.enable)
+        self.bind('<<Disable>>', self.editor.disable)
+        self.bind('<<ChangeColor>>', self.editor.changeColor)
+        self.bind('<<Comment>>', self.editor.commentRow)
+        self.bind('<<Join>>', self.editor.joinBlocks)
+        self.bind('<<Split>>', self.editor.splitBlocks)
 
         # Canvas X-bindings
-        self.bind("<<ViewChange>>",    self.viewChange)
-        self.bind("<<AddMarker>>",    self.canvasFrame.canvas.setActionAddMarker)
-        self.bind('<<MoveGantry>>',    self.canvasFrame.canvas.setActionGantry)
-        self.bind('<<SetWPOS>>',    self.canvasFrame.canvas.setActionWPOS)
-        self.bind('<<SetMem>>',    self.setMem)
-        self.bind('<<ClrMem>>',    self.clrMem)
-        self.bind('<<SaveMems>>',    self.saveMems)
+        self.bind("<<ViewChange>>", self.viewChange)
+        self.bind("<<AddMarker>>", self.canvasFrame.canvas.setActionAddMarker)
+        self.bind('<<MoveGantry>>', self.canvasFrame.canvas.setActionGantry)
+        self.bind('<<SetWPOS>>', self.canvasFrame.canvas.setActionWPOS)
+        self.bind('<<SetMem>>', self.setMem)
+        self.bind('<<ClrMem>>', self.clrMem)
+        self.bind('<<SaveMems>>', self.saveMems)
 
 
         frame = Page.frames["Probe:Tool"]
-        self.bind('<<ToolCalibrate>>',    frame.calibrate)
-        self.bind('<<ToolChange>>',    frame.change)
+        self.bind('<<ToolCalibrate>>', frame.calibrate)
+        self.bind('<<ToolChange>>', frame.change)
 
         self.bind('<<AutolevelMargins>>', Page.frames["Probe:Autolevel"].getMargins)
-        self.bind('<<AutolevelZero>>',    Page.frames["Probe:Autolevel"].setZero)
-        self.bind('<<AutolevelClear>>',    Page.frames["Probe:Autolevel"].clear)
-        self.bind('<<AutolevelScan>>',    Page.frames["Probe:Autolevel"].scan)
-        self.bind('<<AutolevelScanMargins>>',    Page.frames["Probe:Autolevel"].scanMargins)
+        self.bind('<<AutolevelZero>>', Page.frames["Probe:Autolevel"].setZero)
+        self.bind('<<AutolevelClear>>', Page.frames["Probe:Autolevel"].clear)
+        self.bind('<<AutolevelScan>>', Page.frames["Probe:Autolevel"].scan)
+        self.bind('<<AutolevelScanMargins>>', Page.frames["Probe:Autolevel"].scanMargins)
 
-        self.bind('<<CameraOn>>',    self.canvasFrame.canvas.cameraOn)
-        self.bind('<<CameraOff>>',    self.canvasFrame.canvas.cameraOff)
+        self.bind('<<CameraOn>>', self.canvasFrame.canvas.cameraOn)
+        self.bind('<<CameraOff>>', self.canvasFrame.canvas.cameraOff)
 
-        self.bind('<<CanvasFocus>>',    self.canvasFocus)
-        self.bind('<<Draw>>',        self.draw)
-        self.bind('<<DrawProbe>>',    lambda e,c=self.canvasFrame:c.drawProbe(True))
-        self.bind('<<DrawOrient>>',    self.canvasFrame.canvas.drawOrient)
+        self.bind('<<CanvasFocus>>', self.canvasFocus)
+        self.bind('<<Draw>>', self.draw)
+        self.bind('<<DrawProbe>>', lambda e, c=self.canvasFrame: c.drawProbe(True))
+        self.bind('<<DrawOrient>>', self.canvasFrame.canvas.drawOrient)
 
-        self.bind("<<ListboxSelect>>",    self.selectionChange)
-        self.bind("<<Modified>>",    self.drawAfter)
+        self.bind("<<ListboxSelect>>", self.selectionChange)
+        self.bind("<<Modified>>", self.drawAfter)
 
-        self.bind('<Control-Key-a>',    self.selectAll)
-        self.bind('<Control-Key-A>',    self.unselectAll)
-        self.bind('<Escape>',        self.unselectAll)
-        self.bind('<Control-Key-i>',    self.selectInvert)
+        self.bind('<Control-Key-a>', self.selectAll)
+        self.bind('<Control-Key-A>', self.unselectAll)
+        self.bind('<Escape>', self.unselectAll)
+        self.bind('<Control-Key-i>', self.selectInvert)
 
-        self.bind('<<SelectAll>>',    self.selectAll)
-        self.bind('<<SelectNone>>',    self.unselectAll)
-        self.bind('<<SelectInvert>>',    self.selectInvert)
-        self.bind('<<SelectLayer>>',    self.selectLayer)
+        self.bind('<<SelectAll>>', self.selectAll)
+        self.bind('<<SelectNone>>', self.unselectAll)
+        self.bind('<<SelectInvert>>', self.selectInvert)
+        self.bind('<<SelectLayer>>', self.selectLayer)
 
 #        self.bind('<Control-Key-f>',    self.find)
 #        self.bind('<Control-Key-g>',    self.findNext)
 #        self.bind('<Control-Key-h>',    self.replace)
-        self.bind('<Control-Key-e>',    self.editor.toggleExpand)
-        self.bind('<Control-Key-n>',    self.showInfo)
-        self.bind('<<ShowInfo>>',    self.showInfo)
-        self.bind('<Control-Key-l>',    self.editor.toggleEnable)
-        self.bind('<Control-Key-q>',    self.quit)
-        self.bind('<Control-Key-o>',    self.loadDialog)
-        self.bind('<Control-Key-r>',    self.drawAfter)
-        self.bind("<Control-Key-s>",    self.saveAll)
-        self.bind('<Control-Key-y>',    self.redo)
-        self.bind('<Control-Key-z>',    self.undo)
-        self.bind('<Control-Key-Z>',    self.redo)
-        self.canvasFrame.canvas.bind('<Key-space>',    self.commandFocus)
-        self.bind('<Control-Key-space>',self.commandFocus)
-        self.bind('<<CommandFocus>>',    self.commandFocus)
+        self.bind('<Control-Key-e>', self.editor.toggleExpand)
+        self.bind('<Control-Key-n>', self.showInfo)
+        self.bind('<<ShowInfo>>', self.showInfo)
+        self.bind('<Control-Key-l>', self.editor.toggleEnable)
+        self.bind('<Control-Key-q>', self.quit)
+        self.bind('<Control-Key-o>', self.loadDialog)
+        self.bind('<Control-Key-r>', self.drawAfter)
+        self.bind("<Control-Key-s>", self.saveAll)
+        self.bind('<Control-Key-y>', self.redo)
+        self.bind('<Control-Key-z>', self.undo)
+        self.bind('<Control-Key-Z>', self.redo)
+        self.canvasFrame.canvas.bind('<Key-space>', self.commandFocus)
+        self.bind('<Control-Key-space>', self.commandFocus)
+        self.bind('<<CommandFocus>>', self.commandFocus)
 
         tools = self.pages["CAM"]
-        self.bind('<<ToolAdd>>',    tools.add)
-        self.bind('<<ToolDelete>>',    tools.delete)
-        self.bind('<<ToolClone>>',    tools.clone)
-        self.bind('<<ToolRename>>',    tools.rename)
+        self.bind('<<ToolAdd>>', tools.add)
+        self.bind('<<ToolDelete>>', tools.delete)
+        self.bind('<<ToolClone>>', tools.clone)
+        self.bind('<<ToolRename>>', tools.rename)
 
-        self.bind('<Prior>',        self.control.moveZup)
-        self.bind('<Next>',        self.control.moveZdown)
+        self.bind('<Prior>', self.control.moveZup)
+        self.bind('<Next>', self.control.moveZdown)
 
         if self._swapKeyboard == 1:
-            self.bind('<Right>',        self.control.moveYup)
-            self.bind('<Left>',        self.control.moveYdown)
-            self.bind('<Up>',        self.control.moveXdown)
-            self.bind('<Down>',        self.control.moveXup)
+            self.bind('<Right>', self.control.moveYup)
+            self.bind('<Left>', self.control.moveYdown)
+            self.bind('<Up>', self.control.moveXdown)
+            self.bind('<Down>', self.control.moveXup)
         elif self._swapKeyboard == -1:
-            self.bind('<Right>',        self.control.moveYdown)
-            self.bind('<Left>',        self.control.moveYup)
-            self.bind('<Up>',        self.control.moveXup)
-            self.bind('<Down>',        self.control.moveXdown)
+            self.bind('<Right>', self.control.moveYdown)
+            self.bind('<Left>', self.control.moveYup)
+            self.bind('<Up>', self.control.moveXup)
+            self.bind('<Down>', self.control.moveXdown)
         else:
-            self.bind('<Right>',        self.control.moveXup)
-            self.bind('<Left>',        self.control.moveXdown)
-            self.bind('<Up>',        self.control.moveYup)
-            self.bind('<Down>',        self.control.moveYdown)
+            self.bind('<Right>', self.control.moveXup)
+            self.bind('<Left>', self.control.moveXdown)
+            self.bind('<Up>', self.control.moveYup)
+            self.bind('<Down>', self.control.moveYdown)
 
         try:
-            self.bind('<KP_Prior>',        self.control.moveZup)
-            self.bind('<KP_Next>',        self.control.moveZdown)
+            self.bind('<KP_Prior>', self.control.moveZup)
+            self.bind('<KP_Next>', self.control.moveZdown)
 
-            if self._swapKeyboard==1:
-                self.bind('<KP_Right>',    self.control.moveYup)
-                self.bind('<KP_Left>',    self.control.moveYdown)
-                self.bind('<KP_Up>',    self.control.moveXdown)
-                self.bind('<KP_Down>',    self.control.moveXup)
-            elif self._swapKeyboard==-1:
-                self.bind('<KP_Right>',    self.control.moveYdown)
-                self.bind('<KP_Left>',    self.control.moveYup)
-                self.bind('<KP_Up>',    self.control.moveXup)
-                self.bind('<KP_Down>',    self.control.moveXdown)
+            if self._swapKeyboard == 1:
+                self.bind('<KP_Right>', self.control.moveYup)
+                self.bind('<KP_Left>', self.control.moveYdown)
+                self.bind('<KP_Up>', self.control.moveXdown)
+                self.bind('<KP_Down>', self.control.moveXup)
+            elif self._swapKeyboard == -1:
+                self.bind('<KP_Right>', self.control.moveYdown)
+                self.bind('<KP_Left>', self.control.moveYup)
+                self.bind('<KP_Up>', self.control.moveXup)
+                self.bind('<KP_Down>', self.control.moveXdown)
             else:
-                self.bind('<KP_Right>',    self.control.moveXup)
-                self.bind('<KP_Left>',    self.control.moveXdown)
-                self.bind('<KP_Up>',    self.control.moveYup)
-                self.bind('<KP_Down>',    self.control.moveYdown)
+                self.bind('<KP_Right>', self.control.moveXup)
+                self.bind('<KP_Left>', self.control.moveXdown)
+                self.bind('<KP_Up>', self.control.moveYup)
+                self.bind('<KP_Down>', self.control.moveYdown)
         except TclError:
             pass
 
-        self.bind('<Key-plus>',        self.control.incStep)
-        self.bind('<Key-equal>',    self.control.incStep)
-        self.bind('<KP_Add>',        self.control.incStep)
-        self.bind('<Key-minus>',    self.control.decStep)
-        self.bind('<Key-underscore>',    self.control.decStep)
-        self.bind('<KP_Subtract>',    self.control.decStep)
+        self.bind('<Key-plus>', self.control.incStep)
+        self.bind('<Key-equal>', self.control.incStep)
+        self.bind('<KP_Add>', self.control.incStep)
+        self.bind('<Key-minus>', self.control.decStep)
+        self.bind('<Key-underscore>', self.control.decStep)
+        self.bind('<KP_Subtract>', self.control.decStep)
 
-        self.bind('<Key-asterisk>',    self.control.mulStep)
-        self.bind('<KP_Multiply>',    self.control.mulStep)
-        self.bind('<Key-slash>',    self.control.divStep)
-        self.bind('<KP_Divide>',    self.control.divStep)
+        self.bind('<Key-asterisk>', self.control.mulStep)
+        self.bind('<KP_Multiply>', self.control.mulStep)
+        self.bind('<Key-slash>', self.control.divStep)
+        self.bind('<KP_Divide>', self.control.divStep)
 
-        self.bind('<Key-1>',        self.control.setStep1)
-        self.bind('<Key-2>',        self.control.setStep2)
-        self.bind('<Key-3>',        self.control.setStep3)
+        self.bind('<Key-1>', self.control.setStep1)
+        self.bind('<Key-2>', self.control.setStep2)
+        self.bind('<Key-3>', self.control.setStep3)
 
-        self.bind('<Key-exclam>',    self.feedHold)
-        self.bind('<Key-asciitilde>',    self.resume)
+        self.bind('<Key-exclam>', self.feedHold)
+        self.bind('<Key-asciitilde>', self.resume)
 
         for x in self.widgets:
-            if isinstance(x,Entry):
+            if isinstance(x, Entry):
                 x.bind("<Escape>", self.canvasFocus)
 
-        self.bind('<FocusIn>',        self.focusIn)
+        self.bind('<FocusIn>', self.focusIn)
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
         self.canvasFrame.canvas.focus_set()
@@ -464,9 +467,9 @@ class Application(Toplevel,Sender):
         OCV.CD["state"] = NOT_CONNECTED
         OCV.CD["color"] = STATECOLOR[NOT_CONNECTED]
         self._pendantFileUploaded = None
-        self._drawAfter = None    # after handle for modification
-        self._inFocus    = False
-        self._insertCount = 0    # END - insertCount lines where ok was applied to for $xxx commands
+        self._drawAfter = None # after handle for modification
+        self._inFocus = False
+        self._insertCount = 0 # END - insertCount lines where ok was applied to for $xxx commands
         self._selectI = 0
         self.monitorSerial()
         self.canvasFrame.toggleDrawFlag()
@@ -474,10 +477,10 @@ class Application(Toplevel,Sender):
         self.paned.sash_place(0, Utils.getInt(Utils.__prg__, "sash", 340), 0)
 
         # Auto start pendant and serial
-        if Utils.getBool("Connection","pendant"):
+        if Utils.getBool("Connection", "pendant"):
             self.startPendant(False)
 
-        if _openserial and Utils.getBool("Connection","openserial"):
+        if _openserial and Utils.getBool("Connection", "openserial"):
             self.openClose()
 
         # Filedialog Load history
@@ -527,7 +530,7 @@ class Application(Toplevel,Sender):
     # Update canvas coordinates
     #-----------------------------------------------------------------------
     def updateCanvasCoords(self, event):
-        x,y,z = event.data.split()
+        x, y, z = event.data.split()
         self.statusx["text"] = "X: "+x
         self.statusy["text"] = "Y: "+y
         self.statusz["text"] = "Z: "+z
@@ -546,8 +549,9 @@ class Application(Toplevel,Sender):
 
     #-----------------------------------------------------------------------
     def quit(self, event=None):
-        if self.running and self._quit<1:
-            tkMessageBox.showinfo(_("Running"),
+        if self.running and self._quit < 1:
+            tkMessageBox.showinfo(
+                _("Running"),
                 _("CNC is currently running, please stop it before."),
                 parent=self)
             self._quit += 1
@@ -572,12 +576,12 @@ class Application(Toplevel,Sender):
     # ---------------------------------------------------------------------
     def configWidgets(self, var, value):
         for w in self.widgets:
-            if isinstance(w,tuple):
+            if isinstance(w, tuple):
                 try:
                     w[0].entryconfig(w[1], state=value)
                 except TclError:
                     pass
-            elif isinstance(w,tkExtra.Combobox):
+            elif isinstance(w, tkExtra.Combobox):
                 w.configure(state=value)
             else:
                 w[var] = value
@@ -599,7 +603,7 @@ class Application(Toplevel,Sender):
 
     # ---------------------------------------------------------------------
     def enable(self):
-        self.configWidgets("state",NORMAL)
+        self.configWidgets("state", NORMAL)
         self.statusbar.clear()
         self.statusbar.config(background="LightGray")
         self.bufferbar.clear()
@@ -608,7 +612,7 @@ class Application(Toplevel,Sender):
 
     # ---------------------------------------------------------------------
     def disable(self):
-        self.configWidgets("state",DISABLED)
+        self.configWidgets("state", DISABLED)
 
     # ----------------------------------------------------------------------
     # Check for updates
@@ -624,7 +628,7 @@ class Application(Toplevel,Sender):
             key = name.title()
             self.unbind("<{0}>".format(key))    # unbind any possible old value
             if value:
-                self.bind("<{0}>".format(key), lambda e,s=self,c=value : s.execute(c))
+                self.bind("<{0}>".format(key), lambda e, s=self, c=value: s.execute(c))
 
     #-----------------------------------------------------------------------
     def showUserFile(self):
@@ -636,8 +640,8 @@ class Application(Toplevel,Sender):
 
         if OCV.geometry is None:
             OCV.geometry = "{0:d}x{1:d}".format(
-                    Utils.getInt(Utils.__prg__, "width", 900),
-                    Utils.getInt(Utils.__prg__, "height", 650))
+                Utils.getInt(Utils.__prg__, "width", 900),
+                Utils.getInt(Utils.__prg__, "height", 650))
         try: self.geometry(OCV.geometry)
         except: pass
 
@@ -656,30 +660,30 @@ class Application(Toplevel,Sender):
         self._swapKeyboard = Utils.getInt("Control", "swap", 0)
 
         self._onStart = Utils.getStr("Events", "onstart", "")
-        self._onStop  = Utils.getStr("Events", "onstop",  "")
+        self._onStop = Utils.getStr("Events", "onstop", "")
 
         tkExtra.Balloon.font = Utils.getFont("balloon", tkExtra.Balloon.font)
 
-        Ribbon._FONT    = Utils.getFont("ribbon.label", Ribbon._FONT)
-        Ribbon._TABFONT = Utils.getFont("ribbon.tab",    Ribbon._TABFONT)
+        Ribbon._FONT = Utils.getFont("ribbon.label", Ribbon._FONT)
+        Ribbon._TABFONT = Utils.getFont("ribbon.tab", Ribbon._TABFONT)
 
-        OCV.ACTIVE_COLOR       = Utils.getStr("Color", "ribbon.active", OCV.ACTIVE_COLOR)
+        OCV.ACTIVE_COLOR = Utils.getStr("Color", "ribbon.active", OCV.ACTIVE_COLOR)
         OCV.LABEL_SELECT_COLOR = Utils.getStr("Color", "ribbon.select", OCV.LABEL_SELECT_COLOR)
-        OCV.INSERT_COLOR  = Utils.getStr("Color", "canvas.insert", OCV.INSERT_COLOR)
-        OCV.GANTRY_COLOR  = Utils.getStr("Color", "canvas.gantry", OCV.GANTRY_COLOR)
-        OCV.MARGIN_COLOR  = Utils.getStr("Color", "canvas.margin", OCV.MARGIN_COLOR)
-        OCV.GRID_COLOR    = Utils.getStr("Color", "canvas.grid",   OCV.GRID_COLOR)
-        OCV.BOX_SELECT    = Utils.getStr("Color", "canvas.selectbox", OCV.BOX_SELECT)
-        OCV.ENABLE_COLOR  = Utils.getStr("Color", "canvas.enable", OCV.ENABLE_COLOR)
+        OCV.INSERT_COLOR = Utils.getStr("Color", "canvas.insert", OCV.INSERT_COLOR)
+        OCV.GANTRY_COLOR = Utils.getStr("Color", "canvas.gantry", OCV.GANTRY_COLOR)
+        OCV.MARGIN_COLOR = Utils.getStr("Color", "canvas.margin", OCV.MARGIN_COLOR)
+        OCV.GRID_COLOR = Utils.getStr("Color", "canvas.grid", OCV.GRID_COLOR)
+        OCV.BOX_SELECT = Utils.getStr("Color", "canvas.selectbox", OCV.BOX_SELECT)
+        OCV.ENABLE_COLOR = Utils.getStr("Color", "canvas.enable", OCV.ENABLE_COLOR)
         OCV.DISABLE_COLOR = Utils.getStr("Color", "canvas.disable", OCV.DISABLE_COLOR)
-        OCV.SELECT_COLOR  = Utils.getStr("Color", "canvas.select", OCV.SELECT_COLOR)
+        OCV.SELECT_COLOR = Utils.getStr("Color", "canvas.select", OCV.SELECT_COLOR)
         OCV.SELECT2_COLOR = Utils.getStr("Color", "canvas.select2", OCV.SELECT2_COLOR)
         OCV.PROCESS_COLOR = Utils.getStr("Color", "canvas.process", OCV.PROCESS_COLOR)
-        OCV.MOVE_COLOR    = Utils.getStr("Color", "canvas.move", OCV.MOVE_COLOR)
-        OCV.RULER_COLOR   = Utils.getStr("Color", "canvas.ruler", OCV.RULER_COLOR)
-        OCV.CAMERA_COLOR  = Utils.getStr("Color", "canvas.camera", OCV.CAMERA_COLOR)
+        OCV.MOVE_COLOR = Utils.getStr("Color", "canvas.move", OCV.MOVE_COLOR)
+        OCV.RULER_COLOR = Utils.getStr("Color", "canvas.ruler", OCV.RULER_COLOR)
+        OCV.CAMERA_COLOR = Utils.getStr("Color", "canvas.camera", OCV.CAMERA_COLOR)
         OCV.PROBE_TEXT_COLOR = Utils.getStr("Color", "canvas.probetext", OCV.PROBE_TEXT_COLOR)
-        OCV.CANVAS_COLOR  = Utils.getStr("Color", "canvas.background", OCV.CANVAS_COLOR)
+        OCV.CANVAS_COLOR = Utils.getStr("Color", "canvas.background", OCV.CANVAS_COLOR)
 
         self.tools.loadConfig()
         Sender.loadConfig(self)
@@ -689,15 +693,15 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def saveConfig(self):
         # Program
-        Utils.setInt(Utils.__prg__,  "width",     str(self.winfo_width()))
-        Utils.setInt(Utils.__prg__,  "height",     str(self.winfo_height()))
-        #Utils.setInt(Utils.__prg__,  "x",      str(self.winfo_rootx()))
-        #Utils.setInt(Utils.__prg__,  "y",      str(self.winfo_rooty()))
-        Utils.setInt(Utils.__prg__,  "sash",      str(self.paned.sash_coord(0)[0]))
+        Utils.setInt(Utils.__prg__, "width", str(self.winfo_width()))
+        Utils.setInt(Utils.__prg__, "height", str(self.winfo_height()))
+        #Utils.setInt(Utils.__prg__,  "x", str(self.winfo_rootx()))
+        #Utils.setInt(Utils.__prg__,  "y", str(self.winfo_rooty()))
+        Utils.setInt(Utils.__prg__, "sash", str(self.paned.sash_coord(0)[0]))
 
         #save windowState
-        Utils.setStr(Utils.__prg__,  "windowstate", str(self.wm_state()))
-        Utils.setStr(Utils.__prg__,  "page",     str(self.ribbon.getActivePage().name))
+        Utils.setStr(Utils.__prg__, "windowstate", str(self.wm_state()))
+        Utils.setStr(Utils.__prg__, "page", str(self.ribbon.getActivePage().name))
 
         # Connection
         Page.saveConfig()
@@ -709,7 +713,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile,"r")
+            f = open(Utils.hisFile, "r")
         except:
             return
         self.history = [x.strip() for x in f]
@@ -719,7 +723,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def saveHistory(self):
         try:
-            f = open(Utils.hisFile,"w")
+            f = open(Utils.hisFile, "w")
         except:
             return
         f.write("\n".join(self.history))
@@ -746,11 +750,11 @@ class Application(Toplevel,Sender):
             content = value.split(",")
             #print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
             OCV.WK_mems[name] = [
-                    float(content[1]),
-                    float(content[2]),
-                    float(content[3]),
-                    1,
-                    content[0]]
+                float(content[1]),
+                float(content[2]),
+                float(content[3]),
+                1,
+                content[0]]
         #print("Load Memory ended")
 
 
@@ -758,8 +762,9 @@ class Application(Toplevel,Sender):
         for mem_name in OCV.WK_mems:
             md = OCV.WK_mems[mem_name]
             if md[3] is not 0:
-                mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(md[4],md[0], md[1], md[2], md[3])
-                Utils.setStr("Memory", mem_name, mem_value )
+                mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
+                    md[4], md[0], md[1], md[2], md[3])
+                Utils.setStr("Memory", mem_name, mem_value)
 
 
     #-----------------------------------------------------------------------
@@ -813,7 +818,7 @@ class Application(Toplevel,Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About {0} v{1}").format(Utils.__prg__,OCV._version))
+        toplevel.title(_("About {0} v{1}").format(Utils.__prg__, OCV._version))
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
@@ -827,15 +832,15 @@ class Application(Toplevel,Sender):
         font3 = 'Helvetica -10'
 
         frame = Frame(toplevel, borderwidth=2,
-                relief=SUNKEN, background=bg)
+                      relief=SUNKEN, background=bg)
         frame.pack(side=TOP, expand=TRUE, fill=BOTH, padx=5, pady=5)
 
         # -----
         row = 0
         l = Label(frame, image=Utils.icons["OKKCNC"],
-                foreground=fg, background=bg,
-                relief=RAISED,
-                padx=0, pady=0)
+                  foreground=fg, background=bg,
+                  relief=RAISED,
+                  padx=0, pady=0)
         l.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
 
         # -----
@@ -851,121 +856,121 @@ class Application(Toplevel,Sender):
                 _("OKKCNC/\tAn advanced fully featured\n" \
                   "\t\tg-code sender for GRBL. \n\n"\
                   "\t\tForked from bCNC"),
-                font = font3,
-                foreground=fg, background=bg, justify=LEFT)
+                  font=font3,
+                  foreground=fg, background=bg, justify=LEFT)
         l.grid(row=row, column=0, columnspan=2, sticky=W, padx=10, pady=1)
 
         # -----
         row += 1
         f = Frame(frame, borderwidth=1, relief=SUNKEN,
-            height=2, background=bg)
+                  height=2, background=bg)
         f.grid(row=row, column=0, columnspan=2, sticky=EW, padx=5, pady=5)
 
         # -----
         row += 1
         l = Label(frame, text='www:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         l = Label(frame, text=Utils.__www__,
-                foreground=fg, background=bg, justify=LEFT,
-                activeforeground="Blue",
-                font=font2, cursor="hand1")
+                  foreground=fg, background=bg, justify=LEFT,
+                  activeforeground="Blue",
+                  font=font2, cursor="hand1")
         l.grid(row=row, column=1, sticky=W, padx=2, pady=2)
-        l.bind('<Button-1>', lambda e : webbrowser.open(Utils.__www__))
+        l.bind('<Button-1>', lambda e: webbrowser.open(Utils.__www__))
 
         # -----
         row += 1
         l = Label(frame, text='email:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         l = Label(frame, text=__email__,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=W, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='author:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
         l = Label(frame, text=__author__,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='contributors:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
         l = Label(frame, text=Utils.__contribute__,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='translations:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
         l = Label(frame, text=Utils.__translations__,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='credits:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
         l = Label(frame, text=Utils.__credits__,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='version:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         l = Label(frame, text=OCV._version,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         # -----
         row += 1
         l = Label(frame, text='last change:',
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         l = Label(frame, text=OCV._date,
-                foreground=fg, background=bg, justify=LEFT,
-                font=font2)
+                  foreground=fg, background=bg, justify=LEFT,
+                  font=font2)
         l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
-        closeFunc = lambda e=None,t=toplevel: t.destroy()
+        closeFunc = lambda e=None, t=toplevel: t.destroy()
         b = Button(toplevel, text=_("Close"), command=closeFunc)
         b.pack(pady=5)
         frame.grid_columnconfigure(1, weight=1)
 
-        toplevel.bind('<Escape>',   closeFunc)
-        toplevel.bind('<Return>',   closeFunc)
+        toplevel.bind('<Escape>', closeFunc)
+        toplevel.bind('<Return>', closeFunc)
         toplevel.bind('<KP_Enter>', closeFunc)
 
         toplevel.deiconify()
@@ -1020,14 +1025,14 @@ class Application(Toplevel,Sender):
         frame.pack(fill=BOTH)
 
         # ---
-        row, col = 0,0
+        row, col = 0, 0
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["xmin"], OCV.CD["xmax"],
-                OCV.CD["xmax"] -OCV.CD["xmin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["xmin"], OCV.CD["xmax"],
+            OCV.CD["xmax"] -OCV.CD["xmin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1035,10 +1040,10 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["ymin"], OCV.CD["ymax"],
-                OCV.CD["ymax"] -OCV.CD["ymin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["ymin"], OCV.CD["ymax"],
+            OCV.CD["ymax"] -OCV.CD["ymin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1046,10 +1051,10 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["zmin"], OCV.CD["zmax"],
-                OCV.CD["zmax"] -OCV.CD["zmin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["zmin"], OCV.CD["zmax"],
+            OCV.CD["zmax"] -OCV.CD["zmin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1057,7 +1062,7 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text=str(e),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1065,7 +1070,7 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} {1}".format(l, unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1073,17 +1078,17 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("Rapid:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} {1}".format(r, unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
         col = 0
         Label(frame, text=_("Time:")).grid(row=row, column=col, sticky=E)
         col += 1
-        h,m = divmod(t, 60)    # t in min
+        h, m = divmod(t, 60) # t in min
         s = (m-int(m))*60
-        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h),int(m),int(s)),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h), int(m), int(s)),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         frame.grid_columnconfigure(1, weight=1)
 
@@ -1093,14 +1098,14 @@ class Application(Toplevel,Sender):
         frame.pack(fill=BOTH)
 
         # ---
-        row, col = 0,0
+        row, col = 0, 0
         Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["axmin"], OCV.CD["axmax"],
-                OCV.CD["axmax"] -OCV.CD["axmin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["axmin"], OCV.CD["axmax"],
+            OCV.CD["axmax"] -OCV.CD["axmin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1108,10 +1113,10 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["aymin"], OCV.CD["aymax"],
-                OCV.CD["aymax"] -OCV.CD["aymin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["aymin"], OCV.CD["aymax"],
+            OCV.CD["aymax"] -OCV.CD["aymin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1119,10 +1124,10 @@ class Application(Toplevel,Sender):
         Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                OCV.CD["azmin"], OCV.CD["azmax"],
-                OCV.CD["azmax"] -OCV.CD["azmin"],
-                unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+            OCV.CD["azmin"], OCV.CD["azmax"],
+            OCV.CD["azmax"] -OCV.CD["azmin"],
+            unit),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
@@ -1130,24 +1135,24 @@ class Application(Toplevel,Sender):
         Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text=str(len(self.gcode.blocks)),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
         # ---
         row += 1
         col = 0
         Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(frame, text="{0:.f} {1}".format(self.cnc.totalLength, unit),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         # ---
         row += 1
         col = 0
         Label(frame, text=_("Time:")).grid(row=row, column=col, sticky=E)
         col += 1
-        h,m = divmod(self.cnc.totalTime, 60)    # t in min
+        h, m = divmod(self.cnc.totalTime, 60) # t in min
         s = (m-int(m))*60
-        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h),int(m),int(s)),
-            foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h), int(m), int(s)),
+              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
         frame.grid_columnconfigure(1, weight=1)
 
@@ -1155,14 +1160,14 @@ class Application(Toplevel,Sender):
         frame = Frame(toplevel)
         frame.pack(fill=X)
 
-        closeFunc = lambda e=None,t=toplevel: t.destroy()
+        closeFunc = lambda e=None, t=toplevel: t.destroy()
         b = Button(frame, text=_("Close"), command=closeFunc)
         b.pack(pady=5)
         frame.grid_columnconfigure(1, weight=1)
 
-        toplevel.bind("<Escape>",    closeFunc)
-        toplevel.bind("<Return>",    closeFunc)
-        toplevel.bind("<KP_Enter>",  closeFunc)
+        toplevel.bind("<Escape>", closeFunc)
+        toplevel.bind("<Return>", closeFunc)
+        toplevel.bind("<KP_Enter>", closeFunc)
 
         # ----
         toplevel.deiconify()
@@ -1276,8 +1281,8 @@ class Application(Toplevel,Sender):
 
     # ----------------------------------------------------------------------
     def insertCommand(self, cmd, execute=False):
-        self.command.delete(0,END)
-        self.command.insert(0,cmd)
+        self.command.delete(0, END)
+        self.command.insert(0, cmd)
         if execute: self.commandExecute(False)
 
     #-----------------------------------------------------------------------
@@ -1296,9 +1301,9 @@ class Application(Toplevel,Sender):
         elif not self.history or self.history[-1] != line:
             self.history.append(line)
 
-        if len(self.history)>MAX_HISTORY:
+        if len(self.history) > MAX_HISTORY:
             self.history.pop(0)
-        self.command.delete(0,END)
+        self.command.delete(0, END)
         self.execute(line)
 
     #-----------------------------------------------------------------------
@@ -1310,7 +1315,8 @@ class Application(Toplevel,Sender):
         try:
             line = self.evaluate(line)
         except:
-            tkMessageBox.showerror(_("Evaluation error"),
+            tkMessageBox.showerror(
+                _("Evaluation error"),
                 sys.exc_info()[1], parent=self)
             return "break"
         #print ">>>",line
@@ -1320,65 +1326,64 @@ class Application(Toplevel,Sender):
         if self.executeGcode(line): return "break"
 
         oline = line.strip()
-        line  = oline.replace(","," ").split()
-        cmd   = line[0].upper()
+        line = oline.replace(",", " ").split()
+        cmd = line[0].upper()
 
         # ABO*UT: About dialog
-        if rexx.abbrev("ABOUT",cmd,3):
+        if rexx.abbrev("ABOUT", cmd, 3):
             self.about()
 
-        elif rexx.abbrev("AUTOLEVEL",cmd,4):
+        elif rexx.abbrev("AUTOLEVEL", cmd, 4):
             self.executeOnSelection("AUTOLEVEL", True)
 
         # CAM*ERA: camera actions
-        elif rexx.abbrev("CAMERA",cmd,3):
+        elif rexx.abbrev("CAMERA", cmd, 3):
             # FIXME will make crazy the button state
-            if rexx.abbrev("SWITCH",line[1].upper(),1):
+            if rexx.abbrev("SWITCH", line[1].upper(), 1):
                 Page.groups["Probe:Camera"].switchCamera()
 
-            elif rexx.abbrev("SPINDLE",line[1].upper(),2):
+            elif rexx.abbrev("SPINDLE", line[1].upper(), 2):
                 Page.frames["Probe:Camera"].registerSpindle()
 
-            elif rexx.abbrev("CAMERA",line[1].upper(),1):
+            elif rexx.abbrev("CAMERA", line[1].upper(), 1):
                 Page.frames["Probe:Camera"].registerCamera()
 
         # CLE*AR: clear terminal
-        elif rexx.abbrev("CLEAR",cmd,3) or cmd=="CLS":
+        elif rexx.abbrev("CLEAR", cmd, 3) or cmd == "CLS":
             self.ribbon.changePage("Terminal")
             Page.frames["Terminal"].clear()
 
         # CLOSE: close path - join end with start with a line segment
-        elif rexx.abbrev("CLOSE",cmd,4):
+        elif rexx.abbrev("CLOSE", cmd, 4):
             self.executeOnSelection("CLOSE", True)
 
         # CONT*ROL: switch to control tab
-        elif rexx.abbrev("CONTROL",cmd,4):
+        elif rexx.abbrev("CONTROL", cmd, 4):
             self.ribbon.changePage("Control")
 
-        # CUT [depth] [pass-per-depth] [z-surface] [feed] [feedz]: replicate selected blocks to cut-height
         # default values are taken from the active material
         elif cmd == "CUT":
-            try:    depth = float(line[1])
+            try: depth = float(line[1])
             except: depth = None
 
-            try:    step = float(line[2])
+            try: step = float(line[2])
             except: step = None
 
-            try:    surface = float(line[3])
+            try: surface = float(line[3])
             except: surface = None
 
-            try:    feed = float(line[4])
+            try: feed = float(line[4])
             except: feed = None
 
-            try:    feedz = float(line[5])
+            try: feedz = float(line[5])
             except: feedz = None
             self.executeOnSelection("CUT", True, depth, step, surface, feed, feedz)
 
         # DOWN: move downward in cutting order the selected blocks
         # UP: move upwards in cutting order the selected blocks
-        elif cmd=="DOWN":
+        elif cmd == "DOWN":
             self.editor.orderDown()
-        elif cmd=="UP":
+        elif cmd == "UP":
             self.editor.orderUp()
 
         # DIR*ECTION
@@ -1386,35 +1391,40 @@ class Application(Toplevel,Sender):
             if rexx.abbrev("CLIMB", line[1].upper(), 2):
                 direction = -2
             elif rexx.abbrev("CONVENTIONAL", line[1].upper(), 2):
-                direction =  2
+                direction = 2
             elif rexx.abbrev("CW", line[1].upper(), 2):
-                direction =  1
+                direction = 1
             elif rexx.abbrev("CCW", line[1].upper(), 2):
-                direction =  -1
+                direction = -1
             else:
-                tkMessageBox.showerror(_("Direction command error"),
+                tkMessageBox.showerror(
+                    _("Direction command error"),
                     _("Invalid direction {0} specified".format(line[1])),
                     parent=self)
                 return "break"
             self.executeOnSelection("DIRECTION", True, direction)
 
         # DRI*LL [depth] [peck]: perform drilling at all penetrations points
-        elif rexx.abbrev("DRILL",cmd,3):
-            try:    h = float(line[1])
-            except: h = None
+        elif rexx.abbrev("DRILL", cmd, 3):
+            try:
+                h = float(line[1])
+            except:
+                h = None
+            try:
+                p = float(line[2])
+            except:
+                p = None
 
-            try:    p = float(line[2])
-            except: p = None
             self.executeOnSelection("DRILL", True, h, p)
 
         # ECHO <msg>: echo message
-        elif cmd=="ECHO":
+        elif cmd == "ECHO":
             self.setStatus(oline[5:].strip())
 
         # FEED on/off: append feed commands on every motion line for feed override testing
-        elif cmd=="FEED":
+        elif cmd == "FEED":
             try:
-                OCV.appendFeed = (line[1].upper()=="ON")
+                OCV.appendFeed = (line[1].upper() == "ON")
             except:
                 OCV.appendFeed = True
             self.setStatus(OCV.appendFeed and \
@@ -1422,15 +1432,15 @@ class Application(Toplevel,Sender):
                 "Feed appending turned off")
 
         # INV*ERT: invert selected blocks
-        elif rexx.abbrev("INVERT",cmd,3):
+        elif rexx.abbrev("INVERT", cmd, 3):
             self.editor.invertBlocks()
 
         # MSG|MESSAGE <msg>: echo message
-        elif cmd in ("MSG","MESSAGE"):
-            tkMessageBox.showinfo("Message",oline[oline.find(" ")+1:].strip(), parent=self)
+        elif cmd in ("MSG", "MESSAGE"):
+            tkMessageBox.showinfo("Message", oline[oline.find(" ")+1:].strip(), parent=self)
 
         # FIL*TER: filter editor blocks with text
-        elif rexx.abbrev("FILTER",cmd,3) or cmd=="ALL":
+        elif rexx.abbrev("FILTER", cmd, 3) or cmd == "ALL":
             try:
                 self.editor.filter = line[1]
             except:
@@ -1438,18 +1448,20 @@ class Application(Toplevel,Sender):
             self.editor.fill()
 
         # ED*IT: edit current line or item
-        elif rexx.abbrev("EDIT",cmd,2):
+        elif rexx.abbrev("EDIT", cmd, 2):
             self.edit()
 
         # IM*PORT <filename>: import filename with gcode or dxf at cursor location
         # or at the end of the file
-        elif rexx.abbrev("IMPORT",cmd,2):
-            try:    self.importFile(line[1])
-            except: self.importFile()
+        elif rexx.abbrev("IMPORT", cmd, 2):
+            try:
+                self.importFile(line[1])
+            except:
+                self.importFile()
 
         # INK*SCAPE: remove uneccessary Z motion as a result of inkscape gcodetools
-        elif rexx.abbrev("INKSCAPE",cmd,3):
-            if len(line)>1 and rexx.abbrev("ALL",line[1].upper()):
+        elif rexx.abbrev("INKSCAPE", cmd, 3):
+            if len(line) > 1 and rexx.abbrev("ALL", line[1].upper()):
                 self.editor.selectAll()
             self.executeOnSelection("INKSCAPE", True)
 
@@ -1465,44 +1477,31 @@ class Application(Toplevel,Sender):
             self.executeOnSelection("ISLAND", True, isl)
 
         # ISO1: switch to ISO1 projection
-        elif cmd=="ISO1":
+        elif cmd == "ISO1":
             self.canvasFrame.viewISO1()
         # ISO2: switch to ISO2 projection
-        elif cmd=="ISO2":
+        elif cmd == "ISO2":
             self.canvasFrame.viewISO2()
         # ISO3: switch to ISO3 projection
-        elif cmd=="ISO3":
+        elif cmd == "ISO3":
             self.canvasFrame.viewISO3()
 
         # LO*AD [filename]: load filename containing g-code
-        elif rexx.abbrev("LOAD",cmd,2) and len(line)==1:
+        elif rexx.abbrev("LOAD", cmd, 2) and len(line) == 1:
             self.loadDialog()
 
-        # MAT*ERIAL [name/height] [pass-per-depth] [feed]: set material from database or parameters
-#        elif rexx.abbrev("MATERIAL",cmd,3):
-#            tool = self.tools["Material"]
-#            # MAT*ERIAL [height] [pass-depth] [feed]
-#            try: self.height = float(line[1])
-#            except: pass
-#            try: self.depth_pass = float(line[2])
-#            except: pass
-#            try: self.feed = float(line[3])
-#            except: pass
-#            self.setStatus(_("Height: %g  Depth-per-pass: %g  Feed: %g")%(self.height,self.depth_pass, self.feed))
-
-        # MIR*ROR [H*ORIZONTAL/V*ERTICAL]: mirror selected objects horizontally or vertically
-        elif rexx.abbrev("MIRROR",cmd,3):
-            if len(line)==1: return "break"
+        elif rexx.abbrev("MIRROR", cmd, 3):
+            if len(line) == 1: return "break"
             line1 = line[1].upper()
             #if nothing is selected:
             if not self.editor.curselection():
                 self.editor.selectAll()
-            if rexx.abbrev("HORIZONTAL",line1):
+            if rexx.abbrev("HORIZONTAL", line1):
                 self.executeOnSelection("MIRRORH", False)
-            elif rexx.abbrev("VERTICAL",line1):
+            elif rexx.abbrev("VERTICAL", line1):
                 self.executeOnSelection("MIRRORV", False)
 
-        elif rexx.abbrev("ORDER",cmd,2):
+        elif rexx.abbrev("ORDER", cmd, 2):
             if line[1].upper() == "UP":
                 self.editor.orderUp()
             elif line[1].upper() == "DOWN":
@@ -1510,85 +1509,100 @@ class Application(Toplevel,Sender):
 
         # MO*VE [|CE*NTER|BL|BR|TL|TR|UP|DOWN|x] [[y [z]]]:
         # move selected objects either by mouse or by coordinates
-        elif rexx.abbrev("MOVE",cmd,2):
-            if len(line)==1:
+        elif rexx.abbrev("MOVE", cmd, 2):
+            if len(line) == 1:
                 self.canvasFrame.canvas.setActionMove()
                 return "break"
             line1 = line[1].upper()
             dz = 0.0
-            if rexx.abbrev("CENTER",line1,2):
+            if rexx.abbrev("CENTER", line1, 2):
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
-            elif line1=="BL":
+            elif line1 == "BL":
                 dx = -OCV.CD["xmin"]
                 dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
-            elif line1=="BC":
+            elif line1 == "BC":
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
-            elif line1=="BR":
+            elif line1 == "BR":
                 dx = -OCV.CD["xmax"]
                 dy = -OCV.CD["ymin"]
                 self.editor.selectAll()
-            elif line1=="TL":
+            elif line1 == "TL":
                 dx = -OCV.CD["xmin"]
                 dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
-            elif line1=="TC":
+            elif line1 == "TC":
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
-            elif line1=="TR":
+            elif line1 == "TR":
                 dx = -OCV.CD["xmax"]
                 dy = -OCV.CD["ymax"]
                 self.editor.selectAll()
-            elif line1=="LC":
+            elif line1 == "LC":
                 dx = -OCV.CD["xmin"]
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
-            elif line1=="RC":
+            elif line1 == "RC":
                 dx = -OCV.CD["xmax"]
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
                 self.editor.selectAll()
-            elif line1 in ("UP","DOWN"):
+            elif line1 in ("UP", "DOWN"):
                 dx = line1
                 dy = dz = line1
             else:
-                try:    dx = float(line[1])
-                except: dx = 0.0
-                try:    dy = float(line[2])
-                except: dy = 0.0
-                try:    dz = float(line[3])
-                except: dz = 0.0
-            self.executeOnSelection("MOVE", False, dx,dy,dz)
+                try:
+                    dx = float(line[1])
+                except:
+                    dx = 0.0
+                try:
+                    dy = float(line[2])
+                except:
+                    dy = 0.0
+                try:
+                    dz = float(line[3])
+                except:
+                    dz = 0.0
+
+            self.executeOnSelection("MOVE", False, dx, dy, dz)
 
         # OPT*IMIZE: reorder selected blocks to minimize rapid motions
-        elif rexx.abbrev("OPTIMIZE",cmd,3):
+        elif rexx.abbrev("OPTIMIZE", cmd, 3):
             if not self.editor.curselection():
-                tkMessageBox.showinfo(_("Optimize"),
+                tkMessageBox.showinfo(
+                    _("Optimize"),
                     _("Please select the blocks of gcode you want to optimize."),
                     parent=self)
             else:
                 self.executeOnSelection("OPTIMIZE", True)
 
         # OPT*IMIZE: reorder selected blocks to minimize rapid motions
-        elif rexx.abbrev("ORIENT",cmd,4):
+        elif rexx.abbrev("ORIENT", cmd, 4):
             if not self.editor.curselection():
                 self.editor.selectAll()
             self.executeOnSelection("ORIENT", False)
 
         # ORI*GIN x y z: move origin to x,y,z by moving all to -x -y -z
-        elif rexx.abbrev("ORIGIN",cmd,3):
-            try:    dx = -float(line[1])
-            except: dx = 0.0
-            try:    dy = -float(line[2])
-            except: dy = 0.0
-            try:    dz = -float(line[3])
-            except: dz = 0.0
+        elif rexx.abbrev("ORIGIN", cmd, 3):
+            try:
+                dx = -float(line[1])
+            except:
+                dx = 0.0
+            try:
+                dy = -float(line[2])
+            except:
+                dy = 0.0
+            try:
+                dz = -float(line[3])
+            except:
+                dz = 0.0
+
             self.editor.selectAll()
-            self.executeOnSelection("MOVE", False, dx,dy,dz)
+            self.executeOnSelection("MOVE", False, dx, dy, dz)
 
         # REV*ERSE: reverse path direction
         elif rexx.abbrev("REVERSE", cmd, 3):
@@ -1597,7 +1611,7 @@ class Application(Toplevel,Sender):
         # ROT*ATE [CCW|CW|FLIP|ang] [x0 [y0]]: rotate selected blocks
         # counter-clockwise(90) / clockwise(-90) / flip(180)
         # 90deg or by a specific angle and a pivot point
-        elif rexx.abbrev("ROTATE",cmd,3):
+        elif rexx.abbrev("ROTATE", cmd, 3):
             line1 = line[1].upper()
             x0 = y0 = 0.0
             if line1 == "CCW":
@@ -1606,23 +1620,30 @@ class Application(Toplevel,Sender):
             elif line1 == "CW":
                 ang = -90.0
                 #self.editor.selectAll()
-            elif line1=="FLIP":
+            elif line1 == "FLIP":
                 ang = 180.0
                 #self.editor.selectAll()
             else:
-                try: ang = float(line[1])
-                except: pass
-                try: x0 = float(line[2])
-                except: pass
-                try: y0 = float(line[3])
-                except: pass
-            self.executeOnSelection("ROTATE", False, ang,x0,y0)
+                try:
+                    ang = float(line[1])
+                except:
+                    pass
+                try:
+                    x0 = float(line[2])
+                except:
+                    pass
+                try:
+                    y0 = float(line[3])
+                except:
+                    pass
+
+            self.executeOnSelection("ROTATE", False, ang, x0, y0)
 
         # ROU*ND [n]: round all digits to n fractional digits
-        elif rexx.abbrev("ROUND",cmd,3):
+        elif rexx.abbrev("ROUND", cmd, 3):
             acc = None
-            if len(line)>1:
-                if rexx.abbrev("ALL",line[1].upper()):
+            if len(line) > 1:
+                if rexx.abbrev("ALL", line[1].upper()):
                     self.editor.selectAll()
                 else:
                     try:
@@ -1632,11 +1653,11 @@ class Application(Toplevel,Sender):
             self.executeOnSelection("ROUND", False, acc)
 
         # RU*LER: measure distances with mouse ruler
-        elif rexx.abbrev("RULER",cmd,2):
+        elif rexx.abbrev("RULER", cmd, 2):
             self.canvasFrame.canvas.setActionRuler()
 
         # STAT*ISTICS: show statistics of current job
-        elif rexx.abbrev("STATISTICS",cmd,4):
+        elif rexx.abbrev("STATISTICS", cmd, 4):
             self.showStats()
 
         # STEP [s]: set motion step size to s
@@ -1647,16 +1668,16 @@ class Application(Toplevel,Sender):
                 pass
 
         # SPI*NDLE [ON|OFF|speed]: turn on/off spindle
-        elif rexx.abbrev("SPINDLE",cmd,3):
-            if len(line)>1:
-                if line[1].upper()=="OFF":
+        elif rexx.abbrev("SPINDLE", cmd, 3):
+            if len(line) > 1:
+                if line[1].upper() == "OFF":
                     self.spindle.set(False)
-                elif line[1].upper()=="ON":
+                elif line[1].upper() == "ON":
                     self.spindle.set(True)
                 else:
                     try:
                         rpm = int(line[1])
-                        if rpm==0:
+                        if rpm == 0:
                             self.spindleSpeed.set(0)
                             self.spindle.set(False)
                         else:
@@ -1674,11 +1695,11 @@ class Application(Toplevel,Sender):
             self.stopRun()
 
         # TERM*INAL: switch to terminal tab
-        elif rexx.abbrev("TERMINAL",cmd,4):
+        elif rexx.abbrev("TERMINAL", cmd, 4):
             self.ribbon.changePage("Terminal")
 
         # TOOL [diameter]: set diameter of cutting tool
-        elif cmd in ("BIT","TOOL","MILL"):
+        elif cmd in ("BIT", "TOOL", "MILL"):
             try:
                 diam = float(line[1])
             except:
@@ -1687,74 +1708,74 @@ class Application(Toplevel,Sender):
             self.setStatus(_("EndMill: %s %g")%(tool["name"], diam))
 
         # TOOLS
-        elif cmd=="TOOLS":
+        elif cmd == "TOOLS":
             self.ribbon.changePage("CAM")
 
         # UNL*OCK: unlock grbl
-        elif rexx.abbrev("UNLOCK",cmd,3):
+        elif rexx.abbrev("UNLOCK", cmd, 3):
             self.mcontrol.unlock(True)
             #self.unlock()
 
         # US*ER cmd: execute user command, cmd=number or name
-        elif rexx.abbrev("USER",cmd,2):
-            n = Utils.getInt("Buttons","n",6)
+        elif rexx.abbrev("USER", cmd, 2):
+            n = Utils.getInt("Buttons", "n", 6)
             try:
                 idx = int(line[1])
             except:
                 try:
                     name = line[1].upper()
                     for i in range(n):
-                        if name == Utils.getStr("Buttons","name. {0:d}".format(i),"").upper():
+                        if name == Utils.getStr("Buttons", "name. {0:d}".format(i), "").upper():
                             idx = i
                             break
                 except:
                     return "break"
-            if idx<0 or idx>=n:
+            if idx < 0 or idx >= n:
                 self.setStatus(_("Invalid user command {0}").format(line[1]))
                 return "break"
-            cmd = Utils.getStr("Buttons","command. {0:d}".format(idx),"")
+            cmd = Utils.getStr("Buttons", "command. {0:d}".format(idx), "")
             for line in cmd.splitlines():
                 self.execute(line)
 
         # RR*APID:
-        elif rexx.abbrev("RRAPID",cmd,2):
+        elif rexx.abbrev("RRAPID", cmd, 2):
             Page.frames["Probe:Probe"].recordRapid()
 
         # RF*EED:
-        elif rexx.abbrev("RFEED",cmd,2):
+        elif rexx.abbrev("RFEED", cmd, 2):
             Page.frames["Probe:Probe"].recordFeed()
 
         # RP*OINT:
-        elif rexx.abbrev("RPOINT",cmd,2):
+        elif rexx.abbrev("RPOINT", cmd, 2):
             Page.frames["Probe:Probe"].recordPoint()
 
         # RC*IRCLE:
-        elif rexx.abbrev("RCIRCLE",cmd,2):
+        elif rexx.abbrev("RCIRCLE", cmd, 2):
             Page.frames["Probe:Probe"].recordCircle()
 
         # RFI*NISH:
-        elif rexx.abbrev("RFINISH",cmd,3):
+        elif rexx.abbrev("RFINISH", cmd, 3):
             Page.frames["Probe:Probe"].recordFinishAll()
 
         # XY: switch to XY view
         # YX: switch to XY view
-        elif cmd in ("XY","YX"):
+        elif cmd in ("XY", "YX"):
             self.canvasFrame.viewXY()
 
         # XZ: switch to XZ view
         # ZX: switch to XZ view
-        elif cmd in ("XZ","ZX"):
+        elif cmd in ("XZ", "ZX"):
             self.canvasFrame.viewXZ()
 
         # YZ: switch to YZ view
         # ZY: switch to YZ view
-        elif cmd in ("YZ","ZY"):
+        elif cmd in ("YZ", "ZY"):
             self.canvasFrame.viewYZ()
 
         else:
             rc = self.executeCommand(oline)
             if rc:
-                tkMessageBox.showerror(rc[0],rc[1], parent=self)
+                tkMessageBox.showerror(rc[0], rc[1], parent=self)
             return "break"
 
     #-----------------------------------------------------------------------
@@ -1766,7 +1787,8 @@ class Application(Toplevel,Sender):
         else:
             items = self.editor.getCleanSelection()
         if not items:
-            tkMessageBox.showwarning(_("Nothing to do"),
+            tkMessageBox.showwarning(
+                _("Nothing to do"),
                 _("Operation %s requires some gcode to be selected")%(cmd),
                 parent=self)
             return
@@ -1813,10 +1835,10 @@ class Application(Toplevel,Sender):
             if isinstance(sel, str):
                 tkMessageBox.showerror(_("Operation error"), sel, parent=self)
             else:
-                self.editor.select(sel,clear=True)
+                self.editor.select(sel, clear=True)
         self.drawAfter()
         self.notBusy()
-        self.setStatus("{0} {1}".format(cmd," ".join([str(a) for a in args if a is not None])))
+        self.setStatus("{0} {1}".format(cmd, " ".join([str(a) for a in args if a is not None])))
 
 
     #-----------------------------------------------------------------------
@@ -1844,7 +1866,7 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def commandKey(self, event):
         if event.char or event.keysym in ("BackSpace"):
-            self._historyPos    = None
+            self._historyPos = None
             self._historySearch = None
 
     #-----------------------------------------------------------------------
@@ -1862,14 +1884,14 @@ class Application(Toplevel,Sender):
             self._historyPos = max(0, self._historyPos-1)
 
         if self._historySearch:
-            for i in range(self._historyPos,-1,-1):
+            for i in range(self._historyPos, -1, -1):
                 h = self.history[i]
                 if h.upper().startswith(self._historySearch):
                     self._historyPos = i
                     break
 
-        self.command.delete(0,END)
-        self.command.insert(0,self.history[self._historyPos])
+        self.command.delete(0, END)
+        self.command.insert(0, self.history[self._historyPos])
 
     #-----------------------------------------------------------------------
     def commandHistoryDown(self, event=None):
@@ -1879,19 +1901,19 @@ class Application(Toplevel,Sender):
         else:
             self._historyPos += 1
             if self._historyPos >= len(self.history):
-                self._historyPos    = None
+                self._historyPos = None
                 self._historySearch = None
 
         if self._historySearch:
-            for i in range(self._historyPos,len(self.history)):
+            for i in range(self._historyPos, len(self.history)):
                 h = self.history[i]
                 if h.upper().startswith(self._historySearch):
                     self._historyPos = i
                     break
 
-        self.command.delete(0,END)
+        self.command.delete(0, END)
         if self._historyPos is not None:
-            self.command.insert(0,self.history[self._historyPos])
+            self.command.insert(0, self.history[self._historyPos])
 
     #-----------------------------------------------------------------------
     def select(self, items, double, clear, toggle=True):
@@ -1925,11 +1947,12 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def loadDialog(self, event=None):
         if self.running: return
-        filename = bFileDialog.askopenfilename(master=self,
+        filename = bFileDialog.askopenfilename(
+            master=self,
             title=_("Open file"),
             initialfile=os.path.join(
-                    Utils.getUtf("File", "dir"),
-                    Utils.getUtf("File", "file")),
+                Utils.getUtf("File", "dir"),
+                Utils.getUtf("File", "file")),
             filetypes=FILETYPES)
         if filename: self.load(filename)
         return "break"
@@ -1941,33 +1964,36 @@ class Application(Toplevel,Sender):
         if self.running: return
         fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
         if ext in (".dxf", ".DXF"): ext = ".ngc"
-        filename = bFileDialog.asksaveasfilename(master=self,
-                title=_("Save file"),
-                initialfile=os.path.join(Utils.getUtf("File", "dir"), fn+ext),
-                filetypes=FILETYPES)
+        filename = bFileDialog.asksaveasfilename(
+            master=self,
+            title=_("Save file"),
+            initialfile=os.path.join(Utils.getUtf("File", "dir"), fn+ext),
+            filetypes=FILETYPES)
         if filename: self.save(filename)
         return "break"
 
     #-----------------------------------------------------------------------
     def fileModified(self):
         if self.gcode.isModified():
-            ans = tkMessageBox.askquestion(_("File modified"),
+            ans = tkMessageBox.askquestion(
+                _("File modified"),
                 _("Gcode was modified do you want to save it first?"),
-                type = tkMessageBox.YESNOCANCEL,
+                type=tkMessageBox.YESNOCANCEL,
                 parent=self)
-            if ans==tkMessageBox.CANCEL:
+            if ans == tkMessageBox.CANCEL:
                 return True
-            if ans==tkMessageBox.YES or ans==True:
+            if ans == tkMessageBox.YES or ans == True:
                 self.saveAll()
 
         if not self.gcode.probe.isEmpty() and not self.gcode.probe.saved:
-            ans = tkMessageBox.askquestion(_("Probe File modified"),
+            ans = tkMessageBox.askquestion(
+                _("Probe File modified"),
                 _("Probe was modified do you want to save it first?"),
-                type = tkMessageBox.YESNOCANCEL,
+                type=tkMessageBox.YESNOCANCEL,
                 parent=self)
-            if ans==tkMessageBox.CANCEL:
+            if ans == tkMessageBox.CANCEL:
                 return True
-            if ans==tkMessageBox.YES or ans==True:
+            if ans == tkMessageBox.YES or ans == True:
                 if self.gcode.probe.filename == "":
                     self.saveDialog()
                 else:
@@ -1977,30 +2003,31 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     # Load a file into editor
     #-----------------------------------------------------------------------
-    def load(self, filename, autoloaded = False):
-        fn,ext = os.path.splitext(filename)
-        if ext==".probe":
+    def load(self, filename, autoloaded=False):
+        fn, ext = os.path.splitext(filename)
+        if ext == ".probe":
             pass
         else:
             if self.fileModified(): return
 
             if not self.gcode.probe.isEmpty():
-                ans = tkMessageBox.askquestion(_("Existing Autolevel"),
+                ans = tkMessageBox.askquestion(
+                    _("Existing Autolevel"),
                     _("Autolevel/probe information already exists.\nDelete it?"),
                     parent=self)
-                if ans==tkMessageBox.YES or ans==True:
+                if ans == tkMessageBox.YES or ans == True:
                     self.gcode.probe.init()
 
-        self.setStatus(_("Loading: %s ...")%(filename), True)
-        Sender.load(self,filename)
+        self.setStatus(_("Loading: {0} ...").format(filename), True)
+        Sender.load(self, filename)
 
-        if ext==".probe":
+        if ext == ".probe":
             Page.frames["Probe:Autolevel"].setValues()
             self.event_generate("<<DrawProbe>>")
 
-        elif ext==".orient":
+        elif ext == ".orient":
             self.event_generate("<<DrawOrient>>")
-            self.event_generate("<<OrientSelect>>",data=0)
+            self.event_generate("<<OrientSelect>>", data=0)
             self.event_generate("<<OrientUpdate>>")
 
         else:
@@ -2012,7 +2039,7 @@ class Application(Toplevel,Sender):
             Page.frames["CAM"].populate()
 
         if autoloaded:
-            self.setStatus(_("'%s' reloaded at '%s'").decode("utf8")%(filename,str(datetime.now())))
+            self.setStatus(_("'%s' reloaded at '%s'").decode("utf8")%(filename, str(datetime.now())))
         else:
             self.setStatus(_("'%s' loaded").decode("utf8")%(filename))
         self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
@@ -2021,7 +2048,7 @@ class Application(Toplevel,Sender):
     def save(self, filename):
         Sender.save(self, filename)
         self.setStatus(_("'%s' saved").decode("utf8")%(filename))
-        self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version ,self.gcode.filename))
+        self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
 
     #-----------------------------------------------------------------------
     def saveAll(self, event=None):
@@ -2038,16 +2065,18 @@ class Application(Toplevel,Sender):
     #-----------------------------------------------------------------------
     def importFile(self, filename=None):
         if filename is None:
-            filename = bFileDialog.askopenfilename(master=self,
+            filename = bFileDialog.askopenfilename(
+                master=self,
                 title=_("Import Gcode/DXF file"),
                 initialfile=os.path.join(
-                        Utils.getUtf("File", "dir"),
-                        Utils.getUtf("File", "file")),
-                filetypes=[(_("G-Code"),("*.ngc","*.nc", "*.gcode")),
-                       ("DXF",    "*.dxf"),
-                       ("All","*")])
+                    Utils.getUtf("File", "dir"),
+                    Utils.getUtf("File", "file")),
+                filetypes=[
+                    (_("G-Code"), ("*.ngc", "*.nc", "*.gcode")),
+                    ("DXF", "*.dxf"),
+                    ("All", "*")])
         if filename:
-            fn,ext = os.path.splitext(filename)
+            fn, ext = os.path.splitext(filename)
             ext = ext.lower()
             gcode = GCode()
             if ext == ".dxf":
@@ -2075,11 +2104,12 @@ class Application(Toplevel,Sender):
         self._inFocus = True
         if self.gcode.checkFile():
             if self.gcode.isModified():
-                ans = tkMessageBox.askquestion(_("Warning"),
-                    _("Gcode file %s was changed since editing started\n" \
-                      "Reload new version?")%(self.gcode.filename),
+                ans = tkMessageBox.askquestion(
+                    _("Warning"),
+                    _("Gcode file {0} was changed since editing started\n" \
+                      "Reload new version?").format(self.gcode.filename),
                     parent=self)
-                if ans==tkMessageBox.YES or ans==True:
+                if ans == tkMessageBox.YES or ans == True:
                     self.gcode.resetModified()
                     self.load(self.gcode.filename)
             else:
@@ -2092,17 +2122,19 @@ class Application(Toplevel,Sender):
         serialPage = Page.frames["Serial"]
         if self.serial is not None:
             self.close()
-            serialPage.connectBtn.config(text=_("Open"),
-                        background="Salmon",
-                        activebackground="Salmon")
+            serialPage.connectBtn.config(
+                text=_("Open"),
+                background="Salmon",
+                activebackground="Salmon")
         else:
             serialPage = Page.frames["Serial"]
-            device     = _device or serialPage.portCombo.get() #.split("\t")[0]
+            device = _device or serialPage.portCombo.get() #.split("\t")[0]
             baudrate = _baud   or serialPage.baudCombo.get()
             if self.open(device, baudrate):
-                serialPage.connectBtn.config(text=_("Close"),
-                        background="LightGreen",
-                        activebackground="LightGreen")
+                serialPage.connectBtn.config(
+                    text=_("Close"),
+                    background="LightGreen",
+                    activebackground="LightGreen")
                 self.enable()
 
     #-----------------------------------------------------------------------
@@ -2112,9 +2144,10 @@ class Application(Toplevel,Sender):
         except:
             self.serial = None
             self.thread = None
-            tkMessageBox.showerror(_("Error opening serial"),
-                    sys.exc_info()[1],
-                    parent=self)
+            tkMessageBox.showerror(
+                _("Error opening serial"),
+                sys.exc_info()[1],
+                parent=self)
         return False
 
     #-----------------------------------------------------------------------
@@ -2145,7 +2178,8 @@ class Application(Toplevel,Sender):
         print("Will clean after this operation")
 
         if self.serial is None and not OCV.developer:
-            tkMessageBox.showerror(_("Serial Error"),
+            tkMessageBox.showerror(
+                _("Serial Error"),
                 _("Serial is not connected"),
                 parent=self)
             return
@@ -2153,7 +2187,8 @@ class Application(Toplevel,Sender):
             if self._pause:
                 self.resume()
                 return
-            tkMessageBox.showerror(_("Already running"),
+            tkMessageBox.showerror(
+                _("Already running"),
                 _("Please stop before"),
                 parent=self)
             return
@@ -2168,11 +2203,11 @@ class Application(Toplevel,Sender):
         self._runLines = sys.maxsize    # temporary WARNING this value is used
                         # by Sender._serialIO to check if we
                         # are still sending or we finished
-        self._gcount   = 0        # count executed lines
-        self._selectI  = 0        # last selection pointer in items
-        self._paths    = None        # temporary
-        OCV.CD["running"]    = True    # enable running status
-        OCV.CD["_OvChanged"] = True    # force a feed change if any
+        self._gcount = 0 # count executed lines
+        self._selectI = 0 # last selection pointer in items
+        self._paths = None # temporary
+        OCV.CD["running"] = True # enable running status
+        OCV.CD["_OvChanged"] = True # force a feed change if any
         if self._onStart:
             try:
                 os.system(self._onStart)
@@ -2186,7 +2221,7 @@ class Application(Toplevel,Sender):
             #        parent=self)
             #    return
             self.statusbar.setLimits(0, 9999)
-            self.statusbar.setProgress(0,0)
+            self.statusbar.setProgress(0, 0)
 
             #class MyQueue:
             #    def put(self,line):
@@ -2201,7 +2236,8 @@ class Application(Toplevel,Sender):
                 return
             elif not self._paths:
                 self.runEnded()
-                tkMessageBox.showerror(_("Empty gcode"),
+                tkMessageBox.showerror(
+                    _("Empty gcode"),
                     _("Not gcode file was loaded"),
                     parent=self)
                 return
@@ -2229,7 +2265,7 @@ class Application(Toplevel,Sender):
             n = 1        # including one wait command
             for line in CNC.compile(lines):
                 if line is not None:
-                    if isinstance(line,str) or isinstance(line,unicode):
+                    if isinstance(line, str) or isinstance(line, unicode):
                         self.queue.put(line+"\n")
                     else:
                         self.queue.put(line)
@@ -2250,21 +2286,23 @@ class Application(Toplevel,Sender):
     # Start the web pendant
     #-----------------------------------------------------------------------
     def startPendant(self, showInfo=True):
-        started=Pendant.start(self)
+        started = Pendant.start(self)
         if showInfo:
-            hostName="http://{0}:{1:d}".format(socket.gethostname(),Pendant.port)
+            hostName = "http://{0}:{1:d}".format(socket.gethostname(), Pendant.port)
             if started:
-                tkMessageBox.showinfo(_("Pendant"),
+                tkMessageBox.showinfo(
+                    _("Pendant"),
                     _("Pendant started:\n")+hostName,
                     parent=self)
             else:
-                dr=tkMessageBox.askquestion(_("Pendant"),
+                dr=tkMessageBox.askquestion(
+                    _("Pendant"),
                     _("Pendant already started:\n") \
                     + hostName + \
                     _("\nWould you like open it locally?"),
                     parent=self)
                 if dr=="yes":
-                    webbrowser.open(hostName,new=2)
+                    webbrowser.open(hostName, new=2)
 
     #-----------------------------------------------------------------------
     # Stop the web pendant
@@ -2417,6 +2455,7 @@ class Application(Toplevel,Sender):
             #print ("Buffer = ", b_fill)
             self.bufferbar.setProgress(b_fill)
             self.bufferbar.setText("{0:02.2f}".format(b_fill))
+            #print("Queue > ", self.queue.queue)
 
             if self._selectI>=0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI<len(self._paths):

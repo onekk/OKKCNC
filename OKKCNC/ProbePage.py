@@ -1931,11 +1931,11 @@ class ToolFrame(CNCRibbon.PageFrame):
             currentFeedrate = OCV.CD["fastprbfeed"]
             while currentFeedrate > OCV.CD["prbfeed"]:
                 lines.append("%wait")
-                lines.append("g91 [prbcmd] %s z[toolprobez-mz-tooldistance]" \
-                        % CNC.fmt('f',currentFeedrate))
+                lines.append("g91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
+                        CNC.fmt('f',currentFeedrate)))
                 lines.append("%wait")
-                lines.append("[prbcmdreverse] %s z[toolprobez-mz]" \
-                        % CNC.fmt('f',currentFeedrate))
+                lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
+                        CNC.fmt('f',currentFeedrate)))
                 currentFeedrate /= 10
         lines.append("%wait")
         lines.append("g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")

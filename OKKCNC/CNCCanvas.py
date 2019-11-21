@@ -276,16 +276,13 @@ class CNCCanvas(Canvas, object):
         nargs['width'] += winc
 
         #calculate color
-        #cbg = self.winfo_rgb(OCV.CANVAS_COLOR)
         cbg = self.winfo_rgb(self.cget("bg"))
         cfg = list(self.winfo_rgb(nargs['fill']))
         #print cbg, cfg
         cfg[0] = (cfg[0] + cbg[0]*cw)/(cw+1)
         cfg[1] = (cfg[1] + cbg[1]*cw)/(cw+1)
         cfg[2] = (cfg[2] + cbg[2]*cw)/(cw+1)
-        nargs['fill'] = '#%02x%02x%02x' % (int(cfg[0]/256), int(cfg[1]/256), int(cfg[2]/256))
-        #nargs['fill'] = '#AAA'
-        #print cfg, nargs['fill']
+        nargs['fill'] = '#{0:02x}{1:02x}{2:02x}'.format(int(cfg[0]/256), int(cfg[1]/256), int(cfg[2]/256))
 
         return nargs
 
@@ -603,9 +600,13 @@ class CNCCanvas(Canvas, object):
             dx=self._vx1-self._vx0
             dy=self._vy1-self._vy0
             dz=self._vz1-self._vz0
-            self.status(_("dx=%g  dy=%g  dz=%g  length=%g  angle=%g")\
-                    % (dx,dy,dz,math.sqrt(dx**2+dy**2+dz**2),
-                    math.degrees(math.atan2(dy,dx))))
+            self.status(_("dx={0:f}  dy={1:f}  dz={2:f}  length={3:f}  angle={4:f}").format(
+                    dx,
+                    dy,
+                    dz,
+                    math.sqrt(dx**2+dy**2+dz**2),
+                    math.degrees(math.atan2(dy,dx))
+                    ))
 
         elif self._mouseAction == ACTION_PAN:
             self.pan(event)
@@ -2427,7 +2428,7 @@ class CanvasTooltip:
 
         x, y = tip_pos_calculator(canvas, label)
 
-        self.tw.wm_geometry("+%d+%d" % (x, y))
+        self.tw.wm_geometry("+{0:d}+{1:d}".format(x, y))
 
     def hide(self):
         if self.tw:

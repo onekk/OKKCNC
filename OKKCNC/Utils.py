@@ -40,15 +40,15 @@ except:
 
 import OCV
 
-__prg__     = "OKKCNC"
-prgpath   = os.path.abspath(os.path.dirname(__file__))
+__prg__ = "OKKCNC"
+prgpath = os.path.abspath(os.path.dirname(__file__))
 if getattr( sys, 'frozen', False ):
     #When being bundled by pyinstaller, paths are different
     print("Running as pyinstaller bundle!", sys.argv[0])
     prgpath   = os.path.abspath(os.path.dirname(sys.argv[0]))
-iniSystem = os.path.join(prgpath,"%s.ini"%(__prg__))
-iniUser   = os.path.expanduser("~/.%s" % (__prg__))
-hisFile   = os.path.expanduser("~/.%s.history" % (__prg__))
+iniSystem = os.path.join(prgpath,"{0}.ini".format(__prg__))
+iniUser   = os.path.expanduser("~/.{0}".format(__prg__))
+hisFile   = os.path.expanduser("~/.{0}.history".format(__prg__))
 
 # dirty way of substituting the "_" on the builtin namespace
 #__builtin__.__dict__["_"] = gettext.translation('OKKCNC', 'locale', fallback=True).ugettext
@@ -436,8 +436,10 @@ def setFont(name, font):
     elif isinstance(font,tuple):
         config.set(_FONT_SECTION, name, ",".join(map(str,font)))
     else:
-        config.set(_FONT_SECTION, name, "%s,%s,%s" % \
-            (font.cget("family"),font.cget("size"),font.cget("weight")))
+        config.set(_FONT_SECTION, name, "{0},{1},{2}".format(
+                font.cget("family"),
+                font.cget("size"),
+                font.cget("weight")))
 
 
 #------------------------------------------------------------------------------

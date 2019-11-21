@@ -647,12 +647,12 @@ class Sender:
     # thread performing I/O on serial line
     #----------------------------------------------------------------------
     def serialIO(self):
-        self.sio_wait   = False        # wait for commands to complete (status change to Idle)
-        self.sio_status = False        # waiting for status <...> report
+        self.sio_wait   = False # wait for commands to complete (status change to Idle)
+        self.sio_status = False # waiting for status <...> report
         cline  = []        # length of pipeline commands
-        sline  = []            # pipeline commands
-        tosend = None            # next string to send
-        tr = tg = time.time()        # last time a ? or $G was send to grbl
+        sline  = []        # pipeline commands
+        tosend = None      # next string to send
+        tr = tg = time.time() # last time a ? or $G was send to grbl
 
         while self.thread:
             t = time.time()
@@ -733,17 +733,17 @@ class Sender:
                             self._newFeed = float(self._lastFeed)*OCV.CD["_OvFeed"]/100.0
                             if pat is None and self._newFeed!=0 \
                                and not tosend.startswith("$"):
-                                tosend = "f%g%s" % (self._newFeed, tosend)
+                                tosend = "f{0:f}{1}".format(self._newFeed, tosend)
 
                         # Apply override Feed
                         if OCV.CD["_OvFeed"] != 100 and self._newFeed != 0:
                             pat = FEEDPAT.match(tosend)
                             if pat is not None:
                                 try:
-                                    tosend = "%sf%g%s\n" % \
-                                        (pat.group(1),
-                                         self._newFeed,
-                                         pat.group(3))
+                                    tosend = "{0}f{1:f}{2}\n".format(
+                                            pat.group(1),
+                                            self._newFeed,
+                                            pat.group(3))
                                 except:
                                     pass
 
@@ -760,7 +760,6 @@ class Sender:
                     self.emptyQueue()
                     self.close()
                     return
-
                 #print ("<R<",repr(line))
                 #print ("*-* stack=",sline,"sum=",sum(cline),"pause=",self._pause)
                 if not line:
