@@ -7,6 +7,8 @@ Created on Sun Nov 10 15:21:49 2019
 """
 _app = None
 
+root = None
+application = None
 
 _version = "0.1.0-dev"
 _date = "26 Dec 2019"

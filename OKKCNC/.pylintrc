@@ -1,0 +1,5 @@
+[Master]
+init-hook='import sys; sys.path.extend(("./", "./lib", "./controllers"))'
+
+[VARIABLES]
+additional-builtins=_

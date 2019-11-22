@@ -1626,10 +1626,10 @@ class CNC:
                 while currentFeedrate > OCV.CD["prbfeed"]:
                     lines.append("%wait")
                     lines.append("G91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
-                            CNC.fmt('f',currentFeedrate))
+                            CNC.fmt('f',currentFeedrate)))
                     lines.append("%wait")
                     lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
-                            CNC.fmt('f',currentFeedrate))
+                            CNC.fmt('f',currentFeedrate)))
                     currentFeedrate /= 10
             lines.append("%wait")
             lines.append("G91 [prbcmd] F[prbfeed] Z[toolprobez-mz-tooldistance]")
@@ -2040,7 +2040,8 @@ class GCode:
         self.undoredo = undo.UndoRedo()
         self.probe    = Probe()
         self.orient   = Orient()
-        self.vars     = {}        # local variables
+        self.vars     = {}  # local variables
+        self.gcodelines = []
         self.init()
 
     #----------------------------------------------------------------------
@@ -2090,7 +2091,7 @@ class GCode:
         elif isinstance(line,list):
             for i,expr in enumerate(line):
                 if isinstance(expr, types.CodeType):
-                    result = eval(expr,OCV.CD,self.vars)
+                    result = eval(expr, OCV.CD, self.vars)
                     if isinstance(result,float):
                         line[i] = str(round(result, OCV.digits))
                     else:
@@ -2098,7 +2099,7 @@ class GCode:
             return "".join(line)
 
         elif isinstance(line, types.CodeType):
-            import traceback
+            #import traceback
             #traceback.print_stack()
             v = self.vars
             v['os'] = os
@@ -2139,11 +2140,16 @@ class GCode:
             self.blocks.append(Block("Header"))
 
         cmds = CNC.parseLine(line)
+        #print("_addLine ", line, cmds)
         if cmds is None:
             self.blocks[-1].append(line)
             return
 
         self.cnc.motionStart(cmds)
+
+        # Add line to the list for display
+        self.gcodelines.append(line)
+        print("_addLine ", line)
 
         # rapid move up = end of block
         if self._blocksExist:

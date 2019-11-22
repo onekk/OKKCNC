@@ -8,12 +8,18 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-
 __author__ = "Carlo Dormeletti (onekk)"
 __email__ = "carlo.dormeletti@gmail.com"
 
 import os
 import sys
+
+PRGPATH = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(PRGPATH)
+sys.path.append(os.path.join(PRGPATH, 'lib'))
+sys.path.append(os.path.join(PRGPATH, 'plugins'))
+sys.path.append(os.path.join(PRGPATH, 'controllers'))
+
 import time
 import getopt
 import socket
@@ -22,25 +28,18 @@ from datetime import datetime
 
 try:
     import serial
-except:
+except ImportError:
     serial = None
 
 try:
-    import Tkinter
+    import Tkinter as Tk
     from Queue import *
-    from Tkinter import *
     import tkMessageBox
 except ImportError:
-    import tkinter
+    import tkinter as Tk
     from queue import *
-    from tkinter import *
     import tkinter.messagebox as tkMessageBox
 
-PRGPATH = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(PRGPATH)
-sys.path.append(os.path.join(PRGPATH, 'lib'))
-sys.path.append(os.path.join(PRGPATH, 'plugins'))
-sys.path.append(os.path.join(PRGPATH, 'controllers'))
 
 # Load configuration before anything else
 # and if needed replace the  translate function _()
@@ -102,12 +101,11 @@ geometry = None
 #==============================================================================
 # Main Application window
 #==============================================================================
-class Application(Toplevel, Sender):
+class Application(Tk.Toplevel, Sender):
     def __init__(self, master, **kw):
-        Toplevel.__init__(self, master, **kw)
+        Tk.Toplevel.__init__(self, master, **kw)
         Sender.__init__(self)
 
-        OCV._app = self
         if sys.platform == "win32":
             self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
         else:
@@ -122,47 +120,91 @@ class Application(Toplevel, Sender):
 
         # --- Ribbon ---
         self.ribbon = Ribbon.TabRibbonFrame(self)
-        self.ribbon.pack(side=TOP, fill=X)
+        self.ribbon.pack(side=Tk.TOP, fill=Tk.X)
 
         # Main frame
-        self.paned = PanedWindow(self, orient=HORIZONTAL)
-        self.paned.pack(fill=BOTH, expand=YES)
+        self.paned = Tk.PanedWindow(self, orient=Tk.HORIZONTAL)
+        self.paned.pack(fill=Tk.BOTH, expand=Tk.YES)
 
         # Status bar
-        frame = Frame(self)
-        frame.pack(side=BOTTOM, fill=X)
-        self.statusbar = tkExtra.ProgressBar(frame, height=20, relief=SUNKEN)
-        self.statusbar.pack(side=LEFT, fill=X, expand=YES)
-        self.statusbar.configText(fill="DarkBlue", justify=LEFT, anchor=W)
+        frame = Tk.Frame(self)
+        frame.pack(side=Tk.BOTTOM, fill=Tk.X)
+        self.statusbar = tkExtra.ProgressBar(
+                frame,
+                height=20,
+                relief=Tk.SUNKEN)
 
-        self.statusz = Label(frame, foreground="DarkRed", relief=SUNKEN, anchor=W, width=10)
-        self.statusz.pack(side=RIGHT)
-        self.statusy = Label(frame, foreground="DarkRed", relief=SUNKEN, anchor=W, width=10)
-        self.statusy.pack(side=RIGHT)
-        self.statusx = Label(frame, foreground="DarkRed", relief=SUNKEN, anchor=W, width=10)
-        self.statusx.pack(side=RIGHT)
+        self.statusbar.pack(
+                side=Tk.LEFT,
+                fill=Tk.X,
+                expand=Tk.YES)
+
+        self.statusbar.configText(
+                fill="DarkBlue",
+                justify=Tk.LEFT,
+                anchor=Tk.W)
+
+        self.statusz = Tk.Label(
+                frame,
+                foreground="DarkRed",
+                relief=Tk.SUNKEN,
+                anchor=Tk.W,
+                width=10)
+
+        self.statusz.pack(side=Tk.RIGHT)
+
+        self.statusy = Tk.Label(
+                frame,
+                foreground="DarkRed",
+                relief=Tk.SUNKEN,
+                anchor=Tk.W,
+                width=10)
+
+        self.statusy.pack(side=Tk.RIGHT)
+
+        self.statusx = Tk.Label(
+                frame,
+                foreground="DarkRed",
+                relief=Tk.SUNKEN,
+                anchor=Tk.W,
+                width=10)
+
+        self.statusx.pack(side=Tk.RIGHT)
 
         # Buffer bar
-        self.bufferbar = tkExtra.ProgressBar(frame, height=20, width=40, relief=SUNKEN)
-        self.bufferbar.pack(side=RIGHT, expand=NO)
+        self.bufferbar = tkExtra.ProgressBar(
+                frame,
+                height=20,
+                width=40,
+                relief=Tk.SUNKEN)
+
+        self.bufferbar.pack(side=Tk.RIGHT, expand=Tk.NO)
+
         self.bufferbar.setLimits(0, 100)
+
         tkExtra.Balloon.set(self.bufferbar, _("Controller buffer fill"))
 
         # --- Left side ---
-        frame = Frame(self.paned)
+        frame = Tk.Frame(self.paned)
+
         self.paned.add(frame) #, minsize=340)
 
-        pageframe = Frame(frame)
-        pageframe.pack(side=TOP, expand=YES, fill=BOTH)
+        pageframe = Tk.Frame(frame)
+
+        pageframe.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.BOTH)
+
         self.ribbon.setPageFrame(pageframe)
 
         # Command bar
-        f = Frame(frame)
-        f.pack(side=BOTTOM, fill=X)
-        self.cmdlabel = Label(f, text=_("Command:"))
-        self.cmdlabel.pack(side=LEFT)
-        self.command = Entry(f, relief=SUNKEN, background="White")#!!!
-        self.command.pack(side=RIGHT, fill=X, expand=YES)
+        cmd_f = Tk.Frame(frame)
+        cmd_f.pack(side=Tk.BOTTOM, fill=Tk.X)
+        self.cmdlabel = Tk.Label(cmd_f, text=_("Command:"))
+        self.cmdlabel.pack(side=Tk.LEFT)
+
+        self.command = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
+
+        self.command.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
+
         self.command.bind("<Return>", self.cmdExecute)
         self.command.bind("<Up>", self.commandHistoryUp)
         self.command.bind("<Down>", self.commandHistoryDown)
@@ -179,24 +221,32 @@ class Application(Toplevel, Sender):
         self.widgets.append(self.command)
 
         # --- Right side ---
-        frame = Frame(self.paned)
+        frame = Tk.Frame(self.paned)
         self.paned.add(frame)
 
         # --- Canvas ---
         self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
-        self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
-        self.linebuffer = Label(frame, background="khaki")
-        self.proc_line = StringVar()
-        self.linebuffer.configure(height=1, anchor=W,
-                                  textvariable=self.proc_line)
-        self.linebuffer.pack(side=BOTTOM, fill=X)
-        #self.paned.add(self.canvasFrame)
+
+        self.canvasFrame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+
+        self.linebuffer = Tk.Label(frame, background="khaki")
+
+        self.proc_line = Tk.StringVar()
+
+        self.linebuffer.configure(
+                height=1,
+                anchor=Tk.W,
+                textvariable=self.proc_line)
+
+        self.linebuffer.pack(side=Tk.BOTTOM, fill=Tk.X)
 
         # fist create Pages
         self.pages = {}
         for cls in (ControlPage, EditorPage, FilePage, ProbePage,
                     TerminalPage, ToolsPage):
+
             page = cls(self.ribbon, self)
+
             self.pages[page.name] = page
 
         # then add their properties (in separate loop)
@@ -212,7 +262,7 @@ class Application(Toplevel, Sender):
                 last = n[-1]
                 try:
                     if last == "*":
-                        page.addPageFrame(n[:-1], fill=BOTH, expand=TRUE)
+                        page.addPageFrame(n[:-1], fill=Tk.BOTH, expand=Tk.TRUE)
                     else:
                         page.addPageFrame(n)
                 except KeyError:
@@ -220,9 +270,9 @@ class Application(Toplevel, Sender):
 
         if errors:
             tkMessageBox.showwarning("OKKCNC configuration",
-                    "The following pages \"{0}\" are found in your " \
-                    "${HOME}/.OKKCNC initialization " \
-                    "file, which are either spelled wrongly or " \
+                    "The following pages \"{0}\" are found in " \
+                    "your ${HOME}/.OKKCNC initialization file, " \
+                    "which are either spelled wrongly or " \
                     "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
         # remember the editor list widget
@@ -242,9 +292,9 @@ class Application(Toplevel, Sender):
             last = name[-1]
             if last == '>':
                 name = name[:-1]
-                side = RIGHT
+                side = Tk.RIGHT
             else:
-                side = LEFT
+                side = Tk.LEFT
             self.ribbon.addPage(self.pages[name], side)
 
         # Restore last page
@@ -433,7 +483,7 @@ class Application(Toplevel, Sender):
                 self.bind('<KP_Left>', self.control.moveXdown)
                 self.bind('<KP_Up>', self.control.moveYup)
                 self.bind('<KP_Down>', self.control.moveYdown)
-        except TclError:
+        except Tk.TclError:
             pass
 
         self.bind('<Key-plus>', self.control.incStep)
@@ -456,10 +506,10 @@ class Application(Toplevel, Sender):
         self.bind('<Key-asciitilde>', self.resume)
 
         for x in self.widgets:
-            if isinstance(x, Entry):
+            if isinstance(x, Tk.Entry):
                 x.bind("<Escape>", self.canvasFocus)
 
-        self.bind('<FocusIn>', self.focusIn)
+        self.bind('<FocusIn>', self.focus_in)
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
         self.canvasFrame.canvas.focus_set()
@@ -490,17 +540,17 @@ class Application(Toplevel, Sender):
             bFileDialog.append2History(os.path.dirname(filename))
 
 
-    #-----------------------------------------------------------------------
     def setStatus(self, msg, force_update=False):
         self.statusbar.configText(text=msg, fill="DarkBlue")
         if force_update:
             self.statusbar.update_idletasks()
             self.bufferbar.update_idletasks()
 
-    #-----------------------------------------------------------------------
-    # Set a status message from an event
-    #-----------------------------------------------------------------------
+
     def updateStatus(self, event):
+        """
+            Set a status message from an event
+        """
         self.setStatus(_(event.data))
 
     def setMem(self, event=None):
@@ -517,8 +567,8 @@ class Application(Toplevel, Sender):
     #-----------------------------------------------------------------------
     # Show popup dialog asking for value entry, usefull in g-code scripts
     #-----------------------------------------------------------------------
-    def entry(self, message="Enter value", title="", input="", type_="str", from_=None, to_=None):
-        d = tkDialogs.InputDialog(self, title, message, input, type_, from_, to_)
+    def entry(self, message="Enter value", title="", prompt="", type_="str", from_=None, to_=None):
+        d = tkDialogs.InputDialog(self, title, message, prompt, type_, from_, to_)
         v = d.show()
 
         if isinstance(v, basestring):
@@ -539,12 +589,13 @@ class Application(Toplevel, Sender):
     # Accept the user key if not editing any text
     #----------------------------------------------------------------------
     def acceptKey(self, skipRun=False):
-        if not skipRun and self.running: return False
+        if not skipRun and self.running:
+            return False
         focus = self.focus_get()
-        if isinstance(focus, Entry) or \
-           isinstance(focus, Spinbox) or \
-           isinstance(focus, Listbox) or \
-           isinstance(focus, Text): return False
+        if isinstance(focus, Tk.Entry) or isinstance(focus, Tk.Spinbox) or \
+           isinstance(focus, Tk.Listbox) or isinstance(focus, Tk.Text):
+            return False
+
         return True
 
     #-----------------------------------------------------------------------
@@ -571,7 +622,7 @@ class Application(Toplevel, Sender):
             #    Utils.ReportDialog.sendErrorReport()
             pass
 
-        tk.destroy()
+        OCV.root.destroy()
 
     # ---------------------------------------------------------------------
     def configWidgets(self, var, value):
@@ -579,7 +630,7 @@ class Application(Toplevel, Sender):
             if isinstance(w, tuple):
                 try:
                     w[0].entryconfig(w[1], state=value)
-                except TclError:
+                except Tk.TclError:
                     pass
             elif isinstance(w, tkExtra.Combobox):
                 w.configure(state=value)
@@ -591,19 +642,19 @@ class Application(Toplevel, Sender):
         try:
             self.config(cursor="watch")
             self.update_idletasks()
-        except TclError:
+        except Tk.TclError:
             pass
 
     # ----------------------------------------------------------------------
     def notBusy(self):
         try:
             self.config(cursor="")
-        except TclError:
+        except Tk.TclError:
             pass
 
     # ---------------------------------------------------------------------
     def enable(self):
-        self.configWidgets("state", NORMAL)
+        self.configWidgets("state", Tk.NORMAL)
         self.statusbar.clear()
         self.statusbar.config(background="LightGray")
         self.bufferbar.clear()
@@ -612,14 +663,15 @@ class Application(Toplevel, Sender):
 
     # ---------------------------------------------------------------------
     def disable(self):
-        self.configWidgets("state", DISABLED)
+        self.configWidgets("state", Tk.DISABLED)
 
     # ----------------------------------------------------------------------
     # Check for updates
     # ----------------------------------------------------------------------
     def checkUpdates(self):
         # Find OKKCNC version
-        Updates.CheckUpdateDialog(self, OCV._version)
+        #Updates.CheckUpdateDialog(self, OCV._version)
+        pass
 
     #-----------------------------------------------------------------------
     def loadShortcuts(self):
@@ -630,7 +682,7 @@ class Application(Toplevel, Sender):
             if value:
                 self.bind("<{0}>".format(key), lambda e, s=self, c=value: s.execute(c))
 
-    #-----------------------------------------------------------------------
+    @staticmethod
     def showUserFile(self):
         webbrowser.open(Utils.iniUser)
         #os.startfile(Utils.iniUser)
@@ -642,8 +694,10 @@ class Application(Toplevel, Sender):
             OCV.geometry = "{0:d}x{1:d}".format(
                 Utils.getInt(Utils.__prg__, "width", 900),
                 Utils.getInt(Utils.__prg__, "height", 650))
-        try: self.geometry(OCV.geometry)
-        except: pass
+        try:
+            self.geometry(OCV.geometry)
+        except:
+            pass
 
         #restore windowsState
         try:
@@ -729,9 +783,8 @@ class Application(Toplevel, Sender):
         f.write("\n".join(self.history))
         f.close()
 
-
-    def loadMemory(self):
-
+    @staticmethod
+    def loadMemory():
         # maybe soem values in Memory
         #relative to WK_bank_max and WK_bank_num
         # init the memory vars
@@ -757,8 +810,8 @@ class Application(Toplevel, Sender):
                 content[0]]
         #print("Load Memory ended")
 
-
-    def saveMemory(self):
+    @staticmethod
+    def saveMemory():
         for mem_name in OCV.WK_mems:
             md = OCV.WK_mems[mem_name]
             if md[3] is not 0:
@@ -791,7 +844,7 @@ class Application(Toplevel, Sender):
     #-----------------------------------------------------------------------
     def undo(self, event=None):
         if not self.running and self.gcode.canUndo():
-            self.gcode.undo();
+            self.gcode.undo()
             self.editor.fill()
             self.drawAfter()
         return "break"
@@ -799,7 +852,7 @@ class Application(Toplevel, Sender):
     #-----------------------------------------------------------------------
     def redo(self, event=None):
         if not self.running and self.gcode.canRedo():
-            self.gcode.redo();
+            self.gcode.redo()
             self.editor.fill()
             self.drawAfter()
         return "break"
@@ -816,7 +869,7 @@ class Application(Toplevel, Sender):
 
     #-----------------------------------------------------------------------
     def about(self, event=None, timer=None):
-        toplevel = Toplevel(self)
+        toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
         toplevel.title(_("About {0} v{1}").format(Utils.__prg__, OCV._version))
         if sys.platform == "win32":
@@ -831,142 +884,236 @@ class Application(Toplevel, Sender):
         font2 = 'Helvetica -12'
         font3 = 'Helvetica -10'
 
-        frame = Frame(toplevel, borderwidth=2,
-                      relief=SUNKEN, background=bg)
-        frame.pack(side=TOP, expand=TRUE, fill=BOTH, padx=5, pady=5)
+        frame = Tk.Frame(
+                toplevel,
+                borderwidth=2,
+                relief=Tk.SUNKEN,
+                background=bg)
+
+        frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
 
         # -----
         row = 0
-        l = Label(frame, image=Utils.icons["OKKCNC"],
-                  foreground=fg, background=bg,
-                  relief=RAISED,
-                  padx=0, pady=0)
-        l.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
+        lab = Tk.Label(
+                frame,
+                image=Utils.icons["OKKCNC"],
+                foreground=fg,
+                background=bg,
+                relief=Tk.RAISED,
+                padx=0, pady=0)
 
-        # -----
-        #row += 1
-        #l = Label(frame, text=Utils.__prg__,
-        #        foreground=fg, background=bg,
-        #        font=font1)
-        #l.grid(row=row, column=0, columnspan=2, sticky=W, padx=10, pady=5)
+        lab.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
 
-        # -----
         row += 1
-        l = Label(frame, text=\
-                _("OKKCNC/\tAn advanced fully featured\n" \
+
+        lab = Tk.Label(
+                frame,
+                text=_("OKKCNC/\tAn advanced fully featured\n" \
                   "\t\tg-code sender for GRBL. \n\n"\
                   "\t\tForked from bCNC"),
                   font=font3,
-                  foreground=fg, background=bg, justify=LEFT)
-        l.grid(row=row, column=0, columnspan=2, sticky=W, padx=10, pady=1)
+                  foreground=fg,
+                  background=bg,
+                  justify=Tk.LEFT)
+
+        lab.grid(row=row, column=0, columnspan=2, sticky=Tk.W, padx=10, pady=1)
 
         # -----
         row += 1
-        f = Frame(frame, borderwidth=1, relief=SUNKEN,
-                  height=2, background=bg)
-        f.grid(row=row, column=0, columnspan=2, sticky=EW, padx=5, pady=5)
+        frm = Tk.Frame(
+                frame,
+                borderwidth=1,
+                relief=Tk.SUNKEN,
+                height=2,
+                background=bg)
 
-        # -----
+        frm.grid(row=row, column=0, columnspan=2, sticky=Tk.EW, padx=5, pady=5)
+
         row += 1
-        l = Label(frame, text='www:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=Utils.__www__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  activeforeground="Blue",
-                  font=font2, cursor="hand1")
-        l.grid(row=row, column=1, sticky=W, padx=2, pady=2)
-        l.bind('<Button-1>', lambda e: webbrowser.open(Utils.__www__))
+        lab = Tk.Label(
+                frame,
+                text='www:',
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=Utils.__www__,
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                activeforeground="Blue",
+                cursor="hand1")
+
+        lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
+
+        lab.bind('<Button-1>', lambda e: webbrowser.open(Utils.__www__))
+
         row += 1
-        l = Label(frame, text='email:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=__email__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=W, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='email:',
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=__email__,
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
+
+        lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='author:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
-        l = Label(frame, text=__author__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='author:',
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=__author__,
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='contributors:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
-        l = Label(frame, text=Utils.__contribute__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='contributors:',
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=Utils.__contribute__,
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='translations:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
-        l = Label(frame, text=Utils.__translations__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='translations:',
+                font=font2,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=Utils.__translations__,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='credits:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=NE, padx=10, pady=2)
 
-        l = Label(frame, text=Utils.__credits__,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='credits:',
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=Utils.__credits__,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='version:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=OCV._version,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='version:',
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
 
-        # -----
+        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=OCV._version,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
         row += 1
-        l = Label(frame, text='last change:',
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
-        l = Label(frame, text=OCV._date,
-                  foreground=fg, background=bg, justify=LEFT,
-                  font=font2)
-        l.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
+        lab = Tk.Label(
+                frame,
+                text='last change:',
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
+
+        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+        lab = Tk.Label(
+                frame,
+                text=OCV._date,
+                foreground=fg,
+                background=bg,
+                justify=Tk.LEFT,
+                font=font2)
+
+        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         closeFunc = lambda e=None, t=toplevel: t.destroy()
-        b = Button(toplevel, text=_("Close"), command=closeFunc)
-        b.pack(pady=5)
+
+        but = Tk.Button(toplevel, text=_("Close"), command=closeFunc)
+        but.pack(pady=5)
+
         frame.grid_columnconfigure(1, weight=1)
 
         toplevel.bind('<Escape>', closeFunc)
@@ -977,21 +1124,28 @@ class Application(Toplevel, Sender):
         toplevel.wait_visibility()
         toplevel.resizable(False, False)
 
-        try: toplevel.grab_set()
-        except: pass
-        b.focus_set()
+        try:
+            toplevel.grab_set()
+        except:
+            pass
+
+        but.focus_set()
         toplevel.lift()
-        if timer: toplevel.after(timer, closeFunc)
+
+        if timer:
+            toplevel.after(timer, closeFunc)
+
         toplevel.wait_window()
 
-    #-----------------------------------------------------------------------
+
     def alarmClear(self, event=None):
         self._alarm = False
 
-    #-----------------------------------------------------------------------
-    # Display information on selected blocks
-    #-----------------------------------------------------------------------
+
     def showInfo(self, event=None):
+        """
+            Display information on selected blocks
+        """
         self.canvasFrame.canvas.showInfo(self.editor.getSelectedBlocks())
         return "break"
 
@@ -999,7 +1153,7 @@ class Application(Toplevel, Sender):
     # FIXME Very primitive
     #-----------------------------------------------------------------------
     def showStats(self, event=None):
-        toplevel = Toplevel(self)
+        toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
         toplevel.title(_("Statistics"))
 
@@ -1020,149 +1174,270 @@ class Application(Toplevel, Sender):
                 r += block.rapid
                 t += block.time
 
-        # ===========
-        frame = LabelFrame(toplevel, text=_("Enabled GCode"), foreground="DarkRed")
-        frame.pack(fill=BOTH)
+        frame = Tk.LabelFrame(
+                toplevel,
+                text=_("Enabled GCode"),
+                foreground="DarkRed")
 
-        # ---
+        frame.pack(fill=Tk.BOTH)
+
         row, col = 0, 0
-        Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["xmin"], OCV.CD["xmax"],
-            OCV.CD["xmax"] -OCV.CD["xmin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(
+                frame,
+                text=_("Margins X:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                        OCV.CD["xmin"], OCV.CD["xmax"],
+                        OCV.CD["xmax"] -OCV.CD["xmin"],
+                        unit),
+              foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["ymin"], OCV.CD["ymax"],
-            OCV.CD["ymax"] -OCV.CD["ymin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(frame, text="... Y:")
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                        OCV.CD["ymin"], OCV.CD["ymax"],
+                        OCV.CD["ymax"] -OCV.CD["ymin"],
+                        unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["zmin"], OCV.CD["zmax"],
-            OCV.CD["zmax"] -OCV.CD["zmin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(frame, text="... Z:")
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                    OCV.CD["zmin"], OCV.CD["zmax"],
+                    OCV.CD["zmax"] -OCV.CD["zmin"],
+                    unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text=str(e),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(
+                frame,
+                text=_("# Blocks:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(frame, text=str(e),
+              foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} {1}".format(l, unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(frame, text=_("Length:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} {1}".format(l, unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text=_("Rapid:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} {1}".format(r, unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(frame, text=_("Rapid:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} {1}".format(r, unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text=_("Time:")).grid(row=row, column=col, sticky=E)
+
+        lab = Tk.Label(frame, text=_("Time:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
         col += 1
-        h, m = divmod(t, 60) # t in min
+
+        h, m = divmod(t, 60)  # t in min
         s = (m-int(m))*60
-        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h), int(m), int(s)),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+
+        lab = Tk.Label(
+                frame,
+                text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
 
         frame.grid_columnconfigure(1, weight=1)
 
 
-        # ===========
-        frame = LabelFrame(toplevel, text=_("All GCode"), foreground="DarkRed")
-        frame.pack(fill=BOTH)
+        frame = Tk.LabelFrame(
+                toplevel,
+                text=_("All GCode"),
+                foreground="DarkRed")
 
-        # ---
+        frame.pack(fill=Tk.BOTH)
+
         row, col = 0, 0
-        Label(frame, text=_("Margins X:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["axmin"], OCV.CD["axmax"],
-            OCV.CD["axmax"] -OCV.CD["axmin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
-        row += 1
-        col = 0
-        Label(frame, text="... Y:").grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["aymin"], OCV.CD["aymax"],
-            OCV.CD["aymax"] -OCV.CD["aymin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+        lab = Tk.Label(frame, text=_("Margins X:"))
 
-        # ---
-        row += 1
-        col = 0
-        Label(frame, text="... Z:").grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-            OCV.CD["azmin"], OCV.CD["azmax"],
-            OCV.CD["azmax"] -OCV.CD["azmin"],
-            unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+        lab.grid(row=row, column=col, sticky=Tk.E)
 
-        # ---
-        row += 1
-        col = 0
-        Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text=str(len(self.gcode.blocks)),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
-        # ---
-        row += 1
-        col = 0
-        Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
-        col += 1
-        Label(frame, text="{0:.f} {1}".format(self.cnc.totalLength, unit),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
 
-        # ---
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                        OCV.CD["axmin"], OCV.CD["axmax"],
+                        OCV.CD["axmax"] -OCV.CD["axmin"],
+                        unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
         row += 1
         col = 0
-        Label(frame, text=_("Time:")).grid(row=row, column=col, sticky=E)
+
+        lab = Tk.Label(frame, text="... Y:")
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
         col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                        OCV.CD["aymin"], OCV.CD["aymax"],
+                        OCV.CD["aymax"] -OCV.CD["aymin"],
+                        unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
+        row += 1
+        col = 0
+
+        lab = Tk.Label(frame, text="... Z:")
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                        OCV.CD["azmin"], OCV.CD["azmax"],
+                        OCV.CD["azmax"] -OCV.CD["azmin"],
+                        unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
+        row += 1
+        col = 0
+
+        lab = Tk.Label(
+                frame,
+                text=_("# Blocks:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text=str(len(self.gcode.blocks)),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
+        row += 1
+        col = 0
+
+        lab = Tk.Label(
+                frame,
+                text=_("Length:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
+        lab = Tk.Label(
+                frame,
+                text="{0:.f} {1}".format(self.cnc.totalLength, unit),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
+
+        row += 1
+        col = 0
+
+        lab = Tk.Label(frame, text=_("Time:"))
+
+        lab.grid(row=row, column=col, sticky=Tk.E)
+
+        col += 1
+
         h, m = divmod(self.cnc.totalTime, 60) # t in min
         s = (m-int(m))*60
-        Label(frame, text="{0:d}{1:02d}{2:02d} {3}".format(int(h), int(m), int(s)),
-              foreground="DarkBlue").grid(row=row, column=col, sticky=W)
+
+        lab = Tk.Label(
+                frame,
+                text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+                foreground="DarkBlue")
+
+        lab.grid(row=row, column=col, sticky=Tk.W)
 
         frame.grid_columnconfigure(1, weight=1)
 
-        # ===========
-        frame = Frame(toplevel)
-        frame.pack(fill=X)
+        frame = Tk.Frame(toplevel)
+        frame.pack(fill=Tk.X)
 
         closeFunc = lambda e=None, t=toplevel: t.destroy()
-        b = Button(frame, text=_("Close"), command=closeFunc)
-        b.pack(pady=5)
+
+        but = Tk.Button(frame, text=_("Close"), command=closeFunc)
+        but.pack(pady=5)
+
         frame.grid_columnconfigure(1, weight=1)
 
         toplevel.bind("<Escape>", closeFunc)
@@ -1174,9 +1449,12 @@ class Application(Toplevel, Sender):
         toplevel.wait_visibility()
         toplevel.resizable(False, False)
 
-        try: toplevel.grab_set()
-        except: pass
-        b.focus_set()
+        try:
+            toplevel.grab_set()
+        except:
+            pass
+
+        but.focus_set()
         toplevel.lift()
         toplevel.wait_window()
 
@@ -1281,9 +1559,11 @@ class Application(Toplevel, Sender):
 
     # ----------------------------------------------------------------------
     def insertCommand(self, cmd, execute=False):
-        self.command.delete(0, END)
+        self.command.delete(0, Tk.END)
         self.command.insert(0, cmd)
-        if execute: self.commandExecute(False)
+
+        if execute:
+            self.commandExecute(False)
 
     #-----------------------------------------------------------------------
     # Execute command from command line
@@ -1293,7 +1573,8 @@ class Application(Toplevel, Sender):
         self._historySearch = None
 
         line = self.command.get().strip()
-        if not line: return
+        if not line:
+            return
 
         if self._historyPos is not None:
             if self.history[self._historyPos] != line:
@@ -1303,13 +1584,14 @@ class Application(Toplevel, Sender):
 
         if len(self.history) > MAX_HISTORY:
             self.history.pop(0)
-        self.command.delete(0, END)
+        self.command.delete(0, Tk.END)
         self.execute(line)
 
-    #-----------------------------------------------------------------------
-    # Execute a single command
-    #-----------------------------------------------------------------------
+
     def execute(self, line):
+        """
+        Execute a single command
+        """
         #print
         #print "<<<",line
         try:
@@ -1321,9 +1603,11 @@ class Application(Toplevel, Sender):
             return "break"
         #print ">>>",line
 
-        if line is None: return "break"
+        if line is None:
+            return "break"
 
-        if self.executeGcode(line): return "break"
+        if self.executeGcode(line):
+            return "break"
 
         oline = line.strip()
         line = oline.replace(",", " ").split()
@@ -1363,20 +1647,31 @@ class Application(Toplevel, Sender):
 
         # default values are taken from the active material
         elif cmd == "CUT":
-            try: depth = float(line[1])
-            except: depth = None
+            try:
+                depth = float(line[1])
+            except:
+                depth = None
 
-            try: step = float(line[2])
-            except: step = None
+            try:
+                step = float(line[2])
+            except:
+                step = None
 
-            try: surface = float(line[3])
-            except: surface = None
+            try:
+                surface = float(line[3])
+            except:
+                surface = None
 
-            try: feed = float(line[4])
-            except: feed = None
+            try:
+                feed = float(line[4])
+            except:
+                feed = None
 
-            try: feedz = float(line[5])
-            except: feedz = None
+            try:
+                feedz = float(line[5])
+            except:
+                feedz = None
+
             self.executeOnSelection("CUT", True, depth, step, surface, feed, feedz)
 
         # DOWN: move downward in cutting order the selected blocks
@@ -1890,7 +2185,7 @@ class Application(Toplevel, Sender):
                     self._historyPos = i
                     break
 
-        self.command.delete(0, END)
+        self.command.delete(0, Tk.END)
         self.command.insert(0, self.history[self._historyPos])
 
     #-----------------------------------------------------------------------
@@ -1911,7 +2206,7 @@ class Application(Toplevel, Sender):
                     self._historyPos = i
                     break
 
-        self.command.delete(0, END)
+        self.command.delete(0, Tk.END)
         if self._historyPos is not None:
             self.command.insert(0, self.history[self._historyPos])
 
@@ -1982,7 +2277,7 @@ class Application(Toplevel, Sender):
                 parent=self)
             if ans == tkMessageBox.CANCEL:
                 return True
-            if ans == tkMessageBox.YES or ans == True:
+            if ans == tkMessageBox.YES or ans is True:
                 self.saveAll()
 
         if not self.gcode.probe.isEmpty() and not self.gcode.probe.saved:
@@ -1993,7 +2288,7 @@ class Application(Toplevel, Sender):
                 parent=self)
             if ans == tkMessageBox.CANCEL:
                 return True
-            if ans == tkMessageBox.YES or ans == True:
+            if ans == tkMessageBox.YES or ans is True:
                 if self.gcode.probe.filename == "":
                     self.saveDialog()
                 else:
@@ -2015,7 +2310,7 @@ class Application(Toplevel, Sender):
                     _("Existing Autolevel"),
                     _("Autolevel/probe information already exists.\nDelete it?"),
                     parent=self)
-                if ans == tkMessageBox.YES or ans == True:
+                if ans == tkMessageBox.YES or ans is True:
                     self.gcode.probe.init()
 
         self.setStatus(_("Loading: {0} ...").format(filename), True)
@@ -2097,7 +2392,7 @@ class Application(Toplevel, Sender):
             self.canvasFrame.canvas.fit2Screen()
 
     #-----------------------------------------------------------------------
-    def focusIn(self, event):
+    def focus_in(self, event):
         if self._inFocus: return
         # FocusIn is generated for all sub-windows, handle only the main window
         if self is not event.widget: return
@@ -2109,7 +2404,7 @@ class Application(Toplevel, Sender):
                     _("Gcode file {0} was changed since editing started\n" \
                       "Reload new version?").format(self.gcode.filename),
                     parent=self)
-                if ans == tkMessageBox.YES or ans == True:
+                if ans == tkMessageBox.YES or ans is True:
                     self.gcode.resetModified()
                     self.load(self.gcode.filename)
             else:
@@ -2155,7 +2450,7 @@ class Application(Toplevel, Sender):
         Sender.close(self)
         try:
             self.dro.updateState()
-        except TclError:
+        except Tk.TclError:
             pass
 
     #-----------------------------------------------------------------------
@@ -2166,7 +2461,7 @@ class Application(Toplevel, Sender):
     def checkStop(self):
         try:
             self.update()    # very tricky function of Tk
-        except TclError:
+        except Tk.TclError:
             pass
         return self._stop
 
@@ -2295,13 +2590,13 @@ class Application(Toplevel, Sender):
                     _("Pendant started:\n")+hostName,
                     parent=self)
             else:
-                dr=tkMessageBox.askquestion(
+                dr = tkMessageBox.askquestion(
                     _("Pendant"),
                     _("Pendant already started:\n") \
                     + hostName + \
                     _("\nWould you like open it locally?"),
                     parent=self)
-                if dr=="yes":
+                if dr == "yes":
                     webbrowser.open(hostName, new=2)
 
     #-----------------------------------------------------------------------
@@ -2309,7 +2604,10 @@ class Application(Toplevel, Sender):
     #-----------------------------------------------------------------------
     def stopPendant(self):
         if Pendant.stop():
-            tkMessageBox.showinfo(_("Pendant"),_("Pendant stopped"), parent=self)
+            tkMessageBox.showinfo(
+                _("Pendant"),
+                _("Pendant stopped"),
+                parent=self)
 
     #-----------------------------------------------------------------------
     # Inner loop to catch any generic exception
@@ -2320,7 +2618,7 @@ class Application(Toplevel, Sender):
 
         # dump in the terminal what ever you can in less than 0.1s
         inserted = False
-        while self.log.qsize()>0 and time.time()-t<0.1:
+        while self.log.qsize() > 0 and time.time()-t < 0.1:
             try:
                 msg, line = self.log.get_nowait()
                 line = line.rstrip("\n")
@@ -2328,67 +2626,67 @@ class Application(Toplevel, Sender):
                 #print "<<<",msg,line,"\n" in line
 
                 if msg == Sender.MSG_BUFFER:
-                    self.buffer.insert(END, line)
+                    self.buffer.insert(Tk.END, line)
 
                 elif msg == Sender.MSG_SEND:
-                    self.terminal.insert(END, line)
-                    self.terminal.itemconfig(END, foreground="Blue")
+                    self.terminal.insert(Tk.END, line)
+                    self.terminal.itemconfig(Tk.END, foreground="Blue")
 
                 elif msg == Sender.MSG_RECEIVE:
-                    self.terminal.insert(END, line)
+                    self.terminal.insert(Tk.END, line)
                     if self._insertCount:
                         # when counting is started, then continue
                         self._insertCount += 1
-                    elif line and line[0] in ("[","$"):
+                    elif line and line[0] in ("[", "$"):
                         # start the counting on the first line received
                         # starting with $ or [
                         self._insertCount = 1
 
                 elif msg == Sender.MSG_OK:
-                    if self.terminal.size()>0:
+                    if self.terminal.size() > 0:
                         if self._insertCount:
                             pos = self.terminal.size()-self._insertCount
                             self._insertCount = 0
                         else:
-                            pos = END
+                            pos = Tk.END
                         self.terminal.insert(pos, self.buffer.get(0))
                         self.terminal.itemconfig(pos, foreground="Blue")
                         self.buffer.delete(0)
-                    self.terminal.insert(END, line)
+                    self.terminal.insert(Tk.END, line)
 
                 elif msg == Sender.MSG_ERROR:
-                    if self.terminal.size()>0:
+                    if self.terminal.size() > 0:
                         if self._insertCount:
                             pos = self.terminal.size()-self._insertCount
                             self._insertCount = 0
                         else:
-                            pos = END
+                            pos = Tk.END
                         self.terminal.insert(pos, self.buffer.get(0))
                         self.terminal.itemconfig(pos, foreground="Blue")
                         self.buffer.delete(0)
-                    self.terminal.insert(END, line)
-                    self.terminal.itemconfig(END, foreground="Red")
+                    self.terminal.insert(Tk.END, line)
+                    self.terminal.itemconfig(Tk.END, foreground="Red")
 
                 elif msg == Sender.MSG_RUNEND:
-                    self.terminal.insert(END, line)
-                    self.terminal.itemconfig(END, foreground="Magenta")
+                    self.terminal.insert(Tk.END, line)
+                    self.terminal.itemconfig(Tk.END, foreground="Magenta")
                     self.setStatus(line)
                     self.enable()
 
                 elif msg == Sender.MSG_CLEAR:
-                    self.buffer.delete(0,END)
+                    self.buffer.delete(0, Tk.END)
 
                 else:
                     # Unknown?
-                    self.buffer.insert(END, line)
-                    self.terminal.itemconfig(END, foreground="Magenta")
+                    self.buffer.insert(Tk.END, line)
+                    self.terminal.itemconfig(Tk.END, foreground="Magenta")
 
                 if self.terminal.size() > 1000:
-                    self.terminal.delete(0,500)
+                    self.terminal.delete(0, 500)
             except Empty:
                 break
 
-        if inserted: self.terminal.see(END)
+        if inserted: self.terminal.see(Tk.END)
 
         # Check pendant
         try:
@@ -2398,9 +2696,9 @@ class Application(Toplevel, Sender):
             pass
 
         # Load file from pendant
-        if self._pendantFileUploaded!=None:
+        if self._pendantFileUploaded != None:
             self.load(self._pendantFileUploaded)
-            self._pendantFileUploaded=None
+            self._pendantFileUploaded = None
 
         # Update position if needed
         if self._posUpdate:
@@ -2416,13 +2714,14 @@ class Application(Toplevel, Sender):
             self._pause = ("Hold" in state)
             self.dro.updateState()
             self.dro.updateCoords()
-            self.canvasFrame.canvas.gantry(OCV.CD["wx"],
-                       OCV.CD["wy"],
-                       OCV.CD["wz"],
-                       OCV.CD["mx"],
-                       OCV.CD["my"],
-                       OCV.CD["mz"])
-            if state=="Run":
+            self.canvasFrame.canvas.gantry(
+                OCV.CD["wx"],
+                OCV.CD["wy"],
+                OCV.CD["wz"],
+                OCV.CD["mx"],
+                OCV.CD["my"],
+                OCV.CD["mz"])
+            if state == "Run":
                 self.gstate.updateFeed()
                 #self.xxx.updateSpindle()
             self._posUpdate = False
@@ -2448,22 +2747,32 @@ class Application(Toplevel, Sender):
             self._update = None
 
         if self.running:
-            self.statusbar.setProgress(self._runLines-self.queue.qsize(),
-                        self._gcount)
+            self.proc_line_n = self._runLines - self.queue.qsize()
+            self.statusbar.setProgress(
+                self.proc_line_n,
+                self._gcount)
             OCV.CD["msg"] = self.statusbar.msg
             b_fill = Sender.getBufferFill(self)
             #print ("Buffer = ", b_fill)
             self.bufferbar.setProgress(b_fill)
             self.bufferbar.setText("{0:02.2f}".format(b_fill))
             #print("Queue > ", self.queue.queue)
+            if self.proc_line_n > 0:
+                print(self.proc_line_n)
+                displ_line = "{0} > {1} ".format(
+                            self.proc_line_n,
+                            self.gcode.gcodelines[self.proc_line_n])
+                self.proc_line.set(displ_line)
 
-            if self._selectI>=0 and self._paths:
-                while self._selectI <= self._gcount and self._selectI<len(self._paths):
+
+            if self._selectI >= 0 and self._paths:
+                while self._selectI <= self._gcount and self._selectI < len(self._paths):
                     if self._paths[self._selectI]:
-                        i,j = self._paths[self._selectI]
+                        i, j = self._paths[self._selectI]
                         path = self.gcode[i].path(j)
                         if path:
-                            self.canvasFrame.canvas.itemconfig(path,
+                            self.canvasFrame.canvas.itemconfig(
+                                path,
                                 width=2,
                                 fill=OCV.PROCESS_COLOR)
                     self._selectI += 1
@@ -2483,18 +2792,18 @@ class Application(Toplevel, Sender):
             traceback.print_exception(typ, val, tb)
         self.after(MONITOR_AFTER, self.monitorSerial)
 
-    #-----------------------------------------------------------------------
+    @staticmethod
     def get(self, section, item):
         return Utils.config.get(section, item)
 
-    #-----------------------------------------------------------------------
+    @staticmethod
     def set(self, section, item, value):
         return Utils.config.set(section, item, value)
 
 
 #------------------------------------------------------------------------------
 def usage(rc):
-    sys.stdout.write("{0} V{2} [{2}]\n".format(Utils.__prg__, OCV._version, OCV._date))
+    sys.stdout.write("{0} V{1} [{2}]\n".format(Utils.__prg__, OCV._version, OCV._date))
     sys.stdout.write("{0} <{1}>\n\n".format(__author__, __email__))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
@@ -2516,43 +2825,36 @@ def usage(rc):
     sys.stdout.write("\n")
     sys.exit(rc)
 
-#------------------------------------------------------------------------------
-tk = None
-application = None
-
-
 def main(args=None):
-    global tk
-    global application
 
     if sys.version_info[0] != 2:
         sys.stdout.write("="*80+"\n")
         sys.stdout.write("WARNING: OKKCNC is running only on python v2.x for the moment\n")
         sys.stdout.write("="*80+"\n")
         sys.exit(0)
-    tk = Tk()
-    tk.withdraw()
-    try:
-        Tkinter.CallWrapper = Utils.CallWrapper
-    except:
-        tkinter.CallWrapper = Utils.CallWrapper
 
-    tkExtra.bindClasses(tk)
+    OCV.root = Tk.Tk()
+    OCV.root.withdraw()
+    Tk.CallWrapper = Utils.CallWrapper
+
+    tkExtra.bindClasses(OCV.root)
     Utils.loadIcons()
 
     # Parse arguments
     try:
-        optlist, args = getopt.getopt(sys.argv[1:],
+        optlist, args = getopt.getopt(
+            sys.argv[1:],
             '?b:dDfhi:g:rlpPSs:',
-            ['help', 'ini=', 'fullscreen', 'recent', 'list','pendant=','serial=','baud=','run'])
+            ['help', 'ini=', 'fullscreen', 'recent', 'list', 'pendant=',
+             'serial=', 'baud=', 'run'])
     except getopt.GetoptError:
         usage(1)
 
-    recent     = None
-    run        = False
+    recent = None
+    run = False
     fullscreen = False
     for opt, val in optlist:
-        print("Opt, val ",opt,val)
+        print("Opt, val ", opt, val)
         if opt in ("-h", "-?", "--help"):
             usage(0)
         elif opt in ("-i", "--ini"):
@@ -2565,9 +2867,9 @@ def main(args=None):
         elif opt == "-g":
             geometry = val
         elif opt in ("-r", "-R", "--recent", "-l", "--list"):
-            if opt in ("-r","--recent"):
+            if opt in ("-r", "--recent"):
                 r = 0
-            elif opt in ("--list","-l"):
+            elif opt in ("--list", "-l"):
                 r = -1
             else:
                 try:
@@ -2582,14 +2884,14 @@ def main(args=None):
                             break
                     else:
                         r = 0
-            if r<0:
+            if r < 0:
                 # display list of recent files
                 maxlen = 10
                 for i in range(Utils._maxRecent):
 
                     try:
                         filename = Utils.getRecent(i)
-                        print ("Recent = ",i, maxlen, filename)
+                        #print ("Recent = ", i, maxlen, filename)
                     except: continue
                     if (filename is not None):
                         maxlen = max(maxlen, len(os.path.basename(filename)))
@@ -2598,9 +2900,10 @@ def main(args=None):
                 for i in range(Utils._maxRecent):
                     filename = Utils.getRecent(i)
                     if filename is None: break
-                    d  = os.path.dirname(filename)
+                    d = os.path.dirname(filename)
                     fn = os.path.basename(filename)
-                    sys.stdout.write("  {0:2d}: {1:d} {3}{2}\n".format(i+1, maxlen, fn,d))
+                    sys.stdout.write(
+                        "  {0:2d}: {1:d} {3}{2}\n".format(i+1, maxlen, fn, d))
 
                 try:
                     sys.stdout.write("Select one: ")
@@ -2635,14 +2938,19 @@ def main(args=None):
         elif opt == "--run":
             run = True
 
-    palette = {"background": tk.cget("background")}
+    palette = {"background": OCV.root.cget("background")}
 
     color_count = 0
     custom_color_count = 0
-    for color_name in ("background", "foreground", "activeBackground", "activeForeground", "disabledForeground", \
-        "highlightBackground", "highlightColor", "selectBackground", "selectForeground"):
+
+    for color_name in ("background", "foreground", "activeBackground",
+                       "activeForeground", "disabledForeground",
+                       "highlightBackground", "highlightColor",
+                       "selectBackground", "selectForeground"):
+
         color2 = Utils.getStr("Color", "global." + color_name.lower(), None)
         color_count += 1
+
         if (color2 is not None) and (color2.strip() != ""):
             palette[color_name] = color2.strip()
             custom_color_count += 1
@@ -2654,37 +2962,44 @@ def main(args=None):
 
     if custom_color_count > 0:
         print("Changing palette")
-        tk.tk_setPalette(**palette)
+        OCV.root.tk_setPalette(**palette)
 
     # Start application
-    application = Application(tk)
-    if fullscreen: application.attributes("-fullscreen", True)
+    OCV.application = Application(OCV.root)
+
+    if fullscreen:
+        OCV.application.attributes("-fullscreen", True)
 
     # Parse remaining arguments except files
-    if recent: args.append(recent)
+    if recent:
+        args.append(recent)
+
     for fn in args:
-        application.load(fn)
+        OCV.application.load(fn)
 
     if serial is None:
-        tkMessageBox.showerror(_("python serial missing"),
+        tkMessageBox.showerror(
+            _("python serial missing"),
             _("ERROR: Please install the python pyserial module\n" \
               "Windows:\n\tC:\\PythonXX\\Scripts\\easy_install pyserial\n" \
               "Mac:\tpip install pyserial\n" \
               "Linux:\tsudo apt-get install python-serial\n" \
               "\tor yum install python-serial\n" \
               "\tor dnf install python-pyserial"),
-              parent=application)
-        if Updates.need2Check(): application.checkUpdates()
+            parent=OCV.application)
+
+        #if Updates.need2Check():
+        #    OCV.application.checkUpdates()
 
     if run:
-        application.run()
+        OCV.application.run()
 
     try:
-        tk.mainloop()
+        OCV.root.mainloop()
     except KeyboardInterrupt:
-        application.quit()
+        OCV.application.quit()
 
-    application.close()
+    OCV.application.close()
     Utils.saveConfiguration()
 
 

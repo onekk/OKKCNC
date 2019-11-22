@@ -214,16 +214,9 @@ class _GenericController:
         elif line.find("ok")>=0:
             self.master.log.put((self.master.MSG_OK, line))
             self.master._gcount += 1
-            if cline: del cline[0]
+            if cline:
+                del cline[0]
             if sline:
-                #print (">",sline[0],"<")
-                if sline[0].strip() not in ("$G","$#"):
-                    ldesc = "{0:4s} > {1}".format(
-                            str(self.line_sent),
-                            sline[0].strip())
-                    self.line_sent += 1
-                    self.master.proc_line.set(ldesc)
-
                 del sline[0]
 
 
