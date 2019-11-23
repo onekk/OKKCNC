@@ -1498,7 +1498,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                     padx=1, pady=1,
                     variable=OCV.wcsvar,
                     value=p,
-                    indicatoron=Tk.FALSE,
+                    indicatoron=0,
                     activebackground="LightYellow",
                     command=self.wcsChange)
             b.pack(side=Tk.LEFT, fill=Tk.X, expand=Tk.YES)
@@ -1683,7 +1683,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                 image=Utils.icons["spinningtop"],
                 command=self.spindleControl,
                 compound=Tk.LEFT,
-                indicatoron=False,
+                indicatoron=0,
                 variable=self.spindle,
                 padx=1,
                 pady=0)
@@ -1718,7 +1718,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
         coolantDisable = Tk.Checkbutton(f, text=_("OFF"),
                 command=self.coolantOff,
-                indicatoron=False,
+                indicatoron=0,
                 variable=self.coolant,
                 padx=1,
                 pady=0)
@@ -1729,7 +1729,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         col += 1
         floodEnable = Tk.Checkbutton(f, text=_("Flood"),
                 command=self.coolantFlood,
-                indicatoron=False,
+                indicatoron=0,
                 variable=self.flood,
                 padx=1,
                 pady=0)
@@ -1740,7 +1740,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         col += 1
         mistEnable = Tk.Checkbutton(f, text=_("Mist"),
                 command=self.coolantMist,
-                indicatoron=False,
+                indicatoron=0,
                 variable=self.mist,
                 padx=1,
                 pady=0)

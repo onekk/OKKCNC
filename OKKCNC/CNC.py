@@ -15,9 +15,6 @@ import types
 import OCV
 import undo
 import Unicode
-#import pickle
-#import json
-#import binascii
 
 from dxf import DXF
 from bstl import Binary_STL_Writer

@@ -4,6 +4,12 @@
 #
 # Author: carlo.dormeletti@gmail.com
 # Date: 26 Oct 2019
+"""
+    _main__.py
+
+    This module is the main module
+
+"""
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -13,6 +19,12 @@ __email__ = "carlo.dormeletti@gmail.com"
 
 import os
 import sys
+import time
+import getopt
+import socket
+import traceback
+from datetime import datetime
+
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
@@ -20,16 +32,12 @@ sys.path.append(os.path.join(PRGPATH, 'lib'))
 sys.path.append(os.path.join(PRGPATH, 'plugins'))
 sys.path.append(os.path.join(PRGPATH, 'controllers'))
 
-import time
-import getopt
-import socket
-import traceback
-from datetime import datetime
+
 
 try:
     import serial
 except ImportError:
-    serial = None
+    HAS_SERIAL = None
 
 try:
     import Tkinter as Tk
@@ -37,14 +45,15 @@ try:
     import tkMessageBox
 except ImportError:
     import tkinter as Tk
-    from queue import *
     import tkinter.messagebox as tkMessageBox
+    from queue import *
 
+import webbrowser
 
+import OCV
 # Load configuration before anything else
 # and if needed replace the  translate function _()
 # before any string is initialized
-import OCV
 import Utils
 Utils.loadConfiguration()
 
@@ -60,12 +69,12 @@ import Pendant
 from Sender import Sender, NOT_CONNECTED, STATECOLOR, STATECOLORDEF
 
 import CNCCanvas
-import webbrowser
+
 
 from CNCRibbon    import Page
 from ToolsPage    import Tools, ToolsPage
 from FilePage     import FilePage
-from ControlPage  import ControlPage, MemoryGroup
+from ControlPage  import ControlPage #, MemoryGroup
 from TerminalPage import TerminalPage
 from ProbePage    import ProbePage
 from EditorPage   import EditorPage
@@ -130,53 +139,53 @@ class Application(Tk.Toplevel, Sender):
         frame = Tk.Frame(self)
         frame.pack(side=Tk.BOTTOM, fill=Tk.X)
         self.statusbar = tkExtra.ProgressBar(
-                frame,
-                height=20,
-                relief=Tk.SUNKEN)
+            frame,
+            height=20,
+            relief=Tk.SUNKEN)
 
         self.statusbar.pack(
-                side=Tk.LEFT,
-                fill=Tk.X,
-                expand=Tk.YES)
+            side=Tk.LEFT,
+            fill=Tk.X,
+            expand=Tk.YES)
 
         self.statusbar.configText(
-                fill="DarkBlue",
-                justify=Tk.LEFT,
-                anchor=Tk.W)
+            fill="DarkBlue",
+            justify=Tk.LEFT,
+            anchor=Tk.W)
 
         self.statusz = Tk.Label(
-                frame,
-                foreground="DarkRed",
-                relief=Tk.SUNKEN,
-                anchor=Tk.W,
-                width=10)
+            frame,
+            foreground="DarkRed",
+            relief=Tk.SUNKEN,
+            anchor=Tk.W,
+            width=10)
 
         self.statusz.pack(side=Tk.RIGHT)
 
         self.statusy = Tk.Label(
-                frame,
-                foreground="DarkRed",
-                relief=Tk.SUNKEN,
-                anchor=Tk.W,
-                width=10)
+            frame,
+            foreground="DarkRed",
+            relief=Tk.SUNKEN,
+            anchor=Tk.W,
+            width=10)
 
         self.statusy.pack(side=Tk.RIGHT)
 
         self.statusx = Tk.Label(
-                frame,
-                foreground="DarkRed",
-                relief=Tk.SUNKEN,
-                anchor=Tk.W,
-                width=10)
+            frame,
+            foreground="DarkRed",
+            relief=Tk.SUNKEN,
+            anchor=Tk.W,
+            width=10)
 
         self.statusx.pack(side=Tk.RIGHT)
 
         # Buffer bar
         self.bufferbar = tkExtra.ProgressBar(
-                frame,
-                height=20,
-                width=40,
-                relief=Tk.SUNKEN)
+            frame,
+            height=20,
+            width=40,
+            relief=Tk.SUNKEN)
 
         self.bufferbar.pack(side=Tk.RIGHT, expand=Tk.NO)
 
@@ -214,10 +223,13 @@ class Application(Tk.Toplevel, Sender):
         self.command.bind("<Control-Key-z>", self.undo)
         self.command.bind("<Control-Key-Z>", self.redo)
         self.command.bind("<Control-Key-y>", self.redo)
-        tkExtra.Balloon.set(self.command,
+
+        tkExtra.Balloon.set(
+            self.command,
             _("MDI Command line: Accept g-code commands or macro " \
               "commands (RESET/HOME...) or editor commands " \
               "(move,inkscape, round...) [Space or Ctrl-Space]"))
+
         self.widgets.append(self.command)
 
         # --- Right side ---
@@ -234,9 +246,9 @@ class Application(Tk.Toplevel, Sender):
         self.proc_line = Tk.StringVar()
 
         self.linebuffer.configure(
-                height=1,
-                anchor=Tk.W,
-                textvariable=self.proc_line)
+            height=1,
+            anchor=Tk.W,
+            textvariable=self.proc_line)
 
         self.linebuffer.pack(side=Tk.BOTTOM, fill=Tk.X)
 
@@ -269,11 +281,12 @@ class Application(Tk.Toplevel, Sender):
                     errors.append(n)
 
         if errors:
-            tkMessageBox.showwarning("OKKCNC configuration",
-                    "The following pages \"{0}\" are found in " \
-                    "your ${HOME}/.OKKCNC initialization file, " \
-                    "which are either spelled wrongly or " \
-                    "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
+            tkMessageBox.showwarning(
+                "OKKCNC configuration",
+                "The following pages \"{0}\" are found in " \
+                "your ${HOME}/.OKKCNC initialization file, " \
+                "which are either spelled wrongly or " \
+                "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
         # remember the editor list widget
         self.dro = Page.frames["DRO"]
@@ -421,9 +434,9 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<SelectInvert>>', self.selectInvert)
         self.bind('<<SelectLayer>>', self.selectLayer)
 
-#        self.bind('<Control-Key-f>',    self.find)
-#        self.bind('<Control-Key-g>',    self.findNext)
-#        self.bind('<Control-Key-h>',    self.replace)
+        #self.bind('<Control-Key-f>',    self.find)
+        #self.bind('<Control-Key-g>',    self.findNext)
+        #self.bind('<Control-Key-h>',    self.replace)
         self.bind('<Control-Key-e>', self.editor.toggleExpand)
         self.bind('<Control-Key-n>', self.showInfo)
         self.bind('<<ShowInfo>>', self.showInfo)
@@ -536,7 +549,10 @@ class Application(Tk.Toplevel, Sender):
         # Filedialog Load history
         for i in range(Utils._maxRecent):
             filename = Utils.getRecent(i)
-            if filename is None: break
+
+            if filename is None:
+                break
+
             bFileDialog.append2History(os.path.dirname(filename))
 
 
@@ -548,9 +564,7 @@ class Application(Tk.Toplevel, Sender):
 
 
     def updateStatus(self, event):
-        """
-            Set a status message from an event
-        """
+        """Set a status message from an event"""
         self.setStatus(_(event.data))
 
     def setMem(self, event=None):
@@ -564,10 +578,11 @@ class Application(Tk.Toplevel, Sender):
 
     def saveMems(self, event=None):
         self.saveMemory()
-    #-----------------------------------------------------------------------
-    # Show popup dialog asking for value entry, usefull in g-code scripts
-    #-----------------------------------------------------------------------
-    def entry(self, message="Enter value", title="", prompt="", type_="str", from_=None, to_=None):
+
+
+    def entry(self, message="Enter value", title="", prompt="", type_="str",
+              from_=None, to_=None):
+        """Show popup dialog asking for value entry, usefull in g-code scripts"""
         d = tkDialogs.InputDialog(self, title, message, prompt, type_, from_, to_)
         v = d.show()
 
@@ -576,19 +591,17 @@ class Application(Tk.Toplevel, Sender):
         print("entered "+str(type(v))+": "+str(v))
         return v
 
-    #-----------------------------------------------------------------------
-    # Update canvas coordinates
-    #-----------------------------------------------------------------------
+
     def updateCanvasCoords(self, event):
+        """Update canvas coordinates"""
         x, y, z = event.data.split()
         self.statusx["text"] = "X: "+x
         self.statusy["text"] = "Y: "+y
         self.statusz["text"] = "Z: "+z
 
-    #----------------------------------------------------------------------
-    # Accept the user key if not editing any text
-    #----------------------------------------------------------------------
+
     def acceptKey(self, skipRun=False):
+        """Accept the user key if not editing any text"""
         if not skipRun and self.running:
             return False
         focus = self.focus_get()
@@ -598,7 +611,7 @@ class Application(Tk.Toplevel, Sender):
 
         return True
 
-    #-----------------------------------------------------------------------
+
     def quit(self, event=None):
         if self.running and self._quit < 1:
             tkMessageBox.showinfo(
@@ -673,7 +686,7 @@ class Application(Tk.Toplevel, Sender):
         #Updates.CheckUpdateDialog(self, OCV._version)
         pass
 
-    #-----------------------------------------------------------------------
+
     def loadShortcuts(self):
         for name, value in Utils.config.items("Shortcut"):
             # Convert to uppercase
@@ -687,7 +700,7 @@ class Application(Tk.Toplevel, Sender):
         webbrowser.open(Utils.iniUser)
         #os.startfile(Utils.iniUser)
 
-    #-----------------------------------------------------------------------
+
     def loadConfig(self):
 
         if OCV.geometry is None:
@@ -744,7 +757,7 @@ class Application(Tk.Toplevel, Sender):
         self.loadShortcuts()
         self.loadMemory()
 
-    #-----------------------------------------------------------------------
+
     def saveConfig(self):
         # Program
         Utils.setInt(Utils.__prg__, "width", str(self.winfo_width()))
@@ -764,7 +777,7 @@ class Application(Tk.Toplevel, Sender):
         self.canvasFrame.saveConfig()
         self.saveMemory()
 
-    #-----------------------------------------------------------------------
+
     def loadHistory(self):
         try:
             f = open(Utils.hisFile, "r")
@@ -774,7 +787,7 @@ class Application(Tk.Toplevel, Sender):
         self._historySearch = None
         f.close()
 
-    #-----------------------------------------------------------------------
+
     def saveHistory(self):
         try:
             f = open(Utils.hisFile, "w")
@@ -820,28 +833,28 @@ class Application(Tk.Toplevel, Sender):
                 Utils.setStr("Memory", mem_name, mem_value)
 
 
-    #-----------------------------------------------------------------------
+
     def cut(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.cut()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def copy(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.copy()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def paste(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
             self.editor.paste()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def undo(self, event=None):
         if not self.running and self.gcode.canUndo():
             self.gcode.undo()
@@ -849,7 +862,7 @@ class Application(Tk.Toplevel, Sender):
             self.drawAfter()
         return "break"
 
-    #-----------------------------------------------------------------------
+
     def redo(self, event=None):
         if not self.running and self.gcode.canRedo():
             self.gcode.redo()
@@ -857,17 +870,17 @@ class Application(Tk.Toplevel, Sender):
             self.drawAfter()
         return "break"
 
-    #------------------------------------------------------------------------
+
     def ClearEditor(self, event=None):
         self.editor.selectClear()
         self.editor.selectAll()
         self.editor.deleteBlock()
 
-    #-----------------------------------------------------------------------
+
     def addUndo(self, undoinfo):
         self.gcode.addUndo(undoinfo)
 
-    #-----------------------------------------------------------------------
+
     def about(self, event=None, timer=None):
         toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
@@ -885,71 +898,71 @@ class Application(Tk.Toplevel, Sender):
         font3 = 'Helvetica -10'
 
         frame = Tk.Frame(
-                toplevel,
-                borderwidth=2,
-                relief=Tk.SUNKEN,
-                background=bg)
+            toplevel,
+            borderwidth=2,
+            relief=Tk.SUNKEN,
+            background=bg)
 
         frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
 
         # -----
         row = 0
         lab = Tk.Label(
-                frame,
-                image=Utils.icons["OKKCNC"],
-                foreground=fg,
-                background=bg,
-                relief=Tk.RAISED,
-                padx=0, pady=0)
+            frame,
+            image=Utils.icons["OKKCNC"],
+            foreground=fg,
+            background=bg,
+            relief=Tk.RAISED,
+            padx=0, pady=0)
 
         lab.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text=_("OKKCNC/\tAn advanced fully featured\n" \
+            frame,
+            text=_("OKKCNC/\tAn advanced fully featured\n" \
                   "\t\tg-code sender for GRBL. \n\n"\
                   "\t\tForked from bCNC"),
-                  font=font3,
-                  foreground=fg,
-                  background=bg,
-                  justify=Tk.LEFT)
+            font=font3,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, columnspan=2, sticky=Tk.W, padx=10, pady=1)
 
         # -----
         row += 1
         frm = Tk.Frame(
-                frame,
-                borderwidth=1,
-                relief=Tk.SUNKEN,
-                height=2,
-                background=bg)
+            frame,
+            borderwidth=1,
+            relief=Tk.SUNKEN,
+            height=2,
+            background=bg)
 
         frm.grid(row=row, column=0, columnspan=2, sticky=Tk.EW, padx=5, pady=5)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='www:',
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text='www:',
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=Utils.__www__,
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                activeforeground="Blue",
-                cursor="hand1")
+            frame,
+            text=Utils.__www__,
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            activeforeground="Blue",
+            cursor="hand1")
 
         lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
 
@@ -958,154 +971,154 @@ class Application(Tk.Toplevel, Sender):
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='email:',
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text='email:',
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=__email__,
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text=__email__,
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='author:',
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text='author:',
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=__author__,
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text=__author__,
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='contributors:',
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text='contributors:',
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=Utils.__contribute__,
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text=Utils.__contribute__,
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='translations:',
-                font=font2,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT)
+            frame,
+            text='translations:',
+            font=font2,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT)
 
         lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=Utils.__translations__,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text=Utils.__translations__,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='credits:',
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text='credits:',
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=Utils.__credits__,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text=Utils.__credits__,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='version:',
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text='version:',
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=OCV._version,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text=OCV._version,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
         row += 1
 
         lab = Tk.Label(
-                frame,
-                text='last change:',
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text='last change:',
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
 
         lab = Tk.Label(
-                frame,
-                text=OCV._date,
-                foreground=fg,
-                background=bg,
-                justify=Tk.LEFT,
-                font=font2)
+            frame,
+            text=OCV._date,
+            foreground=fg,
+            background=bg,
+            justify=Tk.LEFT,
+            font=font2)
 
         lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
 
@@ -1143,15 +1156,11 @@ class Application(Tk.Toplevel, Sender):
 
 
     def showInfo(self, event=None):
-        """
-            Display information on selected blocks
-        """
+        """Display information on selected blocks"""
         self.canvasFrame.canvas.showInfo(self.editor.getSelectedBlocks())
         return "break"
 
-    #-----------------------------------------------------------------------
-    # FIXME Very primitive
-    #-----------------------------------------------------------------------
+
     def showStats(self, event=None):
         toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
@@ -1175,29 +1184,29 @@ class Application(Tk.Toplevel, Sender):
                 t += block.time
 
         frame = Tk.LabelFrame(
-                toplevel,
-                text=_("Enabled GCode"),
-                foreground="DarkRed")
+            toplevel,
+            text=_("Enabled GCode"),
+            foreground="DarkRed")
 
         frame.pack(fill=Tk.BOTH)
 
         row, col = 0, 0
 
         lab = Tk.Label(
-                frame,
-                text=_("Margins X:"))
+            frame,
+            text=_("Margins X:"))
 
         lab.grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                        OCV.CD["xmin"], OCV.CD["xmax"],
-                        OCV.CD["xmax"] -OCV.CD["xmin"],
-                        unit),
-              foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["xmin"], OCV.CD["xmax"],
+                OCV.CD["xmax"] -OCV.CD["xmin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1211,12 +1220,12 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                        OCV.CD["ymin"], OCV.CD["ymax"],
-                        OCV.CD["ymax"] -OCV.CD["ymin"],
-                        unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["ymin"], OCV.CD["ymax"],
+                OCV.CD["ymax"] -OCV.CD["ymin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1230,12 +1239,12 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                    OCV.CD["zmin"], OCV.CD["zmax"],
-                    OCV.CD["zmax"] -OCV.CD["zmin"],
-                    unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["zmin"], OCV.CD["zmax"],
+                OCV.CD["zmax"] -OCV.CD["zmin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1243,15 +1252,16 @@ class Application(Tk.Toplevel, Sender):
         col = 0
 
         lab = Tk.Label(
-                frame,
-                text=_("# Blocks:"))
+            frame,
+            text=_("# Blocks:"))
 
         lab.grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
 
-        lab = Tk.Label(frame, text=str(e),
-              foreground="DarkBlue")
+        lab = Tk.Label(
+            frame, text=str(e),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1266,9 +1276,9 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} {1}".format(l, unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} {1}".format(l, unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1282,9 +1292,9 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} {1}".format(r, unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} {1}".format(r, unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1301,9 +1311,9 @@ class Application(Tk.Toplevel, Sender):
         s = (m-int(m))*60
 
         lab = Tk.Label(
-                frame,
-                text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
-                foreground="DarkBlue")
+            frame,
+            text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1311,9 +1321,9 @@ class Application(Tk.Toplevel, Sender):
 
 
         frame = Tk.LabelFrame(
-                toplevel,
-                text=_("All GCode"),
-                foreground="DarkRed")
+            toplevel,
+            text=_("All GCode"),
+            foreground="DarkRed")
 
         frame.pack(fill=Tk.BOTH)
 
@@ -1326,12 +1336,12 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                        OCV.CD["axmin"], OCV.CD["axmax"],
-                        OCV.CD["axmax"] -OCV.CD["axmin"],
-                        unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["axmin"], OCV.CD["axmax"],
+                OCV.CD["axmax"] -OCV.CD["axmin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1345,12 +1355,12 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                        OCV.CD["aymin"], OCV.CD["aymax"],
-                        OCV.CD["aymax"] -OCV.CD["aymin"],
-                        unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["aymin"], OCV.CD["aymax"],
+                OCV.CD["aymax"] -OCV.CD["aymin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1364,12 +1374,12 @@ class Application(Tk.Toplevel, Sender):
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
-                        OCV.CD["azmin"], OCV.CD["azmax"],
-                        OCV.CD["azmax"] -OCV.CD["azmin"],
-                        unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+                OCV.CD["azmin"], OCV.CD["azmax"],
+                OCV.CD["azmax"] -OCV.CD["azmin"],
+                unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1377,17 +1387,17 @@ class Application(Tk.Toplevel, Sender):
         col = 0
 
         lab = Tk.Label(
-                frame,
-                text=_("# Blocks:"))
+            frame,
+            text=_("# Blocks:"))
 
         lab.grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text=str(len(self.gcode.blocks)),
-                foreground="DarkBlue")
+            frame,
+            text=str(len(self.gcode.blocks)),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1395,17 +1405,17 @@ class Application(Tk.Toplevel, Sender):
         col = 0
 
         lab = Tk.Label(
-                frame,
-                text=_("Length:"))
+            frame,
+            text=_("Length:"))
 
         lab.grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
 
         lab = Tk.Label(
-                frame,
-                text="{0:.f} {1}".format(self.cnc.totalLength, unit),
-                foreground="DarkBlue")
+            frame,
+            text="{0:.f} {1}".format(self.cnc.totalLength, unit),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1422,9 +1432,9 @@ class Application(Tk.Toplevel, Sender):
         s = (m-int(m))*60
 
         lab = Tk.Label(
-                frame,
-                text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
-                foreground="DarkBlue")
+            frame,
+            text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+            foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
 
@@ -1444,7 +1454,6 @@ class Application(Tk.Toplevel, Sender):
         toplevel.bind("<Return>", closeFunc)
         toplevel.bind("<KP_Enter>", closeFunc)
 
-        # ----
         toplevel.deiconify()
         toplevel.wait_visibility()
         toplevel.resizable(False, False)
@@ -1458,41 +1467,41 @@ class Application(Tk.Toplevel, Sender):
         toplevel.lift()
         toplevel.wait_window()
 
-    #-----------------------------------------------------------------------
+
     #def reportDialog(self, event=None):
     #    Utils.ReportDialog(self)
 
-    #-----------------------------------------------------------------------
+
     def viewChange(self, event=None):
         if self.running:
             self._selectI = 0    # last selection pointer in items
         self.draw()
 
-    # ----------------------------------------------------------------------
+
     def refresh(self, event=None):
         self.editor.fill()
         self.draw()
 
-    # ----------------------------------------------------------------------
+
     def draw(self):
         view = CNCCanvas.VIEWS.index(self.canvasFrame.view.get())
         self.canvasFrame.canvas.draw(view)
         self.selectionChange()
 
-    # ----------------------------------------------------------------------
-    # Redraw with a small delay
-    # ----------------------------------------------------------------------
     def drawAfter(self, event=None):
-        if self._drawAfter is not None: self.after_cancel(self._drawAfter)
+        """Redraw with a small delay"""
+        if self._drawAfter is not None:
+            self.after_cancel(self._drawAfter)
+
         self._drawAfter = self.after(DRAW_AFTER, self.draw)
         return "break"
 
-    #-----------------------------------------------------------------------
+
     def canvasFocus(self, event=None):
         self.canvasFrame.canvas.focus_set()
         return "break"
 
-    #-----------------------------------------------------------------------
+
     def selectAll(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1502,7 +1511,7 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def unselectAll(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1511,7 +1520,7 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def selectInvert(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1520,7 +1529,7 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def selectLayer(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1529,35 +1538,36 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-    #-----------------------------------------------------------------------
+
     def find(self, event=None):
         self.ribbon.changePage("Editor")
         #self.editor.findDialog()
         #return "break"
 
-    #-----------------------------------------------------------------------
+
     def findNext(self, event=None):
         self.ribbon.changePage("Editor")
         #self.editor.findNext()
         #return "break"
 
-    #-----------------------------------------------------------------------
+
     def replace(self, event=None):
         self.ribbon.changePage("Editor")
         #self.editor.replaceDialog()
         #return "break"
 
-    #-----------------------------------------------------------------------
+
     def activeBlock(self):
         return self.editor.activeBlock()
 
-    #-----------------------------------------------------------------------
-    # Keyboard binding to <Return>
-    #-----------------------------------------------------------------------
+
     def cmdExecute(self, event):
+        """
+        Keyboard binding to <Return>
+        """
         self.commandExecute()
 
-    # ----------------------------------------------------------------------
+
     def insertCommand(self, cmd, execute=False):
         self.command.delete(0, Tk.END)
         self.command.insert(0, cmd)
@@ -1565,10 +1575,11 @@ class Application(Tk.Toplevel, Sender):
         if execute:
             self.commandExecute(False)
 
-    #-----------------------------------------------------------------------
-    # Execute command from command line
-    #-----------------------------------------------------------------------
+
     def commandExecute(self, addHistory=True):
+        """
+        Execute command from command line
+        """
         self._historyPos = None
         self._historySearch = None
 
@@ -1592,8 +1603,6 @@ class Application(Tk.Toplevel, Sender):
         """
         Execute a single command
         """
-        #print
-        #print "<<<",line
         try:
             line = self.evaluate(line)
         except:
@@ -1786,7 +1795,10 @@ class Application(Tk.Toplevel, Sender):
             self.loadDialog()
 
         elif rexx.abbrev("MIRROR", cmd, 3):
-            if len(line) == 1: return "break"
+
+            if len(line) == 1:
+                return "break"
+
             line1 = line[1].upper()
             #if nothing is selected:
             if not self.editor.curselection():
@@ -2073,10 +2085,9 @@ class Application(Tk.Toplevel, Sender):
                 tkMessageBox.showerror(rc[0], rc[1], parent=self)
             return "break"
 
-    #-----------------------------------------------------------------------
-    # Execute a command over the selected lines
-    #-----------------------------------------------------------------------
+
     def executeOnSelection(self, cmd, blocksonly, *args):
+        """Execute a command over the selected lines"""
         if blocksonly:
             items = self.editor.getSelectedBlocks()
         else:
@@ -2136,7 +2147,6 @@ class Application(Tk.Toplevel, Sender):
         self.setStatus("{0} {1}".format(cmd, " ".join([str(a) for a in args if a is not None])))
 
 
-    #-----------------------------------------------------------------------
     def edit(self, event=None):
         page = self.ribbon.getActivePage()
         if page.name == "Editor":
@@ -2144,27 +2154,26 @@ class Application(Tk.Toplevel, Sender):
         elif page.name == "CAM":
             page.edit()
 
-    #-----------------------------------------------------------------------
+
     def commandFocus(self, event=None):
         self.command.focus_set()
 
-    #-----------------------------------------------------------------------
+
     def commandFocusIn(self, event=None):
         self.cmdlabel["foreground"] = "Blue"
 
-    #-----------------------------------------------------------------------
+
     def commandFocusOut(self, event=None):
         self.cmdlabel["foreground"] = "Black"
 
-    #-----------------------------------------------------------------------
-    # FIXME why it is not called?
-    #-----------------------------------------------------------------------
+
     def commandKey(self, event):
+        # FIXME why it is not called?
         if event.char or event.keysym in ("BackSpace"):
             self._historyPos = None
             self._historySearch = None
 
-    #-----------------------------------------------------------------------
+
     def commandHistoryUp(self, event=None):
         if self._historyPos is None:
             s = self.command.get()
@@ -2188,7 +2197,7 @@ class Application(Tk.Toplevel, Sender):
         self.command.delete(0, Tk.END)
         self.command.insert(0, self.history[self._historyPos])
 
-    #-----------------------------------------------------------------------
+
     def commandHistoryDown(self, event=None):
         if self._historyPos is None:
             self._historySearch = None
@@ -2210,38 +2219,44 @@ class Application(Tk.Toplevel, Sender):
         if self._historyPos is not None:
             self.command.insert(0, self.history[self._historyPos])
 
-    #-----------------------------------------------------------------------
+
     def select(self, items, double, clear, toggle=True):
         self.editor.select(items, double, clear, toggle)
         self.selectionChange()
 
-    # ----------------------------------------------------------------------
-    # Selection has changed highlight the canvas
-    # ----------------------------------------------------------------------
+
     def selectionChange(self, event=None):
+        """Selection has changed highlight the canvas"""
         items = self.editor.getSelection()
         self.canvasFrame.canvas.clearSelection()
-        if not items: return
+
+        if not items:
+            return
+
         self.canvasFrame.canvas.select(items)
         self.canvasFrame.canvas.activeMarker(self.editor.getActive())
 
-    #-----------------------------------------------------------------------
-    # Create a new file
-    #-----------------------------------------------------------------------
+
     def newFile(self, event=None):
-        if self.running: return
-        if self.fileModified(): return
+        """Create a new file"""
+        if self.running:
+            return
+
+        if self.fileModified():
+            return
+
         self.gcode.init()
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
         self.title("{0}{1}".format(Utils.__prg__, OCV._version))
 
-    #-----------------------------------------------------------------------
-    # load dialog
-    #-----------------------------------------------------------------------
+
     def loadDialog(self, event=None):
-        if self.running: return
+        """load dialog"""
+        if self.running:
+            return
+
         filename = bFileDialog.askopenfilename(
             master=self,
             title=_("Open file"),
@@ -2249,25 +2264,34 @@ class Application(Tk.Toplevel, Sender):
                 Utils.getUtf("File", "dir"),
                 Utils.getUtf("File", "file")),
             filetypes=FILETYPES)
-        if filename: self.load(filename)
+
+        if filename:
+            self.load(filename)
+
         return "break"
 
-    #-----------------------------------------------------------------------
-    # save dialog
-    #-----------------------------------------------------------------------
+
     def saveDialog(self, event=None):
-        if self.running: return
+        """save dialog"""
+        if self.running:
+            return
+
         fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
-        if ext in (".dxf", ".DXF"): ext = ".ngc"
+
+        if ext in (".dxf", ".DXF"):
+            ext = ".ngc"
         filename = bFileDialog.asksaveasfilename(
             master=self,
             title=_("Save file"),
             initialfile=os.path.join(Utils.getUtf("File", "dir"), fn+ext),
             filetypes=FILETYPES)
-        if filename: self.save(filename)
+
+        if filename:
+            self.save(filename)
+
         return "break"
 
-    #-----------------------------------------------------------------------
+
     def fileModified(self):
         if self.gcode.isModified():
             ans = tkMessageBox.askquestion(
@@ -2295,21 +2319,22 @@ class Application(Tk.Toplevel, Sender):
                     self.gcode.probe.save()
         return False
 
-    #-----------------------------------------------------------------------
-    # Load a file into editor
-    #-----------------------------------------------------------------------
+
     def load(self, filename, autoloaded=False):
+        """Load a file into editor"""
         fn, ext = os.path.splitext(filename)
         if ext == ".probe":
             pass
         else:
-            if self.fileModified(): return
+            if self.fileModified():
+                return
 
             if not self.gcode.probe.isEmpty():
                 ans = tkMessageBox.askquestion(
                     _("Existing Autolevel"),
                     _("Autolevel/probe information already exists.\nDelete it?"),
                     parent=self)
+
                 if ans == tkMessageBox.YES or ans is True:
                     self.gcode.probe.init()
 
@@ -2334,18 +2359,24 @@ class Application(Tk.Toplevel, Sender):
             Page.frames["CAM"].populate()
 
         if autoloaded:
-            self.setStatus(_("'%s' reloaded at '%s'").decode("utf8")%(filename, str(datetime.now())))
+            self.setStatus(
+                _("'{0}' reloaded at '{1}'").decode("utf8").format(
+                    filename,
+                    str(datetime.now())))
         else:
-            self.setStatus(_("'%s' loaded").decode("utf8")%(filename))
+            self.setStatus(_("'{0}' loaded").decode("utf8").format(filename))
+
         self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
 
-    #-----------------------------------------------------------------------
+
     def save(self, filename):
         Sender.save(self, filename)
-        self.setStatus(_("'%s' saved").decode("utf8")%(filename))
+
+        self.setStatus(_("'{0}' saved").decode("utf8").format(filename))
+
         self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
 
-    #-----------------------------------------------------------------------
+
     def saveAll(self, event=None):
         if self.gcode.filename:
             Sender.saveAll(self)
@@ -2353,11 +2384,11 @@ class Application(Tk.Toplevel, Sender):
             self.saveDialog()
         return "break"
 
-    #-----------------------------------------------------------------------
+
     def reload(self, event=None):
         self.load(self.gcode.filename)
 
-    #-----------------------------------------------------------------------
+
     def importFile(self, filename=None):
         if filename is None:
             filename = bFileDialog.askopenfilename(
@@ -2391,11 +2422,14 @@ class Application(Tk.Toplevel, Sender):
             self.draw()
             self.canvasFrame.canvas.fit2Screen()
 
-    #-----------------------------------------------------------------------
+
     def focus_in(self, event):
-        if self._inFocus: return
+        if self._inFocus:
+            return
         # FocusIn is generated for all sub-windows, handle only the main window
-        if self is not event.widget: return
+        if self is not event.widget:
+            return
+
         self._inFocus = True
         if self.gcode.checkFile():
             if self.gcode.isModified():
@@ -2412,10 +2446,10 @@ class Application(Tk.Toplevel, Sender):
         self._inFocus = False
         self.gcode.syncFileTime()
 
-    #-----------------------------------------------------------------------
+
     def openClose(self, event=None):
         serialPage = Page.frames["Serial"]
-        if self.serial is not None:
+        if self.HAS_SERIAL is not None:
             self.close()
             serialPage.connectBtn.config(
                 text=_("Open"),
@@ -2432,12 +2466,12 @@ class Application(Tk.Toplevel, Sender):
                     activebackground="LightGreen")
                 self.enable()
 
-    #-----------------------------------------------------------------------
+
     def open(self, device, baudrate):
         try:
             return Sender.open(self, device, baudrate)
         except:
-            self.serial = None
+            self.HAS_SERIAL = None
             self.thread = None
             tkMessageBox.showerror(
                 _("Error opening serial"),
@@ -2445,7 +2479,7 @@ class Application(Tk.Toplevel, Sender):
                 parent=self)
         return False
 
-    #-----------------------------------------------------------------------
+
     def close(self):
         Sender.close(self)
         try:
@@ -2453,26 +2487,30 @@ class Application(Tk.Toplevel, Sender):
         except Tk.TclError:
             pass
 
-    #-----------------------------------------------------------------------
-    # An entry function should be called periodically during compiling
-    # to check if the Pause or Stop buttons are pressed
-    # @return true if the compile has to abort
-    #-----------------------------------------------------------------------
+
     def checkStop(self):
+        """
+        An entry function should be called periodically during compiling
+        to check if the Pause or Stop buttons are pressed
+        @return true if the compile has to abort
+        """
+
+
         try:
             self.update()    # very tricky function of Tk
         except Tk.TclError:
             pass
         return self._stop
 
-    #-----------------------------------------------------------------------
-    # Send enabled gcode file to the CNC machine
-    #-----------------------------------------------------------------------
+
     def run(self, lines=None):
+        """
+        Send enabled gcode file to the CNC machine
+        """
         self.cleanAfter = True    #Clean when this operation stops
         print("Will clean after this operation")
 
-        if self.serial is None and not OCV.developer:
+        if self.HAS_SERIAL is None and not OCV.developer:
             tkMessageBox.showerror(
                 _("Serial Error"),
                 _("Serial is not connected"),
@@ -2518,12 +2556,6 @@ class Application(Tk.Toplevel, Sender):
             self.statusbar.setLimits(0, 9999)
             self.statusbar.setProgress(0, 0)
 
-            #class MyQueue:
-            #    def put(self,line):
-            #        print ">>>",line
-            #self._paths = self.gcode.compile(MyQueue(), self.checkStop)
-            #return
-
             self._paths = self.gcode.compile(self.queue, self.checkStop)
             if self._paths is None:
                 self.emptyQueue()
@@ -2539,8 +2571,11 @@ class Application(Tk.Toplevel, Sender):
 
             # reset colors
             before = time.time()
-            for ij in self._paths:    # Slow loop
-                if not ij: continue
+            for ij in self._paths:  # Slow loop
+
+                if not ij:
+                    continue
+
                 path = self.gcode[ij[0]].path(ij[1])
                 if path:
                     color = self.canvasFrame.canvas.itemcget(path, "fill")
@@ -2555,7 +2590,7 @@ class Application(Tk.Toplevel, Sender):
                         before = time.time()
 
             # the buffer of the machine should be empty?
-            self._runLines = len(self._paths) + 1    # plus the wait
+            self._runLines = len(self._paths) + 1  # plus the wait
         else:
             n = 1        # including one wait command
             for line in CNC.compile(lines):
@@ -2577,10 +2612,12 @@ class Application(Tk.Toplevel, Sender):
         self.bufferbar.config(background="DarkGray")
         self.bufferbar.setText("")
 
-    #-----------------------------------------------------------------------
-    # Start the web pendant
-    #-----------------------------------------------------------------------
+
     def startPendant(self, showInfo=True):
+        """
+        Start the web pendant
+        """
+
         started = Pendant.start(self)
         if showInfo:
             hostName = "http://{0}:{1:d}".format(socket.gethostname(), Pendant.port)
@@ -2599,20 +2636,23 @@ class Application(Tk.Toplevel, Sender):
                 if dr == "yes":
                     webbrowser.open(hostName, new=2)
 
-    #-----------------------------------------------------------------------
-    # Stop the web pendant
-    #-----------------------------------------------------------------------
+
     def stopPendant(self):
+        """
+        Stop the web pendant
+        """
         if Pendant.stop():
             tkMessageBox.showinfo(
                 _("Pendant"),
                 _("Pendant stopped"),
                 parent=self)
 
-    #-----------------------------------------------------------------------
-    # Inner loop to catch any generic exception
-    #-----------------------------------------------------------------------
+
     def _monitorSerial(self):
+        """
+        Inner loop to catch any generic exception
+        """
+
         # Check serial output
         t = time.time()
 
@@ -2686,7 +2726,8 @@ class Application(Tk.Toplevel, Sender):
             except Empty:
                 break
 
-        if inserted: self.terminal.see(Tk.END)
+        if inserted:
+            self.terminal.see(Tk.END)
 
         # Check pendant
         try:
@@ -2757,13 +2798,14 @@ class Application(Tk.Toplevel, Sender):
             self.bufferbar.setProgress(b_fill)
             self.bufferbar.setText("{0:02.2f}".format(b_fill))
             #print("Queue > ", self.queue.queue)
+
             if self.proc_line_n > 0:
                 print(self.proc_line_n)
                 displ_line = "{0} > {1} ".format(
-                            self.proc_line_n,
-                            self.gcode.gcodelines[self.proc_line_n])
-                self.proc_line.set(displ_line)
+                    self.proc_line_n,
+                    self.gcode.gcodelines[self.proc_line_n])
 
+                self.proc_line.set(displ_line)
 
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI < len(self._paths):
@@ -2780,11 +2822,12 @@ class Application(Tk.Toplevel, Sender):
             if self._gcount >= self._runLines:
                 self.runEnded()
 
-    #-----------------------------------------------------------------------
-    # "thread" timed function looking for messages in the serial thread
-    # and reporting back in the terminal
-    #-----------------------------------------------------------------------
+
     def monitorSerial(self):
+        """
+        "thread" timed function looking for messages in the serial thread
+        and reporting back in the terminal
+        """
         try:
             self._monitorSerial()
         except:
@@ -2801,7 +2844,6 @@ class Application(Tk.Toplevel, Sender):
         return Utils.config.set(section, item, value)
 
 
-#------------------------------------------------------------------------------
 def usage(rc):
     sys.stdout.write("{0} V{1} [{2}]\n".format(Utils.__prg__, OCV._version, OCV._date))
     sys.stdout.write("{0} <{1}>\n\n".format(__author__, __email__))
@@ -2878,7 +2920,10 @@ def main(args=None):
                     # Scan in names
                     for r in range(Utils._maxRecent):
                         filename = Utils.getRecent(r)
-                        if filename is None: break
+
+                        if filename is None:
+                            break
+
                         fn, ext = os.path.splitext(os.path.basename(filename))
                         if fn == val:
                             break
@@ -2892,14 +2937,19 @@ def main(args=None):
                     try:
                         filename = Utils.getRecent(i)
                         #print ("Recent = ", i, maxlen, filename)
-                    except: continue
+                    except:
+                        continue
+
                     if (filename is not None):
                         maxlen = max(maxlen, len(os.path.basename(filename)))
 
                 sys.stdout.write("Recent files:\n")
                 for i in range(Utils._maxRecent):
                     filename = Utils.getRecent(i)
-                    if filename is None: break
+
+                    if filename is None:
+                        break
+
                     d = os.path.dirname(filename)
                     fn = os.path.basename(filename)
                     sys.stdout.write(
@@ -2910,8 +2960,10 @@ def main(args=None):
                     r = int(sys.stdin.readline())-1
                 except:
                     pass
-            try: recent = Utils.getRecent(r)
-            except: pass
+            try:
+                recent = Utils.getRecent(r)
+            except:
+                pass
 
         elif opt in ("-f", "--fullscreen"):
             fullscreen = True
@@ -2977,7 +3029,7 @@ def main(args=None):
     for fn in args:
         OCV.application.load(fn)
 
-    if serial is None:
+    if HAS_SERIAL is None:
         tkMessageBox.showerror(
             _("python serial missing"),
             _("ERROR: Please install the python pyserial module\n" \
@@ -3005,6 +3057,5 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
-
 
  #vim:ts=8:sw=8:sts=8:noet
