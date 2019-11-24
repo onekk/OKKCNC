@@ -33,7 +33,7 @@ import CNCRibbon
 
 #from CNC import CNC
 
-_EXE_FONT = ("Helvetica",12,"bold")
+
 
 
 #===============================================================================
@@ -591,7 +591,7 @@ class Shortcut(_Base):
     #----------------------------------------------------------------------
     def execute(self, app):
         self.save()
-        app.loadShortcuts()
+        OCV.application.loadShortcuts()
 
 
 #------------------------------------------------------------------------------
@@ -803,11 +803,11 @@ class Controller(_Base):
             lines.append("$%s=%s"%(n[5:],str(v)))
             lines.append("%wait")
         lines.append("$$")
-        app.run(lines=lines)
+        OCV.application.run(lines=lines)
 
     # ----------------------------------------------------------------------
     def beforeChange(self, app):
-        app.sendGCode("$$")
+        OCV.application.sendGCode("$$")
         time.sleep(1)
 
     # ----------------------------------------------------------------------
@@ -969,7 +969,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Stock"),
                 compound=TOP,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Stock",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=2, pady=0, sticky=NSEW)
@@ -983,7 +983,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("Material"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Material",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -997,7 +997,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
                 text=_("End Mill"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="EndMill",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -1015,7 +1015,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Edit name of current operation/object"))
         self.addWidget(b)
-        app.tools.addButton("rename",b)
+        OCV.application.tools.addButton("rename",b)
 
         # ===
         col,row=2,0
@@ -1028,7 +1028,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Add a new operation/object"))
         self.addWidget(b)
-        app.tools.addButton("add",b)
+        OCV.application.tools.addButton("add",b)
 
         # ---
         row += 1
@@ -1041,7 +1041,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Clone selected operation/object"))
         self.addWidget(b)
-        app.tools.addButton("clone",b)
+        OCV.application.tools.addButton("clone",b)
 
         # ---
         row += 1
@@ -1054,7 +1054,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Delete selected operation/object"))
         self.addWidget(b)
-        app.tools.addButton("delete",b)
+        OCV.application.tools.addButton("delete",b)
 
 #===============================================================================
 # Config
@@ -1089,7 +1089,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Camera"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Camera",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1103,7 +1103,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Colors"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Color",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1117,7 +1117,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Config"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="CNC",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1131,7 +1131,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Controller"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Controller",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1145,7 +1145,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Fonts"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Font",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1159,7 +1159,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Shortcuts"),
                 compound=LEFT,
                 anchor=W,
-                variable=app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Shortcut",
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1173,7 +1173,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #                text=_("Events"),
 #                compound=LEFT,
 #                anchor=W,
-#                variable=app.tools.active,
+#                variable=OCV.application.tools.active,
 #                value="Events",
 #                background=OCV.BACKGROUND)
 #        b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
@@ -1205,12 +1205,12 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         menu.add_radiobutton(
                 label=_("Events"),
                 image=Utils.icons["event"], compound=LEFT,
-                variable=self.app.tools.active,
+                variable=OCV.application.tools.active,
                 value="Events")
         menu.add_command(
                 label=_("User File"),
                 image=Utils.icons["about"], compound=LEFT,
-                command=self.app.showUserFile)
+                command=OCV.application.showUserFile)
         return menu
 
 
@@ -1220,7 +1220,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 class ToolsFrame(CNCRibbon.PageFrame):
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "CAM", app)
-        self.tools = app.tools
+        self.tools = OCV.application.tools
 
         paned = PanedWindow(self, orient=VERTICAL)
         paned.pack(expand=YES, fill=BOTH)
@@ -1234,7 +1234,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
                 foreground="DarkRed",
                 activeforeground="DarkRed",
                 activebackground="LightYellow",
-                font=_EXE_FONT,
+                font=OCV.EXE_FONT,
                 command=self.execute)
         b.pack(side=TOP, fill=X)
         self.tools.addButton("exe",b)
@@ -1272,7 +1272,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
         self.tools.setWidget("toolHelpFrame", frame)
         self.tools.setWidget("toolHelp",      toolHelp)
 
-        app.tools.active.trace('w',self.change)
+        OCV.application.tools.active.trace('w',self.change)
         self.change()
 
     #----------------------------------------------------------------------
@@ -1280,7 +1280,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
     #----------------------------------------------------------------------
     def change(self, a=None, b=None, c=None):
         tool = self.tools.getActive()
-        tool.beforeChange(self.app)
+        tool.beforeChange(OCV.application)
         tool.populate()
         tool.update()
         self.tools.activateButtons(tool)
@@ -1317,7 +1317,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
 
     #----------------------------------------------------------------------
     def execute(self, event=None):
-        self.tools.getActive().execute(self.app)
+        self.tools.getActive().execute(OCV.application)
 
     #----------------------------------------------------------------------
     def add(self, event=None):

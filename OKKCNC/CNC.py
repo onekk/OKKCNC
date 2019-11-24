@@ -2038,13 +2038,13 @@ class GCode:
         self.probe    = Probe()
         self.orient   = Orient()
         self.vars     = {}  # local variables
-        self.gcodelines = []
         self.init()
 
     #----------------------------------------------------------------------
     def init(self):
         self.filename = ""
-        self.blocks   = []        # list of blocks
+        self.blocks   = []  # list of blocks
+        self.gcodelines = ["",]  # Add a starting 0 pos to better align index
         self.vars.clear()
         self.undoredo.reset()
 #        self.probe.init()
@@ -2146,7 +2146,7 @@ class GCode:
 
         # Add line to the list for display
         self.gcodelines.append(line)
-        print("_addLine ", line)
+        #print("_addLine ", len(self.gcodelines), line)
 
         # rapid move up = end of block
         if self._blocksExist:

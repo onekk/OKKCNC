@@ -129,8 +129,8 @@ class CNCCanvas(Tk.Canvas, object):
         # Global variables
         self.view = 0
         self.app = app
-        self.cnc = app.cnc
-        self.gcode = app.gcode
+        self.cnc = self.app.cnc
+        self.gcode = self.app.gcode
         self.actionVar = Tk.IntVar()
 
         # Canvas binding

@@ -6,13 +6,8 @@ Created on Fri Nov  8 16:03:58 2019
 @author: carlo
 """
 
-
 from __future__ import absolute_import
 from __future__ import print_function
-
-__author__  = "Carlo Dormeletti (onekk)"
-__email__   = "carlo.dormeletti@gmail.com"
-
 
 try:
    import tkMessageBox
@@ -24,50 +19,57 @@ import OCV
 from CNC import Block, CNC
 
 
-def RectPath(x,y,w,h):
-        xR = []
-        yR = []
-        xR.append(x)
-        yR.append(y)
-        xR.append(x + w)
-        yR.append(y)
-        xR.append(x + w)
-        yR.append(y + h)
-        xR.append(x)
-        yR.append(y + h)
-        xR.append(x)
-        yR.append(y)
-        return (xR,yR)
+def rect_path(x_0, y_0, r_w, r_h):
+    """calculate the rectangular path"""
+    x_r = []
+    y_r = []
+
+    x_r.append(x_0)
+    y_r.append(y_0)
+    x_r.append(x_0 + r_w)
+    y_r.append(y_0)
+    x_r.append(x_0 + r_w)
+    y_r.append(y_0 + r_h)
+    x_r.append(x_0)
+    y_r.append(y_0 + r_h)
+    x_r.append(x_0)
+    y_r.append(y_0)
+
+    return (x_r, y_r)
 
 
-def line(self, app, endDepth, mem_0, mem_1):
+def line(self, app, end_depth, mem_0, mem_1):
+    """Create GCode for a Line"""
+    x_start = min(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
+    y_start = min(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
-    XStart = min(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
-    YStart = min(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
+    x_end = max(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
+    y_end = max(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
-    XEnd = max(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
-    YEnd = max(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
+    z_start = OCV.WK_mems[mem_1][2]
 
-    startDepth = OCV.WK_mems[mem_1][2]
+    tool_dia = OCV.CD['diameter']
+    #tool_rad = tool_dia / 2.
+    xy_stepover = tool_dia * OCV.CD['stepover'] / 100.0
 
-    toolDiam = OCV.CD['diameter']
-    #toolRadius = toolDiam / 2.
-    StepOverInUnitMax = toolDiam * OCV.CD['stepover'] / 100.0
+    z_stepover = OCV.CD['stepz']
 
-    ZStepOver = OCV.CD['stepz']
-    if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
+    #avoid infinite while loop
+    if z_stepover == 0:
+        z_stepover = 0.001
 
-    msg = "Line Cut Operation: \n"
-    msg+= "Start: \n\n{0}\n\n".format(OCV.showC(XStart, YStart, startDepth))
-    msg+= "End: \n\n{0}\n\n".format(OCV.showC(XEnd, YEnd, endDepth))
-    msg+= "Tooldiam: {0:.{1}f} \n\n".format(toolDiam, OCV.digits)
-    msg+= "StepDown: {0:.{1}f} \n\n".format(ZStepOver, OCV.digits)
-    msg+= "StepOver: {0:.{1}f} \n\n".format(StepOverInUnitMax, OCV.digits)
+    msg = (
+        "Line Cut Operation: \n",
+        "Start: \n\n{0}\n\n".format(OCV.showC(x_start, y_start, z_start)),
+        "End: \n\n{0}\n\n".format(OCV.showC(x_end, y_end, end_depth)),
+        "Tool diameter: {0:.{1}f} \n\n".format(tool_dia, OCV.digits),
+        "StepDown: {0:.{1}f} \n\n".format(z_stepover, OCV.digits),
+        "StepOver: {0:.{1}f} \n\n".format(xy_stepover, OCV.digits))
 
 
-    retval = tkMessageBox.askokcancel("Line Cut",msg)
+    retval = tkMessageBox.askokcancel("Line Cut", "".join(msg))
 
-    print("RetVal",retval)
+    print("RetVal", retval)
 
     if retval is False:
         return
@@ -78,218 +80,228 @@ def line(self, app, endDepth, mem_0, mem_1):
 
     # Set the Initialization file
     blocks = []
-    block =  Block("Init")
+    block = Block("Init")
     # Get the current WCS as the mem are related to it
     block.append(OCV.CD['WCS'])
     blocks.append(block)
 
     block = Block("Line")
     block.append("(Line Cut)")
-    block.append("(From: {0})".format(OCV.gcodeCC(XStart, YStart, startDepth)))
-    block.append("(To: {0})".format(OCV.gcodeCC(XEnd, YEnd, endDepth)))
-    block.append("(StepDown: {0:.{1}f} )".format(ZStepOver, OCV.digits))
-    block.append("(StepOver: {0:.{1}f} )".format(StepOverInUnitMax, OCV.digits))
-    block.append("(Tool diameter = {0:.{1}f})".format(toolDiam,  OCV.digits))
+    block.append("(From: {0})".format(OCV.gcodeCC(x_start, y_start, z_start)))
+    block.append("(To: {0})".format(OCV.gcodeCC(x_end, y_end, end_depth)))
+    block.append("(StepDown: {0:.{1}f} )".format(z_stepover, OCV.digits))
+    block.append("(StepOver: {0:.{1}f} )".format(xy_stepover, OCV.digits))
+    block.append("(Tool diameter = {0:.{1}f})".format(tool_dia, OCV.digits))
 
     #Safe move to first point
     block.append(CNC.zsafe())
-    block.append(CNC.grapid(XStart,YStart))
+    block.append(CNC.grapid(x_start, y_start))
 
-    # Init Depth corrected by ZStepOver
+    # Init Depth corrected by z_stepover
     # for the correctness of the loop
-    # the first instruction of the while loop is -= ZStepOver
+    # the first instruction of the while loop is -= z_stepover
     # the check is done at the final depth
 
-    currDepth = startDepth + ZStepOver
+    curr_depth = z_start + z_stepover
 
     #Create GCode from points
     while True:
-        currDepth -= ZStepOver
-        if currDepth < endDepth : currDepth = endDepth
-        block.append(CNC.zenter(currDepth))
-        block.append(CNC.gcode(1, [("F",OCV.CD["cutfeed"])]))
+        curr_depth -= z_stepover
 
-        block.append(CNC.gline(XEnd,YEnd))
+        if curr_depth < end_depth:
+            curr_depth = end_depth
+
+        block.append(CNC.zenter(curr_depth))
+        block.append(CNC.gcode(1, [("F", OCV.CD["cutfeed"])]))
+
+        block.append(CNC.gline(x_end, y_end))
 
         #Move to start in a safe way
         block.append(CNC.zsafe())
-        block.append(CNC.grapid(XStart,YStart))
+        block.append(CNC.grapid(x_start, y_start))
 
         #Check exit condition
-        if currDepth <= endDepth : break
+        if curr_depth <= end_depth:
+            break
 
     # return to a safe Z
     block.append(CNC.zsafe())
     blocks.append(block)
 
     if blocks is not None:
-        active = app.activeBlock()
-        if active==0: active=1
-        app.gcode.insBlocks(active, blocks, "Line Cut")
-        app.refresh()
-        app.setStatus(_("Line Cut: Generated line cut code"))
+        active = OCV.application.activeBlock()
+
+        if active == 0:
+            active = 1
+
+        OCV.application.gcode.insBlocks(active, blocks, "Line Cut")
+        OCV.application.refresh()
+        OCV.application.setStatus(_("Line Cut: Generated line cut code"))
 
 
-def pocket(self, app, endDepth, mem_0, mem_1):
+def pocket(self, app, end_depth, mem_0, mem_1):
+    """create GCode for a pocket"""
+    x_start = min(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
+    y_start = min(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
-    XStart = min(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
-    YStart = min(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
+    x_end = max(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
+    y_end = max(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
-    XEnd = max(OCV.WK_mems[mem_0][0],OCV.WK_mems[mem_1][0])
-    YEnd = max(OCV.WK_mems[mem_0][1],OCV.WK_mems[mem_1][1])
+    z_start = OCV.WK_mems[mem_1][2]
 
-    startDepth = OCV.WK_mems[mem_1][2]
+    tool_dia = OCV.CD['diameter']
+    tool_rad = tool_dia / 2.
 
-    toolDiam = OCV.CD['diameter']
-    toolRadius = toolDiam / 2.
+    xy_stepover = tool_dia * OCV.CD['stepover'] / 100.0
 
-    StepOverInUnitMax = toolDiam * OCV.CD['stepover'] / 100.0
+    z_stepover = OCV.CD['stepz']
 
-    ZStepOver = OCV.CD['stepz']
+    #avoid infinite while loop
+    if z_stepover == 0:
+        z_stepover = 0.001
 
-    if ZStepOver==0 : ZStepOver=0.001  #avoid infinite while loop
+    msg = (
+        "Pocket Cut Operation: \n",
+        "Start: \n\n{0}\n\n".format(OCV.showC(x_start, y_start, z_start)),
+        "End: \n\n{0}\n\n".format(OCV.showC(x_end, y_end, end_depth)),
+        "Tool diameter: {0:.{1}f} \n\n".format(tool_dia, OCV.digits),
+        "StepDown: {0:.{1}f} \n\n".format(z_stepover, OCV.digits),
+        "StepOver: {0:.{1}f} \n\n".format(xy_stepover, OCV.digits))
 
-    msg = "Pocket Cut Operation: \n"
-    msg+= "Start: \n\n{0}\n\n".format(OCV.showC(XStart, YStart, startDepth))
-    msg+= "End: \n\n{0}\n\n".format(OCV.showC(XEnd, YEnd, endDepth))
-    msg+= "Tooldiam: {0:.{1}f} \n\n".format(toolDiam, OCV.digits)
-    msg+= "StepDown: {0:.{1}f} \n\n".format(ZStepOver, OCV.digits)
-    msg+= "StepOver: {0:.{1}f} \n\n".format(StepOverInUnitMax, OCV.digits)
-
-    retval = tkMessageBox.askokcancel("Pocket Cut",msg)
+    retval = tkMessageBox.askokcancel("Pocket Cut", "".join(msg))
 
     if retval is False:
         return
 
     # Set the Initialization file
     blocks = []
-    block =  Block("Init")
+    block = Block("Init")
     # Get the current WCS as the mem are related to it
     block.append(OCV.CD['WCS'])
     blocks.append(block)
 
     block = Block("Pocket")
     block.append("(Pocket)")
-    block.append("(Start: {0})".format(OCV.gcodeCC(XStart, YStart, startDepth)))
-    block.append("(End: {0})".format(OCV.gcodeCC(XEnd, YEnd, endDepth)))
-    block.append("(StepDown: {0:.{1}f} )".format(ZStepOver, OCV.digits))
-    block.append("(StepOver: {0:.{1}f} )".format(StepOverInUnitMax, OCV.digits))
-    block.append("(Tool diameter = {0:.{1}f})".format(toolDiam,  OCV.digits))
+    block.append("(Start: {0})".format(OCV.gcodeCC(x_start, y_start, z_start)))
+    block.append("(End: {0})".format(OCV.gcodeCC(x_end, y_end, end_depth)))
+    block.append("(StepDown: {0:.{1}f} )".format(z_stepover, OCV.digits))
+    block.append("(StepOver: {0:.{1}f} )".format(xy_stepover, OCV.digits))
+    block.append("(Tool diameter = {0:.{1}f})".format(tool_dia, OCV.digits))
 
     #Move safe to first point
     block.append(CNC.zsafe())
-    block.append(CNC.grapid(XStart,YStart))
+    block.append(CNC.grapid(x_start, y_start))
 
     #Init Depth
 
-    f_width = XEnd - XStart
-    f_heigth = YEnd - YStart
+    f_width = x_end - x_start
+    f_heigth = y_end - y_start
 
-    CutDirection = "Conventional"
+    cut_dir = "Conventional"
 
-    #Offset for Border Cut
-
-    BorderXStart = XStart + toolRadius
-    BorderYStart = YStart + toolRadius
-
-    #BorderXEnd = XStart + f_width - toolRadius
-    #BorderYEnd = YStart + f_heigth - toolRadius
-
-    PocketXStart = BorderXStart
-    PocketYStart = BorderYStart
+    x_start_pocket = x_start + tool_rad
+    y_start_pocket = y_start + tool_rad
 
     #Calc space to work with/without border cut
-    WToWork = f_width - toolDiam
-    HToWork = f_heigth - toolDiam
+    travel_width = f_width - tool_dia
+    travel_height = f_heigth - tool_dia
 
-    if(WToWork < toolRadius or HToWork < toolRadius):
+    if travel_width < tool_rad or travel_height < tool_rad:
         msg = "(Pocket aborted: Pocket area is too small for this End Mill.)"
-        retval = tkMessageBox.askokcancel("Pocket Cut",msg)
+        retval = tkMessageBox.askokcancel("Pocket Cut", msg)
         return
 
     #Prepare points for pocketing
-    xP=[]
-    yP=[]
+    x_p = []
+    y_p = []
 
     #Calc number of pass
-    VerticalCount = (int)(HToWork / ZStepOver)
-    HorrizontalCount = (int)(WToWork / ZStepOver)
+    v_count = (int)(travel_height / xy_stepover)
+    h_count = (int)(travel_width / xy_stepover)
+
     #Make them odd
-    if VerticalCount%2 == 0 : VerticalCount += 1
-    if HorrizontalCount%2 == 0 : HorrizontalCount += 1
+    if v_count%2 == 0:
+        v_count += 1
+
+    if h_count%2 == 0:
+        h_count += 1
 
     #Calc step minor of Max step
-    StepOverInUnitH = HToWork / (VerticalCount)
-    StepOverInUnitW = WToWork / (HorrizontalCount)
+    h_stepover = travel_height / v_count
+    w_stepover = travel_width / h_count
 
     #Start from border to center
-    xS = PocketXStart
-    yS = PocketYStart
-    wS = WToWork
-    hS = HToWork
-    xC = 0
-    yC = 0
+    x_s = x_start_pocket
+    y_s = y_start_pocket
+    w_s = travel_width
+    h_s = travel_height
+    x_c = 0
+    y_c = 0
 
-    while (xC<=HorrizontalCount/2 and yC<=VerticalCount/2):
-            #Pocket offset points
-            xO,yO = RectPath(xS, yS, wS, hS)
-            if CutDirection == "Conventional":
-                    xO = xO[::-1]
-                    yO = yO[::-1]
+    while x_c <= h_count/2 and y_c <= v_count/2:
+        #Pocket offset points
+        x_0, y_0 = rect_path(x_s, y_s, w_s, h_s)
 
-            xP = xP + xO
-            yP = yP + yO
-            xS+=StepOverInUnitH
-            yS+=StepOverInUnitW
-            hS-=2.0*StepOverInUnitH
-            wS-=2.0*StepOverInUnitW
-            xC += 1
-            yC += 1
+        if cut_dir == "Conventional":
+            x_0 = x_0[::-1]
+            y_0 = y_0[::-1]
 
-            #Reverse point to start from inside (less stres on the tool)
-            xP = xP[::-1]
-            yP = yP[::-1]
+        x_p = x_p + x_0
+        y_p = y_p + y_0
+        x_s += h_stepover
+        y_s += w_stepover
+        h_s -= 2.0 * h_stepover
+        w_s -= 2.0 * w_stepover
+        x_c += 1
+        y_c += 1
+
+        #Reverse point to start from inside (less stres on the tool)
+        x_p = x_p[::-1]
+        y_p = y_p[::-1]
 
     #Move safe to first point
     block.append(CNC.zsafe())
-    block.append(CNC.grapid(xP[0], yP[0]))
+    block.append(CNC.grapid(x_p[0], y_p[0]))
 
-    # Init Depth corrected by ZStepOver
+    # Init Depth corrected by z_stepover
     # for the correctness of the loop
-    # the first instruction of the while loop is -= ZStepOver
+    # the first instruction of the while loop is -= z_stepover
     # the check is done at the final depth
-    currDepth = startDepth + ZStepOver
+    curr_depth = z_start + z_stepover
 
     #Create GCode from points
     while True:
-            currDepth -= ZStepOver
-            if currDepth < endDepth : currDepth = endDepth
+        curr_depth -= z_stepover
 
-            block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("F",OCV.CD["cutfeed"])]))
+        if curr_depth < end_depth:
+            curr_depth = end_depth
 
-            #Pocketing
-            for x,y in zip(xP,yP):
-                    block.append(CNC.gline(x, y))
+        block.append(CNC.zenter(curr_depth))
+        block.append(CNC.gcode(1, [("F", OCV.CD["cutfeed"])]))
 
-            #Move to the begin in a safe way
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(xP[0], yP[0]))
+        #Pocketing
+        for x_l, y_l in zip(x_p, y_p):
+                block.append(CNC.gline(x_l, y_l))
 
-            #Verify exit condition
-            if currDepth <= endDepth : break
+        #Move to the begin in a safe way
+        block.append(CNC.zsafe())
+        block.append(CNC.grapid(x_p[0], y_p[0]))
+
+        #Verify exit condition
+        if curr_depth <= end_depth:
+            break
 
     # end of the loop
     # return to z_safe
     block.append(CNC.zsafe())
     blocks.append(block)
 
-
     if blocks is not None:
-        active = app.activeBlock()
+        active = OCV.application.activeBlock()
 
-        if active==0: active=1
-        app.gcode.insBlocks(active, blocks, "Line Cut")
-        app.refresh()
-        app.setStatus(_("Line Cut: Generated line cut code"))
+        if active == 0:
+            active = 1
 
+        OCV.application.gcode.insBlocks(active, blocks, "Line Cut")
+        OCV.application.refresh()
+        OCV.application.setStatus(_("Line Cut: Generated line cut code"))

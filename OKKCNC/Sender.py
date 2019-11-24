@@ -538,9 +538,9 @@ class Sender:
     #----------------------------------------------------------------------
     # FIXME: legacy wrappers. try to call mcontrol directly instead:
     #----------------------------------------------------------------------
-    def hardReset(self):            self.mcontrol.hardReset()
-    #def softReset(self, clearAlarm=True):    self.mcontrol.softReset(clearAlarm)
-    #def unlock(self, clearAlarm=True):    self.mcontrol.unlock(clearAlarm)
+    #def hardReset(self):            self.mcontrol.hardReset()
+    def softReset(self, clearAlarm=True):    self.mcontrol.softReset(clearAlarm)
+    def unlock(self, clearAlarm=True):    self.mcontrol.unlock(clearAlarm)
     def home(self, event=None):     self.mcontrol.home(event)
     def viewSettings(self):         self.mcontrol.viewSettings()
     def viewParameters(self):       self.mcontrol.viewParameters()

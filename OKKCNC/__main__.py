@@ -32,13 +32,17 @@ sys.path.append(os.path.join(PRGPATH, 'lib'))
 sys.path.append(os.path.join(PRGPATH, 'plugins'))
 sys.path.append(os.path.join(PRGPATH, 'controllers'))
 
+# Import Here the OCV module as it contains variables used across the program
+import OCV
 
-
+# Check if pyserial is installed
 try:
     import serial
+    OCV.HAS_SERIAL = True
 except ImportError:
-    HAS_SERIAL = None
+    OCV.HAS_SERIAL = None
 
+# Import Tkinter
 try:
     import Tkinter as Tk
     from Queue import *
@@ -50,7 +54,7 @@ except ImportError:
 
 import webbrowser
 
-import OCV
+
 # Load configuration before anything else
 # and if needed replace the  translate function _()
 # before any string is initialized
@@ -59,7 +63,6 @@ Utils.loadConfiguration()
 
 import rexx
 import tkExtra
-#import Updates
 import bFileDialog
 import tkDialogs
 
@@ -74,10 +77,12 @@ import CNCCanvas
 from CNCRibbon    import Page
 from ToolsPage    import Tools, ToolsPage
 from FilePage     import FilePage
-from ControlPage  import ControlPage #, MemoryGroup
+from ControlPage  import ControlPage
 from TerminalPage import TerminalPage
 from ProbePage    import ProbePage
 from EditorPage   import EditorPage
+
+import MemoryPanel
 
 _openserial = True # override ini parameters
 _device = None
@@ -105,15 +110,13 @@ FILETYPES = [
     ("STL", "*.stl"),
     (_("All"), "*")]
 
-geometry = None
-
-#==============================================================================
-# Main Application window
-#==============================================================================
 class Application(Tk.Toplevel, Sender):
+    """Main Application window"""
     def __init__(self, master, **kw):
         Tk.Toplevel.__init__(self, master, **kw)
-        Sender.__init__(self)
+        OCV.application = self
+
+        Sender.__init__(OCV.application)
 
         if sys.platform == "win32":
             self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
@@ -296,10 +299,6 @@ class Application(Tk.Toplevel, Sender):
         self.terminal = Page.frames["Terminal"].terminal
         self.buffer = Page.frames["Terminal"].buffer
 
-        # XXX FIXME Do we need it or I can takes from Page every time?
-        #self.autolevel = Page.frames["Probe:Autolevel"]
-        # seem to be fixed
-
         # Left side
         for name in Utils.getStr(Utils.__prg__, "ribbon").split():
             last = name[-1]
@@ -404,6 +403,7 @@ class Application(Tk.Toplevel, Sender):
 
 
         frame = Page.frames["Probe:Tool"]
+
         self.bind('<<ToolCalibrate>>', frame.calibrate)
         self.bind('<<ToolChange>>', frame.change)
 
@@ -577,7 +577,7 @@ class Application(Tk.Toplevel, Sender):
         OCV.WK_active_mems[OCV.WK_mem] = 1
 
     def saveMems(self, event=None):
-        self.saveMemory()
+        MemoryPanel.Config.saveMemory()
 
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
@@ -724,6 +724,8 @@ class Application(Tk.Toplevel, Sender):
         font = Utils.getFont("TkMenuFont")
         font = Utils.getFont("TkTextFont")
 
+        print("Font: >", font)
+
         self._swapKeyboard = Utils.getInt("Control", "swap", 0)
 
         self._onStart = Utils.getStr("Events", "onstart", "")
@@ -731,8 +733,8 @@ class Application(Tk.Toplevel, Sender):
 
         tkExtra.Balloon.font = Utils.getFont("balloon", tkExtra.Balloon.font)
 
-        Ribbon._FONT = Utils.getFont("ribbon.label", Ribbon._FONT)
-        Ribbon._TABFONT = Utils.getFont("ribbon.tab", Ribbon._TABFONT)
+        OCV.RIBBON_FONT = Utils.getFont("ribbon.label", OCV.RIBBON_FONT)
+        OCV.RIBBON_TABFONT = Utils.getFont("ribbon.tab", OCV.RIBBON_TABFONT)
 
         OCV.ACTIVE_COLOR = Utils.getStr("Color", "ribbon.active", OCV.ACTIVE_COLOR)
         OCV.LABEL_SELECT_COLOR = Utils.getStr("Color", "ribbon.select", OCV.LABEL_SELECT_COLOR)
@@ -755,7 +757,7 @@ class Application(Tk.Toplevel, Sender):
         self.tools.loadConfig()
         Sender.loadConfig(self)
         self.loadShortcuts()
-        self.loadMemory()
+        MemoryPanel.Config.loadMemory()
 
 
     def saveConfig(self):
@@ -775,7 +777,7 @@ class Application(Tk.Toplevel, Sender):
         Sender.saveConfig(self)
         self.tools.saveConfig()
         self.canvasFrame.saveConfig()
-        self.saveMemory()
+        MemoryPanel.Config.saveMemory()
 
 
     def loadHistory(self):
@@ -795,43 +797,6 @@ class Application(Tk.Toplevel, Sender):
             return
         f.write("\n".join(self.history))
         f.close()
-
-    @staticmethod
-    def loadMemory():
-        # maybe soem values in Memory
-        #relative to WK_bank_max and WK_bank_num
-        # init the memory vars
-        OCV.WK_mem_num = ((OCV.WK_bank_max + 1) * OCV.WK_bank_mem) + 1
-        OCV.WK_active_mems = []
-
-        for i in range(0, OCV.WK_mem_num + 1):
-            OCV.WK_active_mems.append(0)
-
-        OCV.WK_bank_show = []
-
-        for i in range(0, OCV.WK_bank_max + 1):
-            OCV.WK_bank_show.append(0)
-
-        for name, value in Utils.config.items("Memory"):
-            content = value.split(",")
-            #print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
-            OCV.WK_mems[name] = [
-                float(content[1]),
-                float(content[2]),
-                float(content[3]),
-                1,
-                content[0]]
-        #print("Load Memory ended")
-
-    @staticmethod
-    def saveMemory():
-        for mem_name in OCV.WK_mems:
-            md = OCV.WK_mems[mem_name]
-            if md[3] is not 0:
-                mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
-                    md[4], md[0], md[1], md[2], md[3])
-                Utils.setStr("Memory", mem_name, mem_value)
-
 
 
     def cut(self, event=None):
@@ -2021,7 +1986,6 @@ class Application(Tk.Toplevel, Sender):
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
             self.mcontrol.unlock(True)
-            #self.unlock()
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
@@ -2449,17 +2413,20 @@ class Application(Tk.Toplevel, Sender):
 
     def openClose(self, event=None):
         serialPage = Page.frames["Serial"]
-        if self.HAS_SERIAL is not None:
+        print("OpenClose Reached")
+        if OCV.serial_open is True:
             self.close()
             serialPage.connectBtn.config(
                 text=_("Open"),
                 background="Salmon",
                 activebackground="Salmon")
+            OCV.serial_open = False
         else:
             serialPage = Page.frames["Serial"]
             device = _device or serialPage.portCombo.get() #.split("\t")[0]
             baudrate = _baud   or serialPage.baudCombo.get()
             if self.open(device, baudrate):
+                OCV.serial_open = True
                 serialPage.connectBtn.config(
                     text=_("Close"),
                     background="LightGreen",
@@ -2471,7 +2438,7 @@ class Application(Tk.Toplevel, Sender):
         try:
             return Sender.open(self, device, baudrate)
         except:
-            self.HAS_SERIAL = None
+            OCV.serial_open = False
             self.thread = None
             tkMessageBox.showerror(
                 _("Error opening serial"),
@@ -2495,7 +2462,6 @@ class Application(Tk.Toplevel, Sender):
         @return true if the compile has to abort
         """
 
-
         try:
             self.update()    # very tricky function of Tk
         except Tk.TclError:
@@ -2510,12 +2476,13 @@ class Application(Tk.Toplevel, Sender):
         self.cleanAfter = True    #Clean when this operation stops
         print("Will clean after this operation")
 
-        if self.HAS_SERIAL is None and not OCV.developer:
+        if OCV.HAS_SERIAL is False and not OCV.developer:
             tkMessageBox.showerror(
                 _("Serial Error"),
                 _("Serial is not connected"),
                 parent=self)
             return
+
         if self.running:
             if self._pause:
                 self.resume()
@@ -2789,18 +2756,22 @@ class Application(Tk.Toplevel, Sender):
 
         if self.running:
             self.proc_line_n = self._runLines - self.queue.qsize()
+            #print(self.proc_line_n)
             self.statusbar.setProgress(
                 self.proc_line_n,
                 self._gcount)
+
             OCV.CD["msg"] = self.statusbar.msg
+
             b_fill = Sender.getBufferFill(self)
             #print ("Buffer = ", b_fill)
             self.bufferbar.setProgress(b_fill)
             self.bufferbar.setText("{0:02.2f}".format(b_fill))
             #print("Queue > ", self.queue.queue)
 
-            if self.proc_line_n > 0:
-                print(self.proc_line_n)
+            if self.proc_line_n > 0 and \
+                self.proc_line_n < len(self.gcode.gcodelines):
+
                 displ_line = "{0} > {1} ".format(
                     self.proc_line_n,
                     self.gcode.gcodelines[self.proc_line_n])
@@ -2907,7 +2878,7 @@ def main(args=None):
         elif opt == "-D":
             OCV.developer = False
         elif opt == "-g":
-            geometry = val
+            OCV.geometry = val
         elif opt in ("-r", "-R", "--recent", "-l", "--list"):
             if opt in ("-r", "--recent"):
                 r = 0
@@ -3017,19 +2988,19 @@ def main(args=None):
         OCV.root.tk_setPalette(**palette)
 
     # Start application
-    OCV.application = Application(OCV.root)
+    _application = Application(OCV.root)
 
     if fullscreen:
-        OCV.application.attributes("-fullscreen", True)
+        _application.attributes("-fullscreen", True)
 
     # Parse remaining arguments except files
     if recent:
         args.append(recent)
 
     for fn in args:
-        OCV.application.load(fn)
+        _application.load(fn)
 
-    if HAS_SERIAL is None:
+    if OCV.HAS_SERIAL is False:
         tkMessageBox.showerror(
             _("python serial missing"),
             _("ERROR: Please install the python pyserial module\n" \
@@ -3038,22 +3009,18 @@ def main(args=None):
               "Linux:\tsudo apt-get install python-serial\n" \
               "\tor yum install python-serial\n" \
               "\tor dnf install python-pyserial"),
-            parent=OCV.application)
-
-        #if Updates.need2Check():
-        #    OCV.application.checkUpdates()
+            parent=_application)
 
     if run:
-        OCV.application.run()
+        _application.run()
 
     try:
-        OCV.root.mainloop()
+        _application.mainloop()
     except KeyboardInterrupt:
-        OCV.application.quit()
+        _application.quit()
 
-    OCV.application.close()
+    _application.close()
     Utils.saveConfiguration()
-
 
 if __name__ == "__main__":
     main()

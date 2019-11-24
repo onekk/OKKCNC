@@ -63,6 +63,7 @@ class _GenericController:
     def hardReset(self):
         self.master.busy()
         if self.master.serial is not None:
+            print("Machine hardtReset")
             self.hardResetPre()
             self.master.openClose()
             self.hardResetAfter()
@@ -75,6 +76,7 @@ class _GenericController:
     #----------------------------------------------------------------------
     def softReset(self, clearAlarm=True):
         if self.master.serial:
+            print("Machine softReset")
             self.master.serial.write(b"\030")
         self.master.stopProbe()
         if clearAlarm: self.master._alarm = False
@@ -82,7 +84,10 @@ class _GenericController:
 
     #----------------------------------------------------------------------
     def unlock(self, clearAlarm=True):
-        if clearAlarm: self.master._alarm = False
+        print("Machine Unlock")
+        if clearAlarm:
+            self.master._alarm = False
+
         self.master.sendGCode("$X")
 
     #----------------------------------------------------------------------

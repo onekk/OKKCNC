@@ -45,14 +45,14 @@ class TerminalGroup(CNCRibbon.ButtonGroup):
 class CommandsGroup(CNCRibbon.ButtonMenuGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Commands"), app,
-            [(_("Restore Settings"),  "grbl_settings",  app.grblRestoreSettings),
-             (_("Restore Workspace"), "grbl_params",    app.grblRestoreWCS),
-             (_("Restore All"),      "reset",        app.grblRestoreAll),
+            [(_("Restore Settings"),  "grbl_settings",  OCV.application.grblRestoreSettings),
+             (_("Restore Workspace"), "grbl_params",    OCV.application.grblRestoreWCS),
+             (_("Restore All"),      "reset",        OCV.application.grblRestoreAll),
             ])
         self.grid3rows()
 
         # Disable state for some SMOOTHIE commands
-        state=app.controller in ("GRBL0", "GRBL1") and NORMAL or DISABLED,
+        state=OCV.application.controller in ("GRBL0", "GRBL1") and NORMAL or DISABLED,
 
         # ---
         col,row=0,0
@@ -62,7 +62,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 state=state,
-                command=self.app.viewSettings,
+                command=OCV.application.viewSettings,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$$ Display settings of Grbl"))
@@ -74,7 +74,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Parameters"),
                 compound=LEFT,
                 anchor=W,
-                command=self.app.viewParameters,
+                command=OCV.application.viewParameters,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$# Display parameters of Grbl"))
@@ -86,7 +86,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("State"),
                 compound=LEFT,
                 anchor=W,
-                command=self.app.viewState,
+                command=OCV.application.viewState,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$G Display state of Grbl"))
@@ -100,7 +100,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Build"),
                 compound=LEFT,
                 anchor=W,
-                command=self.app.viewBuild,
+                command=OCV.application.viewBuild,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$I Display build information of Grbl"))
@@ -113,7 +113,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 state=state,
-                command=self.app.viewStartup,
+                command=OCV.application.viewStartup,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$N Display startup configuration of Grbl"))
@@ -127,7 +127,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 compound=LEFT,
                 anchor=W,
                 state=state,
-                command=self.app.checkGcode,
+                command=OCV.application.checkGcode,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$C Enable/Disable checking of gcode"))
@@ -141,7 +141,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Help"),
                 compound=LEFT,
                 anchor=W,
-                command=self.app.grblHelp,
+                command=OCV.application.grblHelp,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("$ Display build information of Grbl"))

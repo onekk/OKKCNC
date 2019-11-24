@@ -5,7 +5,13 @@ Created on Sun Nov 10 15:21:49 2019
 
 @author: carlo
 """
-_app = None
+HAS_SERIAL = None
+EXE_FONT = ("Helvetica",12,"bold")
+RIBBON_TABFONT = ("Sans","-14","bold")
+RIBBON_FONT = ("Sans","-11")
+
+FONT_SECTION = "Font"
+
 
 root = None
 application = None
@@ -55,6 +61,7 @@ laseradaptive  = False
 memNum = 0
 
 # S #
+serial_open = False
 startup        = "G90"
 stdexpr        = False    # standard way of defining expressions with []
 step1 = 0.0

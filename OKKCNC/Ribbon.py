@@ -18,8 +18,7 @@ import OCV
 import Utils
 import tkExtra
 
-_TABFONT    = ("Sans","-14","bold")
-_FONT       = ("Sans","-11")
+
 
 # Ribbon show state
 RIBBON_HIDDEN =  0    # Hidden
@@ -64,7 +63,7 @@ class LabelGroup(Frame):
                 compound=RIGHT)
         else:
             self.label = Label(self, text=_(name),
-                    font       = _FONT,
+                    font = OCV.RIBBON_FONT,
                     foreground = OCV.FOREGROUND_GROUP,
                     background = OCV.BACKGROUND_GROUP,
                     padx=2,
@@ -110,21 +109,23 @@ class _KeyboardFocus:
 class LabelButton(Button, _KeyboardFocus):
     def __init__(self, master, recipient=None, event=None, **kw):
         Button.__init__(self, master, **kw)
-        self.config(    relief           = FLAT,
+        self.config(
+                relief = FLAT,
                 activebackground = OCV.ACTIVE_COLOR,
-                font             = _FONT,
-                borderwidth      = 1,
+                font = OCV.RIBBON_FONT,
+                borderwidth = 1,
                 highlightthickness = 0,
-                padx             = 2,
-                pady             = 0)
+                padx = 2,
+                pady = 0)
         _KeyboardFocus._bind(self)
+
         if recipient is not None:
             self.config(command = self.sendEvent)
             self._recipient = recipient
-            self._event     = event
+            self._event = event
         else:
             self._recipient = None
-            self._event     = None
+            self._event = None
 
     #-----------------------------------------------------------------------
     def sendEvent(self):
@@ -144,7 +145,7 @@ class LabelCheckbutton(Checkbutton, _KeyboardFocus):
                 highlightthickness = 0,
                 padx               = 0,
                 pady               = 0,
-                font               = _FONT
+                font               = OCV.RIBBON_FONT
             )
         _KeyboardFocus._bind(self)
 
@@ -161,7 +162,7 @@ class LabelRadiobutton(Radiobutton, _KeyboardFocus):
             borderwidth        = 0,
             highlightthickness = 0,
             pady               = 0,
-            font               = _FONT
+            font               = OCV.RIBBON_FONT
         )
         _KeyboardFocus._bind(self)
 
@@ -170,7 +171,7 @@ class LabelRadiobutton(Radiobutton, _KeyboardFocus):
 class LabelCombobox(tkExtra.Combobox, _KeyboardFocus):
     def __init__(self, master, **kw):
         tkExtra.Combobox.__init__(self, master, **kw)
-        self.config(background=OCV.BACKGROUND, font=_FONT)
+        self.config(background=OCV.BACKGROUND, font=OCV.RIBBON_FONT)
         Frame.config(self, background=OCV.BACKGROUND, padx=0, pady=0)
         _KeyboardFocus._bind(self)
 
@@ -188,7 +189,7 @@ class MenuButton(Button, _KeyboardFocus):
         Button.__init__(self, master, **kw)
         self.config(    relief           = FLAT,
                 activebackground = OCV.ACTIVE_COLOR,
-                font             = _FONT,
+                font             = OCV.RIBBON_FONT,
                 borderwidth      = 0,
                 highlightthickness= 0,
                 padx             = 2,
@@ -282,7 +283,7 @@ class TabButton(Radiobutton):
                 activebackground   = OCV.ACTIVE_COLOR,
                 indicatoron        = 0,
                 relief             = FLAT,
-                font               = _TABFONT,
+                font               = OCV.RIBBON_TABFONT,
                 borderwidth        = 0,
                 highlightthickness = 0,
                 padx               = 5,

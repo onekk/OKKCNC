@@ -86,9 +86,6 @@ _errorReport = True
 errors       = []
 _maxRecent   = 10
 
-_FONT_SECTION = "Font"
-
-
 #New class to provide config for everyone
 #FIXME: create single instance of this and pass it to all parts of application
 class Config():
@@ -408,7 +405,7 @@ def fontString(font):
 #-------------------------------------------------------------------------------
 def getFont(name, default=None):
     try:
-        value = config.get(_FONT_SECTION, name)
+        value = config.get(OCV.FONT_SECTION, name)
     except:
         value = None
 
@@ -432,11 +429,11 @@ def getFont(name, default=None):
 def setFont(name, font):
     if font is None: return
     if isinstance(font,str):
-        config.set(_FONT_SECTION, name, font)
+        config.set(OCV.FONT_SECTION, name, font)
     elif isinstance(font,tuple):
-        config.set(_FONT_SECTION, name, ",".join(map(str,font)))
+        config.set(OCV.FONT_SECTION, name, ",".join(map(str,font)))
     else:
-        config.set(_FONT_SECTION, name, "{0},{1},{2}".format(
+        config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
                 font.cget("family"),
                 font.cget("size"),
                 font.cget("weight")))

@@ -61,18 +61,18 @@ class CNCListbox(Listbox):
         except:
             pass
 
-        self.bind("<Control-Key-b>",    self.insertBlock)
-        self.bind("<Control-Key-r>",    self.fill)
+        self.bind("<Control-Key-b>", self.insertBlock)
+        self.bind("<Control-Key-r>", self.fill)
 
-        self._blockPos = []        # listbox position of each block
-        self._items    = []        # each listbox lien which item (bid,lid) shows
-        self.app       = app
-        self.gcode     = app.gcode
-        self.font      = tkFont.nametofont(self.cget("font"))
-        self._ystart   = 0
-        self._double   = False    # double clicked handled
+        self._blockPos = []  # listbox position of each block
+        self._items = []  # each listbox lien which item (bid,lid) shows
+        self.app = app
+        self.gcode = self.app.gcode
+        self.font = tkFont.nametofont(self.cget("font"))
+        self._ystart = 0
+        self._double = False  # double clicked handled
         self._hadfocus = False
-        self.filter    = None
+        self.filter = None
 
     # ----------------------------------------------------------------------
     def commandFocus(self, event=None):
