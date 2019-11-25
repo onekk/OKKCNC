@@ -70,7 +70,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         self.addWidget(b)
 
-        col,row = 1, 0
+        col, row = 1, 0
 
         b = Ribbon.LabelButton(
             self.frame,
@@ -89,26 +89,26 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         row += 1
         b = Ribbon.LabelButton(
-                self.frame,
-                image=Utils.icons["serial"],
-                text=_("Connection"),
-                compound=Tk.LEFT,
-                anchor=Tk.W,
-                command=lambda s=self : s.event_generate("<<Connect>>"),
-                background=OCV.BACKGROUND)
+            self.frame,
+            image=Utils.icons["serial"],
+            text=_("Connection"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            command=lambda s=self: s.event_generate("<<Connect>>"),
+            background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Open/Close connection"))
         self.addWidget(b)
 
         row += 1
         b = Ribbon.LabelButton(
-                self.frame,
-                image=Utils.icons["reset"],
-                text=_("Reset"),
-                compound=Tk.LEFT,
-                anchor=Tk.W,
-                command=app.mcontrol.softReset(True),
-                background=OCV.BACKGROUND)
+            self.frame,
+            image=Utils.icons["reset"],
+            text=_("Reset"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            command=app.mcontrol.softReset(True),
+            background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Software reset of controller [ctrl-x]"))
         self.addWidget(b)
@@ -122,16 +122,16 @@ class UserGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, "User", app)
         self.grid3rows()
 
-        n = Utils.getInt("Buttons","n",6)
+        n = Utils.getInt("Buttons", "n", 6)
 
-        for idx in range(1,n):
+        for idx in range(1, n):
             b = Utils.UserButton(
-                    self.frame,
-                    self.app,
-                    idx,
-                    anchor=Tk.W,
-                    background=OCV.BACKGROUND)
-            col,row = divmod(idx-1, 3)
+                self.frame,
+                self.app,
+                idx,
+                anchor=Tk.W,
+                background=OCV.BACKGROUND)
+            col, row = divmod(idx-1, 3)
 
             b.grid(row=row, column=col, sticky=Tk.NSEW)
 
@@ -145,7 +145,9 @@ class RunGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Run", app)
 
-        b = Ribbon.LabelButton(self.frame, self, "<<Run>>",
+        b = Ribbon.LabelButton(
+                self.frame,
+                self, "<<Run>>",
                 image=Utils.icons["start32"],
                 text=_("Start"),
                 compound=Tk.TOP,
@@ -154,7 +156,9 @@ class RunGroup(CNCRibbon.ButtonGroup):
         tkExtra.Balloon.set(b, _("Run g-code commands from editor to controller"))
         self.addWidget(b)
 
-        b = Ribbon.LabelButton(self.frame, self, "<<Pause>>",
+        b = Ribbon.LabelButton(
+                self.frame,
+                self, "<<Pause>>",
                 image=Utils.icons["pause32"],
                 text=_("Pause"),
                 compound=Tk.TOP,
@@ -162,7 +166,9 @@ class RunGroup(CNCRibbon.ButtonGroup):
         b.pack(side=Tk.LEFT, fill=Tk.BOTH)
         tkExtra.Balloon.set(b, _("Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"))
 
-        b = Ribbon.LabelButton(self.frame, self, "<<Stop>>",
+        b = Ribbon.LabelButton(
+                self.frame,
+                self, "<<Stop>>",
                 image=Utils.icons["stop32"],
                 text=_("Stop"),
                 compound=Tk.TOP,
@@ -284,7 +290,10 @@ class DROFrame(CNCRibbon.PageFrame):
         row += 1
         col = 1
 
-        self.xzero = Tk.Button(self, text=_("X=0"),
+        self.xzero = Tk.Button(
+                self,
+                text=_("X=0"),
+                font=OCV.DRO_ZERO_FONT,
                 command=self.setX0,
                 activebackground="LightYellow",
                 padx=2, pady=1)
@@ -294,7 +303,10 @@ class DROFrame(CNCRibbon.PageFrame):
         self.addWidget(self.xzero)
 
         col += 1
-        self.yzero = Tk.Button(self, text=_("Y=0"),
+        self.yzero = Tk.Button(
+                self,
+                text=_("Y=0"),
+                font=OCV.DRO_ZERO_FONT,
                 command=self.setY0,
                 activebackground="LightYellow",
                 padx=2, pady=1)
@@ -304,7 +316,10 @@ class DROFrame(CNCRibbon.PageFrame):
         self.addWidget(self.yzero)
 
         col += 1
-        self.zzero = Tk.Button(self, text=_("Z=0"),
+        self.zzero = Tk.Button(
+                self,
+                text=_("Z=0"),
+                font=OCV.DRO_ZERO_FONT,
                 command=self.setZ0,
                 activebackground="LightYellow",
                 padx=2, pady=1)
@@ -316,7 +331,10 @@ class DROFrame(CNCRibbon.PageFrame):
         # Set buttons
         row += 1
         col = 1
-        self.xyzero = Tk.Button(self, text=_("XY=0"),
+        self.xyzero = Tk.Button(
+                self,
+                text=_("XY=0"),
+                font=OCV.DRO_ZERO_FONT,
                 command=self.setXY0,
                 activebackground="LightYellow",
                 padx=2, pady=1)
@@ -326,7 +344,10 @@ class DROFrame(CNCRibbon.PageFrame):
         self.addWidget(self.xyzero)
 
         col += 1
-        self.xyzzero = Tk.Button(self, text=_("XYZ=0"),
+        self.xyzzero = Tk.Button(
+                self,
+                text=_("XYZ=0"),
+                font=OCV.DRO_ZERO_FONT,
                 command=self.setXYZ0,
                 activebackground="LightYellow",
                 padx=2, pady=1)
@@ -1237,7 +1258,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             col += 1
             b = Tk.Radiobutton(f2, text=w,
                     foreground="DarkRed",
-                    font = "Helvetica,14",
+                    font = OCV.STATE_WCS_FONT,
                     padx=1, pady=1,
                     variable=OCV.wcsvar,
                     value=p,

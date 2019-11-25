@@ -4,8 +4,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-from tkinter.constants import END
-
 import OCV
 from CNC import CNC, WCS
 import time

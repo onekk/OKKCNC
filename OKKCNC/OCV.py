@@ -6,9 +6,14 @@ Created on Sun Nov 10 15:21:49 2019
 @author: carlo
 """
 HAS_SERIAL = None
-EXE_FONT = ("Helvetica",12,"bold")
-RIBBON_TABFONT = ("Sans","-14","bold")
-RIBBON_FONT = ("Sans","-11")
+EXE_FONT = ("Helvetica", 12, "bold")
+RIBBON_TABFONT = ("Sans", "-14","bold")
+RIBBON_FONT = ("Sans", "-11")
+
+DRO_ZERO_FONT = ("Sans", "-11")
+
+STATE_WCS_FONT = ("Helvetica", "-14")
+STATE_BUT_FONT = ("Sans", "-11")
 
 FONT_SECTION = "Font"
 
