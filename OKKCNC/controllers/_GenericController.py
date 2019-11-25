@@ -17,7 +17,6 @@ SPLITPAT  = re.compile(r"[:,]")
 VARPAT    = re.compile(r"^\$(\d+)=(\d*\.?\d*) *\(?.*")
 
 
-
 class _GenericController:
 
     line_sent = 0
@@ -61,7 +60,7 @@ class _GenericController:
     def hardReset(self):
         self.master.busy()
         if self.master.serial is not None:
-            print("Machine hardtReset")
+            #print("Machine hardReset")
             self.hardResetPre()
             self.master.openClose()
             self.hardResetAfter()
@@ -74,7 +73,7 @@ class _GenericController:
     #----------------------------------------------------------------------
     def softReset(self, clearAlarm=True):
         if self.master.serial:
-            print("Machine softReset")
+            #print("Machine softReset")
             self.master.serial.write(b"\030")
         self.master.stopProbe()
         if clearAlarm: self.master._alarm = False
@@ -82,7 +81,7 @@ class _GenericController:
 
     #----------------------------------------------------------------------
     def unlock(self, clearAlarm=True):
-        print("Machine Unlock")
+        #print("Machine Unlock")
         if clearAlarm:
             self.master._alarm = False
 
@@ -178,12 +177,12 @@ class _GenericController:
         # remember and send all G commands
         G = " ".join([x for x in OCV.CD["G"] if x[0]=="G"])    # remember $G
         TLO = OCV.CD["TLO"]
-        self.softReset(False)            # reset controller
+        self.softReset(False)  # reset controller
         self.purgeControllerExtra()
         self.master.runEnded()
         self.master.stopProbe()
         if G: self.master.sendGCode(G)            # restore $G
-        self.master.sendGCode("G43.1Z{0}".format(TLO))    # restore TLO
+        self.master.sendGCode("G43.1 Z{0}".format(TLO))  # restore TLO
         self.viewState()
 
 
@@ -229,11 +228,11 @@ class _GenericController:
             if pat:
                 OCV.CD["grbl_{0}".format(pat.group(1))] = pat.group(2)
 
-        elif line[:4]=="Grbl" or line[:13]=="CarbideMotion": # and self.running:
+        elif line[:4]=="Grbl" or line[:13]=="CarbideMotion":  # and self.running:
             #tg = time.time()
             self.master.log.put((self.master.MSG_RECEIVE, line))
             self.master._stop = True
-            del cline[:] # After reset clear the buffer counters
+            del cline[:]  # After reset clear the buffer counters
             del sline[:]
             OCV.CD["version"] = line.split()[1]
             # Detect controller
