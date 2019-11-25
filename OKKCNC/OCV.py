@@ -5,9 +5,10 @@ Created on Sun Nov 10 15:21:49 2019
 
 @author: carlo
 """
+
 HAS_SERIAL = None
 EXE_FONT = ("Helvetica", 12, "bold")
-RIBBON_TABFONT = ("Sans", "-14","bold")
+RIBBON_TABFONT = ("Sans", "-14", "bold")
 RIBBON_FONT = ("Sans", "-11")
 
 DRO_ZERO_FONT = ("Sans", "-11")
@@ -17,6 +18,26 @@ STATE_BUT_FONT = ("Sans", "-11")
 
 FONT_SECTION = "Font"
 
+#
+WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
+
+DISTANCE_MODE = {
+    "G90" : "Absolute",
+    "G91" : "Incremental"}
+
+FEED_MODE = {
+    "G93" : "1/Time",
+    "G94" : "unit/min",
+    "G95" : "unit/rev"}
+
+UNITS = {
+    "G20" : "inch",
+    "G21" : "mm"}
+
+PLANE = {
+    "G17" : "XY",
+    "G18" : "XZ",
+    "G19" : "YZ"}
 
 root = None
 application = None
@@ -37,54 +58,57 @@ appendFeed = False # append feed on every G1/G2/G3 commands to be used
                    # FIXME will not be needed after Grbl v1.0
 
 # C #
-comment = "" # last parsed comment
+comment = ""  # last parsed comment
 
 # D #
-DRAW_TIME = 5 # Maximum draw time permitted
+DRAW_TIME = 5  # Maximum draw time permitted
 developer = False
 digits = 3
-drillPolicy = 1 # Expand Canned cycles
+drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
 # F #
-feedmax_x      = 3000
-feedmax_y      = 3000
-feedmax_z      = 2000
+feedmax_x = 3000
+feedmax_y = 3000
+feedmax_z = 2000
 
 
 # G #
 geometry = None
 # I #
-inch           = False
+inch = False
 
 # L #
-lasercutter    = False
-laseradaptive  = False
-
+lasercutter = False
+laseradaptive = False
 
 # M #
 memNum = 0
 
 # S #
 serial_open = False
-startup        = "G90"
-stdexpr        = False    # standard way of defining expressions with []
+startup = "G90"
+stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
 step2 = 0.0
 step3 = 0.0
 step4 = 0.0
 
 # T #
-toolPolicy     = 1        # Should be in sync with ProbePage
-                # 0 - send to grbl
-                # 1 - skip those lines
-                # 2 - manual tool change (WCS)
-                # 3 - manual tool change (TLO)
-                # 4 - manual tool change (No Probe)
-toolWaitAfterProbe = True    # wait at tool change position after probing
-travel_x       = 300
-travel_y       = 300
-travel_z       = 60
+toolPolicy = 1
+"""
+Should be in sync with ProbePage
+0 > send to grbl
+1 > skip those lines
+2 > manual tool change (WCS)
+3 > manual tool change (TLO)
+4 > manual tool change (No Probe)
+"""
+
+toolWaitAfterProbe = True  # wait at tool change position after probing
+travel_x = 300
+travel_y = 300
+travel_z = 60
 
 # Z #
 zstep1 = 0.0
@@ -95,33 +119,39 @@ zstep4 = 0.0
 # W #
 wcsvar = 0
 
-# List containing the active mems
-# one position for each mem
-# hold the mem status
-# 0 empty
-# 1 set but not shown
-# 2 set and shown
+
 WK_active_mems = []
-# variables to manage the memory bank
-WK_bank = 0;
-WK_bank_max = 3;
+"""
+    List containing the active mems
+    one position for each mem
+    hold the mem status
+     0 empty
+     1 set but not shown
+     2 set and shown
+"""
+
+"""variables to manage the memory bank"""
+WK_bank = 0
+WK_bank_max = 3
 WK_bank_start = 0
-# number of memories in Bank
+"""number of memories in Bank"""
 WK_bank_mem = 9
-# Toggle used to whow the memory bank
+"""Toggle used to whow the memory bank"""
 WK_bank_show = []
 
 WK_mem = 0 # pass memory number across the different program part
 WK_mem_name = "" # pass memory name across the different program part
 
-# dictionary containing memories data
-# WK_mems[mem_name] = [mx,my,mz, set, desc]
-# where mem_name a string like mem_N with N 0 > N < 49
-# set is a flag 0 mem non set (used to inactivate a memory)
-# desc is the memory name in tooltips (button and canvas)
-# mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
-# they are working memories and not saved in the user file
-# memories are saved in the configuration file <TODO>
+"""
+    dictionary containing memories data
+    WK_mems[mem_name] = [mx,my,mz, set, desc]
+    where mem_name a string like mem_N with N 0 > N < 49
+    set is a flag 0 mem non set (used to inactivate a memory)
+    desc is the memory name in tooltips (button and canvas)
+    mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
+    they are working memories and not saved in the user file
+    memories are saved in the configuration file <TODO>
+"""
 WK_mems = {}
 WK_mem_num = 0
 
@@ -199,42 +229,42 @@ CD = {
 
 
 # INTERFACE COLORS #
-ACTIVE_COLOR       = "LightYellow"
-BACKGROUND         = "#E6E2E0"
-BACKGROUND_LABELS  = "pale green"
+ACTIVE_COLOR = "LightYellow"
+BACKGROUND = "#E6E2E0"
+BACKGROUND_LABELS = "pale green"
 BACKGROUND_DISABLE = "#A6A2A0"
-BACKGROUND_GROUP   = "#B6B2B0"
-BACKGROUND_GROUP2  = "#B0C0C0"
-BACKGROUND_GROUP3  = "#A0C0A0"
-BACKGROUND_GROUP4  = "#B0C0A0"
-BLOCK_COLOR   = "LightYellow"
-BOX_SELECT    = "Cyan"
-CAMERA_COLOR  = "Cyan"
-CANVAS_COLOR  = "White"
+BACKGROUND_GROUP = "#B6B2B0"
+BACKGROUND_GROUP2 = "#B0C0C0"
+BACKGROUND_GROUP3 = "#A0C0A0"
+BACKGROUND_GROUP4 = "#B0C0A0"
+BLOCK_COLOR = "LightYellow"
+BOX_SELECT = "Cyan"
+CAMERA_COLOR = "Cyan"
+CANVAS_COLOR = "White"
 COMMENT_COLOR = "Blue"
 DISABLE_COLOR = "LightGray"
-ENABLE_COLOR  = "Black"
-FOREGROUND_GROUP   = "White"
-GANTRY_COLOR  = "Red"
-GRID_COLOR    = "Gray"
-INFO_COLOR    = "Gold"
-INSERT_COLOR  = "Blue"
+ENABLE_COLOR = "Black"
+FOREGROUND_GROUP = "White"
+GANTRY_COLOR = "Red"
+GRID_COLOR = "Gray"
+INFO_COLOR = "Gold"
+INSERT_COLOR = "Blue"
 LABEL_SELECT_COLOR = "#C0FFC0"
 LISTBOX_NUMBER = "khaki1"
 LISTBOX_SEP = "aquamarine"
 LISTBOX_TEXT = "azure"
 LISTBOX_VAL = "AntiqueWhite1"
-MARGIN_COLOR  = "Magenta"
-MEM_COLOR     = "Orchid1"
-MOVE_COLOR    = "DarkCyan"
+MARGIN_COLOR = "Magenta"
+MEM_COLOR = "Orchid1"
+MOVE_COLOR = "DarkCyan"
 PROBE_TEXT_COLOR = "Green"
 PROCESS_COLOR = "Green"
-RULER_COLOR   = "Green"
-SELECT_COLOR  = "Blue"
+RULER_COLOR = "Green"
+SELECT_COLOR = "Blue"
 SELECT2_COLOR = "DarkCyan"
-TAB_COLOR     = "DarkOrange"
-TABS_COLOR    = "Orange"
-WORK_COLOR    = "Orange"
+TAB_COLOR = "DarkOrange"
+TABS_COLOR = "Orange"
+WORK_COLOR = "Orange"
 
 def showC(X, Y, Z):
     return _sh_coord.format(X, Y, Z, digits)

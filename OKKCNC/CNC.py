@@ -46,19 +46,6 @@ YZ   = 2
 CW   = 2
 CCW  = 3
 
-WCS  = ["G54", "G55", "G56", "G57", "G58", "G59"]
-
-DISTANCE_MODE = { "G90" : "Absolute",
-          "G91" : "Incremental" }
-FEED_MODE     = { "G93" : "1/Time",
-          "G94" : "unit/min",
-          "G95" : "unit/rev"}
-UNITS         = { "G20" : "inch",
-          "G21" : "mm" }
-PLANE         = { "G17" : "XY",
-          "G18" : "XZ",
-          "G19" : "YZ" }
-
 # Modal Mode from $G and variable set
 MODAL_MODES = {
     "G0"    : "motion",
@@ -1634,7 +1621,7 @@ class CNC:
             if OCV.toolPolicy==2:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
-                p = WCS.index(OCV.CD["WCS"])+1
+                p = OCV.WCS.index(OCV.CD["WCS"])+1
                 lines.append("G10L20P{0:d} Z[toolheight]".format(p))
                 lines.append("%wait")
 

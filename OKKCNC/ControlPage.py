@@ -27,7 +27,7 @@ import CNCRibbon
 import MemoryPanel
 import CAMGen
 from Sender import ERROR_CODES
-from CNC import Block, WCS, DISTANCE_MODE, FEED_MODE, UNITS, PLANE
+from CNC import Block
 
 OCV.FONT = ("Sans", "-10")
 
@@ -146,33 +146,33 @@ class RunGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, "Run", app)
 
         b = Ribbon.LabelButton(
-                self.frame,
-                self, "<<Run>>",
-                image=Utils.icons["start32"],
-                text=_("Start"),
-                compound=Tk.TOP,
-                background=OCV.BACKGROUND)
+            self.frame,
+            self, "<<Run>>",
+            image=Utils.icons["start32"],
+            text=_("Start"),
+            compound=Tk.TOP,
+            background=OCV.BACKGROUND)
         b.pack(side=Tk.LEFT, fill=Tk.BOTH)
         tkExtra.Balloon.set(b, _("Run g-code commands from editor to controller"))
         self.addWidget(b)
 
         b = Ribbon.LabelButton(
-                self.frame,
-                self, "<<Pause>>",
-                image=Utils.icons["pause32"],
-                text=_("Pause"),
-                compound=Tk.TOP,
-                background=OCV.BACKGROUND)
+            self.frame,
+            self, "<<Pause>>",
+            image=Utils.icons["pause32"],
+            text=_("Pause"),
+            compound=Tk.TOP,
+            background=OCV.BACKGROUND)
         b.pack(side=Tk.LEFT, fill=Tk.BOTH)
         tkExtra.Balloon.set(b, _("Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"))
 
         b = Ribbon.LabelButton(
-                self.frame,
-                self, "<<Stop>>",
-                image=Utils.icons["stop32"],
-                text=_("Stop"),
-                compound=Tk.TOP,
-                background=OCV.BACKGROUND)
+            self.frame,
+            self, "<<Stop>>",
+            image=Utils.icons["stop32"],
+            text=_("Stop"),
+            compound=Tk.TOP,
+            background=OCV.BACKGROUND)
         b.pack(side=Tk.LEFT, fill=Tk.BOTH)
         tkExtra.Balloon.set(b, _("Pause running program and soft reset controller to empty the buffer."))
 
@@ -181,122 +181,129 @@ class RunGroup(CNCRibbon.ButtonGroup):
 # DRO Frame
 #===============================================================================
 class DROFrame(CNCRibbon.PageFrame):
-    dro_status = ('Helvetica',12,'bold')
-    dro_wpos   = ('Helvetica',12,'bold')
-    dro_mpos   = ('Helvetica',12)
+    dro_status = ('Helvetica', 12, 'bold')
+    dro_wpos = ('Helvetica', 12, 'bold')
+    dro_mpos = ('Helvetica', 12)
 
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "DRO", app)
 
         DROFrame.dro_status = Utils.getFont("dro.status", DROFrame.dro_status)
-        DROFrame.dro_wpos   = Utils.getFont("dro.wpos",   DROFrame.dro_wpos)
-        DROFrame.dro_mpos   = Utils.getFont("dro.mpos",   DROFrame.dro_mpos)
+        DROFrame.dro_wpos = Utils.getFont("dro.wpos", DROFrame.dro_wpos)
+        DROFrame.dro_mpos = Utils.getFont("dro.mpos", DROFrame.dro_mpos)
 
         row = 0
         col = 0
-        Tk.Label(self,text=_("Status:")).grid(row=row,column=col,sticky=Tk.E)
+        Tk.Label(self, text=_("Status:")).grid(row=row, column=col, sticky=Tk.E)
         col += 1
-        self.state = Tk.Button(self,
-                text=Sender.NOT_CONNECTED,
-                font=DROFrame.dro_status,
-                command=self.showState,
-                cursor="hand1",
-                background=Sender.STATECOLOR[Sender.NOT_CONNECTED],
-                activebackground="LightYellow")
-        self.state.grid(row=row,column=col, columnspan=3, sticky=Tk.EW)
-        tkExtra.Balloon.set(self.state,
-                _("Show current state of the machine\n"
-                  "Click to see details\n"
-                  "Right-Click to clear alarm/errors"))
+        self.state = Tk.Button(
+            self,
+            text=Sender.NOT_CONNECTED,
+            font=DROFrame.dro_status,
+            command=self.showState,
+            cursor="hand1",
+            background=Sender.STATECOLOR[Sender.NOT_CONNECTED],
+            activebackground="LightYellow")
+        self.state.grid(row=row, column=col, columnspan=3, sticky=Tk.EW)
+        tkExtra.Balloon.set(
+            self.state,
+            _("Show current state of the machine\n"
+              "Click to see details\n"
+              "Right-Click to clear alarm/errors"))
         #self.state.bind("<Button-3>", lambda e,s=self : s.event_generate("<<AlarmClear>>"))
         self.state.bind("<Button-3>", self.stateMenu)
 
         row += 1
         col = 0
-        Tk.Label(self,text=_("WPos:")).grid(row=row,column=col,sticky=Tk.E)
+        Tk.Label(self, text=_("WPos:")).grid(row=row, column=col, sticky=Tk.E)
 
         # work
         col += 1
-        self.xwork = Tk.Entry(self, font=DROFrame.dro_wpos,
-                    background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                    relief=Tk.FLAT,
-                    borderwidth=0,
-                    justify=Tk.RIGHT)
-        self.xwork.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.xwork = Tk.Entry(
+            self,
+            font=DROFrame.dro_wpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            relief=Tk.FLAT,
+            borderwidth=0,
+            justify=Tk.RIGHT)
+        self.xwork.grid(row=row, column=col, padx=1, sticky=Tk.EW)
         tkExtra.Balloon.set(self.xwork, _("X work position (click to set)"))
-        self.xwork.bind('<FocusIn>',  self.workFocus)
-        self.xwork.bind('<Return>',   self.setX)
+        self.xwork.bind('<FocusIn>', self.workFocus)
+        self.xwork.bind('<Return>', self.setX)
         self.xwork.bind('<KP_Enter>', self.setX)
 
         # ---
         col += 1
-        self.ywork = Tk.Entry(self, font=DROFrame.dro_wpos,
-                    background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                    relief=Tk.FLAT,
-                    borderwidth=0,
-                    justify=Tk.RIGHT)
-        self.ywork.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.ywork = Tk.Entry(
+            self,
+            font=DROFrame.dro_wpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            relief=Tk.FLAT,
+            borderwidth=0,
+            justify=Tk.RIGHT)
+        self.ywork.grid(row=row, column=col, padx=1, sticky=Tk.EW)
         tkExtra.Balloon.set(self.ywork, _("Y work position (click to set)"))
-        self.ywork.bind('<FocusIn>',  self.workFocus)
-        self.ywork.bind('<Return>',   self.setY)
+        self.ywork.bind('<FocusIn>', self.workFocus)
+        self.ywork.bind('<Return>', self.setY)
         self.ywork.bind('<KP_Enter>', self.setY)
 
         # ---
         col += 1
-        self.zwork = Tk.Entry(self, font=DROFrame.dro_wpos,
-                    background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                    relief=Tk.FLAT,
-                    borderwidth=0,
-                    justify=Tk.RIGHT)
-        self.zwork.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.zwork = Tk.Entry(
+            self, font=DROFrame.dro_wpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            relief=Tk.FLAT,
+            borderwidth=0,
+            justify=Tk.RIGHT)
+        self.zwork.grid(row=row, column=col, padx=1, sticky=Tk.EW)
         tkExtra.Balloon.set(self.zwork, _("Z work position (click to set)"))
-        self.zwork.bind('<FocusIn>',  self.workFocus)
-        self.zwork.bind('<Return>',   self.setZ)
+        self.zwork.bind('<FocusIn>', self.workFocus)
+        self.zwork.bind('<Return>', self.setZ)
         self.zwork.bind('<KP_Enter>', self.setZ)
 
         # Machine
         row += 1
         col = 0
-        Tk.Label(self,text=_("MPos:")).grid(row=row,column=col,sticky=Tk.E)
+        Tk.Label(self, text=_("MPos:")).grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
         self.xmachine = Tk.Label(
-                self,
-                font=DROFrame.dro_mpos,
-                background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                anchor=Tk.E)
+            self,
+            font=DROFrame.dro_mpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            anchor=Tk.E)
 
-        self.xmachine.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.xmachine.grid(row=row, column=col, padx=1, sticky=Tk.EW)
 
         col += 1
         self.ymachine = Tk.Label(
-                self,
-                font=DROFrame.dro_mpos,
-                background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                anchor=Tk.E)
+            self,
+            font=DROFrame.dro_mpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            anchor=Tk.E)
 
-        self.ymachine.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.ymachine.grid(row=row, column=col, padx=1, sticky=Tk.EW)
 
         col += 1
         self.zmachine = Tk.Label(
-                self,
-                font=DROFrame.dro_mpos,
-                background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                anchor=Tk.E)
+            self,
+            font=DROFrame.dro_mpos,
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            anchor=Tk.E)
 
-        self.zmachine.grid(row=row,column=col,padx=1,sticky=Tk.EW)
+        self.zmachine.grid(row=row, column=col, padx=1, sticky=Tk.EW)
 
         # Set buttons
         row += 1
         col = 1
 
         self.xzero = Tk.Button(
-                self,
-                text=_("X=0"),
-                font=OCV.DRO_ZERO_FONT,
-                command=self.setX0,
-                activebackground="LightYellow",
-                padx=2, pady=1)
+            self,
+            text=_("X=0"),
+            font=OCV.DRO_ZERO_FONT,
+            command=self.setX0,
+            activebackground="LightYellow",
+            padx=2, pady=1)
 
         self.xzero.grid(row=row, column=col, pady=0, sticky=Tk.EW)
         tkExtra.Balloon.set(self.xzero, _("Set X coordinate to zero (or to typed coordinate in WPos)"))
@@ -304,12 +311,12 @@ class DROFrame(CNCRibbon.PageFrame):
 
         col += 1
         self.yzero = Tk.Button(
-                self,
-                text=_("Y=0"),
-                font=OCV.DRO_ZERO_FONT,
-                command=self.setY0,
-                activebackground="LightYellow",
-                padx=2, pady=1)
+            self,
+            text=_("Y=0"),
+            font=OCV.DRO_ZERO_FONT,
+            command=self.setY0,
+            activebackground="LightYellow",
+            padx=2, pady=1)
 
         self.yzero.grid(row=row, column=col, pady=0, sticky=Tk.EW)
         tkExtra.Balloon.set(self.yzero, _("Set Y coordinate to zero (or to typed coordinate in WPos)"))
@@ -317,12 +324,12 @@ class DROFrame(CNCRibbon.PageFrame):
 
         col += 1
         self.zzero = Tk.Button(
-                self,
-                text=_("Z=0"),
-                font=OCV.DRO_ZERO_FONT,
-                command=self.setZ0,
-                activebackground="LightYellow",
-                padx=2, pady=1)
+            self,
+            text=_("Z=0"),
+            font=OCV.DRO_ZERO_FONT,
+            command=self.setZ0,
+            activebackground="LightYellow",
+            padx=2, pady=1)
 
         self.zzero.grid(row=row, column=col, pady=0, sticky=Tk.EW)
         tkExtra.Balloon.set(self.zzero, _("Set Z coordinate to zero (or to typed coordinate in WPos)"))
@@ -332,12 +339,12 @@ class DROFrame(CNCRibbon.PageFrame):
         row += 1
         col = 1
         self.xyzero = Tk.Button(
-                self,
-                text=_("XY=0"),
-                font=OCV.DRO_ZERO_FONT,
-                command=self.setXY0,
-                activebackground="LightYellow",
-                padx=2, pady=1)
+            self,
+            text=_("XY=0"),
+            font=OCV.DRO_ZERO_FONT,
+            command=self.setXY0,
+            activebackground="LightYellow",
+            padx=2, pady=1)
 
         self.xyzero.grid(row=row, column=col, pady=0, sticky=Tk.EW)
         tkExtra.Balloon.set(self.xyzero, _("Set XY coordinate to zero (or to typed coordinate in WPos)"))
@@ -345,12 +352,12 @@ class DROFrame(CNCRibbon.PageFrame):
 
         col += 1
         self.xyzzero = Tk.Button(
-                self,
-                text=_("XYZ=0"),
-                font=OCV.DRO_ZERO_FONT,
-                command=self.setXYZ0,
-                activebackground="LightYellow",
-                padx=2, pady=1)
+            self,
+            text=_("XYZ=0"),
+            font=OCV.DRO_ZERO_FONT,
+            command=self.setXYZ0,
+            activebackground="LightYellow",
+            padx=2, pady=1)
 
         self.xyzzero.grid(row=row, column=col, pady=0, sticky=Tk.EW, columnspan=2)
         tkExtra.Balloon.set(self.xyzzero, _("Set XYZ coordinate to zero (or to typed coordinate in WPos)"))
@@ -362,25 +369,31 @@ class DROFrame(CNCRibbon.PageFrame):
         f = Tk.Frame(self)
         f.grid(row=row, column=col, columnspan=3, pady=0, sticky=Tk.EW)
 
-        b = Tk.Button(f, text=_("Set WPOS"),
-                image=Utils.icons["origin"],
-                compound=Tk.LEFT,
-                activebackground="LightYellow",
-                command=lambda s=self: s.event_generate("<<SetWPOS>>"),
-                padx=2, pady=1)
-        b.pack(side=Tk.LEFT,fill=Tk.X,expand=Tk.YES)
+        b = Tk.Button(
+            f,
+            text=_("Set WPOS"),
+            font=OCV.DRO_ZERO_FONT,
+            image=Utils.icons["origin"],
+            compound=Tk.LEFT,
+            activebackground="LightYellow",
+            command=lambda s=self: s.event_generate("<<SetWPOS>>"),
+            padx=2, pady=1)
+        b.pack(side=Tk.LEFT, fill=Tk.X, expand=Tk.YES)
         tkExtra.Balloon.set(b, _("Set WPOS to mouse location"))
         self.addWidget(b)
 
         #col += 2
-        b = Tk.Button(f, text=_("Move Gantry"),
-                image=Utils.icons["gantry"],
-                compound=Tk.LEFT,
-                activebackground="LightYellow",
-                command=lambda s=self: s.event_generate("<<MoveGantry>>"),
-                padx=2, pady=1)
+        b = Tk.Button(
+            f,
+            text=_("Move Gantry"),
+            font=OCV.DRO_ZERO_FONT,
+            image=Utils.icons["gantry"],
+            compound=Tk.LEFT,
+            activebackground="LightYellow",
+            command=lambda s=self: s.event_generate("<<MoveGantry>>"),
+            padx=2, pady=1)
         #b.grid(row=row, column=col, pady=0, sticky=Tk.EW)
-        b.pack(side=Tk.RIGHT,fill=Tk.X,expand=Tk.YES)
+        b.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
         tkExtra.Balloon.set(b, _("Move gantry to mouse location [g]"))
         self.addWidget(b)
 
@@ -392,16 +405,31 @@ class DROFrame(CNCRibbon.PageFrame):
     def stateMenu(self, event=None):
         menu = Tk.Menu(self, tearoff=0)
 
-        menu.add_command(label=_("Show Info"), image=Utils.icons["info"], compound=Tk.LEFT,
-                    command=self.showState)
-        menu.add_command(label=_("Clear Message"), image=Utils.icons["clear"], compound=Tk.LEFT,
-                    command=lambda s=self: s.event_generate("<<AlarmClear>>"))
+        menu.add_command(
+            label=_("Show Info"),
+            image=Utils.icons["info"],
+            compound=Tk.LEFT,
+            command=self.showState)
+
+        menu.add_command(
+            label=_("Clear Message"),
+            image=Utils.icons["clear"],
+            compound=Tk.LEFT,
+            command=lambda s=self: s.event_generate("<<AlarmClear>>"))
+
         menu.add_separator()
 
-        menu.add_command(label=_("Feed hold"), image=Utils.icons["pause"], compound=Tk.LEFT,
-                    command=lambda s=self: s.event_generate("<<FeedHold>>"))
-        menu.add_command(label=_("Resume"), image=Utils.icons["start"], compound=Tk.LEFT,
-                    command=lambda s=self: s.event_generate("<<Resume>>"))
+        menu.add_command(
+            label=_("Feed hold"),
+            image=Utils.icons["pause"],
+            compound=Tk.LEFT,
+            command=lambda s=self: s.event_generate("<<FeedHold>>"))
+
+        menu.add_command(
+            label=_("Resume"),
+            image=Utils.icons["start"],
+            compound=Tk.LEFT,
+            command=lambda s=self: s.event_generate("<<Resume>>"))
 
         menu.tk_popup(event.x_root, event.y_root)
 
@@ -420,21 +448,21 @@ class DROFrame(CNCRibbon.PageFrame):
             focus = None
         if focus is not self.xwork:
             self.xwork.delete(0, Tk.END)
-            self.xwork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wx"]))
+            self.xwork.insert(0, self.padFloat(OCV.drozeropad, OCV.CD["wx"]))
         if focus is not self.ywork:
             self.ywork.delete(0, Tk.END)
-            self.ywork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wy"]))
+            self.ywork.insert(0, self.padFloat(OCV.drozeropad, OCV.CD["wy"]))
         if focus is not self.zwork:
             self.zwork.delete(0, Tk.END)
-            self.zwork.insert(0,self.padFloat(OCV.drozeropad,OCV.CD["wz"]))
+            self.zwork.insert(0, self.padFloat(OCV.drozeropad, OCV.CD["wz"]))
 
-        self.xmachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["mx"])
-        self.ymachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["my"])
-        self.zmachine["text"] = self.padFloat(OCV.drozeropad,OCV.CD["mz"])
+        self.xmachine["text"] = self.padFloat(OCV.drozeropad, OCV.CD["mx"])
+        self.ymachine["text"] = self.padFloat(OCV.drozeropad, OCV.CD["my"])
+        self.zmachine["text"] = self.padFloat(OCV.drozeropad, OCV.CD["mz"])
 
     #----------------------------------------------------------------------
     def padFloat(self, decimals, value):
-        if decimals>0:
+        if decimals > 0:
             return "{0:0.{1}f".format(value, decimals)
         else:
             return value
@@ -448,30 +476,30 @@ class DROFrame(CNCRibbon.PageFrame):
 
     #----------------------------------------------------------------------
     def setX0(self, event=None):
-        self.app.mcontrol._wcsSet("0",None,None)
+        self.app.mcontrol._wcsSet("0", None, None)
 
     #----------------------------------------------------------------------
     def setY0(self, event=None):
-        self.app.mcontrol._wcsSet(None,"0",None)
+        self.app.mcontrol._wcsSet(None, "0", None)
 
     #----------------------------------------------------------------------
     def setZ0(self, event=None):
-        self.app.mcontrol._wcsSet(None,None,"0")
+        self.app.mcontrol._wcsSet(None, None, "0")
 
     #----------------------------------------------------------------------
     def setXY0(self, event=None):
-        self.app.mcontrol._wcsSet("0","0",None)
+        self.app.mcontrol._wcsSet("0", "0", None)
 
     #----------------------------------------------------------------------
     def setXYZ0(self, event=None):
-        self.app.mcontrol._wcsSet("0","0","0")
+        self.app.mcontrol._wcsSet("0", "0", "0")
 
     #----------------------------------------------------------------------
     def setX(self, event=None):
         if self.app.running: return
         try:
             value = round(eval(self.xwork.get(), None, OCV.CD), 3)
-            self.app.mcontrol._wcsSet(value,None,None)
+            self.app.mcontrol._wcsSet(value, None, None)
         except:
             pass
 
@@ -480,7 +508,7 @@ class DROFrame(CNCRibbon.PageFrame):
         if self.app.running: return
         try:
             value = round(eval(self.ywork.get(), None, OCV.CD), 3)
-            self.app.mcontrol._wcsSet(None,value,None)
+            self.app.mcontrol._wcsSet(None, value, None)
         except:
             pass
 
@@ -489,21 +517,25 @@ class DROFrame(CNCRibbon.PageFrame):
         if self.app.running: return
         try:
             value = round(eval(self.zwork.get(), None, OCV.CD), 3)
-            self.app.mcontrol._wcsSet(None,None,value)
+            self.app.mcontrol._wcsSet(None, None, value)
         except:
             pass
 
     def showState(self):
         err = OCV.CD["errline"]
+
         if err:
-            msg  = _("Last error: %s\n")%(OCV.CD["errline"])
+            msg = _("Last error: {0}\n").format(OCV.CD["errline"])
         else:
             msg = ""
 
         state = OCV.CD["state"]
-        msg += ERROR_CODES.get(state,
-                _("No info available.\nPlease contact the author."))
-        tkMessageBox.showinfo(_("State: %s")%(state), msg, parent=self)
+
+        msg += ERROR_CODES.get(
+            state,
+            _("No info available.\nPlease contact the author."))
+
+        tkMessageBox.showinfo(_("State: {0}").format(state), msg, parent=self)
 
 
 #===============================================================================
@@ -511,14 +543,14 @@ class DROFrame(CNCRibbon.PageFrame):
 #===============================================================================
 class ControlFrame(CNCRibbon.PageLabelFrame):
 
-    z_step_font = ('Helvetica',7,'bold')
+    z_step_font = ('Helvetica', 7, 'bold')
 
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Control", _("Control"), app)
 
         Tk.Label(self, text="Y").grid(row=6, column=3)
 
-        Tk.Label(self,"",width=1).grid(row=1,column=10)
+        Tk.Label(self, "", width=1).grid(row=1, column=10)
 
         b_width = 2
         b_height = 2
@@ -529,7 +561,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 0
 
-        zstep = Utils.config.get("Control","zstep")
+        zstep = Utils.config.get("Control", "zstep")
         self.zstep = tkExtra.Combobox(self, width=4, background="White")
         self.zstep.grid(row=row, column=0, columnspan=4, sticky=Tk.EW)
         self.zstep.set(zstep)
@@ -537,11 +569,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
         self.addWidget(self.zstep)
 
-        b = Tk.Button(self, text="{0}".format(OCV.step1),
-                name="step_1",
-                command=self.setStep1,
-                width=2,
-                padx=1, pady=1)
+        b = Tk.Button(
+            self,
+            text="{0}".format(OCV.step1),
+            name="step_1",
+            command=self.setStep1,
+            width=2,
+            padx=1, pady=1)
         b.grid(row=row, column = 4, columnspan = 2, sticky=Tk.EW)
         b.bind("<Button-3>", lambda event: self.editStep("S1"))
         bal_text = _("Step1 = {0}").format(OCV.step1)
@@ -549,11 +583,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(b)
 
 
-        b = Tk.Button(self, text="{0}".format(OCV.step2),
-                name="step_2",
-                command=self.setStep2,
-                width=2,
-                padx=1, pady=1)
+        b = Tk.Button(
+            self,
+            text="{0}".format(OCV.step2),
+            name="step_2",
+            command=self.setStep2,
+            width=2,
+            padx=1, pady=1)
         b.grid(row=row, column = 6, columnspan = 2, sticky=Tk.EW)
         b.bind("<Button-3>", lambda event: self.editStep("S2"))
         bal_text = _("Step2 = {0}").format(OCV.step2)
@@ -561,11 +597,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(b)
 
 
-        b = Tk.Button(self, text="{0}".format(OCV.step3),
-                name="step_3",
-                command=self.setStep3,
-                width=2,
-                padx=1, pady=1)
+        b = Tk.Button(
+            self,
+            text="{0}".format(OCV.step3),
+            name="step_3",
+            command=self.setStep3,
+            width=2,
+            padx=1, pady=1)
         b.grid(row=row, column=8, columnspan = 2, sticky=Tk.EW)
         b.bind("<Button-3>", lambda event: self.editStep("S3"))
         bal_text = _("Step3 = {0}").format(OCV.step3)
@@ -574,18 +612,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 1
 
-        b = Tk.Button(self, text=u"\u00F75",
-                    command=self.divStep,
-                    width=3,
-                    padx=1, pady=1)
+        b = Tk.Button(
+            self,
+            text=u"\u00F75",
+            command=self.divStep,
+            width=3,
+            padx=1, pady=1)
         b.grid(row=row, column=4, sticky=Tk.EW)
         tkExtra.Balloon.set(b, _("Divide step by 5"))
         self.addWidget(b)
 
-        b = Tk.Button(self, text=u"\u00D75",
-                command=self.mulStep,
-                width=3,
-                padx=1, pady=1)
+        b = Tk.Button(
+            self,
+            text=u"\u00D75",
+            command=self.mulStep,
+            width=3,
+            padx=1, pady=1)
         b.grid(row=row, column=5, sticky=Tk.EW)
         tkExtra.Balloon.set(b, _("Multiply step by 5"))
         self.addWidget(b)
@@ -1250,11 +1292,10 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         f = Tk.Frame(self())
         f.pack(side=Tk.TOP, fill=Tk.X)
 
-        # ===
-        col,row=0,0
+        col,row = 0,0
         f2 = Tk.Frame(f)
         f2.grid(row=row, column=col, columnspan=5,sticky=Tk.EW)
-        for p,w in enumerate(WCS):
+        for p,w in enumerate(OCV.WCS):
             col += 1
             b = Tk.Radiobutton(f2, text=w,
                     foreground="DarkRed",
@@ -1269,45 +1310,68 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             tkExtra.Balloon.set(b, _("Switch to workspace %s")%(w))
             self.addWidget(b)
 
-        # Absolute or relative mode
+
         row += 1
-        col = 0
-        Tk.Label(f, text=_("Distance:")).grid(row=row, column=col, sticky=Tk.E)
-        col += 1
-        self.distance = tkExtra.Combobox(f, True,
-                    command=self.distanceChange,
-                    width=5,
-                    background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        self.distance.fill(sorted(DISTANCE_MODE.values()))
+
+        label_text = (_("Distance:"), _("Units:"), _("Tool:"), _("Plane:"),
+                      _("Feed:"), _("Mode:"), _("TLO:"), _("G92:"))
+        label_pos  = ((row, 0), (row, 3), (row + 1, 0), (row + 1, 3),
+                      (row + 2, 0), (row + 2, 3), (row + 3, 0), (row + 3, 3))
+
+        for idx, val in enumerate(label_text):
+            lab = Tk.Label(
+                f,
+                text=label_text[idx],
+                font=OCV.STATE_BUT_FONT)
+            lab.grid(row=label_pos[idx][0], column=label_pos[idx][1], sticky=Tk.E)
+
+        # Absolute or relative mode
+        col = 1
+        self.distance = tkExtra.Combobox(
+                f,
+                True,
+                command=self.distanceChange,
+                width=5,
+                background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
+        self.distance.fill(sorted(OCV.DISTANCE_MODE.values()))
         self.distance.grid(row=row, column=col, columnspan=2, sticky=Tk.EW)
-        tkExtra.Balloon.set(self.distance, _("Distance Mode [G90,G91]"))
+
+        bal_text = ""
+        for key, val in OCV.DISTANCE_MODE.viewitems():
+            bal_text += "{0} > {1}\n".format(key, val)
+
+        tkExtra.Balloon.set(self.distance, _("Distance Mode:\n{0}".format(bal_text)))
+
         self.addWidget(self.distance)
 
         # populate gstate dictionary
-        self.gstate = {}    # $G state results widget dictionary
-        for k,v in DISTANCE_MODE.items():
+        self.gstate = {}  # $G state results widget dictionary
+
+        for k,v in OCV.DISTANCE_MODE.viewitems():
             self.gstate[k] = (self.distance, v)
 
-        # Units mode
-        col += 2
-        Tk.Label(f, text=_("Units:")).grid(row=row, column=col, sticky=Tk.E)
-        col += 1
+        col += 3
         self.units = tkExtra.Combobox(f, True,
                     command=self.unitsChange,
                     width=5,
                     background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        self.units.fill(sorted(UNITS.values()))
+        self.units.fill(sorted(OCV.UNITS.values()))
         self.units.grid(row=row, column=col, sticky=Tk.EW)
-        tkExtra.Balloon.set(self.units, _("Units [G20, G21]"))
-        for k,v in UNITS.items(): self.gstate[k] = (self.units, v)
+
+        bal_text = ""
+        for key, val in OCV.UNITS.viewitems():
+            bal_text += "{0} > {1}\n".format(key, val)
+
+        tkExtra.Balloon.set(self.units, _("Units:\n{0}".format(bal_text)) )
+
+        for k,v in OCV.UNITS.viewitems():
+            self.gstate[k] = (self.units, v)
+
         self.addWidget(self.units)
 
         # Tool
         row += 1
-        col = 0
-        Tk.Label(f, text=_("Tool:")).grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
+        col = 1
         self.toolEntry = tkExtra.IntegerEntry(f, background=tkExtra.GLOBAL_CONTROL_BACKGROUND, width=5)
         self.toolEntry.grid(row=row, column=col, sticky=Tk.EW)
         tkExtra.Balloon.set(self.toolEntry, _("Tool number [T#]"))
@@ -1321,26 +1385,28 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.addWidget(b)
 
         # Plane
-        col += 1
-        Tk.Label(f, text=_("Plane:")).grid(row=row, column=col, sticky=Tk.E)
-        col += 1
+        col += 2
         self.plane = tkExtra.Combobox(f, True,
                     command=self.planeChange,
                     width=5,
                     background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        self.plane.fill(sorted(PLANE.values()))
+        self.plane.fill(sorted(OCV.PLANE.values()))
         self.plane.grid(row=row, column=col, sticky=Tk.EW)
-        tkExtra.Balloon.set(self.plane, _("Plane [G17,G18,G19]"))
+
+        bal_text = ""
+        for key, val in OCV.PLANE.viewitems():
+            bal_text += "{0} > {1}\n".format(key, val)
+
+        tkExtra.Balloon.set(self.plane, _("Plane:\n{0}".format(bal_text)) )
+
         self.addWidget(self.plane)
 
-        for k,v in PLANE.items(): self.gstate[k] = (self.plane, v)
+        for k,v in OCV.PLANE.viewitems():
+            self.gstate[k] = (self.plane, v)
 
         # Feed speed
         row += 1
-        col = 0
-        Tk.Label(f, text=_("Feed:")).grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
+        col = 1
         self.feedRate = tkExtra.FloatEntry(f, background=tkExtra.GLOBAL_CONTROL_BACKGROUND, disabledforeground="Black", width=5)
         self.feedRate.grid(row=row, column=col, sticky=Tk.EW)
         self.feedRate.bind('<Return>',   self.setFeedRate)
@@ -1356,26 +1422,26 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.addWidget(b)
 
         #Feed mode
-        col += 1
-        Tk.Label(f, text=_("Mode:")).grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
+        col += 2
         self.feedMode = tkExtra.Combobox(f, True,
                     command=self.feedModeChange,
                     width=5,
                     background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        self.feedMode.fill(sorted(FEED_MODE.values()))
+        self.feedMode.fill(sorted(OCV.FEED_MODE.values()))
         self.feedMode.grid(row=row, column=col, sticky=Tk.EW)
-        tkExtra.Balloon.set(self.feedMode, _("Feed Mode [G93, G94, G95]"))
-        for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
+
+        bal_text = ""
+        for key, val in OCV.FEED_MODE.viewitems():
+            bal_text += "{0} > {1}\n".format(key, val)
+
+        tkExtra.Balloon.set(self.feedMode, _("Feed Mode:\n{0}".format(bal_text)) )
+
+        for k,v in OCV.FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
         self.addWidget(self.feedMode)
 
         # TLO
         row += 1
-        col = 0
-        Tk.Label(f, text=_("TLO:")).grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
+        col = 1
         self.tlo = tkExtra.FloatEntry(f, background=tkExtra.GLOBAL_CONTROL_BACKGROUND, disabledforeground="Black", width=5)
         self.tlo.grid(row=row, column=col, sticky=Tk.EW)
         self.tlo.bind('<Return>',   self.setTLO)
@@ -1391,17 +1457,12 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.addWidget(b)
 
         # g92
-        col += 1
-        Tk.Label(f, text=_("G92:")).grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
+        col += 2
         self.g92 = Tk.Label(f, text="")
         self.g92.grid(row=row, column=col, columnspan=3, sticky=Tk.EW)
         tkExtra.Balloon.set(self.g92, _("Set position [G92 X# Y# Z#]"))
         self.addWidget(self.g92)
 
-
-        # ---
         f.grid_columnconfigure(1, weight=1)
         f.grid_columnconfigure(4, weight=1)
 
@@ -1414,7 +1475,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.spindle = Tk.BooleanVar()
         self.spindleSpeed = Tk.IntVar()
 
-        col,row=0,0
+        col, row=0, 0
         self.overrideCombo = tkExtra.Combobox(f, width=8, command=self.overrideComboChange)
         self.overrideCombo.fill(OVERRIDES)
         self.overrideCombo.grid(row=row, column=col, pady=0, sticky=Tk.EW)
@@ -1440,7 +1501,6 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
         self.overrideCombo.set(OVERRIDES[0])
 
-        # ---
         row += 2
         col = 0
         b = Tk.Checkbutton(f, text=_("Spindle"),
@@ -1513,6 +1573,9 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.addWidget(mistEnable)
         f.grid_columnconfigure(1, weight=1)
 
+        # DEBUG
+        #print(self.gstate)
+
     #----------------------------------------------------------------------
     def overrideChange(self, event=None):
         n = self.overrideCombo.get()
@@ -1544,22 +1607,22 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     #----------------------------------------------------------------------
     def distanceChange(self):
         if self._gUpdate: return
-        self._gChange(self.distance.get(), DISTANCE_MODE)
+        self._gChange(self.distance.get(), OCV.DISTANCE_MODE)
 
     #----------------------------------------------------------------------
     def unitsChange(self):
         if self._gUpdate: return
-        self._gChange(self.units.get(), UNITS)
+        self._gChange(self.units.get(), OCV.UNITS)
 
     #----------------------------------------------------------------------
     def feedModeChange(self):
         if self._gUpdate: return
-        self._gChange(self.feedMode.get(), FEED_MODE)
+        self._gChange(self.feedMode.get(), OCV.FEED_MODE)
 
     #----------------------------------------------------------------------
     def planeChange(self):
         if self._gUpdate: return
-        self._gChange(self.plane.get(), PLANE)
+        self._gChange(self.plane.get(), OCV.PLANE)
 
     #----------------------------------------------------------------------
     def setFeedRate(self, event=None):
@@ -1639,15 +1702,15 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             focus = None
 
         try:
-            OCV.wcsvar.set(WCS.index(OCV.CD["WCS"]))
+            OCV.wcsvar.set(OCV.WCS.index(OCV.CD["WCS"]))
             self.feedRate.set(str(OCV.CD["feed"]))
-            self.feedMode.set(FEED_MODE[OCV.CD["feedmode"]])
+            self.feedMode.set(OCV.FEED_MODE[OCV.CD["feedmode"]])
             self.spindle.set(OCV.CD["spindle"]=="M3")
             self.spindleSpeed.set(int(OCV.CD["rpm"]))
             self.toolEntry.set(OCV.CD["tool"])
-            self.units.set(UNITS[OCV.CD["units"]])
-            self.distance.set(DISTANCE_MODE[OCV.CD["distance"]])
-            self.plane.set(PLANE[OCV.CD["plane"]])
+            self.units.set(OCV.UNITS[OCV.CD["units"]])
+            self.distance.set(OCV.DISTANCE_MODE[OCV.CD["distance"]])
+            self.plane.set(OCV.PLANE[OCV.CD["plane"]])
             self.tlo.set(str(OCV.CD["TLO"]))
             self.g92.config(text=str(OCV.CD["G92"]))
         except KeyError:
@@ -1665,7 +1728,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
     #----------------------------------------------------------------------
     def wcsChange(self):
-        self.sendGCode(WCS[OCV.wcsvar.get()])
+        self.sendGCode(OCV.WCS[OCV.wcsvar.get()])
         self.app.mcontrol.viewState()
 
 

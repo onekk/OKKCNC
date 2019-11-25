@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import OCV
-from CNC import CNC, WCS
+from CNC import CNC
 import time
 import re
 
@@ -118,7 +118,7 @@ class _GenericController:
 
     #----------------------------------------------------------------------
     def _wcsSet(self, x, y, z):
-        p = WCS.index(OCV.CD["WCS"])
+        p = OCV.WCS.index(OCV.CD["WCS"])
         if p<6:
             cmd = "G10L20P{0:d}".format(p+1)
         elif p==6:
@@ -136,8 +136,8 @@ class _GenericController:
         self.master.sendGCode(cmd)
         self.viewParameters()
         self.master.event_generate("<<Status>>",
-            data=(_("Set workspace {0} to {1}").format(WCS[p],pos)))
-            #data=(_("Set workspace %s to %s")%(WCS[p],pos)).encode("utf8"))
+            data=(_("Set workspace {0} to {1}").format(OCV.WCS[p],pos)))
+            #data=(_("Set workspace %s to %s")%(OCV.WCS[p],pos)).encode("utf8"))
         self.master.event_generate("<<CanvasFocus>>")
 
     #----------------------------------------------------------------------

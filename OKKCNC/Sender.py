@@ -31,7 +31,7 @@ except ImportError:
     from queue import *
 
 import OCV
-from CNC import WAIT, MSG, UPDATE, WCS, CNC, GCode
+from CNC import WAIT, MSG, UPDATE, CNC, GCode
 import Utils
 import Pendant
 from _GenericGRBL import ERROR_CODES
