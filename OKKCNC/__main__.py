@@ -66,6 +66,8 @@ import tkExtra
 import bFileDialog
 import tkDialogs
 
+import Commands as cmd
+
 from CNC import WAIT, CNC, GCode
 import Ribbon
 import Pendant
@@ -115,6 +117,7 @@ class Application(Tk.Toplevel, Sender):
     def __init__(self, master, **kw):
         Tk.Toplevel.__init__(self, master, **kw)
         OCV.application = self
+        print("Application > ", self)
 
         Sender.__init__(OCV.application)
 

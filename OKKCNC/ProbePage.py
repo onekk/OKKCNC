@@ -4,7 +4,6 @@
 # Author: carlo.dormeletti@gmail.com
 # Date: 26 Oct 2019
 
-
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -31,45 +30,50 @@ import tkExtra
 
 import CNCRibbon
 
-PROBE_CMD = [    _("G38.2 stop on contact else error"),
-        _("G38.3 stop on contact"),
-        _("G38.4 stop on loss contact else error"),
-        _("G38.5 stop on loss contact")
+PROBE_CMD = [
+    _("G38.2 stop on contact else error"),
+    _("G38.3 stop on contact"),
+    _("G38.4 stop on loss contact else error"),
+    _("G38.5 stop on loss contact")
     ]
 
-TOOL_POLICY = [ _("Send M6 commands"),         # 0
-        _("Ignore M6 commands"),     # 1
-        _("Manual Tool Change (WCS)"),     # 2
-        _("Manual Tool Change (TLO)"),     # 3
-        _("Manual Tool Change (NoProbe)")# 4
-        ]
+TOOL_POLICY = [
+    _("Send M6 commands"),  # 0
+    _("Ignore M6 commands"),  # 1
+    _("Manual Tool Change (WCS)"),  # 2
+    _("Manual Tool Change (TLO)"),  # 3
+    _("Manual Tool Change (NoProbe)")  # 4
+    ]
 
-TOOL_WAIT = [    _("ONLY before probing"),
-        _("BEFORE & AFTER probing")
-        ]
+TOOL_WAIT = [
+    _("ONLY before probing"),
+    _("BEFORE & AFTER probing")
+    ]
 
-CAMERA_LOCATION = { "Gantry"       : NONE,
-            "Top-Left"     : NW,
-            "Top"          : N,
-            "Top-Right"    : NE,
-            "Left"         : W,
-            "Center"       : CENTER,
-            "Right"        : E,
-            "Bottom-Left"  : SW,
-            "Bottom"       : S,
-            "Bottom-Right" : SE,
-        }
+CAMERA_LOCATION = {
+    "Gantry"       : NONE,
+    "Top-Left"     : NW,
+    "Top"          : N,
+    "Top-Right"    : NE,
+    "Left"         : W,
+    "Center"       : CENTER,
+    "Right"        : E,
+    "Bottom-Left"  : SW,
+    "Bottom"       : S,
+    "Bottom-Right" : SE,
+    }
+
 CAMERA_LOCATION_ORDER = [
-            "Gantry",
-            "Top-Left",
-            "Top",
-            "Top-Right",
-            "Left",
-            "Center",
-            "Right",
-            "Bottom-Left",
-            "Bottom",
-            "Bottom-Right"]
+    "Gantry",
+    "Top-Left",
+    "Top",
+    "Top-Right",
+    "Left",
+    "Center",
+    "Right",
+    "Bottom-Left",
+    "Bottom",
+    "Bottom-Right"]
 
 
 #===============================================================================
@@ -80,9 +84,10 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, N_("Probe"), app)
 
         self.tab = StringVar()
-        # ---
-        col,row=0,0
-        b = Ribbon.LabelRadiobutton(self.frame,
+
+        col, row = 0, 0
+        b = Ribbon.LabelRadiobutton(
+                self.frame,
                 image=Utils.icons["probe32"],
                 text=_("Probe"),
                 compound=TOP,
@@ -94,7 +99,8 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
 
         # ---
         col += 1
-        b = Ribbon.LabelRadiobutton(self.frame,
+        b = Ribbon.LabelRadiobutton(
+                self.frame,
                 image=Utils.icons["level32"],
                 text=_("Autolevel"),
                 compound=TOP,

@@ -111,6 +111,9 @@ class Page(Ribbon.Page):
         Ribbon.Page.__init__(self, master, **kw)
         self.register()
 
+        print("Page self.app> ", self.app)
+        print("Page master > ", master)
+
 
     def register(self):
         """Should be overridden with the groups and frames to register"""
