@@ -14,9 +14,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__author__ = "Carlo Dormeletti (onekk)"
-__email__ = "carlo.dormeletti@gmail.com"
-
 import os
 import sys
 import time
@@ -349,17 +346,37 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Recent7>>', self._loadRecent7)
         self.bind('<<Recent8>>', self._loadRecent8)
         self.bind('<<Recent9>>', self._loadRecent9)
-
-        self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
         self.bind('<<AlarmClear>>', self.alarmClear)
         self.bind('<<Help>>', self.help)
-                        # Do not send the event otherwise it will skip the feedHold/resume
+        # Do not send the event otherwise it will skip the feedHold/resume
         self.bind('<<FeedHold>>', lambda e, s=self: s.feedHold())
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
         self.bind('<<Run>>', lambda e, s=self: s.run())
         self.bind('<<Stop>>', self.stopRun)
         self.bind('<<Pause>>', self.pause)
 #        self.bind('<<TabAdded>>',    self.tabAdded)
+        self.bind('<<SetMem>>', self.setMem)
+        self.bind('<<ClrMem>>', self.clrMem)
+        self.bind('<<SaveMems>>', self.saveMems)
+        self.bind("<<ListboxSelect>>", self.selectionChange)
+        self.bind("<<Modified>>", self.drawAfter)
+
+        self.bind('<Control-Key-a>', self.selectAll)
+        self.bind('<Control-Key-A>', self.unselectAll)
+        self.bind('<Escape>', self.unselectAll)
+        self.bind('<Control-Key-i>', self.selectInvert)
+
+        self.bind('<<SelectAll>>', self.selectAll)
+        self.bind('<<SelectNone>>', self.unselectAll)
+        self.bind('<<SelectInvert>>', self.selectInvert)
+        self.bind('<<SelectLayer>>', self.selectLayer)
+
+        self.bind('<<ZmoveUp>>', self.control.moveZup)
+        self.bind('<<ZmoveDown>>', self.control.moveZdown)
+
+
+
+        self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
 
         tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
         tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
@@ -370,13 +387,15 @@ class Application(Tk.Toplevel, Sender):
         self.bind("<<AddLine>>", self.editor.insertLine)
         self.bind("<<Clone>>", self.editor.clone)
         self.bind("<<ClearEditor>>", self.ClearEditor)
+        self.bind("<<Delete>>", self.editor.deleteBlock)
+
+        # CanvasFrame see if is == OCV.canvas
         self.canvasFrame.canvas.bind("<Control-Key-Prior>", self.editor.orderUp)
         self.canvasFrame.canvas.bind("<Control-Key-Next>", self.editor.orderDown)
         self.canvasFrame.canvas.bind('<Control-Key-d>', self.editor.clone)
         self.canvasFrame.canvas.bind('<Control-Key-c>', self.copy)
         self.canvasFrame.canvas.bind('<Control-Key-x>', self.cut)
         self.canvasFrame.canvas.bind('<Control-Key-v>', self.paste)
-        self.bind("<<Delete>>", self.editor.deleteBlock)
         self.canvasFrame.canvas.bind("<Delete>", self.editor.deleteBlock)
         self.canvasFrame.canvas.bind("<BackSpace>", self.editor.deleteBlock)
 
@@ -400,10 +419,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind("<<AddMarker>>", self.canvasFrame.canvas.setActionAddMarker)
         self.bind('<<MoveGantry>>', self.canvasFrame.canvas.setActionGantry)
         self.bind('<<SetWPOS>>', self.canvasFrame.canvas.setActionWPOS)
-        self.bind('<<SetMem>>', self.setMem)
-        self.bind('<<ClrMem>>', self.clrMem)
-        self.bind('<<SaveMems>>', self.saveMems)
-
 
         frame = Page.frames["Probe:Tool"]
 
@@ -424,18 +439,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<DrawProbe>>', lambda e, c=self.canvasFrame: c.drawProbe(True))
         self.bind('<<DrawOrient>>', self.canvasFrame.canvas.drawOrient)
 
-        self.bind("<<ListboxSelect>>", self.selectionChange)
-        self.bind("<<Modified>>", self.drawAfter)
-
-        self.bind('<Control-Key-a>', self.selectAll)
-        self.bind('<Control-Key-A>', self.unselectAll)
-        self.bind('<Escape>', self.unselectAll)
-        self.bind('<Control-Key-i>', self.selectInvert)
-
-        self.bind('<<SelectAll>>', self.selectAll)
-        self.bind('<<SelectNone>>', self.unselectAll)
-        self.bind('<<SelectInvert>>', self.selectInvert)
-        self.bind('<<SelectLayer>>', self.selectLayer)
 
         #self.bind('<Control-Key-f>',    self.find)
         #self.bind('<Control-Key-g>',    self.findNext)
@@ -972,7 +975,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=__author__,
+            text=OCV.author,
             font=font2,
             foreground=fg,
             background=bg,
@@ -2820,7 +2823,7 @@ class Application(Tk.Toplevel, Sender):
 
 def usage(rc):
     sys.stdout.write("{0} V{1} [{2}]\n".format(Utils.__prg__, OCV._version, OCV._date))
-    sys.stdout.write("{0} <{1}>\n\n".format(__author__, __email__))
+    sys.stdout.write("{0} <{1}>\n\n".format(OCV.author, OCV.email))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
     sys.stdout.write("\t-b # | --baud #\t\tSet the baud rate\n")

@@ -6,6 +6,10 @@ Created on Sun Nov 10 15:21:49 2019
 @author: carlo
 """
 
+author = "Carlo Dormeletti (onekk)"
+email = "carlo.dormeletti@gmail.com"
+
+
 HAS_SERIAL = None
 EXE_FONT = ("Helvetica", 12, "bold")
 RIBBON_TABFONT = ("Sans", "-14", "bold")
@@ -39,8 +43,14 @@ PLANE = {
     "G18" : "XZ",
     "G19" : "YZ"}
 
+
+# variables that hold significant Tk reference for object
+# that are spread across many modules
+
 root = None
 application = None
+canvas = None
+
 
 _version = "0.1.0-dev"
 _date = "26 Dec 2019"

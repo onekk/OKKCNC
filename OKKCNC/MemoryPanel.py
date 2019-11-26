@@ -310,7 +310,12 @@ class Config():
     def saveMemory():
         for mem_name in OCV.WK_mems:
             md = OCV.WK_mems[mem_name]
+            # Test the indicator and delete the memory from config if
+            # indicator = 0
             if md[3] is not 0:
                 mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
                     md[4], md[0], md[1], md[2], md[3])
                 Utils.setStr("Memory", mem_name, mem_value)
+            else:
+                Utils.removeValue("Memory", mem_name)
+

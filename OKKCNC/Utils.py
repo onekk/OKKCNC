@@ -7,9 +7,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__author__  = "Carlo Dormeletti (onekk)"
-__email__   = "carlo.dormeletti@gmail.com"
-
 import os
 import glob
 import traceback
@@ -134,10 +131,8 @@ def delIcons():
         images = {}    # needed otherwise it complains on deleting the icons
 
 
-#------------------------------------------------------------------------------
-# Load configuration
-#------------------------------------------------------------------------------
 def loadConfiguration(systemOnly=False):
+    """Load configuration"""
     global config, _errorReport, language
     if systemOnly:
         config.read(iniSystem)
@@ -152,10 +147,8 @@ def loadConfiguration(systemOnly=False):
                     fallback=True, languages=[language]).gettext
 
 
-#------------------------------------------------------------------------------
-# Save configuration file
-#------------------------------------------------------------------------------
 def saveConfiguration():
+    """Save configuration file"""
     global config
     cleanConfiguration()
     f = open(iniUser,"w")
@@ -164,10 +157,8 @@ def saveConfiguration():
     delIcons()
 
 
-#----------------------------------------------------------------------
-# Remove items that are the same as in the default ini
-#----------------------------------------------------------------------
 def cleanConfiguration():
+    """Remove items that are the same as in the default ini"""
     global config
     newconfig = config    # Remember config
     config = ConfigParser.ConfigParser()
@@ -186,10 +177,8 @@ def cleanConfiguration():
     config = newconfig
 
 
-#------------------------------------------------------------------------------
-# add section if it doesn't exist
-#------------------------------------------------------------------------------
 def addSection(section):
+    """add section if it doesn't exist"""
     global config
     if not config.has_section(section):
         config.add_section(section)
@@ -233,10 +222,15 @@ def getBool(section, name, default=False):
     try: return bool(int(config.get(section, name)))
     except: return default
 
-#------------------------------------
-# set the steps used in ControlPage -
-#------------------------------------
+
+def removeValue(section, name):
+    global config
+    if config.has_option(section, name):
+        config.remove_option(section, name)
+
+
 def SetSteps():
+    """set the steps used in ControlPage"""
     # Default steppings
     try:
         OCV.step1 = getFloat("Control","step1")
@@ -274,7 +268,6 @@ def SetSteps():
         OCV.zstep4 = 10.0
 
 
-#----------------------------------------------------------------------
 def InputValue(app, caller):
     title_d = _("Enter A Value")
     title_p = _("Enter Value for {0} :")
@@ -355,10 +348,9 @@ def InputValue(app, caller):
 def do_nothing():
     pass
 
-#-------------------------------------------------------------------------------
-# Return a font from a string
-#-------------------------------------------------------------------------------
+
 def makeFont(name, value=None):
+    """Return a font from a string"""
     try:
         font = tkFont.Font(name=name, exists=True)
     except TclError:

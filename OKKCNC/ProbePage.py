@@ -7,9 +7,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-__author__  = "Carlo Dormeletti (onekk)"
-__email__   = "carlo.dormeletti@gmail.com"
-
 import sys
 # import time
 import math

@@ -18,6 +18,7 @@ except ImportError:
 
 import OCV
 from CNC import CNC
+import Commands as cmd
 import Utils
 import Camera
 import tkExtra
@@ -107,14 +108,11 @@ MOUSE_CURSOR = {
     #ACTION_EDIT : "pencil",
 }
 
-
 def mouseCursor(action):
     return MOUSE_CURSOR.get(action, DEF_CURSOR)
 
 class AlarmException(Exception):
-    """
-        Raise an alarm exception
-    """
+    """Raise an alarm exception"""
     pass
 
 
@@ -125,7 +123,7 @@ class CNCCanvas(Tk.Canvas, object):
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
-
+        OCV.canvas = self
         # Global variables
         self.view = 0
         self.app = app
@@ -159,33 +157,33 @@ class CNCCanvas(Tk.Canvas, object):
         self.bind('<Control-Key-Down>', self.panDown)
 
         self.bind('<Escape>', self.actionCancel)
-#        self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
-#        self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
-#        self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
-#        self.bind('<Key-f>', self.fit2Screen)
-#        self.bind('<Key-g>', self.setActionGantry)
-#        self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
-#        self.bind('<Key-m>', self.setActionMove)
-#        self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
-#        self.bind('<Key-o>', self.setActionOrigin)
-#        self.bind('<Key-r>', self.setActionRuler)
-#        self.bind('<Key-s>', self.setActionSelect)
-#        self.bind('<Key-x>', self.setActionPan)
+        #        self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
+        #        self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
+        #        self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
+        #        self.bind('<Key-f>', self.fit2Screen)
+        #        self.bind('<Key-g>', self.setActionGantry)
+        #        self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
+        #        self.bind('<Key-m>', self.setActionMove)
+        #        self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
+        #        self.bind('<Key-o>', self.setActionOrigin)
+        #        self.bind('<Key-r>', self.setActionRuler)
+        #        self.bind('<Key-s>', self.setActionSelect)
+        #        self.bind('<Key-x>', self.setActionPan)
         self.bind('<Key>', self.handleKey)
 
         self.bind('<Control-Key-S>', self.cameraSave)
-        self.bind('<Control-Key-t>', self.__test)
+        self.bind('<Control-Key-t>', self._test)
 
         self.bind('<Control-Key-equal>', self.menuZoomIn)
         self.bind('<Control-Key-minus>', self.menuZoomOut)
 
-#        self.bind('<Control-Key-x>', self.cut)
-#        self.bind('<Control-Key-c>', self.copy)
-#        self.bind('<Control-Key-v>', self.paste)
+        #        self.bind('<Control-Key-x>', self.cut)
+        #        self.bind('<Control-Key-c>', self.copy)
+        #        self.bind('<Control-Key-v>', self.paste)
 
-#        self.bind('<Key-space>', self.commandFocus)
-#        self.bind('<Control-Key-space>', self.commandFocus)
-#        self.bind('<Control-Key-a>', self.selectAll)
+        #        self.bind('<Key-space>', self.commandFocus)
+        #        self.bind('<Control-Key-space>', self.commandFocus)
+        #        self.bind('<Control-Key-a>', self.selectAll)
 
         self.x0 = 0.0
         self.y0 = 0.0
@@ -458,17 +456,16 @@ class CNCCanvas(Tk.Canvas, object):
         self.setAction(ACTION_SELECT)
 
 
-    # Set the work coordinates to mouse location
-
     def actionWPOS(self, x, y):
+        """Set the work coordinates to mouse location"""
         u, v, w = self.image2Machine(x, y)
+        #print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
         self.app.mcontrol._wcsSet(u, v, w)
         self.setAction(ACTION_SELECT)
 
 
-    # Add an orientation marker at mouse location
-
     def actionAddOrient(self, x, y):
+        """Add an orientation marker at mouse location"""
         cx, cy = self.snapPoint(self.canvasx(x), self.canvasy(y))
         u, v, w = self.canvas2Machine(cx, cy)
         if u is None or v is None:
@@ -481,9 +478,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.setAction(ACTION_SELECT)
 
 
-    # Find item selected
-
     def click(self, event):
+        """Find item selected"""
         self.focus_set()
         self._x = self._xp = event.x
         self._y = self._yp = event.y
@@ -720,7 +716,7 @@ class CNCCanvas(Tk.Canvas, object):
         self.setMouseStatus(event)
 
     # Testing routine
-    def __test(self, event):
+    def _test(self, event):
         i = self.canvasx(event.x)
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
@@ -918,9 +914,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def fit2Screen(self, event=None):
-        """
-            Zoom to Fit to Screen
-        """
+        """Zoom to Fit to Screen"""
 
         bb = self.selBbox()
         if bb is None: return
@@ -962,8 +956,7 @@ class CNCCanvas(Tk.Canvas, object):
         self.RefreshItems()
 
     def RefreshItems(self):
-        self.RefreshMemories()
-        pass
+        cmd.RefreshMemories()
 
 
     def menuZoomIn(self, event=None):
@@ -990,9 +983,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.zoomCanvas(event.x, event.y, pow(ZOOM, (event.delta//120)))
 
 
-    # Change the insert marker location
-
     def activeMarker(self, item):
+        """Change the insert marker location"""
         if item is None: return
         b, i = item
         if i is None: return
@@ -1006,9 +998,8 @@ class CNCCanvas(Tk.Canvas, object):
             self.itemconfig(self._lastActive, arrow=Tk.LAST)
 
 
-    # Display gantry
-
     def gantry(self, wx, wy, wz, mx, my, mz):
+        """Display gantry"""
         self._lastGantry = (wx, wy, wz)
         self._drawGantry(*self.plotCoords([(wx, wy, wz)])[0])
         if self._cameraImage and self.cameraAnchor is Tk.NONE:
@@ -1045,9 +1036,8 @@ class CNCCanvas(Tk.Canvas, object):
             self.coords(self._workarea, *coords)
 
 
-    # Clear highlight of selection
-
     def clearSelection(self):
+        """Clear highlight of selection"""
         if self._lastActive is not None:
             self.itemconfig(self._lastActive, arrow=Tk.NONE)
             self._lastActive = None
@@ -1074,9 +1064,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.delete("info")
 
 
-    # Highlight selected items
-
     def select(self, items):
+        """Highlight selected items"""
         for b, i in items:
             block = self.gcode[b]
             if i is None:
@@ -1100,9 +1089,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.drawMargin()
 
 
-    # Select orientation marker
-
     def selectMarker(self, item):
+        """Select orientation marker"""
         # find marker
         for i, paths in enumerate(self.gcode.orient.paths):
             if item in paths:
@@ -1114,9 +1102,8 @@ class CNCCanvas(Tk.Canvas, object):
         self._orientSelected = None
 
 
-    # Highlight marker that was selected
-
     def orientChange(self, marker):
+        """Highlight marker that was selected"""
         self.itemconfig("Orient", width=1)
         if marker >= 0:
             self._orientSelected = marker
@@ -1129,9 +1116,8 @@ class CNCCanvas(Tk.Canvas, object):
             self._orientSelected = None
 
 
-    # Display graphical information on selected blocks
-
     def showInfo(self, blocks):
+        """Display graphical information on selected blocks"""
         self.delete("info")    # clear any previous information
         for bid in blocks:
             block = self.gcode.blocks[bid]
@@ -1268,16 +1254,15 @@ class CNCCanvas(Tk.Canvas, object):
         self.camera.save("camera{0:02d}.png".format(self._count))
 
 
-    # Reposition camera and crosshair
-
     def cameraPosition(self):
+        """Reposition camera and crosshair"""
         if self._cameraImage is None: return
         w = self.winfo_width()
         h = self.winfo_height()
         hc, wc = self.camera.image.shape[:2]
         wc //= 2
         hc //= 2
-        x = w//2        # everything on center
+        x = w//2  # everything on center
         y = h//2
         if self.cameraAnchor is Tk.NONE:
             if self._lastGantry is not None:
@@ -1313,9 +1298,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def cameraMakeTemplate(self, r):
-        """
-            Crop center of camera and search it in subsequent movements
-        """
+        """Crop center of camera and search it in subsequent movements"""
 
         if self._cameraImage is None: return
         self._template = self.camera.getCenterTemplate(r)
@@ -1326,9 +1309,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def draw(self, view=None): #, lines):
-        """
-            Parse and draw the file from the editor to g-code commands
-        """
+        """Parse and draw the file from the editor to g-code commands"""
 
         if self._inDraw:
             return
@@ -1367,9 +1348,8 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def initPosition(self):
-        """
-            Initialize gantry position
-        """
+        """Initialize gantry position"""
+
         self.configure(background=OCV.CANVAS_COLOR)
         self.delete(Tk.ALL)
         self._cameraImage = None
@@ -1467,8 +1447,38 @@ class CNCCanvas(Tk.Canvas, object):
         CanvasTooltip(self, objD, text=ttext, tag=mem_tt)
 
         # Position created objects
+        # for mem 0 and mem 1 coordinates are in working coord
+        # for other memories coorddinates are in machine coord
+        # need a function to translate machine to canvas
 
-        x, y = self.plotCoords([(md[0], md[1], md[2])])[0]
+        if mem_num in (0, 1):
+            pc_x = md[0]
+            pc_y = md[1]
+            pc_z = md[2]
+        else:
+            # Translate machine coordinate in w coordinates, using
+            # GRBL position messages to cope with different values
+            # mpos are the same, are fixed by endstops
+            # wpos may vary
+            # but GRBL is reporting constantly both values
+            # so there is no need to mantain a table in OKKCNC
+
+            d_x = (OCV.CD["wx"] - OCV.CD["mx"])
+            d_y = (OCV.CD["wy"] - OCV.CD["my"])
+            d_z = (OCV.CD["wz"] - OCV.CD["mz"])
+            pc_x = md[0] + d_x
+            pc_y = md[1] + d_y
+            pc_z = md[2] + d_z
+
+            """
+            print(" WPOS: X{0} Y{1} Z{2}\n Delta: X{3} Y{4} Z{5}\n MPOS: X{6} Y{7} Z{8}".format(
+                    pc_x, pc_y, pc_z,
+                    d_x, d_y, d_z,
+                    *md))
+            """
+
+        x, y = self.plotCoords([(pc_x, pc_y, pc_z)])[0]
+
         self.coords(objA, x-wc, y, x+wc, y)
         self.coords(objB, x, y-hc, x, y+hc)
         self.coords(objC, x-r_dim, y-r_dim, x+r_dim, y+r_dim)
@@ -1495,12 +1505,6 @@ class CNCCanvas(Tk.Canvas, object):
         self.delete(mem_cross_c)
         self.delete(mem_text)
         self.delete(mem_tt)
-
-    def RefreshMemories(self):
-        for i in range(2, OCV.WK_mem_num):
-            if OCV.WK_active_mems[i] == 2:
-                self.memDraw(i)
-
 
     # Draw gantry location
 
@@ -2221,12 +2225,10 @@ class CNCCanvas(Tk.Canvas, object):
 
         return x, y, z
 
-#==============================================================================
+
 
 class CanvasFrame(Tk.Frame):
-    """
-        Canvas Frame with toolbar
-    """
+    """Canvas Frame with toolbar"""
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Frame.__init__(self, master, *kw, **kwargs)
