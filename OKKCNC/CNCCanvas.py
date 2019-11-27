@@ -117,9 +117,7 @@ class AlarmException(Exception):
 
 
 class CNCCanvas(Tk.Canvas, object):
-    """
-        Drawing canvas
-    """
+    """Drawing canvas"""
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
@@ -302,10 +300,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def status(self, msg):
-        """
-            Set status message
-        """
-        #self.event_generate("<<Status>>", data=msg.encode("utf8"))
+        """Set status message"""
         self.event_generate("<<Status>>", data=msg)
 
 
@@ -836,23 +831,21 @@ class CNCCanvas(Tk.Canvas, object):
         self.yview(Tk.SCROLL, 1, Tk.UNITS)
 
 
-    # Delay zooming to cascade multiple zoom actions
-
     def zoomCanvas(self, x, y, zoom):
+        """Delay zooming to cascade multiple zoom actions"""
         self._tx = x
         self._ty = y
         self.__tzoom *= zoom
         self.after_idle(self._zoomCanvas)
 
 
-    # Zoom on screen position x,y by a factor zoom
+    def _zoomCanvas(self, event=None):
+        """Zoom on screen position x,y"""
 
-    def _zoomCanvas(self, event=None): #x, y, zoom):
         x = self._tx
         y = self._ty
         zoom = self.__tzoom
 
-        #def zoomCanvas(self, x, y, zoom):
         self.__tzoom = 1.0
 
         self.zoom *= zoom
@@ -891,9 +884,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def selBbox(self):
-        """
-            Return selected objects bounding box
-        """
+        """Return selected objects bounding box"""
 
         x1 = None
         for tag in ("sel", "sel2", "sel3", "sel4"):
@@ -917,18 +908,31 @@ class CNCCanvas(Tk.Canvas, object):
         """Zoom to Fit to Screen"""
 
         bb = self.selBbox()
-        if bb is None: return
+        if bb is None:
+            return
+
         x1, y1, x2, y2 = bb
 
+        # add a factor to improve reability
+        bbox_width = (x2-x1) * 1.05
+        bbox_height = (y2-y1) * 1.05
+
         try:
-            zx = float(self.winfo_width()) / (x2-x1)
+            zx = round(float(self.winfo_width() / bbox_width), 2)
         except:
             return
+
         try:
-            zy = float(self.winfo_height()) / (y2-y1)
+            zy = round(float(self.winfo_height() / bbox_height), 2)
         except:
             return
-        if zx > 1.0:
+
+        if OCV.DEBUG is True:
+            print("BBCALC ", bbox_width, bbox_height)
+            print("canvas ", self.winfo_width(), self.winfo_height())
+            print("ZX, ZY ", zx, zy)
+
+        if zx > 0.98:
             self.__tzoom = min(zx, zy)
         else:
             self.__tzoom = max(zx, zy)
@@ -1470,12 +1474,11 @@ class CNCCanvas(Tk.Canvas, object):
             pc_y = md[1] + d_y
             pc_z = md[2] + d_z
 
-            """
-            print(" WPOS: X{0} Y{1} Z{2}\n Delta: X{3} Y{4} Z{5}\n MPOS: X{6} Y{7} Z{8}".format(
-                    pc_x, pc_y, pc_z,
-                    d_x, d_y, d_z,
-                    *md))
-            """
+            if OCV.DEBUG is True:
+                print(" WPOS: X{0} Y{1} Z{2}\n Delta: X{3} Y{4} Z{5}\n MPOS: X{6} Y{7} Z{8}".format(
+                        pc_x, pc_y, pc_z,
+                        d_x, d_y, d_z,
+                        *md))
 
         x, y = self.plotCoords([(pc_x, pc_y, pc_z)])[0]
 

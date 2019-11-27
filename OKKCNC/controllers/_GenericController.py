@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import OCV
-from CNC import CNC
 import time
 import re
 
@@ -85,36 +84,42 @@ class _GenericController:
         if clearAlarm:
             self.master._alarm = False
 
-        self.master.sendGCode("$X")
+        self.master.sendGCode(b"$X")
 
     #----------------------------------------------------------------------
     def home(self, event=None):
         self.master._alarm = False
-        self.master.sendGCode("$H")
+        self.master.sendGCode(b"$H")
 
     def viewStatusReport(self):
         self.master.serial.write(b"?")
         self.master.sio_status = True
 
     def viewParameters(self):
-        self.master.sendGCode("$#")
+        self.master.sendGCode(b"$#")
 
     def viewState(self): #Maybe rename to viewParserState() ???
-        self.master.sendGCode("$G")
+        self.master.sendGCode(b"$G")
 
     #----------------------------------------------------------------------
     def jog(self, dir):
         #print("jog",dir)
         self.master.sendGCode("G91G0{0}".format(dir))
-        self.master.sendGCode("G90")
+        self.master.sendGCode(b"G90")
 
     #----------------------------------------------------------------------
     def goto(self, x=None, y=None, z=None):
         cmd = "G90G0"
-        if x is not None: cmd += "X{0:0.{1}f}".format(x, OCV.digits)
-        if y is not None: cmd += "Y{0:0.{1}f}".format(y, OCV.digits)
-        if z is not None: cmd += "Z{0:0.{1}f}".format(z, OCV.digits)
-        self.master.sendGCode("{0}".format(cmd))
+        if x is not None:
+            cmd += "X{0:0.{1}f}".format(x, OCV.digits)
+        if y is not None:
+            cmd += "Y{0:0.{1}f}".format(y, OCV.digits)
+        if z is not None:
+            cmd += "Z{0:0.{1}f}".format(z, OCV.digits)
+
+        cmd_string = "{0}".format(cmd)
+        self.master.sendGCode(cmd_string)
+
 
     #----------------------------------------------------------------------
     def _wcsSet(self, x, y, z):
@@ -137,7 +142,6 @@ class _GenericController:
         self.viewParameters()
         self.master.event_generate("<<Status>>",
             data=(_("Set workspace {0} to {1}").format(OCV.WCS[p],pos)))
-            #data=(_("Set workspace %s to %s")%(OCV.WCS[p],pos)).encode("utf8"))
         self.master.event_generate("<<CanvasFocus>>")
 
     #----------------------------------------------------------------------
@@ -166,11 +170,12 @@ class _GenericController:
         else:
             self.master.feedHold()
 
-    #----------------------------------------------------------------------
-    # Purge the buffer of the controller. Unfortunately we have to perform
-    # a reset to clear the buffer of the controller
-    #---------------------------------------------------------------------
+
     def purgeController(self):
+        """
+        Purge the buffer of the controller. Unfortunately we have to perform
+        a reset to clear the buffer of the controller
+        """
         self.master.serial.write(b"!")
         self.master.serial.flush()
         time.sleep(1)
@@ -181,12 +186,14 @@ class _GenericController:
         self.purgeControllerExtra()
         self.master.runEnded()
         self.master.stopProbe()
-        if G: self.master.sendGCode(G)            # restore $G
+
+        if G:
+            self.master.sendGCode(G)  # restore $G
+
         self.master.sendGCode("G43.1 Z{0}".format(TLO))  # restore TLO
         self.viewState()
 
 
-    #----------------------------------------------------------------------
     def parseLine(self, line, cline, sline):
         if not line:
             return True

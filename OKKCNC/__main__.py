@@ -113,8 +113,12 @@ class Application(Tk.Toplevel, Sender):
     """Main Application window"""
     def __init__(self, master, **kw):
         Tk.Toplevel.__init__(self, master, **kw)
+
         OCV.application = self
+
         print("Application > ", self)
+
+        #Tk.Toplevel.__init__(OCV.application, master, **kw)
 
         Sender.__init__(OCV.application)
 
@@ -2330,11 +2334,11 @@ class Application(Tk.Toplevel, Sender):
 
         if autoloaded:
             self.setStatus(
-                _("'{0}' reloaded at '{1}'").decode("utf8").format(
+                _("'{0}' reloaded at '{1}'").format(
                     filename,
                     str(datetime.now())))
         else:
-            self.setStatus(_("'{0}' loaded").decode("utf8").format(filename))
+            self.setStatus(_("'{0}' loaded").format(filename))
 
         self.title("{0}{1}: {2}".format(Utils.__prg__, OCV._version, self.gcode.filename))
 
@@ -2568,7 +2572,7 @@ class Application(Tk.Toplevel, Sender):
             n = 1        # including one wait command
             for line in CNC.compile(lines):
                 if line is not None:
-                    if isinstance(line, str) or isinstance(line, unicode):
+                    if isinstance(line, str):
                         self.queue.put(line+"\n")
                     else:
                         self.queue.put(line)
@@ -2634,7 +2638,8 @@ class Application(Tk.Toplevel, Sender):
         while self.log.qsize() > 0 and time.time()-t < 0.1:
             try:
                 msg, line = self.log.get_nowait()
-                line = line.rstrip("\n")
+                #line = line.rstrip("\n")
+                line = str(line).rstrip("\n")
                 inserted = True
                 #print "<<<",msg,line,"\n" in line
 
@@ -2846,14 +2851,21 @@ def usage(rc):
 
 def main(args=None):
 
-    if sys.version_info[0] != 2:
-        sys.stdout.write("="*80+"\n")
-        sys.stdout.write("WARNING: OKKCNC is running only on python v2.x for the moment\n")
-        sys.stdout.write("="*80+"\n")
-        sys.exit(0)
-
     OCV.root = Tk.Tk()
     OCV.root.withdraw()
+
+    if sys.version_info[0] != 2:
+        sys.stdout.write("="*80+"\n")
+        sys.stdout.write(
+                "WARNING: OKKCNC is tested for running on python v2.x for now\n")
+        sys.stdout.write("="*80+"\n")
+
+        tkMessageBox.showwarning(
+                "OKKCNC: Unsupported Python version",
+                "Only Python 2 is currently supported by bCNC.\
+                \nContinue on your own risk!")
+        OCV.IS_PY3 = True
+
     Tk.CallWrapper = Utils.CallWrapper
 
     tkExtra.bindClasses(OCV.root)

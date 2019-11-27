@@ -1006,7 +1006,13 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.distance.grid(row=row, column=col, columnspan=2, sticky=Tk.EW)
 
         bal_text = ""
-        for key, val in OCV.DISTANCE_MODE.viewitems():
+
+        if OCV.IS_PY3 is True:
+            g17_items = OCV.DISTANCE_MODE.items()
+        else:
+            g17_items = OCV.DISTANCE_MODE.viewitems()
+
+        for key, val in g17_items:
             bal_text += "{0} > {1}\n".format(key, val)
 
         tkExtra.Balloon.set(self.distance, _("Distance Mode:\n{0}".format(bal_text)))
@@ -1016,8 +1022,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         # populate gstate dictionary
         self.gstate = {}  # $G state results widget dictionary
 
-        for k,v in OCV.DISTANCE_MODE.viewitems():
-            self.gstate[k] = (self.distance, v)
+        for key, val in g17_items:
+            self.gstate[key] = (self.distance, val)
 
         col += 3
         self.units = tkExtra.Combobox(f, True,
@@ -1028,13 +1034,19 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.units.grid(row=row, column=col, sticky=Tk.EW)
 
         bal_text = ""
-        for key, val in OCV.UNITS.viewitems():
+
+        if OCV.IS_PY3 is True:
+            unit_items = OCV.UNITS.items()
+        else:
+            unit_items = OCV.UNITS.viewitems()
+
+        for key, val in unit_items:
             bal_text += "{0} > {1}\n".format(key, val)
 
         tkExtra.Balloon.set(self.units, _("Units:\n{0}".format(bal_text)) )
 
-        for k,v in OCV.UNITS.viewitems():
-            self.gstate[k] = (self.units, v)
+        for key, val in unit_items:
+            self.gstate[key] = (self.units, val)
 
         self.addWidget(self.units)
 
@@ -1063,14 +1075,21 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.plane.grid(row=row, column=col, sticky=Tk.EW)
 
         bal_text = ""
-        for key, val in OCV.PLANE.viewitems():
+
+        if OCV.IS_PY3 is True:
+            plane_items = OCV.PLANE.items()
+        else:
+            plane_items = OCV.PLANE.viewitems()
+
+
+        for key, val in plane_items:
             bal_text += "{0} > {1}\n".format(key, val)
 
         tkExtra.Balloon.set(self.plane, _("Plane:\n{0}".format(bal_text)) )
 
         self.addWidget(self.plane)
 
-        for k,v in OCV.PLANE.viewitems():
+        for k,v in plane_items:
             self.gstate[k] = (self.plane, v)
 
         # Feed speed
@@ -1099,13 +1118,22 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.feedMode.fill(sorted(OCV.FEED_MODE.values()))
         self.feedMode.grid(row=row, column=col, sticky=Tk.EW)
 
+
         bal_text = ""
-        for key, val in OCV.FEED_MODE.viewitems():
+
+        if OCV.IS_PY3 is True:
+            feed_items = OCV.FEED_MODE.items()
+        else:
+            feed_items = OCV.FEED_MODE.viewitems()
+
+        for key, val in feed_items:
             bal_text += "{0} > {1}\n".format(key, val)
 
         tkExtra.Balloon.set(self.feedMode, _("Feed Mode:\n{0}".format(bal_text)) )
 
-        for k,v in OCV.FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
+        for key, val in feed_items:
+            self.gstate[key] = (self.feedMode, val)
+
         self.addWidget(self.feedMode)
 
         # TLO

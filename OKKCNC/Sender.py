@@ -515,17 +515,24 @@ class Sender:
         OCV.CD["state"] = NOT_CONNECTED
         OCV.CD["color"] = STATECOLOR[OCV.CD["state"]]
 
-    #----------------------------------------------------------------------
-    # Send to controller a gcode or command
-    # WARNING: it has to be a single line!
-    #----------------------------------------------------------------------
     def sendGCode(self, cmd):
+        """
+        Send to controller a gcode or command
+        WARNING: it has to be a single line!
+        """
         if self.serial and not self.running:
-            if isinstance(cmd,tuple):
-                self.queue.put(cmd)
-            else:
-                self.queue.put(cmd+"\n")
+            c_type = type(cmd)
 
+            if OCV.COM_DEBUG is True:
+                print("Cmd      > ", cmd)
+                print("Cmd type > ", c_type)
+
+            if isinstance(cmd, tuple):
+                self.queue.put(cmd)
+            elif isinstance(cmd, str):
+                self.queue.put(cmd + "\n")
+            else:
+                self.queue.put(cmd + b"\n")
     #----------------------------------------------------------------------
     def sendHex(self, hexcode):
         if self.serial is None: return
@@ -606,32 +613,36 @@ class Sender:
         OCV.CD["running"] = False
 
 
-    #----------------------------------------------------------------------
-    # Stop the current run
-    #----------------------------------------------------------------------
     def stopRun(self, event=None):
+        """Stop the current run"""
         self.feedHold()
         self._stop = True
         # if we are in the process of submitting do not do anything
         if self._runLines != sys.maxsize:
             self.purgeController()
 
-    #----------------------------------------------------------------------
-    # This should be called everytime that milling of g-code file is finished
-    # So we can purge the controller for the next job
-    # See https://github.com/vlachoudis/bCNC/issues/1035
-    #----------------------------------------------------------------------
     def jobDone(self):
-        print("Job done. Purging the controller. (Running: {0})".format(self.running))
+        """
+        This should be called everytime that milling of g-code file is finished
+        So we can purge the controller for the next job
+        See https://github.com/vlachoudis/bCNC/issues/1035
+        """
+
+        if OCV.COM_DEBUG is True:
+            print("Job done. Purging the controller. (Running: {0})".format(self.running))
         self.purgeController()
 
-    #----------------------------------------------------------------------
-    # This is called everytime that motion controller changes the state
-    # YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT BCNC STATE
-    # Right now the primary idea of this is to detect when job stopped running
-    #----------------------------------------------------------------------
+
     def controllerStateChange(self, state):
-        print("Controller state changed to: {0} (Running: {1})".format(state, self.running))
+        """
+        This is called everytime that motion controller changes the state
+        YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT BCNC STATE
+        Right now the primary idea of this is to detect when job stopped running
+        """
+
+        if OCV.COM_DEBUG is True:
+            print("Controller state changed to: {0} (Running: {1})".format(state, self.running))
+
         if state in ("Idle"):
             self.mcontrol.viewParameters()
             self.mcontrol.viewState()
@@ -690,13 +701,13 @@ class Sender:
                             self._gcount += 1
                         tosend = None
 
-                    elif not isinstance(tosend,str) and not isinstance(tosend,unicode):
+                    elif not isinstance(tosend,str):
                         try:
                             tosend = self.gcode.evaluate(tosend)
 #                            if isinstance(tosend, list):
 #                                cline.append(len(tosend[0]))
 #                                sline.append(tosend[0])
-                            if isinstance(tosend,str) or isinstance(tosend,unicode):
+                            if isinstance(tosend,str):
                                 tosend += "\n"
                             else:
                                 # Count executed commands as well
@@ -714,11 +725,9 @@ class Sender:
                 if tosend is not None:
                     # All modification in tosend should be
                     # done before adding it to cline
-                    if isinstance(tosend, unicode):
-                        tosend = tosend.encode("ascii","replace")
 
                     # Keep track of last feed
-                    pat = FEEDPAT.match(tosend)
+                    pat = FEEDPAT.match(str(tosend))
                     if pat is not None:
                         self._lastFeed = pat.group(2)
 
@@ -751,7 +760,8 @@ class Sender:
             # Anything to receive?
             if self.serial.inWaiting() or tosend is None:
                 try:
-                    line = str(self.serial.readline()).strip()
+                    line = str(self.serial.readline().decode()).strip()
+                    #print("Received line > ", line)
                 except:
                     self.log.put((Sender.MSG_RECEIVE, str(sys.exc_info()[1])))
                     self.emptyQueue()
@@ -788,9 +798,16 @@ class Sender:
                 #print ">S>",repr(tosend),"stack=",sline,"sum=",sum(cline)
                 if self.mcontrol.gcode_case > 0: tosend = tosend.upper()
                 if self.mcontrol.gcode_case < 0: tosend = tosend.lower()
-                self.serial.write(bytes(tosend))
-                #self.serial.write(tosend.encode("utf8"))
-                #self.serial.flush()
+
+                if OCV.COM_DEBUG is True:
+                    print("serial to send > ", tosend)
+                    print("serial to send type> ", type(tosend))
+
+                try:
+                    self.serial.write(tosend.encode())
+                except AttributeError:
+                    self.serial.write(tosend)
+
                 self.log.put((Sender.MSG_BUFFER,tosend))
 
                 tosend = None

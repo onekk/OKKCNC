@@ -338,21 +338,26 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
     def comportRefresh(self, dbg=False):
         #Detect devices
         hwgrep = []
-        for i in self.comportsGet():
+        com_ports = self.comportsGet()
+
+        print("comportRefresh scg > ", com_ports)
+
+        for i in com_ports:
             if dbg:
                 #Print list to console if requested
                 comport = ''
                 for j in i: comport+=j+"\t"
                 print(comport)
+
             for hw in i[2].split(' '):
-                hwgrep += ["hwgrep://"+hw+"\t"+i[1]]
+                hwgrep += ["hwgrep://{0}\t{1}".format(hw,i[1])]
 
         #Populate combobox
-        devices = sorted([x[0]+"\t"+x[1] for x in self.comportsGet()])
+        devices = sorted(["{0}\t {1}".format(*x) for x in com_ports])
         devices += ['']
         devices += sorted(set(hwgrep))
         devices += ['']
-        devices += sorted(["spy://"+x[0]+"?raw"+"\t(Debug) "+x[1] for x in self.comportsGet()])
+        devices += sorted(["spy://{0} ?raw\t(Debug) {1}".format(*x) for x in com_ports])
         devices += ['', 'socket://localhost:23', 'rfc2217://localhost:2217']
 
         #Clean neighbour duplicates

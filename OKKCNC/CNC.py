@@ -641,21 +641,17 @@ class Orient:
         self.saved = True
 
 
-#===============================================================================
-# Command operations on a CNC
-#===============================================================================
 class CNC:
+    """Command operations on a CNC"""
 
-    #----------------------------------------------------------------------
     def __init__(self):
         self.initPath()
         self.resetAllMargins()
 
-    #----------------------------------------------------------------------
-    # Update G variables from "G" string
-    #----------------------------------------------------------------------
+
     @staticmethod
     def updateG():
+        """Update G variables from "G" string"""
         for g in OCV.CD["G"]:
             if g[0] == "F":
                 OCV.CD["feed"] = float(g[1:])
@@ -1547,7 +1543,7 @@ class CNC:
             newcmd = []
             cmds = CNC.compileLine(line)
             if cmds is None: continue
-            if isinstance(cmds,str) or isinstance(cmds,unicode):
+            if isinstance(cmds,str):
                 cmds = CNC.breakLine(cmds)
             else:
                 # either CodeType or tuple, list[] append at it as is
@@ -1878,10 +1874,9 @@ class Block(list):
 
             return "%s [%s]"%(name,','.join(ops))
 
-    #----------------------------------------------------------------------
-    # Add a new operation to the block's name
-    #----------------------------------------------------------------------
+
     def addOperation(self, operation, remove=None):
+        """Add a new operation to the block's name"""
         self._name = Block.operationName(self.name(), operation, remove)
 
     #----------------------------------------------------------------------
@@ -1892,12 +1887,13 @@ class Block(list):
                 or  Unicode.BALLOT_BOX
 
         try:
-            return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
-            #return "{0} {1} {2} - [{3:d}]".format(e, v, self.name(), len(self))
+            #return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
+            return u"{0} {1} {2} - [{3}]".format(e, v, self.name(), len(self))
         except UnicodeDecodeError:
-            return "%s %s %s - [%d]"%(e, v, self.name().decode("ascii","replace"), len(self))
-            #return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().decode("ascii","replace"), len(self))
-        #except UnicodeEncodeError:
+            #return "%s %s %s - [%d]"%(e, v, self.name().decode("ascii","replace"), len(self))
+            return u"{0} {1} {2} - [{3}]".format(e, v, self.name().decode("ascii","replace"), len(self))
+        except UnicodeEncodeError:
+            print(e,v,self.name(), len(self))
         #    return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().encode('ascii', 'ignore').decode("ascii","replace"), len(self))
     #----------------------------------------------------------------------
     def write_header(self):
@@ -2649,7 +2645,7 @@ class GCode:
                             self.fmt("Z",z,7))+cm)
 
         #Get island height of segment
-        def getSegmentZTab(segment, altz=None):
+        def getSegmentZTab(segment, altz=float("-inf")):
             if segment._inside:
                 return max(segment._inside)
             else: return altz
@@ -2659,8 +2655,11 @@ class GCode:
             x,y = path[0].A
 
             #decide if flat or ramp/helical:
-            if z == zstart: zh = z
-            elif zstart is not None: zh = zstart
+            if z == zstart:
+                zh = z
+
+            elif zstart is not None:
+                zh = zstart
 
             #test if not starting in tab/island!
             ztab = getSegmentZTab(path[0], z)
@@ -2685,7 +2684,7 @@ class GCode:
 
             #Loop over segments
             setfeed = True
-            ztabprev = None
+            ztabprev = float("-inf")
             ramping = True
             for sid,segment in enumerate(path):
                 zhprev = zh
@@ -2705,7 +2704,7 @@ class GCode:
 
                 #Retract over tabs
                 if ztab != ztabprev: #has tab height changed? tab boundary crossed?
-                    if (ztab is None or ztab < ztabprev) and (zh < ztabprev or zhprev < ztabprev): #if we need to enter the toolpath after done clearing the tab
+                    if (ztab == float("-inf") or ztab < ztabprev) and (zh < ztabprev or zhprev < ztabprev): #if we need to enter the toolpath after done clearing the tab
                         if comments: block.append("(tab down "+str(max(zhprev,ztab))+")")
                         block.append(CNC.zenter(max(zhprev,ztab),7))
                         setfeed = True
@@ -3092,7 +3091,7 @@ class GCode:
             if cmds is None:
                 new.append(line)
                 continue
-            elif isinstance(cmds,str) or isinstance(cmds,unicode):
+            elif isinstance(cmds,str):
                 cmds = CNC.breakLine(cmds)
             else:
                 new.append(line)
@@ -3350,7 +3349,7 @@ class GCode:
 
             #Decide conventional/climb/error:
             side = self.blocks[bid].operationSide()
-            if abs(direction)>1 and side is 0:
+            if abs(direction) > 1 and side == 0:
                 msg = "Conventional/Climb feature only works for paths with 'in/out/pocket' tags!\n"
                 msg += "Some of the selected paths were not taged (or are both in+out). You can still use CW/CCW for them."
                 continue
@@ -3752,7 +3751,7 @@ class GCode:
             paths.append(path)
         autolevel = not self.probe.isEmpty()
         self.initPath()
-        for line in CNC.compile(self.cnc.startup.splitlines()):
+        for line in CNC.compile(OCV.startup.splitlines()):
             add(line, None)
 
         every = 1

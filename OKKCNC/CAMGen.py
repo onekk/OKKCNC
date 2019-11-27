@@ -69,7 +69,8 @@ def line(self, app, end_depth, mem_0, mem_1):
 
     retval = tkMessageBox.askokcancel("Line Cut", "".join(msg))
 
-    print("RetVal", retval)
+    if OCV.DEBUG is True:
+        print("RetVal", retval)
 
     if retval is False:
         return

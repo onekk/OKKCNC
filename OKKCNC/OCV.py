@@ -9,8 +9,12 @@ Created on Sun Nov 10 15:21:49 2019
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
+DEBUG = False
+INT_DEBUG = False
+COM_DEBUG = True
 
 HAS_SERIAL = None
+IS_PY3 = False
 EXE_FONT = ("Helvetica", 12, "bold")
 RIBBON_TABFONT = ("Sans", "-14", "bold")
 RIBBON_FONT = ("Sans", "-11")

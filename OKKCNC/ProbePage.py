@@ -1796,8 +1796,12 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setInt(  "Probe", "toolpolicy",  TOOL_POLICY.index(self.toolPolicy.get().encode("utf8")))
-        Utils.setInt(  "Probe", "toolwait",    TOOL_WAIT.index(self.toolWait.get().encode("utf8")))
+        Utils.setInt(
+                "Probe", "toolpolicy",
+                TOOL_POLICY.index(self.toolPolicy.get()))
+        Utils.setInt(
+                "Probe", "toolwait",
+                TOOL_WAIT.index(self.toolWait.get()))
         Utils.setFloat("Probe", "toolchangex", self.changeX.get())
         Utils.setFloat("Probe", "toolchangey", self.changeY.get())
         Utils.setFloat("Probe", "toolchangez", self.changeZ.get())
@@ -1867,7 +1871,7 @@ class ToolFrame(CNCRibbon.PageFrame):
                     parent=self.winfo_toplevel())
             return
 
-    #-----------------------------------------------------------------------
+
     def check4Errors(self):
         if OCV.CD["tooldistance"] <= 0.0:
             tkMessageBox.showerror(_("Probe Tool Change Error"),
@@ -1876,16 +1880,15 @@ class ToolFrame(CNCRibbon.PageFrame):
             return True
         return False
 
-    #-----------------------------------------------------------------------
+
     def policyChange(self):
-        OCV.toolPolicy = int(TOOL_POLICY.index(self.toolPolicy.get().encode("utf8")))
+        OCV.toolPolicy = int(TOOL_POLICY.index(self.toolPolicy.get()))
 
-    #-----------------------------------------------------------------------
+
     def waitChange(self):
-        OCV.toolWaitAfterProbe = int(TOOL_WAIT.index(self.toolWait.get().encode("utf8")))
+        OCV.toolWaitAfterProbe = int(TOOL_WAIT.index(self.toolWait.get()))
 
 
-    #-----------------------------------------------------------------------
     def setProbeParams(self, dummy=None):
         print("probe chg handler")
         OCV.CD["toolchangex"] = float(self.changeX.get())
