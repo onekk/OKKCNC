@@ -98,15 +98,12 @@ MAX_HISTORY = 500
 
 FILETYPES = [
     (_("All accepted"),
-     ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode", "*.dxf", "*.probe",
-      "*.orient", "*.stl", "*.svg")),
+     ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode", "*.probe",
+      "*.orient")),
     (_("G-Code"), ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode")),
     (_("G-Code clean"), ("*.txt")),
-    ("DXF", "*.dxf"),
-    ("SVG", "*.svg"),
     (_("Probe"), ("*.probe", "*.xyz")),
     (_("Orient"), "*.orient"),
-    ("STL", "*.stl"),
     (_("All"), "*")]
 
 class Application(Tk.Toplevel, Sender):
@@ -318,10 +315,13 @@ class Application(Tk.Toplevel, Sender):
         self.ribbon.changePage(Utils.getStr(Utils.__prg__, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
+
         tkExtra.bindEventData(self, "<<OrientSelect>>",
                               lambda e, f=probe: f.selectMarker(int(e.data)))
+
         tkExtra.bindEventData(self, '<<OrientChange>>',
                               lambda e, s=self: s.canvas.orientChange(int(e.data)))
+
         self.bind('<<OrientUpdate>>', probe.orientUpdate)
 
         # Global bindings
@@ -2379,12 +2379,7 @@ class Application(Tk.Toplevel, Sender):
             fn, ext = os.path.splitext(filename)
             ext = ext.lower()
             gcode = GCode()
-            if ext == ".dxf":
-                gcode.importDXF(filename)
-            elif ext == ".svg":
-                gcode.importSVG(filename)
-            else:
-                gcode.load(filename)
+            gcode.load(filename)
             sel = self.editor.getSelectedBlocks()
             if not sel:
                 pos = None

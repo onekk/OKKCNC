@@ -73,10 +73,10 @@ class _GenericController:
     def softReset(self, clearAlarm=True):
         if self.master.serial:
             #print("Machine softReset")
-            self.master.serial.write(b"\030")
+            self.master.serial_write_byte(b"\030")
         self.master.stopProbe()
         if clearAlarm: self.master._alarm = False
-        OCV.CD["_OvChanged"] = True    # force a feed change if any
+        OCV.CD["_OvChanged"] = True  # force a feed change if any
 
     #----------------------------------------------------------------------
     def unlock(self, clearAlarm=True):
@@ -84,30 +84,30 @@ class _GenericController:
         if clearAlarm:
             self.master._alarm = False
 
-        self.master.sendGCode(b"$X")
+        self.master.sendGCode("$X")
 
     #----------------------------------------------------------------------
     def home(self, event=None):
         self.master._alarm = False
-        self.master.sendGCode(b"$H")
+        self.master.sendGCode("$H")
 
     def viewStatusReport(self):
-        self.master.serial.write(b"?")
+        self.master.serial_write("?")
         self.master.sio_status = True
 
     def viewParameters(self):
-        self.master.sendGCode(b"$#")
+        self.master.sendGCode("$#")
 
     def viewState(self): #Maybe rename to viewParserState() ???
-        self.master.sendGCode(b"$G")
+        self.master.sendGCode("$G")
 
-    #----------------------------------------------------------------------
+
     def jog(self, dir):
         #print("jog",dir)
         self.master.sendGCode("G91G0{0}".format(dir))
-        self.master.sendGCode(b"G90")
+        self.master.sendGCode("G90")
 
-    #----------------------------------------------------------------------
+
     def goto(self, x=None, y=None, z=None):
         cmd = "G90G0"
         if x is not None:
@@ -121,7 +121,6 @@ class _GenericController:
         self.master.sendGCode(cmd_string)
 
 
-    #----------------------------------------------------------------------
     def _wcsSet(self, x, y, z):
         p = OCV.WCS.index(OCV.CD["WCS"])
         if p<6:
@@ -144,11 +143,11 @@ class _GenericController:
             data=(_("Set workspace {0} to {1}").format(OCV.WCS[p],pos)))
         self.master.event_generate("<<CanvasFocus>>")
 
-    #----------------------------------------------------------------------
+
     def feedHold(self, event=None):
         if event is not None and not self.master.acceptKey(True): return
         if self.master.serial is None: return
-        self.master.serial.write(b"!")
+        self.master.serial_write("!")
         self.master.serial.flush()
         self.master._pause = True
 
@@ -156,7 +155,7 @@ class _GenericController:
     def resume(self, event=None):
         if event is not None and not self.master.acceptKey(True): return
         if self.master.serial is None: return
-        self.master.serial.write(b"~")
+        self.master.serial_write("~")
         self.master.serial.flush()
         self.master._msg   = None
         self.master._alarm = False
@@ -176,11 +175,11 @@ class _GenericController:
         Purge the buffer of the controller. Unfortunately we have to perform
         a reset to clear the buffer of the controller
         """
-        self.master.serial.write(b"!")
+        self.master.serial_write("!")
         self.master.serial.flush()
         time.sleep(1)
         # remember and send all G commands
-        G = " ".join([x for x in OCV.CD["G"] if x[0]=="G"])    # remember $G
+        G = " ".join([x for x in OCV.CD["G"] if x[0]=="G"])  # remember $G
         TLO = OCV.CD["TLO"]
         self.softReset(False)  # reset controller
         self.purgeControllerExtra()

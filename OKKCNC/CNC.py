@@ -16,35 +16,35 @@ import OCV
 import undo
 import Unicode
 
-from dxf import DXF
+#from dxf import DXF
 from bstl import Binary_STL_Writer
-from bpath import eq,Path, Segment
+from bpath import eq, Path, Segment
 from bmath import *
 from copy import deepcopy
-from svgcode import SVGcode
-from time import strftime,localtime
+#from svgcode import SVGcode
+from time import strftime, localtime
 
-IDPAT    = re.compile(r".*\bid:\s*(.*?)\)")
+IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
 PARENPAT = re.compile(r"(\(.*?\))")
-SEMIPAT  = re.compile(r"(;.*)")
-OPPAT    = re.compile(r"(.*)\[(.*)\]")
-CMDPAT   = re.compile(r"([A-Za-z]+)")
+SEMIPAT = re.compile(r"(;.*)")
+OPPAT = re.compile(r"(.*)\[(.*)\]")
+CMDPAT = re.compile(r"([A-Za-z]+)")
 BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
-AUXPAT   = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
+AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
 
-STOP   = 0
-SKIP   = 1
-ASK    = 2
-MSG    = 3
-WAIT   = 4
+STOP = 0
+SKIP = 1
+ASK = 2
+MSG = 3
+WAIT = 4
 UPDATE = 5
 
-XY   = 0
-XZ   = 1
-YZ   = 2
+XY = 0
+XZ = 1
+YZ = 2
 
-CW   = 2
-CCW  = 3
+CW = 2
+CCW = 3
 
 # Modal Mode from $G and variable set
 MODAL_MODES = {
@@ -102,13 +102,12 @@ MODAL_MODES = {
 
 ERROR_HANDLING = {}
 TOLERANCE = 1e-7
-MAXINT    = 1000000000    # python3 doesn't have maxint
+MAXINT = 1000000000    # python3 doesn't have maxint
 
 
-#------------------------------------------------------------------------------
-# Return a value combined from two dictionaries new/old
-#------------------------------------------------------------------------------
-def getValue(name,new,old,default=0.0):
+def getValue(name, new, old, default=0.0):
+    """Return a value combined from two dictionaries new/old"""
+
     try:
         return new[name]
     except:
@@ -128,13 +127,13 @@ class Probe:
     #----------------------------------------------------------------------
     def init(self):
         self.filename = ""
-        self.xmin =   0.0
-        self.ymin =   0.0
+        self.xmin = 0.0
+        self.ymin = 0.0
         self.zmin = -10.0
 
-        self.xmax =  10.0
-        self.ymax =  10.0
-        self.zmax =   3.0
+        self.xmax = 10.0
+        self.ymax = 10.0
+        self.zmax = 3.0
 
         self._xstep = 1.0
         self._ystep = 1.0
@@ -142,22 +141,23 @@ class Probe:
         self.xn = 5
         self.yn = 5
 
-        self.points = []    # probe points
-        self.matrix = []    # 2D matrix with Z coordinates
-        self.zeroed = False    # if probe was zeroed at any location
-        self.start  = False    # start collecting probes
-        self.saved  = False
+        self.points = []  # probe points
+        self.matrix = []  # 2D matrix with Z coordinates
+        self.zeroed = False  # if probe was zeroed at any location
+        self.start = False  # start collecting probes
+        self.saved = False
 
     #----------------------------------------------------------------------
     def clear(self):
         del self.points[:]
         del self.matrix[:]
         self.zeroed = False
-        self.start  = False
-        self.saved  = False
+        self.start = False
+        self.saved = False
 
     #----------------------------------------------------------------------
-    def isEmpty(self): return len(self.matrix)==0
+    def isEmpty(self):
+        return len(self.matrix) == 0
 
     #----------------------------------------------------------------------
     def makeMatrix(self):
@@ -177,18 +177,22 @@ class Probe:
         def read(f):
             while True:
                 line = f.readline()
-                if len(line)==0: raise
-                line = line.strip()
-                if line: return map(float, line.split())
+                if len(line) == 0:
+                    raise
 
-        f = open(self.filename,"r")
+                line = line.strip()
+
+                if line:
+                    return map(float, line.split())
+
+        f = open(self.filename, "r")
         self.xmin, self.xmax, self.xn = read(f)
         self.ymin, self.ymax, self.yn = read(f)
-        self.zmin, self.zmax, feed    = read(f)
+        self.zmin, self.zmax, feed = read(f)
         OCV.CD["prbfeed"] = feed
 
-        self.xn = max(2,int(self.xn))
-        self.yn = max(2,int(self.yn))
+        self.xn = max(2, int(self.xn))
+        self.yn = max(2, int(self.yn))
 
         self.makeMatrix()
         self.xstep()
@@ -211,10 +215,10 @@ class Probe:
         if filename is None:
             filename = self.filename
 
-        fn,ext = os.path.splitext(filename)
+        fn, ext = os.path.splitext(filename)
         ext = ext.lower()
 
-        f = open(filename,"w")
+        f = open(filename, "w")
         if ext != '.xyz':
             self.filename = filename
             f.write("{0:0.f} {1:0.f} {2:d}".format(self.xmin, self.xmax, self.xn))
@@ -225,7 +229,7 @@ class Probe:
             y = self.ymin + self._ystep*j
             for i in range(self.xn):
                 x = self.xmin + self._xstep*i
-                f.write("{0:0.f} {1:0.f} {2:0.f}".format(x,y,self.matrix[j][i]))
+                f.write("{0:0.f} {1:0.f} {2:0.f}".format(x, y, self.matrix[j][i]))
             f.write("\n")
         f.close()
         self.saved = True
@@ -245,11 +249,11 @@ class Probe:
                 for i in range(self.xn -1):
                     x1 = self.xmin + self._xstep*i
                     x2 = self.xmin + self._xstep*(i+1)
-                    v1=[x1,y1,self.matrix[j][i]]
-                    v2=[x2,y1,self.matrix[j][i+1]]
-                    v3=[x2,y2,self.matrix[j+1][i+1]]
-                    v4=[x1,y2,self.matrix[j+1][i]]
-                    writer.add_face([v1,v2,v3,v4])
+                    v1 = [x1, y1, self.matrix[j][i]]
+                    v2 = [x2, y1, self.matrix[j][i+1]]
+                    v3 = [x2, y2, self.matrix[j+1][i+1]]
+                    v4 = [x1, y2, self.matrix[j+1][i]]
+                    writer.add_face([v1, v2, v3, v4])
             writer.close()
 
     #----------------------------------------------------------------------
@@ -285,43 +289,57 @@ class Probe:
         self.makeMatrix()
         x = self.xmin
         xstep = self._xstep
-        lines = ["G0 Z{0:0.f}".format(OCV.CD["safe"]),
-             "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)]
+        lines = [
+            "G0 Z{0:0.f}".format(OCV.CD["safe"]),
+            "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)]
+
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
             for i in range(self.xn):
                 lines.append("G0 Z{0:0.f}".format(self.zmax))
-                lines.append("G0 X{0:0.f} Y{1:0.f}".format(x,y))
-                lines.append("%wait")    # added for smoothie
-                lines.append("{0}Z{1:0.f} F{2:0.f}".format(OCV.CD["prbcmd"], self.zmin, OCV.CD["prbfeed"]))
-                lines.append("%wait")    # added for smoothie
+                lines.append("G0 X{0:0.f} Y{1:0.f}".format(x, y))
+                lines.append("%wait")  # added for smoothie
+                lines.append("{0}Z{1:0.f} F{2:0.f}".format(
+                    OCV.CD["prbcmd"],
+                    self.zmin,
+                    OCV.CD["prbfeed"]))
+                lines.append("%wait")  # added for smoothie
                 x += xstep
             x -= xstep
             xstep = -xstep
         lines.append("G0 Z{0:0.f}".format(self.zmax))
-        lines.append("G0 X{0:0.f} Y{1:0.f}".format(self.xmin,self.ymin))
+        lines.append("G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin))
         return lines
 
-    #----------------------------------------------------------------------
-    # Add a probed point to the list and the 3D matrix
-    #----------------------------------------------------------------------
-    def add(self, x,y,z):
-        if not self.start: return
+
+    def add(self, x, y, z):
+        """Add a probed point to the list and the 3D matrix"""
+        if not self.start:
+            return
+
         i = round((x-self.xmin) / self._xstep)
-        if i<0.0 or i>self.xn: return
+
+        if i < 0.0 or i > self.xn:
+            return
 
         j = round((y-self.ymin) / self._ystep)
-        if j<0.0 or j>self.yn: return
+
+        if j < 0.0 or j > self.yn:
+            return
 
         rem = abs(x - (i*self._xstep + self.xmin))
-        if rem > self._xstep/10.0: return
+
+        if rem > self._xstep/10.0:
+            return
 
         rem = abs(y - (j*self._ystep + self.ymin))
-        if rem > self._ystep/10.0: return
+
+        if rem > self._ystep/10.0:
+            return
 
         try:
             self.matrix[int(j)][int(i)] = z
-            self.points.append([x,y,z])
+            self.points.append([x, y, z])
         except IndexError:
             pass
 
@@ -336,15 +354,15 @@ class Probe:
         if self.isEmpty():
             self.zeroed = False
             return
-        zero = self.interpolate(x,y)
+        zero = self.interpolate(x, y)
         self.xstep()
         self.ystep()
-        for j,row in enumerate(self.matrix):
+        for j, row in enumerate(self.matrix):
             y = self.ymin + self._ystep*j
             for i in range(len(row)):
                 x = self.xmin + self._xstep*i
                 row[i] -= zero
-                self.points.append([x,y,row[i]])
+                self.points.append([x, y, row[i]])
         self.zeroed = True
 
     #----------------------------------------------------------------------
@@ -354,14 +372,14 @@ class Probe:
         i = int(math.floor(ix))
         j = int(math.floor(jy))
 
-        if i<0:
+        if i < 0:
             i = 0
-        elif i>=self.xn-1:
+        elif i >= self.xn-1:
             i = self.xn-2
 
-        if j<0:
+        if j < 0:
             j = 0
-        elif j>=self.yn-1:
+        elif j >= self.yn-1:
             j = self.yn-2
 
         a = ix - i
@@ -369,63 +387,70 @@ class Probe:
         a1 = 1.0 - a
         b1 = 1.0 - b
 
-        return a1*b1 * self.matrix[j][i]   + \
-               a1*b  * self.matrix[j+1][i] + \
-               a *b1 * self.matrix[j][i+1] + \
-               a *b  * self.matrix[j+1][i+1]
+        return a1 * b1 * self.matrix[j][i]   + \
+               a1 * b  * self.matrix[j+1][i] + \
+               a * b1 * self.matrix[j][i+1] + \
+               a * b  * self.matrix[j+1][i+1]
 
-    #----------------------------------------------------------------------
-    # Split line into multiple segments correcting for Z if needed
-    # return only end points
-    #----------------------------------------------------------------------
+
     def splitLine(self, x1, y1, z1, x2, y2, z2):
+        """
+        Split line into multiple segments correcting for Z if needed
+        return only end points
+        """
         dx = x2-x1
         dy = y2-y1
         dz = z2-z1
 
-        if abs(dx)<1e-10: dx = 0.0
-        if abs(dy)<1e-10: dy = 0.0
-        if abs(dz)<1e-10: dz = 0.0
+        if abs(dx) < 1e-10:
+            dx = 0.0
 
-        if dx==0.0 and dy==0.0:
-            return [(x2,y2,z2+self.interpolate(x2,y2))]
+        if abs(dy) < 1e-10:
+            dy = 0.0
+
+        if abs(dz) < 1e-10:
+            dz = 0.0
+
+        if dx == 0.0 and dy == 0.0:
+            return [(x2, y2, z2+self.interpolate(x2, y2))]
 
         # Length along projection on X-Y plane
         rxy = math.sqrt(dx*dx + dy*dy)
-        dx /= rxy    # direction cosines along XY plane
+        dx /= rxy  # direction cosines along XY plane
         dy /= rxy
-        dz /= rxy    # add correction for the slope in Z, versus the travel in XY
+        dz /= rxy  # add correction for the slope in Z, versus the travel in XY
 
         i = int(math.floor((x1-self.xmin) / self._xstep))
         j = int(math.floor((y1-self.ymin) / self._ystep))
+
         if dx > 1e-10:
-            tx  = (float(i+1)*self._xstep+self.xmin - x1)/ dx    # distance to next cell
+            tx = (float(i+1)*self._xstep+self.xmin - x1)/ dx  # distance to next cell
             tdx = self._xstep / dx
         elif dx < -1e-10:
-            tx  = (float(i)*self._xstep+self.xmin - x1)/ dx        # distance to next cell
+            tx = (float(i)*self._xstep+self.xmin - x1)/ dx  # distance to next cell
             tdx = -self._xstep / dx
         else:
             tx  = 1e10
             tdx = 0.0
 
         if dy > 1e-10:
-            ty  = (float(j+1)*self._ystep+self.ymin - y1)/ dy    # distance to next cell
+            ty = (float(j+1)*self._ystep+self.ymin - y1)/ dy  # distance to next cell
             tdy = self._ystep / dy
         elif dy < -1e-10:
-            ty  = (float(j)*self._ystep+self.ymin - y1)/ dy        # distance to next cell
+            ty = (float(j)*self._ystep+self.ymin - y1)/ dy  # distance to next cell
             tdy = -self._ystep / dy
         else:
-            ty  = 1e10
+            ty = 1e10
             tdy = 0.0
 
         segments = []
-        rxy *= 0.999999999    # just reduce a bit to avoid precision errors
-        while tx<rxy or ty<rxy:
-            if tx==ty:
+        rxy *= 0.999999999  # just reduce a bit to avoid precision errors
+        while tx < rxy or ty < rxy:
+            if tx == ty:
                 t = tx
                 tx += tdx
                 ty += tdy
-            elif tx<ty:
+            elif tx < ty:
                 t = tx
                 tx += tdx
             else:
@@ -434,25 +459,25 @@ class Probe:
             x = x1 + t*dx
             y = y1 + t*dy
             z = z1 + t*dz
-            segments.append((x,y,z+self.interpolate(x,y)))
+            segments.append((x, y, z+self.interpolate(x, y)))
 
-        segments.append((x2,y2,z2+self.interpolate(x2,y2)))
+        segments.append((x2, y2, z2+self.interpolate(x2, y2)))
         return segments
 
 
-#===============================================================================
-# contains a list of machine points vs position in the gcode
-# calculates the transformation matrix (rotation + translation) needed
-# to adjust the gcode to match the workpiece on the machine
-#===============================================================================
 class Orient:
-    #-----------------------------------------------------------------------
+    """
+    contains a list of machine points vs position in the gcode
+    calculates the transformation matrix (rotation + translation) needed
+    to adjust the gcode to match the workpiece on the machine
+    """
+
     def __init__(self):
         self.markers = []        # list of points pairs (xm, ym, x, y)
                         # xm,ym = machine x,y mpos
                         # x, y  = desired or gcode location
-        self.paths   = []
-        self.errors  = []
+        self.paths = []
+        self.errors = []
         self.filename = ""
         self.clear()
 
@@ -466,8 +491,8 @@ class Orient:
             del self.markers[item]
 
         self.phi = 0.0
-        self.xo  = 0.0
-        self.yo  = 0.0
+        self.xo = 0.0
+        self.yo = 0.0
         self.valid = False
         self.saved = False
 
@@ -477,7 +502,7 @@ class Orient:
 
     #-----------------------------------------------------------------------
     def add(self, xm, ym, x, y):
-        self.markers.append((xm,ym,x,y))
+        self.markers.append((xm, ym, x, y))
         self.valid = False
         self.saved = False
 
@@ -494,33 +519,32 @@ class Orient:
         return len(self.markers)
 
     #-----------------------------------------------------------------------
-    # Return the rotation angle phi in radians and the offset (xo,yo)
-    # or none on failure
+    # For the next module
     # Transformation equation is the following
-    #
-    #    Xm = R * X + T
-    #
-    #    Xm = [xm ym]^t
-    #    X  = [x y]^t
-    #
-    #
+
+    # Xm = R * X + T
+
+    # Xm = [xm ym]^t
+    # X  = [x y]^t
+
+
     #       / cosf  -sinf \   / c  -s \
     #   R = |             | = |       |
     #       \ sinf   cosf /   \ s   c /
-    #
+
     # Assuming that the machine is squared. We could even solve it for
     # a skewed machine, but then the arcs have to be converted to
     # ellipses...
-    #
-    #   T = [xo yo]^t
-    #
+
+    # T = [xo yo]^t
+
     # The overdetermined system (equations) to solve are the following
     #      c*x + s*(-y) + xo      = xm
     #      s*x + c*y    + yo      = ym
     #  <=> c*y + s*y         + yo = ym
-    #
+
     # We are solving for the unknowns c,s,xo,yo
-    #
+
     #       /  x1  -y1  1 0 \ / c  \    / xm1 \
     #       |  y1   x1  0 1 | | s  |    | ym1 |
     #       |  x2  -y2  1 0 | | xo |    | xm2 |
@@ -532,22 +556,33 @@ class Orient:
     #               A            X    =    B
     #
     # Constraints:
-    #   1. orthogonal system   c^2 + s^2 = 1
-    #   2. no aspect ratio
-    #
-    #-----------------------------------------------------------------------
+    # 1. orthogonal system   c^2 + s^2 = 1
+    # 2. no aspect ratio
+
     def solve(self):
+        """
+        Return the rotation angle phi in radians and the offset (xo,yo)
+        or none on failure
+        """
+
+
         self.valid = False
-        if len(self.markers)< 2: raise Exception("Too few markers")
+        if len(self.markers) < 2:
+            raise Exception("Too few markers")
+
         A = []
         B = []
-        for xm,ym,x,y in self.markers:
-            A.append([x,-y,1.0,0.0]);    B.append([xm])
-            A.append([y, x,0.0,1.0]);    B.append([ym])
+
+        for xm, ym, x, y in self.markers:
+            A.append([x, -y, 1.0, 0.0])
+            B.append([xm])
+
+            A.append([y, x, 0.0, 1.0]);
+            B.append([ym])
 
         # The solution of the overdetermined system A X = B
         try:
-            c,s,self.xo,self.yo = solveOverDetermined(Matrix(A),Matrix(B))
+            c, s, self.xo, self.yo = solveOverDetermined(Matrix(A), Matrix(B))
         except:
             raise Exception("Unable to solve system")
 
@@ -563,15 +598,16 @@ class Orient:
         #yo /= r
         self.phi = atan2(s, c)
 
-        if abs(self.phi)<TOLERANCE: self.phi = 0.0    # rotation
+        if abs(self.phi) < TOLERANCE:
+            self.phi = 0.0  # rotation
 
         self.valid = True
-        return self.phi,self.xo,self.yo
 
-    #-----------------------------------------------------------------------
-    # @return minimum, average and maximum error
-    #-----------------------------------------------------------------------
+        return self.phi, self.xo, self.yo
+
+
     def error(self):
+        """@return minimum, average and maximum error"""
         # Type errors
         minerr = 1e9
         maxerr = 0.0
@@ -582,7 +618,7 @@ class Orient:
 
         del self.errors[:]
 
-        for i,(xm,ym,x,y) in enumerate(self.markers):
+        for i, (xm, ym, x, y) in enumerate(self.markers):
             dx = c*x - s*y + self.xo - xm
             dy = s*x + c*y + self.yo - ym
             err = sqrt(dx**2 + dy**2)
@@ -594,49 +630,44 @@ class Orient:
 
         return minerr, sumerr/float(len(self.markers)), maxerr
 
-    #-----------------------------------------------------------------------
-    # Convert gcode to machine coordinates
-    #-----------------------------------------------------------------------
+
     def gcode2machine(self, x, y):
+        """Convert gcode to machine coordinates"""
         c = cos(self.phi)
         s = sin(self.phi)
         return    c*x - s*y + self.xo, \
             s*x + c*y + self.yo
 
-    #-----------------------------------------------------------------------
-    # Convert machine to gcode coordinates
-    #-----------------------------------------------------------------------
+
     def machine2gcode(self, x, y):
+        """Convert machine to gcode coordinates"""
         c = cos(self.phi)
         s = sin(self.phi)
         x -= self.xo
         y -= self.yo
-        return     c*x + s*y, \
-            -s*x + c*y
+        return     c*x + s*y, -s*x + c*y
 
-    #----------------------------------------------------------------------
-    # Load orient information from file
-    #----------------------------------------------------------------------
+
     def load(self, filename=None):
+        """Load orient information from file"""
         if filename is not None:
             self.filename = filename
         self.clear()
         self.saved = True
 
-        f = open(self.filename,"r")
+        f = open(self.filename, "r")
         for line in f:
             self.add(*map(float, line.split()))
         f.close()
 
-    #----------------------------------------------------------------------
-    # Save orient information to file
-    #----------------------------------------------------------------------
+
     def save(self, filename=None):
+        """Save orient information to file"""
         if filename is not None:
             self.filename = filename
-        f = open(self.filename,"w")
-        for xm,ym,x,y in self.markers:
-            f.write("{0:0.f} {1:0.f} {2:0.f} {3:0.f} ".format(xm,ym,x,y))
+        f = open(self.filename, "w")
+        for xm, ym, x, y in self.markers:
+            f.write("{0:0.f} {1:0.f} {2:0.f} {3:0.f} ".format(xm, ym, x, y))
         f.close()
         self.saved = True
 
@@ -676,66 +707,118 @@ class CNC:
     @staticmethod
     def loadConfig(config):
         section = "CNC"
-        try: OCV.inch           = bool(int(config.get(section, "units")))
-        except: pass
-        try: OCV.lasercutter    = bool(int(config.get(section, "lasercutter")))
-        except: pass
-        try: OCV.laseradaptive  = bool(int(config.get(section, "laseradaptive")))
-        except: pass
-        try: OCV.doublesizeicon = bool(int(config.get(section, "doublesizeicon")))
-        except: pass
-        try: OCV.acceleration_x = float(config.get(section, "acceleration_x"))
-        except: pass
-        try: OCV.acceleration_y = float(config.get(section, "acceleration_y"))
-        except: pass
-        try: OCV.acceleration_z = float(config.get(section, "acceleration_z"))
-        except: pass
-        try: OCV.feedmax_x      = float(config.get(section, "feedmax_x"))
-        except: pass
-        try: OCV.feedmax_y      = float(config.get(section, "feedmax_y"))
-        except: pass
-        try: OCV.feedmax_z      = float(config.get(section, "feedmax_z"))
-        except: pass
-        try: OCV.travel_x       = float(config.get(section, "travel_x"))
-        except: pass
-        try: OCV.travel_y       = float(config.get(section, "travel_y"))
-        except: pass
-        try: OCV.travel_z       = float(config.get(section, "travel_z"))
-        except: pass
-        try: OCV.accuracy       = float(config.get(section, "accuracy"))
-        except: pass
-        try: OCV.digits         = int(  config.get(section, "round"))
-        except: pass
-        try: OCV.drozeropad     = int(  config.get(section, "drozeropad"))
-        except: pass
+        try:
+            OCV.inch = bool(int(config.get(section, "units")))
+        except:
+            pass
 
         try:
-          OCV.startup = config.get(section, "startup")
-        except: pass
+            OCV.lasercutter = bool(int(config.get(section, "lasercutter")))
+        except:
+            pass
+
         try:
-          OCV.header  = config.get(section, "header")
-        except: pass
+            OCV.laseradaptive = bool(int(config.get(section, "laseradaptive")))
+        except:
+            pass
+
         try:
-          OCV.footer  = config.get(section, "footer")
-        except: pass
+            OCV.doublesizeicon = bool(int(config.get(section, "doublesizeicon")))
+        except:
+            pass
+
+        try:
+            OCV.acceleration_x = float(config.get(section, "acceleration_x"))
+        except:
+            pass
+
+        try:
+            OCV.acceleration_y = float(config.get(section, "acceleration_y"))
+        except:
+            pass
+
+        try:
+            OCV.acceleration_z = float(config.get(section, "acceleration_z"))
+        except:
+            pass
+
+        try:
+            OCV.feedmax_x = float(config.get(section, "feedmax_x"))
+        except:
+            pass
+
+        try:
+            OCV.feedmax_y = float(config.get(section, "feedmax_y"))
+        except:
+            pass
+
+        try:
+            OCV.feedmax_z = float(config.get(section, "feedmax_z"))
+        except:
+            pass
+
+        try:
+            OCV.travel_x = float(config.get(section, "travel_x"))
+        except:
+            pass
+
+        try:
+            OCV.travel_y = float(config.get(section, "travel_y"))
+        except:
+            pass
+
+        try:
+            OCV.travel_z = float(config.get(section, "travel_z"))
+        except:
+            pass
+
+        try:
+            OCV.accuracy = float(config.get(section, "accuracy"))
+        except:
+            pass
+
+        try:
+            OCV.digits = int(config.get(section, "round"))
+        except:
+            pass
+
+        try:
+            OCV.drozeropad = int(config.get(section, "drozeropad"))
+        except:
+            pass
+
+        try:
+            OCV.startup = config.get(section, "startup")
+        except:
+            pass
+
+        try:
+            OCV.header = config.get(section, "header")
+        except:
+            pass
+
+        try:
+            OCV.footer = config.get(section, "footer")
+        except:
+            pass
 
         if OCV.inch:
-            OCV.acceleration_x  /= 25.4
-            OCV.acceleration_y  /= 25.4
-            OCV.acceleration_z  /= 25.4
-            OCV.feedmax_x       /= 25.4
-            OCV.feedmax_y       /= 25.4
-            OCV.feedmax_z       /= 25.4
-            OCV.travel_x        /= 25.4
-            OCV.travel_y        /= 25.4
-            OCV.travel_z        /= 25.4
+            OCV.acceleration_x /= 25.4
+            OCV.acceleration_y /= 25.4
+            OCV.acceleration_z /= 25.4
+            OCV.feedmax_x /= 25.4
+            OCV.feedmax_y /= 25.4
+            OCV.feedmax_z /= 25.4
+            OCV.travel_x /= 25.4
+            OCV.travel_y /= 25.4
+            OCV.travel_z /= 25.4
 
         section = "Error"
         if OCV.drillPolicy == 1:
             ERROR_HANDLING["G98"] = 1
             ERROR_HANDLING["G99"] = 1
 
-        for cmd,value in config.items(section):
+        for cmd, value in config.items(section):
             try:
                 ERROR_HANDLING[cmd.upper()] = int(value)
             except:
@@ -762,8 +845,8 @@ class CNC:
             self.z = self.zval = z
         self.ival = self.jval = self.kval = 0.0
         self.uval = self.vval = self.wval = 0.0
-        self.dx   = self.dy   = self.dz   = 0.0
-        self.di   = self.dj   = self.dk   = 0.0
+        self.dx = self.dy = self.dz = 0.0
+        self.di = self.dj = self.dk = 0.0
         self.rval = 0.0
         self.pval = 0.0
         self.qval = 0.0
@@ -773,26 +856,26 @@ class CNC:
         self.tool = 0
         self._lastTool = None
 
-        self.absolute    = True        # G90/G91     absolute/relative motion
-        self.arcabsolute = False    # G90.1/G91.1 absolute/relative arc
-        self.retractz    = True        # G98/G99     retract to Z or R
-        self.gcode       = None
-        self.plane       = XY
-        self.feed        = 0        # Actual gcode feed rate (not to confuse with cutfeed
+        self.absolute = True  # G90/G91     absolute/relative motion
+        self.arcabsolute = False  # G90.1/G91.1 absolute/relative arc
+        self.retractz = True  # G98/G99     retract to Z or R
+        self.gcode = None
+        self.plane = XY
+        self.feed = 0  # Actual gcode feed rate (not to confuse with cutfeed
         self.totalLength = 0.0
-        self.totalTime   = 0.0
+        self.totalTime = 0.0
 
     #----------------------------------------------------------------------
     def resetEnableMargins(self):
         # Selected blocks margin
-        OCV.CD["xmin"]  = OCV.CD["ymin"]  = OCV.CD["zmin"]  =  1000000.0
-        OCV.CD["xmax"]  = OCV.CD["ymax"]  = OCV.CD["zmax"]  = -1000000.0
+        OCV.CD["xmin"] = OCV.CD["ymin"] = OCV.CD["zmin"] = 1000000.0
+        OCV.CD["xmax"] = OCV.CD["ymax"] = OCV.CD["zmax"] = -1000000.0
 
     #----------------------------------------------------------------------
     def resetAllMargins(self):
         self.resetEnableMargins()
         # All blocks margin
-        OCV.CD["axmin"] = OCV.CD["aymin"] = OCV.CD["azmin"] =  1000000.0
+        OCV.CD["axmin"] = OCV.CD["aymin"] = OCV.CD["azmin"] = 1000000.0
         OCV.CD["axmax"] = OCV.CD["aymax"] = OCV.CD["azmax"] = -1000000.0
 
     #----------------------------------------------------------------------
@@ -809,94 +892,114 @@ class CNC:
             OCV.CD["aymin"] <= OCV.CD["aymax"] and \
             OCV.CD["azmin"] <= OCV.CD["azmax"]
 
-    #----------------------------------------------------------------------
-    # Number formating
-    #----------------------------------------------------------------------
+
     @staticmethod
     def fmt(c, v, d=None):
-        if d is None: d = OCV.digits
+        """Number formating"""
+        if d is None:
+            d = OCV.digits
         #Don't know why, but in some cases floats are not truncated by format string unless rounded
         #I guess it's vital idea to round them rather than truncate anyway!
         v = round(v, d)
         #return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
-        return ("{0}{2:0.{1}f}".format(c,d,v))
+        return "{0}{2:0.{1}f}".format(c, d, v)
 
-    #----------------------------------------------------------------------
+
     @staticmethod
     def gcode(g, pairs):
         s = "G{0}".format(g)
-        for c,v in pairs:
-            s += " {0}{1:0.{2}f}".format(c, round(v,OCV.digits),OCV.digits)
+        for c, v in pairs:
+            s += " {0}{1:0.{2}f}".format(c, round(v, OCV.digits), OCV.digits)
         return s
 
-    #----------------------------------------------------------------------
+
     @staticmethod
     def _gcode(g, **args):
         s = "G{0}".format(g)
-        for n,v in args.items():
-            s += ' ' + CNC.fmt(n,v)
+        for n, v in args.items():
+            s += ' ' + CNC.fmt(n, v)
         return s
 
     #----------------------------------------------------------------------
     @staticmethod
     def _goto(g, x=None, y=None, z=None, **args):
         s = "G{0}".format(g)
-        if x is not None: s += ' '+ CNC.fmt('X',x)
-        if y is not None: s += ' '+ CNC.fmt('Y',y)
-        if z is not None: s += ' '+ CNC.fmt('Z',z)
-        for n,v in args.items():
-            s += ' ' + CNC.fmt(n,v)
+        if x is not None:
+            s += ' '+ CNC.fmt('X', x)
+
+        if y is not None:
+            s += ' '+ CNC.fmt('Y', y)
+
+        if z is not None:
+            s += ' '+ CNC.fmt('Z', z)
+
+        for n, v in args.items():
+            s += ' ' + CNC.fmt(n, v)
         return s
 
     #----------------------------------------------------------------------
     @staticmethod
     def grapid(x=None, y=None, z=None, **args):
-        return CNC._goto(0,x,y,z,**args)
+        return CNC._goto(0, x, y, z, **args)
 
     #----------------------------------------------------------------------
     @staticmethod
     def gline(x=None, y=None, z=None, **args):
-        return CNC._goto(1,x,y,z,**args)
+        return CNC._goto(1, x, y, z, **args)
 
     #----------------------------------------------------------------------
     @staticmethod
     def glinev(g, v, feed=None):
-        pairs = zip("XYZ",v)
+        pairs = zip("XYZ", v)
         if feed is not None:
-            pairs.append(("F",feed))
+            pairs.append(("F", feed))
         return CNC.gcode(g, pairs)
 
     #----------------------------------------------------------------------
     @staticmethod
     def garcv(g, v, ijk):
-        return CNC.gcode(g, zip("XYZ",v) + zip("IJ",ijk[:2]))
+        return CNC.gcode(g, zip("XYZ", v) + zip("IJ", ijk[:2]))
 
     #----------------------------------------------------------------------
     @staticmethod
     def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
         s = "G{0}".format(g)
-        if x is not None: s += ' '+CNC.fmt('X',x)
-        if y is not None: s += ' '+CNC.fmt('Y',y)
-        if z is not None: s += ' '+CNC.fmt('Z',z)
-        if i is not None: s += ' '+CNC.fmt('I',i)
-        if j is not None: s += ' '+CNC.fmt('J',j)
-        if k is not None: s += ' '+CNC.fmt('K',k)
-        for n,v in args.items():
-            s += ' ' + CNC.fmt(n,v)
+        if x is not None:
+            s += ' '+CNC.fmt('X', x)
+
+        if y is not None:
+            s += ' '+CNC.fmt('Y', y)
+
+        if z is not None:
+            s += ' '+CNC.fmt('Z', z)
+
+        if i is not None:
+            s += ' '+CNC.fmt('I', i)
+
+        if j is not None:
+            s += ' '+CNC.fmt('J', j)
+
+        if k is not None:
+            s += ' '+CNC.fmt('K', k)
+
+        for n, v in args.items():
+            s += ' ' + CNC.fmt(n, v)
+
         return s
 
-    #----------------------------------------------------------------------
-    # Enter to material or start the laser
-    #----------------------------------------------------------------------
+
     @staticmethod
     def zenter(z, d=None):
+        """Enter to material or start the laser"""
         if OCV.lasercutter:
             if OCV.laseradaptive:
                 return "M4"
             else:
                 return "M3"
         else:
-            return "G1 {0} {1}".format(CNC.fmt("Z",z,d), CNC.fmt("F", OCV.CD["cutfeedz"]))
+            return "G1 {0} {1}".format(
+                CNC.fmt("Z", z, d),
+                CNC.fmt("F", OCV.CD["cutfeedz"]))
 
     #----------------------------------------------------------------------
     @staticmethod
@@ -904,84 +1007,92 @@ class CNC:
         if OCV.lasercutter:
             return "M5"
         else:
-            return "G0 {0}".format(CNC.fmt("Z",z,d))
+            return "G0 {0}".format(CNC.fmt("Z", z, d))
 
-    #----------------------------------------------------------------------
-    # gcode to go to z-safe
-    # Exit from material or stop the laser
-    #----------------------------------------------------------------------
+
     @staticmethod
     def zsafe():
+        """
+        gcode to go to z-safe
+        Exit from material or stop the laser
+        """
         return CNC.zexit(OCV.CD["safe"])
 
-    #----------------------------------------------------------------------
-    # @return line in broken a list of commands, None if empty or comment
-    #----------------------------------------------------------------------
+
     @staticmethod
     def parseLine(line):
+        """@return line in broken a list of commands, None if empty or comment"""
         # skip empty lines
-        if len(line)==0 or line[0] in ("%","(","#",";"):
+        if len(line) == 0 or line[0] in ("%", "(", "#", ";"):
             return None
 
         # remove comments
-        line = PARENPAT.sub("",line)
-        line = SEMIPAT.sub("",line)
+        line = PARENPAT.sub("", line)
+        line = SEMIPAT.sub("", line)
 
         # process command
         # strip all spaces
-        line = line.replace(" ","")
+        line = line.replace(" ", "")
 
         # Insert space before each command
-        line = CMDPAT.sub(r" \1",line).lstrip()
+        line = CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
     # -----------------------------------------------------------------------------
-    # @return line,comment
-    #    line broken in a list of commands,
-    #       None,"" if empty or comment
-    #       else compiled expressions,""
     #----------------------------------------------------------------------
     @staticmethod
     def compileLine(line, space=False):
+        """
+         @return line,comment
+        line broken in a list of commands,
+        None,"" if empty or comment
+        else compiled expressions,""
+        """
         line = line.strip()
-        if not line: return None
-        if line[0] == "$": return line
+
+        if not line:
+            return None
+
+        if line[0] == "$":
+            return line
 
         # to accept #nnn variables as _nnn internally
-        line = line.replace('#','_')
+        line = line.replace('#', '_')
         OCV.comment = ""
 
         # execute literally the line after the first character
-        if line[0]=='%':
+        if line[0] == '%':
             # special command
             pat = AUXPAT.match(line.strip())
+
             if pat:
-                cmd  = pat.group(1)
+                cmd = pat.group(1)
                 args = pat.group(2)
             else:
                 cmd  = None
                 args = None
-            if cmd=="%wait":
+
+            if cmd == "%wait":
                 return (WAIT,)
-            elif cmd=="%msg":
+            elif cmd == "%msg":
                 if not args: args = None
                 return (MSG, args)
-            elif cmd=="%update":
+            elif cmd == "%update":
                 return (UPDATE, args)
             elif line.startswith("%if running") and not OCV.CD["running"]:
                 # ignore if running lines when not running
                 return None
             else:
                 try:
-                    return compile(line[1:],"","exec")
+                    return compile(line[1:], "", "exec")
                 except:
                     # FIXME show the error!!!!
                     return None
 
         # most probably an assignment like  #nnn = expr
-        if line[0]=='_':
+        if line[0] == '_':
             try:
-                return compile(line,"","exec")
+                return compile(line, "", "exec")
             except:
                 # FIXME show the error!!!!
                 return None
@@ -991,30 +1102,35 @@ class CNC:
             OCV.comment = line[1:].strip()
             return None
 
-        out    = []        # output list of commands
-        braket = 0        # bracket count []
-        paren  = 0        # parenthesis count ()
-        expr   = ""        # expression string
-        cmd    = ""        # cmd string
+        out = []  # output list of commands
+        braket = 0  # bracket count []
+        paren = 0  # parenthesis count ()
+        expr = ""  # expression string
+        cmd = ""  # cmd string
         inComment = False    # inside inComment
         for i,ch in enumerate(line):
             if ch == '(':
                 # comment start?
                 paren += 1
-                inComment = (braket==0)
+                inComment = (braket == 0)
+
                 if not inComment:
                     expr += ch
+
             elif ch == ')':
                 # comment end?
                 paren -= 1
-                if not inComment: expr += ch
-                if paren==0 and inComment: inComment=False
+                if not inComment:
+                    expr += ch
+
+                if paren==0 and inComment:
+                    inComment=False
             elif ch == '[':
                 # expression start?
                 if not inComment:
                     if OCV.stdexpr: ch='('
                     braket += 1
-                    if braket==1:
+                    if braket == 1:
                         if cmd:
                             out.append(cmd)
                             cmd = ""
@@ -1027,7 +1143,7 @@ class CNC:
                 if not inComment:
                     if OCV.stdexpr: ch=')'
                     braket -= 1
-                    if braket==0:
+                    if braket == 0:
                         try:
                             out.append(compile(expr,"","eval"))
                         except:
@@ -1041,7 +1157,7 @@ class CNC:
                     OCV.comment += ch
             elif ch=='=':
                 # check for assignments (FIXME very bad)
-                if not out and braket==0 and paren==0:
+                if not out and braket == 0 and paren == 0:
                     for i in " ()-+*/^$":
                         if i in cmd:
                             cmd += ch
@@ -1054,13 +1170,13 @@ class CNC:
                             return None
             elif ch == ';':
                 # Skip everything after the semicolon on normal lines
-                if not inComment and paren==0 and braket==0:
+                if not inComment and paren == 0 and braket == 0:
                     OCV.comment += line[i+1:]
                     break
                 else:
                     expr += ch
 
-            elif braket>0:
+            elif braket > 0:
                 expr += ch
 
             elif not inComment:
@@ -1076,17 +1192,16 @@ class CNC:
         if cmd: out.append(cmd)
 
         # return output commands
-        if len(out)==0:
+        if len(out) == 0:
             return None
-        if len(out)>1:
+        if len(out) > 1:
             return out
         return out[0]
 
-    #----------------------------------------------------------------------
-    # Break line into commands
-    #----------------------------------------------------------------------
+
     @staticmethod
     def breakLine(line):
+        """Break line into commands"""
         if line is None: return None
         # Insert space before each command
         line = CMDPAT.sub(r" \1",line).lstrip()
@@ -1895,7 +2010,8 @@ class Block(list):
         except UnicodeEncodeError:
             print(e,v,self.name(), len(self))
         #    return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().encode('ascii', 'ignore').decode("ascii","replace"), len(self))
-    #----------------------------------------------------------------------
+
+
     def write_header(self):
         header = ''
         header += "(Block-name: {0})\n".format(self.name())
@@ -1904,6 +2020,7 @@ class Block(list):
         if self.color:
             header += "(Block-color: {0})\n".format(self.color)
         return header
+
 
     def write(self, f):
         f.write(self.write_header())
@@ -2221,150 +2338,6 @@ class GCode:
         return False
 
     #----------------------------------------------------------------------
-    # Load DXF file into gcode
-    #----------------------------------------------------------------------
-    def importDXF(self, filename):
-        try:
-            dxf = DXF(filename,"r")
-        except:
-            return False
-        self.filename = ""
-
-        dxf.readFile()
-        dxf.close()
-
-        # prepare dxf file
-        dxf.sort()
-        dxf.convert2Polylines()
-        dxf.expandBlocks()
-
-        #import time; start = time.time()
-        empty = len(self.blocks)==0
-        if empty: self.addBlockFromString("Header",self.header)
-
-        if OCV.inch:
-            units = DXF.INCHES
-        else:
-            units = DXF.MILLIMETERS
-
-        undoinfo = []
-        for name,layer in dxf.layers.items():
-            enable = not bool(layer.isFrozen())
-            entities = dxf.entities(name)
-            if not entities: continue
-            self.importEntityPoints(None, entities, name, enable, layer.color())
-            path = Path(name)
-            path.fromDxf(dxf, entities, units)
-            path.removeZeroLength()
-            if path.color is None:
-                path.color = layer.color()
-            if path.color == "#FFFFFF": path.color = None
-            opath = path.split2contours(0.0001) #Lowered accuracy due to problems interfacing arcs and lines in DXF
-            if not opath: continue
-            while opath:
-                li = 0
-                llen = 0.0
-                for i,p in enumerate(opath):
-                    if p.length()>llen:
-                        li = i
-                        llen = p.length()
-                longest = opath.pop(li)
-                longest.directionSet(1) #turn path to CW (conventional when milling outside)
-
-                # Can be time consuming
-                if GCode.LOOP_MERGE:
-#                    print "Loop merge"
-                    longest.mergeLoops(opath)
-
-                undoinfo.extend(self.importPath(None, longest, None, enable))
-#                d = longest.direction()
-#                bid = len(self.blocks)-1
-#                if d==0:
-#                    undoinfo.extend(self.addBlockOperationUndo(bid,"O"))
-#                elif d==1:
-#                    undoinfo.extend(self.addBlockOperationUndo(bid,"CW"))
-#                elif d==-1:
-#                    undoinfo.extend(self.addBlockOperationUndo(bid,"CCW"))
-
-            undoinfo.extend(self.importPath(None, opath, None, enable))
-#            d = opath.direction()
-#            bid = len(self.blocks)-1
-#            if d==0:
-#                undoinfo.extend(self.addBlockOperationUndo(bid,"O"))
-#            elif d==1:
-#                undoinfo.extend(self.addBlockOperationUndo(bid,"CW"))
-#            elif d==-1:
-#                undoinfo.extend(self.addBlockOperationUndo(bid,"CCW"))
-
-        #print "Loading time:", time.time()-start
-        if empty: self.addBlockFromString("Footer",self.footer)
-        #self.addUndo(undoinfo)
-        return True
-
-    #----------------------------------------------------------------------
-    # Save in DXF format
-    #----------------------------------------------------------------------
-    def saveDXF(self, filename):
-        try:
-            dxf = DXF(filename,"w")
-        except:
-            return False
-        if OCV.inch:
-            dxf.units = DXF.INCHES
-        else:
-            dxf.units = DXF.MILLIMETERS
-        dxf.writeHeader()
-        for block in self.blocks:
-            name = block.name()
-            if ":" in name: name = name.split(":")[0]
-            for line in block:
-                cmds = CNC.parseLine(line)
-                if cmds is None: continue
-                self.cnc.motionStart(cmds)
-                if self.cnc.gcode == 1:    # line
-                    dxf.line(self.cnc.x, self.cnc.y, self.cnc.xval, self.cnc.yval, name)
-                elif self.cnc.gcode in (2,3):    # arc
-                    xc,yc = self.cnc.motionCenter()
-                    sphi = math.atan2(self.cnc.y-yc,    self.cnc.x-xc)
-                    ephi = math.atan2(self.cnc.yval-yc, self.cnc.xval-xc)
-                    if ephi<=sphi+1e-10: ephi += 2.0*math.pi
-                    if self.cnc.gcode==2:
-                        dxf.arc(xc,yc,self.cnc.rval, math.degrees(ephi), math.degrees(sphi),name)
-                    else:
-                        dxf.arc(xc,yc,self.cnc.rval, math.degrees(sphi), math.degrees(ephi),name)
-                self.cnc.motionEnd()
-        dxf.writeEOF()
-        dxf.close()
-        return True
-
-    #----------------------------------------------------------------------
-    # Get scaling factor for SVG files
-    #----------------------------------------------------------------------
-    def SVGscale(self):
-        dpi=96 #same as inkscape 0.9x (according to jscut)
-        if not OCV.inch: dpi = round(dpi/25.4,7)
-        return dpi
-
-    #----------------------------------------------------------------------
-    # Load SVG file into gcode
-    #----------------------------------------------------------------------
-    def importSVG(self, filename):
-        #try:
-        svgcode = SVGcode(filename)
-        #except:
-        #    return False
-
-        empty = len(self.blocks)==0
-        if empty: self.addBlockFromString("Header",self.header)
-
-        #FIXME: UI to set SVG subdivratio
-        for path in svgcode.get_gcode(self.SVGscale(), 10, OCV.digits):
-            self.addBlockFromString(path['id'],path['path'])
-
-        if empty: self.addBlockFromString("Footer",self.footer)
-        return True
-
-    #----------------------------------------------------------------------
     # get document margins
     #----------------------------------------------------------------------
     def getMargins(self):
@@ -2376,120 +2349,6 @@ class GCode:
                 minx2,miny2,maxx2,maxy2 = path.bbox()
                 minx,miny,maxx,maxy = min(minx,minx2), min(miny,miny2), max(maxx,maxx2), max(maxy,maxy2)
         return minx,miny,maxx,maxy
-
-    #----------------------------------------------------------------------
-    # Save in SVG format
-    #----------------------------------------------------------------------
-    def saveSVG(self, filename):
-        try:
-            svg = open(filename,"w")
-        except:
-            return False
-
-        padding = 10
-        scale=self.SVGscale()
-
-        #Get bounding box of document
-        minx,miny,maxx,maxy = self.getMargins()
-        #centerx = (minx+maxx)/2
-        #centery = (miny+maxy)/2
-
-        svg.write('<!-- SVG generated by OKKCNC: https://github.com/onekk/OKKCNC -->\n')
-        svg.write('<svg viewBox="{0} {1} {2} {3}">\n'.format(
-                (minx*scale)-padding,
-                (-maxy*scale)-padding,
-                ((maxx-minx)*scale)+padding*2,
-                ((maxy-miny)*scale)+padding*2))
-        #svg.write('\t<path d="M %s %s L %s %s" stroke="%s" stroke-width="%s" fill="none" />\n'%(minx*scale, -miny*scale, maxx*scale, -maxy*scale, "pink", 2)) #Bounding box debug
-
-        def svgLine(scale, px, py, type='L'):
-            return('\t{0} {1} {2}\n'.format(type, px*scale, py*scale))
-
-        def svgArc(scale, gcode, r, ax, ay, bx, by, cx, cy):
-            sphi = math.atan2(ay-yc, ax-xc)
-            ephi = math.atan2(by-yc, bx-xc)
-            arcSweep = ephi - sphi
-            arcSweep = 0 if arcSweep <= math.radians(180) else 1
-            #Arc
-            if gcode == 2:
-                if ephi<=sphi+1e-10: ephi += 2.0*math.pi
-                #dxf.arc(xc,yc,self.cnc.rval, math.degrees(ephi), math.degrees(sphi),name)
-                #return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 1, bx*scale, by*scale))
-                return('\tA {0} {1} {2} {3} {4} {5} {6}\n'.format(
-                        r*scale,
-                        r*scale,
-                        0,
-                        arcSweep,
-                        1,
-                        bx*scale,
-                        by*scale))
-            else:
-                if ephi<=sphi+1e-10: ephi += 2.0*math.pi
-                #dxf.arc(xc,yc,self.cnc.rval, math.degrees(sphi), math.degrees(ephi),name)
-                #return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 0, bx*scale, by*scale))
-                return('\tA {0} {1} {2} {3} {4} {5} {6}\n'.format(
-                        r*scale,
-                        r*scale,
-                        0,
-                        arcSweep,
-                        0,
-                        bx*scale,
-                        by*scale))
-
-
-        for block in self.blocks:
-
-            name = block.name()
-            color = block.color
-            if color is None: color = 'black'
-            width = 2
-            if ":" in name: name = name.split(":")[0]
-            svgpath = ''
-            lastx, lasty = 0, 0
-            firstx, firsty = None, None
-
-            #Write paths
-            for line in block:
-                cmds = CNC.parseLine(line)
-                if cmds is None: continue
-                self.cnc.motionStart(cmds)
-
-                if self.cnc.gcode == 0:    # rapid line (move)
-                    svgpath += svgLine(scale, self.cnc.xval, -self.cnc.yval, 'M')
-                else:
-                    lastx, lasty = self.cnc.xval, self.cnc.yval
-                    if firstx is None:
-                        firstx, firsty = self.cnc.x, self.cnc.y
-
-                if self.cnc.gcode == 1:    # line
-                    svgpath += svgLine(scale, self.cnc.xval, -self.cnc.yval)
-
-                elif self.cnc.gcode in (2,3):    # arc
-                    xc,yc = self.cnc.motionCenter()
-
-                    #In case of full circle, we need to split circle in two arcs:
-                    midx = self.cnc.x
-                    midy = self.cnc.y
-                    if self.cnc.y==self.cnc.yval and self.cnc.x==self.cnc.xval: #is full circle?
-                        midx = self.cnc.x+(xc-self.cnc.x)*2
-                        midy = self.cnc.y+(yc-self.cnc.y)*2
-                        svgpath += svgArc(scale, self.cnc.gcode, self.cnc.rval, self.cnc.x, -self.cnc.y, midx, -midy, xc, -yc)
-                    #Finish arc
-                    svgpath += svgArc(scale, self.cnc.gcode, self.cnc.rval, midx, -midy, self.cnc.xval, -self.cnc.yval, xc, -yc)
-                self.cnc.motionEnd()
-
-            if firstx == lastx and firsty == lasty:
-                svgpath += '\tZ\n'
-
-            if len(svgpath) > 0:
-                for line in block.write_header().splitlines():
-                    svg.write("\t<!-- {0} -->\n".format(line))
-                svg.write('\t<path d="\n{0}\t" stroke="{1}" stroke-width="{2}" fill="none" />\n'.format(svgpath, color, width))
-
-        #dxf.writeEOF()
-        svg.write('</svg>\n')
-        svg.close()
-        return True
 
     #----------------------------------------------------------------------
     # Import POINTS from entities
@@ -3850,13 +3709,19 @@ class GCode:
 
                 for cmd in cmds:
                     c = cmd[0]
-                    try: value = float(cmd[1:])
-                    except: value = 0.0
+                    try:
+                        value = float(cmd[1:])
+                    except:
+                        value = 0.0
+
                     if c.upper() in ("F","X","Y","Z","I","J","K","R","P"):
                         cmd = self.fmt(c,value)
                     else:
                         opt = ERROR_HANDLING.get(cmd.upper(),0)
-                        if opt == SKIP: cmd = None
+
+                        if opt == SKIP:
+                            cmd = None
+
                     if cmd is not None:
                         newcmd.append(cmd)
 

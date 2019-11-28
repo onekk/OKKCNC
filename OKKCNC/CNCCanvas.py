@@ -1476,9 +1476,9 @@ class CNCCanvas(Tk.Canvas, object):
 
             if OCV.DEBUG is True:
                 print(" WPOS: X{0} Y{1} Z{2}\n Delta: X{3} Y{4} Z{5}\n MPOS: X{6} Y{7} Z{8}".format(
-                        pc_x, pc_y, pc_z,
-                        d_x, d_y, d_z,
-                        *md))
+                    pc_x, pc_y, pc_z,
+                    d_x, d_y, d_z,
+                    *md))
 
         x, y = self.plotCoords([(pc_x, pc_y, pc_z)])[0]
 

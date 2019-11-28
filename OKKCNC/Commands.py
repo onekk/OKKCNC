@@ -14,7 +14,9 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
 
 import OCV
-from Sender import ERROR_CODES
+from _GenericGRBL import ERROR_CODES
+
+#from Sender import ERROR_CODES
 
 #----------------------------------------------------------------------
 def setX0():

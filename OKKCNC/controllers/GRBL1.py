@@ -10,26 +10,26 @@ from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, V
 from CNC import CNC
 import time
 
-OV_FEED_100     = chr(0x90)        # Extended override commands
-OV_FEED_i10     = chr(0x91)
-OV_FEED_d10     = chr(0x92)
-OV_FEED_i1      = chr(0x93)
-OV_FEED_d1      = chr(0x94)
+OV_FEED_100     = b'\x90'        # Extended override commands
+OV_FEED_i10     = b'\x91'
+OV_FEED_d10     = b'0x92'
+OV_FEED_i1      = b'0x93'
+OV_FEED_d1      = b'0x94'
 
-OV_RAPID_100    = chr(0x95)
-OV_RAPID_50     = chr(0x96)
-OV_RAPID_25     = chr(0x97)
+OV_RAPID_100    = b'0x95'
+OV_RAPID_50     = b'0x96'
+OV_RAPID_25     = b'0x97'
 
-OV_SPINDLE_100  = chr(0x99)
-OV_SPINDLE_i10  = chr(0x9A)
-OV_SPINDLE_d10  = chr(0x9B)
-OV_SPINDLE_i1   = chr(0x9C)
-OV_SPINDLE_d1   = chr(0x9D)
+OV_SPINDLE_100  = b'0x99'
+OV_SPINDLE_i10  = b'0x9A'
+OV_SPINDLE_d10  = b'0x9B'
+OV_SPINDLE_i1   = b'0x9C'
+OV_SPINDLE_d1   = b'0x9D'
 
-OV_SPINDLE_STOP = chr(0x9E)
+OV_SPINDLE_STOP = b'0x9E'
 
-OV_FLOOD_TOGGLE = chr(0xA0)
-OV_MIST_TOGGLE  = chr(0xA1)
+OV_FLOOD_TOGGLE = b'0xA0'
+OV_MIST_TOGGLE  = b'0xA1'
 
 
 class Controller(_GenericGRBL):
@@ -43,24 +43,24 @@ class Controller(_GenericGRBL):
         self.master.sendGCode("$J=G91 {0} F100000".format(dir))
 
     def overrideSet(self):
-        OCV.CD["_OvChanged"] = False    # Temporary
+        OCV.CD["_OvChanged"] = False  # Temporary
         # Check feed
         diff = OCV.CD["_OvFeed"] - OCV.CD["OvFeed"]
         if diff==0:
             pass
         elif OCV.CD["_OvFeed"] == 100:
-            self.master.serial.write(OV_FEED_100)
+            self.master.serial_write_byte(OV_FEED_100)
         elif diff >= 10:
-            self.master.serial.write(OV_FEED_i10)
+            self.master.serial_write_byte(OV_FEED_i10)
             OCV.CD["_OvChanged"] = diff>10
         elif diff <= -10:
-            self.master.serial.write(OV_FEED_d10)
+            self.master.serial_write_byte(OV_FEED_d10)
             OCV.CD["_OvChanged"] = diff<-10
         elif diff >= 1:
-            self.master.serial.write(OV_FEED_i1)
+            self.master.serial_write_byte(OV_FEED_i1)
             OCV.CD["_OvChanged"] = diff>1
         elif diff <= -1:
-            self.master.serial.write(OV_FEED_d1)
+            self.master.serial_write_byte(OV_FEED_d1)
             OCV.CD["_OvChanged"] = diff<-1
         # Check rapid
         target  = OCV.CD["_OvRapid"]
@@ -68,30 +68,30 @@ class Controller(_GenericGRBL):
         if target == current:
             pass
         elif target == 100:
-            self.master.serial.write(OV_RAPID_100)
+            self.master.serial_write_byte(OV_RAPID_100)
         elif target == 75:
-            self.master.serial.write(OV_RAPID_50)    # FIXME: GRBL protocol does not specify 75% override command at all
+            self.master.serial_write_byte(OV_RAPID_50)    # FIXME: GRBL protocol does not specify 75% override command at all
         elif target == 50:
-            self.master.serial.write(OV_RAPID_50)
+            self.master.serial_write_byte(OV_RAPID_50)
         elif target == 25:
-            self.master.serial.write(OV_RAPID_25)
+            self.master.serial_write_byte(OV_RAPID_25)
         # Check Spindle
         diff = OCV.CD["_OvSpindle"] - OCV.CD["OvSpindle"]
         if diff==0:
             pass
         elif OCV.CD["_OvSpindle"] == 100:
-            self.master.serial.write(OV_SPINDLE_100)
+            self.master.serial_write_byte(OV_SPINDLE_100)
         elif diff >= 10:
-            self.master.serial.write(OV_SPINDLE_i10)
+            self.master.serial_write_byte(OV_SPINDLE_i10)
             OCV.CD["_OvChanged"] = diff>10
         elif diff <= -10:
-            self.master.serial.write(OV_SPINDLE_d10)
+            self.master.serial_write_byte(OV_SPINDLE_d10)
             OCV.CD["_OvChanged"] = diff<-10
         elif diff >= 1:
-            self.master.serial.write(OV_SPINDLE_i1)
+            self.master.serial_write_byte(OV_SPINDLE_i1)
             OCV.CD["_OvChanged"] = diff>1
         elif diff <= -1:
-            self.master.serial.write(OV_SPINDLE_d1)
+            self.master.serial_write_byte(OV_SPINDLE_d1)
             OCV.CD["_OvChanged"] = diff<-1
 
 
