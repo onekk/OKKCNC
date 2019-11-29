@@ -10,12 +10,12 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 try:
-   import tkMessageBox
+    import tkMessageBox
 except:
     import tkinter.messagebox as tkMessageBox
 
 import OCV
-#import CNC
+# import CNC
 from CNC import Block, CNC
 
 
@@ -49,12 +49,12 @@ def line(self, app, end_depth, mem_0, mem_1):
     z_start = OCV.WK_mems[mem_1][2]
 
     tool_dia = OCV.CD['diameter']
-    #tool_rad = tool_dia / 2.
+    # tool_rad = tool_dia / 2.
     xy_stepover = tool_dia * OCV.CD['stepover'] / 100.0
 
     z_stepover = OCV.CD['stepz']
 
-    #avoid infinite while loop
+    # avoid infinite while loop
     if z_stepover == 0:
         z_stepover = 0.001
 
@@ -66,7 +66,6 @@ def line(self, app, end_depth, mem_0, mem_1):
         "StepDown: {0:.{1}f} \n\n".format(z_stepover, OCV.digits),
         "StepOver: {0:.{1}f} \n\n".format(xy_stepover, OCV.digits))
 
-
     retval = tkMessageBox.askokcancel("Line Cut", "".join(msg))
 
     if OCV.DEBUG is True:
@@ -77,7 +76,6 @@ def line(self, app, end_depth, mem_0, mem_1):
 
     # Reset the Gcode in the Editor
     # Loading an empty file
-
 
     # Set the Initialization file
     blocks = []
@@ -94,7 +92,7 @@ def line(self, app, end_depth, mem_0, mem_1):
     block.append("(StepOver: {0:.{1}f} )".format(xy_stepover, OCV.digits))
     block.append("(Tool diameter = {0:.{1}f})".format(tool_dia, OCV.digits))
 
-    #Safe move to first point
+    # Safe move to first point
     block.append(CNC.zsafe())
     block.append(CNC.grapid(x_start, y_start))
 
@@ -105,7 +103,7 @@ def line(self, app, end_depth, mem_0, mem_1):
 
     curr_depth = z_start + z_stepover
 
-    #Create GCode from points
+    # Create GCode from points
     while True:
         curr_depth -= z_stepover
 
@@ -117,11 +115,11 @@ def line(self, app, end_depth, mem_0, mem_1):
 
         block.append(CNC.gline(x_end, y_end))
 
-        #Move to start in a safe way
+        # Move to start in a safe way
         block.append(CNC.zsafe())
         block.append(CNC.grapid(x_start, y_start))
 
-        #Check exit condition
+        # Check exit condition
         if curr_depth <= end_depth:
             break
 
@@ -157,7 +155,7 @@ def pocket(self, app, end_depth, mem_0, mem_1):
 
     z_stepover = OCV.CD['stepz']
 
-    #avoid infinite while loop
+    # avoid infinite while loop
     if z_stepover == 0:
         z_stepover = 0.001
 
@@ -189,11 +187,11 @@ def pocket(self, app, end_depth, mem_0, mem_1):
     block.append("(StepOver: {0:.{1}f} )".format(xy_stepover, OCV.digits))
     block.append("(Tool diameter = {0:.{1}f})".format(tool_dia, OCV.digits))
 
-    #Move safe to first point
+    # Move safe to first point
     block.append(CNC.zsafe())
     block.append(CNC.grapid(x_start, y_start))
 
-    #Init Depth
+    # Init Depth
 
     f_width = x_end - x_start
     f_heigth = y_end - y_start
@@ -203,7 +201,7 @@ def pocket(self, app, end_depth, mem_0, mem_1):
     x_start_pocket = x_start + tool_rad
     y_start_pocket = y_start + tool_rad
 
-    #Calc space to work with/without border cut
+    # Calc space to work with/without border cut
     travel_width = f_width - tool_dia
     travel_height = f_heigth - tool_dia
 
@@ -212,26 +210,26 @@ def pocket(self, app, end_depth, mem_0, mem_1):
         retval = tkMessageBox.askokcancel("Pocket Cut", msg)
         return
 
-    #Prepare points for pocketing
+    # Prepare points for pocketing
     x_p = []
     y_p = []
 
-    #Calc number of pass
+    # Calc number of pass
     v_count = (int)(travel_height / xy_stepover)
     h_count = (int)(travel_width / xy_stepover)
 
-    #Make them odd
+    # Make them odd
     if v_count%2 == 0:
         v_count += 1
 
     if h_count%2 == 0:
         h_count += 1
 
-    #Calc step minor of Max step
+    # Calc step minor of Max step
     h_stepover = travel_height / v_count
     w_stepover = travel_width / h_count
 
-    #Start from border to center
+    # Start from border to center
     x_s = x_start_pocket
     y_s = y_start_pocket
     w_s = travel_width
@@ -240,7 +238,7 @@ def pocket(self, app, end_depth, mem_0, mem_1):
     y_c = 0
 
     while x_c <= h_count/2 and y_c <= v_count/2:
-        #Pocket offset points
+        # Pocket offset points
         x_0, y_0 = rect_path(x_s, y_s, w_s, h_s)
 
         if cut_dir == "Conventional":
@@ -256,11 +254,11 @@ def pocket(self, app, end_depth, mem_0, mem_1):
         x_c += 1
         y_c += 1
 
-        #Reverse point to start from inside (less stres on the tool)
+        # Reverse point to start from inside (less stres on the tool)
         x_p = x_p[::-1]
         y_p = y_p[::-1]
 
-    #Move safe to first point
+    # Move safe to first point
     block.append(CNC.zsafe())
     block.append(CNC.grapid(x_p[0], y_p[0]))
 
@@ -270,7 +268,7 @@ def pocket(self, app, end_depth, mem_0, mem_1):
     # the check is done at the final depth
     curr_depth = z_start + z_stepover
 
-    #Create GCode from points
+    # Create GCode from points
     while True:
         curr_depth -= z_stepover
 
@@ -280,15 +278,15 @@ def pocket(self, app, end_depth, mem_0, mem_1):
         block.append(CNC.zenter(curr_depth))
         block.append(CNC.gcode(1, [("F", OCV.CD["cutfeed"])]))
 
-        #Pocketing
+        # Pocketing
         for x_l, y_l in zip(x_p, y_p):
                 block.append(CNC.gline(x_l, y_l))
 
-        #Move to the begin in a safe way
+        # Move to the begin in a safe way
         block.append(CNC.zsafe())
         block.append(CNC.grapid(x_p[0], y_p[0]))
 
-        #Verify exit condition
+        # Verify exit condition
         if curr_depth <= end_depth:
             break
 

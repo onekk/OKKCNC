@@ -30,22 +30,22 @@ FONT_SECTION = "Font"
 WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
 
 DISTANCE_MODE = {
-    "G90" : "Absolute",
-    "G91" : "Incremental"}
+    "G90": "Absolute",
+    "G91": "Incremental"}
 
 FEED_MODE = {
-    "G93" : "1/Time",
-    "G94" : "unit/min",
-    "G95" : "unit/rev"}
+    "G93": "1/Time",
+    "G94": "unit/min",
+    "G95": "unit/rev"}
 
 UNITS = {
-    "G20" : "inch",
-    "G21" : "mm"}
+    "G20": "inch",
+    "G21": "mm"}
 
 PLANE = {
-    "G17" : "XY",
-    "G18" : "XZ",
-    "G19" : "YZ"}
+    "G17": "XY",
+    "G18": "XZ",
+    "G19": "YZ"}
 
 
 # variables that hold significant Tk reference for object
@@ -54,25 +54,27 @@ PLANE = {
 root = None
 application = None
 canvas = None
+mcontrol = None
+RUN_GROUP = None
 
-
-_version = "0.1.0-dev"
+_version = "0.1.9-dev"
 _date = "26 Dec 2019"
 
 _sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
 _gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
 
 # A #
-acceleration_x = 25.0 # mm/s^2
-acceleration_y = 25.0 # mm/s^2
-acceleration_z = 25.0 # mm/s^2
-accuracy = 0.01 # sagitta error during arc conversion
-appendFeed = False # append feed on every G1/G2/G3 commands to be used
-                   # for feed override testing
-                   # FIXME will not be needed after Grbl v1.0
+acceleration_x = 25.0  # mm/s^2
+acceleration_y = 25.0  # mm/s^2
+acceleration_z = 25.0  # mm/s^2
+accuracy = 0.01  # sagitta error during arc conversion
+appendFeed = False  # append feed on every G1/G2/G3 commands to be used
+                    # for feed override testing
+                    # FIXME will not be needed after Grbl v1.0
 
 # C #
 comment = ""  # last parsed comment
+c_state = ""  # controller state to determine the state
 
 # D #
 DRAW_TIME = 5  # Maximum draw time permitted
@@ -85,7 +87,6 @@ drozeropad = 0
 feedmax_x = 3000
 feedmax_y = 3000
 feedmax_z = 2000
-
 
 # G #
 geometry = None
@@ -107,6 +108,11 @@ step1 = 0.0
 step2 = 0.0
 step3 = 0.0
 step4 = 0.0
+s_alarm = True
+s_pause = False
+s_stop = False
+s_stop_req = False
+
 
 # T #
 toolPolicy = 1
@@ -172,75 +178,74 @@ WK_mem_num = 0
 
 
 CD = {
-    "prbx"       : 0.0,
-    "prby"       : 0.0,
-    "prbz"       : 0.0,
-    "prbcmd"     : "G38.2",
-    "prbfeed"    : 10.,
-    "errline"    : "",
-    "wx"         : 0.0,
-    "wy"         : 0.0,
-    "wz"         : 0.0,
-    "mx"         : 0.0,
-    "my"         : 0.0,
-    "mz"         : 0.0,
-    "wcox"       : 0.0,
-    "wcoy"       : 0.0,
-    "wcoz"       : 0.0,
-    "curfeed"    : 0.0,
-    "curspindle" : 0.0,
-    "_camwx"     : 0.0,
-    "_camwy"     : 0.0,
-    "G"          : [],
-    "TLO"        : 0.0,
-    "motion"     : "G0",
-    "WCS"        : "G54",
-    "plane"      : "G17",
-    "feedmode"   : "G94",
-    "distance"   : "G90",
-    "arc"        : "G91.1",
-    "units"      : "G20",
-    "cutter"     : "",
-    "tlo"        : "",
-    "program"    : "M0",
-    "spindle"    : "M5",
-    "coolant"    : "M9",
+    "prbx": 0.0,
+    "prby": 0.0,
+    "prbz": 0.0,
+    "prbcmd": "G38.2",
+    "prbfeed": 10.,
+    "errline": "",
+    "wx": 0.0,
+    "wy": 0.0,
+    "wz": 0.0,
+    "mx": 0.0,
+    "my": 0.0,
+    "mz": 0.0,
+    "wcox": 0.0,
+    "wcoy": 0.0,
+    "wcoz": 0.0,
+    "curfeed": 0.0,
+    "curspindle": 0.0,
+    "_camwx": 0.0,
+    "_camwy": 0.0,
+    "G": [],
+    "TLO": 0.0,
+    "motion": "G0",
+    "WCS": "G54",
+    "plane": "G17",
+    "feedmode": "G94",
+    "distance": "G90",
+    "arc": "G91.1",
+    "units": "G20",
+    "cutter": "",
+    "tlo": "",
+    "program": "M0",
+    "spindle": "M5",
+    "coolant": "M9",
 
-    "tool"       : 0,
-    "feed"       : 0.0,
-    "rpm"        : 0.0,
+    "tool": 0,
+    "feed": 0.0,
+    "rpm": 0.0,
 
-    "planner"    : 0,
-    "rxbytes"    : 0,
+    "planner": 0,
+    "rxbytes": 0,
 
-    "OvFeed"     : 100,    # Override status
-    "OvRapid"    : 100,
-    "OvSpindle"  : 100,
-    "_OvChanged" : False,
-    "_OvFeed"    : 100,    # Override target values
-    "_OvRapid"   : 100,
-    "_OvSpindle" : 100,
+    "OvFeed": 100,    # Override status
+    "OvRapid": 100,
+    "OvSpindle": 100,
+    "_OvChanged": False,
+    "_OvFeed": 100,    # Override target values
+    "_OvRapid": 100,
+    "_OvSpindle": 100,
 
-    "diameter"   : 3.175,    # Tool diameter
-    "cutfeed"    : 1000.,    # Material feed for cutting
-    "cutfeedz"   : 500.,    # Material feed for cutting
-    "safe"       : 3.,
-    "state"      : "",
-    "pins"       : "",
-    "msg"        : "",
-    "stepz"      : 1.,
-    "surface"    : 0.,
-    "thickness"  : 5.,
-    "stepover"   : 40.,
+    "diameter": 3.175,    # Tool diameter
+    "cutfeed": 1000.,    # Material feed for cutting
+    "cutfeedz": 500.,    # Material feed for cutting
+    "safe": 3.,
+    "state": "",
+    "pins": "",
+    "msg": "",
+    "stepz": 1.,
+    "surface": 0.,
+    "thickness": 5.,
+    "stepover": 40.,
 
-    "PRB"        : None,
-    "TLO"        : 0.,
+    "PRB": None,
+    "TLO": 0.,
 
-    "version"    : "",
-    "controller" : "",
-    "running"    : False,
+    "version": "",
+    "controller": "",
+    "running": False,
     }
-
 
 # INTERFACE COLORS #
 ACTIVE_COLOR = "LightYellow"

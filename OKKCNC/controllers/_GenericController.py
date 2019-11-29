@@ -65,30 +65,30 @@ class _GenericController:
             self.hardResetAfter()
         self.master.openClose()
         self.master.stopProbe()
-        self.master._alarm = False
+        OCV.s_alarm = False
         OCV.CD["_OvChanged"] = True    # force a feed change if any
         self.master.notBusy()
 
-    #----------------------------------------------------------------------
     def softReset(self, clearAlarm=True):
         if self.master.serial:
             #print("Machine softReset")
             self.master.serial_write_byte(b"\030")
         self.master.stopProbe()
-        if clearAlarm: self.master._alarm = False
+
+        if clearAlarm:
+            OCV.s_alarm = False
+
         OCV.CD["_OvChanged"] = True  # force a feed change if any
 
-    #----------------------------------------------------------------------
     def unlock(self, clearAlarm=True):
         #print("Machine Unlock")
         if clearAlarm:
-            self.master._alarm = False
+            OCV.s_alarm = False
 
         self.master.sendGCode("$X")
 
-    #----------------------------------------------------------------------
-    def home(self, event=None):
-        self.master._alarm = False
+    def home(self):
+        OCV.s_alarm = False
         self.master.sendGCode("$H")
 
     def viewStatusReport(self):
@@ -120,55 +120,65 @@ class _GenericController:
         cmd_string = "{0}".format(cmd)
         self.master.sendGCode(cmd_string)
 
-
-    def _wcsSet(self, x, y, z):
+    def wcs_set(self, x, y, z):
         p = OCV.WCS.index(OCV.CD["WCS"])
-        if p<6:
+        if p < 6:
             cmd = "G10L20P{0:d}".format(p+1)
-        elif p==6:
+        elif p == 6:
             cmd = "G28.1"
-        elif p==7:
+        elif p == 7:
             cmd = "G30.1"
-        elif p==8:
+        elif p == 8:
             cmd = "G92"
 
         pos = ""
-        if x is not None and abs(float(x))<10000.0: pos += "X"+str(x)
-        if y is not None and abs(float(y))<10000.0: pos += "Y"+str(y)
-        if z is not None and abs(float(z))<10000.0: pos += "Z"+str(z)
+        if x is not None and abs(float(x)) < 10000.0:
+            pos += "X"+str(x)
+
+        if y is not None and abs(float(y)) < 10000.0:
+            pos += "Y"+str(y)
+        if z is not None and abs(float(z)) < 10000.0:
+            pos += "Z"+str(z)
         cmd += pos
         self.master.sendGCode(cmd)
         self.viewParameters()
         self.master.event_generate("<<Status>>",
-            data=(_("Set workspace {0} to {1}").format(OCV.WCS[p],pos)))
+            data=(_("Set workspace {0} to {1}").format(OCV.WCS[p], pos)))
         self.master.event_generate("<<CanvasFocus>>")
 
-
     def feedHold(self, event=None):
-        if event is not None and not self.master.acceptKey(True): return
-        if self.master.serial is None: return
+        if event is not None and not self.master.acceptKey(True):
+            return
+        self.feed_hold()
+
+    def feed_hold(self):
+        if self.master.serial is None:
+            return
+
         self.master.serial_write("!")
         self.master.serial.flush()
-        self.master._pause = True
+        OCV.s_pause = True
 
-    #----------------------------------------------------------------------
     def resume(self, event=None):
-        if event is not None and not self.master.acceptKey(True): return
-        if self.master.serial is None: return
+        if event is not None and not self.master.acceptKey(True):
+            return
+
+        if self.master.serial is None:
+            return
+
         self.master.serial_write("~")
         self.master.serial.flush()
         self.master._msg   = None
-        self.master._alarm = False
-        self.master._pause = False
+        OCV.s_alarm = False
+        OCV.s_pause = False
 
-    #----------------------------------------------------------------------
     def pause(self, event=None):
-        if self.master.serial is None: return
-        if self.master._pause:
+        if self.master.serial is None:
+            return
+        if OCV.s_pause:
             self.master.resume()
         else:
-            self.master.feedHold()
-
+            self.feed_hold()
 
     def purgeController(self):
         """
@@ -179,7 +189,7 @@ class _GenericController:
         self.master.serial.flush()
         time.sleep(1)
         # remember and send all G commands
-        G = " ".join([x for x in OCV.CD["G"] if x[0]=="G"])  # remember $G
+        G = " ".join([x for x in OCV.CD["G"] if x[0] == "G"])  # remember $G
         TLO = OCV.CD["TLO"]
         self.softReset(False)  # reset controller
         self.purgeControllerExtra()
@@ -192,32 +202,40 @@ class _GenericController:
         self.master.sendGCode("G43.1 Z{0}".format(TLO))  # restore TLO
         self.viewState()
 
-
     def parseLine(self, line, cline, sline):
         if not line:
             return True
 
-        elif line[0]=="<":
+        elif line[0] == "<":
             if not self.master.sio_status:
                 self.master.log.put((self.master.MSG_RECEIVE, line))
             else:
                 self.parseBracketAngle(line, cline)
 
-        elif line[0]=="[":
+        elif line[0] == "[":
             self.master.log.put((self.master.MSG_RECEIVE, line))
             self.parseBracketSquare(line)
 
         elif "error:" in line or "ALARM:" in line:
+            print("Error: ", line)
             self.master.log.put((self.master.MSG_ERROR, line))
             self.master._gcount += 1
             #print "gcount ERROR=",self._gcount
-            if cline: del cline[0]
-            if sline: OCV.CD["errline"] = sline.pop(0)
-            if not self.master._alarm: self.master._posUpdate = True
-            self.master._alarm = True
-            OCV.CD["state"] = line
+            if cline:
+                del cline[0]
+
+            if sline:
+                OCV.CD["errline"] = sline.pop(0)
+
+            if not OCV.s_alarm:
+                self.master._posUpdate = True
+
+            OCV.s_alarm = True
+
+            OCV.c_state = line
+
             if self.master.running:
-                self.master._stop = True
+                OCV.s_stop = True
 
         elif line.find("ok")>=0:
             self.master.log.put((self.master.MSG_OK, line))
@@ -237,7 +255,7 @@ class _GenericController:
         elif line[:4]=="Grbl" or line[:13]=="CarbideMotion":  # and self.running:
             #tg = time.time()
             self.master.log.put((self.master.MSG_RECEIVE, line))
-            self.master._stop = True
+            OCV.s_stop = True
             del cline[:]  # After reset clear the buffer counters
             del sline[:]
             OCV.CD["version"] = line.split()[1]

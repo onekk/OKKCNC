@@ -281,7 +281,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     #----------------------------------------------------------------------
     def updateState(self):
-        msg = OCV.application._msg or OCV.CD["state"]
+        msg = OCV.application._msg or OCV.c_state
         if OCV.CD["pins"] is not None and OCV.CD["pins"] != "":
             msg += " ["+OCV.CD["pins"]+"]"
         self.state.config(text=msg, background=OCV.CD["color"])
@@ -311,7 +311,7 @@ class DROFrame(CNCRibbon.PageFrame):
         if OCV.application.running: return
         try:
             value = round(eval(self.xwork.get(), None, OCV.CD), 3)
-            OCV.application.mcontrol._wcsSet(value, None, None)
+            OCV.mcontrol.wcs_set(value, None, None)
         except:
             pass
 
@@ -320,7 +320,7 @@ class DROFrame(CNCRibbon.PageFrame):
         if OCV.application.running: return
         try:
             value = round(eval(self.ywork.get(), None, OCV.CD), 3)
-            OCV.application.mcontrol._wcsSet(None, value, None)
+            OCV.mcontrol.wcs_set(None, value, None)
         except:
             pass
 
@@ -329,6 +329,6 @@ class DROFrame(CNCRibbon.PageFrame):
         if OCV.application.running: return
         try:
             value = round(eval(self.zwork.get(), None, OCV.CD), 3)
-            OCV.application.mcontrol._wcsSet(None, None, value)
+            OCV.mcontrol.wcs_set(None, None, value)
         except:
             pass

@@ -274,7 +274,9 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
         col += 1
         ProbeCommonFrame.tlo = tkExtra.FloatEntry(frame, background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
         ProbeCommonFrame.tlo.grid(row=row, column=col, sticky=EW)
+
         tkExtra.Balloon.set(ProbeCommonFrame.tlo, _("Set tool offset for probing"))
+
         self.addWidget(ProbeCommonFrame.tlo)
         self.tlo.bind("<Return>",   self.tloSet)
         self.tlo.bind("<KP_Enter>", self.tloSet)
@@ -300,20 +302,17 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
         ProbeCommonFrame.probeCmd.fill(PROBE_CMD)
         self.addWidget(ProbeCommonFrame.probeCmd)
 
-        frame.grid_columnconfigure(1,weight=1)
+        frame.grid_columnconfigure(1, weight=1)
         self.loadConfig()
 
-    #------------------------------------------------------------------------
-    def tloSet(self, event=None):
         try:
             OCV.CD["TLO"] = float(ProbeCommonFrame.tlo.get())
             cmd = "G43.1 Z{0:f}".format(ProbeCommonFrame.tlo.get())
             self.sendGCode(cmd)
         except:
             pass
-        OCV.application.mcontrol.viewParameters()
+        OCV.mcontrol.viewParameters()
 
-    #------------------------------------------------------------------------
     @staticmethod
     def probeUpdate():
         try:
@@ -334,6 +333,9 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
                 state = ProbeCommonFrame.tlo["state"] = state
         except:
             pass
+
+    def tloSet(self):
+        pass
 
     #-----------------------------------------------------------------------
     def saveConfig(self):

@@ -129,7 +129,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         self.selectBank(0)
 
     def onClickMem(self, event, obj):
-        if OCV.CD["state"] == "Idle":
+        if OCV.c_state == "Idle":
             #print(event.num)
             #print("Button {0} CLicked".format(obj))
             mem_clicked = (OCV.WK_bank * OCV.WK_bank_mem) + 2 + obj

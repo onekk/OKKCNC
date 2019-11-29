@@ -344,54 +344,54 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         for i in com_ports:
             if dbg:
-                #Print list to console if requested
+                # Print list to console if requested
                 comport = ''
-                for j in i: comport+=j+"\t"
+                for j in i:
+                    comport += j + "\t"
                 print(comport)
 
             for hw in i[2].split(' '):
-                hwgrep += ["hwgrep://{0}\t{1}".format(hw,i[1])]
+                hwgrep += ["hwgrep://{0}\t{1}".format(hw, i[1])]
 
         #Populate combobox
         devices = sorted(["{0}\t {1}".format(*x) for x in com_ports])
         devices += ['']
         devices += sorted(set(hwgrep))
         devices += ['']
-        devices += sorted(["spy://{0} ?raw\t(Debug) {1}".format(*x) for x in com_ports])
+        devices += sorted(["spy://{0} ?raw&color\t(Debug) {1}".format(*x) for x in com_ports])
         devices += ['', 'socket://localhost:23', 'rfc2217://localhost:2217']
 
         #Clean neighbour duplicates
         devices_clean = []
-        devprev = '';
+        devprev = ''
+
         for i in devices:
-            if i.split("\t")[0] != devprev: devices_clean += [i]
+            if i.split("\t")[0] != devprev:
+                devices_clean += [i]
+
             devprev = i.split("\t")[0]
 
         self.portCombo.fill(devices_clean)
 
-    #-----------------------------------------------------------------------
     def saveConfig(self):
         # Connection
-        Utils.setStr("Connection", "controller",  OCV.application.controller)
-        Utils.setStr("Connection", "port",        self.portCombo.get().split("\t")[0])
-        Utils.setStr("Connection", "baud",        self.baudCombo.get())
+        Utils.setStr("Connection", "controller", OCV.application.controller)
+        Utils.setStr("Connection", "port", self.portCombo.get().split("\t")[0])
+        Utils.setStr("Connection", "baud", self.baudCombo.get())
         Utils.setBool("Connection", "openserial", self.autostart.get())
 
 
-#===============================================================================
-# File Page
-#===============================================================================
 class FilePage(CNCRibbon.Page):
+    """File Page"""
     __doc__ = _("File I/O and configuration")
-    _name_  = N_("File")
-    _icon_  = "new"
+    _name_ = N_("File")
+    _icon_ = "new"
 
-    #----------------------------------------------------------------------
-    # Add a widget in the widgets list to enable disable during the run
-    #----------------------------------------------------------------------
     def register(self):
-        self._register((FileGroup,
-                PendantGroup,
-                OptionsGroup,
-                CloseGroup),
-                (SerialFrame,))
+        """Add a widget in the widgets list to enable disable during the run"""
+        self._register(
+                (FileGroup,
+                 PendantGroup,
+                 OptionsGroup,
+                 CloseGroup),
+                 (SerialFrame,))

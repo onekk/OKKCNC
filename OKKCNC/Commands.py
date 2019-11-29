@@ -20,27 +20,27 @@ from _GenericGRBL import ERROR_CODES
 
 #----------------------------------------------------------------------
 def setX0():
-    OCV.application.mcontrol._wcsSet("0", None, None)
+    OCV.mcontrol.wcs_set("0", None, None)
     RefreshMemories()
 
 
 def setY0():
-    OCV.application.mcontrol._wcsSet(None, "0", None)
+    OCV.mcontrol.wcs_set(None, "0", None)
     RefreshMemories()
 
 
 def setZ0():
-    OCV.application.mcontrol._wcsSet(None, None, "0")
+    OCV.mcontrol.wcs_set(None, None, "0")
     RefreshMemories()
 
 
 def setXY0():
-    OCV.application.mcontrol._wcsSet("0", "0", None)
+    OCV.mcontrol.wcs_set("0", "0", None)
     RefreshMemories()
 
 
 def setXYZ0():
-    OCV.application.mcontrol._wcsSet("0", "0", "0")
+    OCV.mcontrol.wcs_set("0", "0", "0")
     RefreshMemories()
 
 
@@ -58,13 +58,12 @@ def showState():
     else:
         msg = ""
 
-    state = OCV.CD["state"]
-
     msg += ERROR_CODES.get(
-        state,
+        OCV.c_state,
         _("No info available.\nPlease contact the author."))
 
-    tkMessageBox.showinfo(_("State: {0}").format(state), msg, parent=OCV.application)
+    tkMessageBox.showinfo(_("State: {0}").format(OCV.c_state),
+                          msg, parent=OCV.application)
 
 
 def RefreshMemories():

@@ -52,7 +52,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", app.mcontrol.hardReset)])
+            [(_("Hard Reset"), "reset", OCV.mcontrol.hardReset)])
 
         print("ConnectionGroup app", app)
 
@@ -66,7 +66,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Home"),
             compound=Tk.TOP,
             anchor=Tk.W,
-            command=app.home,
+            command=OCV.mcontrol.home(),
             background=OCV.BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
@@ -83,7 +83,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Unlock"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.application.mcontrol.unlock(True),
+            command=OCV.mcontrol.unlock(True),
             background=OCV.BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -112,7 +112,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Reset"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.application.mcontrol.softReset(True),
+            command=OCV.mcontrol.softReset(True),
             background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Software reset of controller [ctrl-x]"))
@@ -149,6 +149,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
 class RunGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Run", app)
+        OCV.RUN_GROUP = self
 
         b = Ribbon.LabelButton(
             self.frame,
@@ -164,6 +165,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             self, "<<Pause>>",
+            name="run_pause",
             image=Utils.icons["pause32"],
             text=_("Pause"),
             compound=Tk.TOP,
@@ -174,6 +176,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             self, "<<Stop>>",
+            name="run_stop",
             image=Utils.icons["stop32"],
             text=_("Stop"),
             compound=Tk.TOP,
@@ -613,7 +616,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
 
     def memA(self):
-        if OCV.CD["state"] == "Idle":
+        if OCV.c_state == "Idle":
             print("mem_A 1st")
             px = OCV.CD["wx"]
             py = OCV.CD["wy"]
@@ -635,7 +638,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
 
     def memB(self):
-        if OCV.CD["state"] == "Idle":
+        if OCV.c_state == "Idle":
             px = OCV.CD["wx"]
             py = OCV.CD["wy"]
             pz = OCV.CD["wz"]
@@ -655,7 +658,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             pass
 
     def retA(self):
-        if OCV.CD["state"] == "Idle":
+        if OCV.c_state == "Idle":
             if ("mem_0" in OCV.WK_mems):
                 md = OCV.WK_mems["mem_0"]
                 #print ("RmA {0} {1}".format(md[0],md[1]))
@@ -666,7 +669,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             pass
 
     def retB(self):
-        if OCV.CD["state"] == "Idle":
+        if OCV.c_state == "Idle":
             if ("mem_1" in OCV.WK_mems):
                 md = OCV.WK_mems["mem_1"]
                 #print ("RmB {0} {1}".format(md[0],md[1]))
@@ -705,51 +708,51 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
     def moveXup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("X", float(self.step.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("X", float(self.step.get())))
 
     def moveXdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("X-", float(self.step.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("X-", float(self.step.get())))
 
     def moveYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("Y",float(self.step.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("Y",float(self.step.get())))
 
     def moveYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("Y-", float(self.step.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("Y-", float(self.step.get())))
 
     def moveXdownYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+        OCV.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
                 "X-", float(self.step.get()),
                 "Y", float(self.step.get())))
 
     def moveXupYup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+        OCV.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
                 "X", float(self.step.get()),
                 "Y", float(self.step.get())))
 
     def moveXdownYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+        OCV.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
                 "X-", float(self.step.get()),
                 "Y-", float(self.step.get())))
 
     def moveXupYdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
+        OCV.mcontrol.jog("{0}{1:f} {2}{3:f}".format(
                 "X", float(self.step.get()),
                 "Y-", float(self.step.get())))
 
     def moveZup(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
 
     def moveZdown(self, event=None):
         if event is not None and not self.acceptKey(): return
-        OCV.application.mcontrol.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
+        OCV.mcontrol.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
 
     def go2origin(self, event=None):
         self.sendGCode("G90")
@@ -1141,7 +1144,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         col = 1
         self.tlo = tkExtra.FloatEntry(f, background=tkExtra.GLOBAL_CONTROL_BACKGROUND, disabledforeground="Black", width=5)
         self.tlo.grid(row=row, column=col, sticky=Tk.EW)
-        self.tlo.bind('<Return>',   self.setTLO)
+        self.tlo.bind('<Return>', self.setTLO)
         self.tlo.bind('<KP_Enter>', self.setTLO)
         tkExtra.Balloon.set(self.tlo, _("Tool length offset [G43.1#]"))
         self.addWidget(self.tlo)
@@ -1183,7 +1186,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         tkExtra.Balloon.set(b, _("Reset override to 100%"))
 
         col += 1
-        self.overrideScale = Tk.Scale(f,
+        self.overrideScale = Tk.Scale(
+                f,
                 command=self.overrideChange,
                 variable=self.override,
                 showvalue=True,
@@ -1336,8 +1340,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         #if self._probeUpdate: return
         try:
             tlo = float(self.tlo.get())
-            self.sendGCode("G43.1Z{0:.{1}f}".format(tlo, OCV.digits))
-            OCV.application.mcontrol.viewParameters()
+            self.sendGCode("G43.1 Z{0:.{1}f}".format(tlo, OCV.digits))
+            OCV.mcontrol.viewParameters()
             self.event_generate("<<CanvasFocus>>")
         except ValueError:
             pass
@@ -1350,7 +1354,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def spindleControl(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED): return
+        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED): return
         if self.spindle.get():
             self.sendGCode("M3 S{0:d}".format(self.spindleSpeed.get()))
         else:
@@ -1360,7 +1364,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantMist(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.mist.set(Tk.FALSE)
             return
         self.coolant.set(Tk.FALSE)
@@ -1371,7 +1375,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantFlood(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.flood.set(Tk.FALSE)
             return
         self.coolant.set(Tk.FALSE)
@@ -1382,7 +1386,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def coolantOff(self, event=None):
         if self._gUpdate: return
         # Avoid sending commands before unlocking
-        if OCV.CD["state"] in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
             self.coolant.set(Tk.FALSE)
             return
         self.flood.set(Tk.FALSE)
@@ -1426,7 +1430,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     #----------------------------------------------------------------------
     def wcsChange(self):
         self.sendGCode(OCV.WCS[OCV.wcsvar.get()])
-        OCV.application.mcontrol.viewState()
+        OCV.mcontrol.viewState()
 
 
 #===============================================================================

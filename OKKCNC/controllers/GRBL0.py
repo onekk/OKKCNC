@@ -21,8 +21,8 @@ class Controller(_GenericGRBL):
         self.master.sio_status = False
         pat = STATUSPAT.match(line)
         if pat:
-            if not self.master._alarm:
-                OCV.CD["state"] = pat.group(1)
+            if not OCV.s_alarm:
+                OCV.c_state = pat.group(1)
             OCV.CD["mx"] = float(pat.group(2))
             OCV.CD["my"] = float(pat.group(3))
             OCV.CD["mz"] = float(pat.group(4))

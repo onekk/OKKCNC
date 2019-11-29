@@ -100,12 +100,11 @@ class Controller(_GenericGRBL):
         fields = line[1:-1].split("|")
         OCV.CD["pins"] = ""
 
-
         #Report if state has changed
-        if OCV.CD["state"] != fields[0] or self.master.runningPrev != self.master.running:
+        if OCV.c_state != fields[0] or self.master.runningPrev != self.master.running:
             self.master.controllerStateChange(fields[0])
         self.master.runningPrev = self.master.running
-        OCV.CD["state"] = fields[0]
+        OCV.c_state = fields[0]
 
         for field in fields[1:]:
             word = SPLITPAT.split(field)
@@ -119,31 +118,31 @@ class Controller(_GenericGRBL):
                     OCV.CD["wz"] = round(OCV.CD["mz"]-OCV.CD["wcoz"], OCV.digits)
                     self.master._posUpdate = True
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "F":
                 try:
                     OCV.CD["curfeed"] = float(word[1])
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "FS":
                 try:
                     OCV.CD["curfeed"]    = float(word[1])
                     OCV.CD["curspindle"] = float(word[2])
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Bf":
                 try:
                     OCV.CD["planner"] = int(word[1])
                     OCV.CD["rxbytes"] = int(word[2])
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Ov":
                 try:
@@ -151,8 +150,8 @@ class Controller(_GenericGRBL):
                     OCV.CD["OvRapid"]   = int(word[2])
                     OCV.CD["OvSpindle"] = int(word[3])
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "WCO":
                 try:
@@ -160,36 +159,36 @@ class Controller(_GenericGRBL):
                     OCV.CD["wcoy"] = float(word[2])
                     OCV.CD["wcoz"] = float(word[3])
                 except (ValueError,IndexError):
-                    OCV.CD["state"] = "Garbage receive {0}: {1}".format(word[0],line)
-                    self.master.log.put((self.master.MSG_RECEIVE, OCV.CD["state"]))
+                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                    self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Pn":
                 try:
                     OCV.CD["pins"] = word[1]
                     if 'S' in word[1]:
-                        if OCV.CD["state"] == 'Idle' and not self.master.running:
+                        if OCV.c_state == 'Idle' and not self.master.running:
                             print("Stream requested by CYCLE START machine button")
                             self.master.event_generate("<<Run>>", when = 'tail')
                         else:
-                            print("Ignoring machine stream request, because of state: ", OCV.CD["state"], self.master.running)
+                            print(
+                                    "Ignoring machine stream request, because of state: ",
+                                    OCV.c_state, self.master.running)
                 except (ValueError,IndexError):
                     break
 
-
         # Machine is Idle buffer is empty stop waiting and go on
         if self.master.sio_wait and not cline and fields[0] not in ("Run", "Jog", "Hold"):
-            #if not self.master.running: self.master.jobDone() #This is not a good idea, it purges the controller while waiting for toolchange. see #1061
             self.master.sio_wait = False
             self.master._gcount += 1
 
     def parseBracketSquare(self, line):
         word = SPLITPAT.split(line[1:-1])
-        #print word
+        # print word
         if word[0] == "PRB":
             OCV.CD["prbx"] = float(word[1])
             OCV.CD["prby"] = float(word[2])
             OCV.CD["prbz"] = float(word[3])
-            #if self.running:
+            # if self.running:
             self.master.gcode.probe.add(
                  OCV.CD["prbx"]-OCV.CD["wcox"],
                  OCV.CD["prby"]-OCV.CD["wcoy"],

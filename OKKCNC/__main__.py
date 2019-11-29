@@ -352,8 +352,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Recent9>>', self._loadRecent9)
         self.bind('<<AlarmClear>>', self.alarmClear)
         self.bind('<<Help>>', self.help)
-        # Do not send the event otherwise it will skip the feedHold/resume
-        self.bind('<<FeedHold>>', lambda e, s=self: s.feedHold())
+        self.bind('<<FeedHold>>', OCV.mcontrol.feedHold(None))
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
         self.bind('<<Run>>', lambda e, s=self: s.run())
         self.bind('<<Stop>>', self.stopRun)
@@ -525,7 +524,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<Key-2>', self.control.setStep2)
         self.bind('<Key-3>', self.control.setStep3)
 
-        self.bind('<Key-exclam>', self.feedHold)
+        self.bind('<Key-exclam>', OCV.mcontrol.feedHold(None))
         self.bind('<Key-asciitilde>', self.resume)
 
         for x in self.widgets:
@@ -537,7 +536,7 @@ class Application(Tk.Toplevel, Sender):
 
         self.canvasFrame.canvas.focus_set()
 
-        OCV.CD["state"] = NOT_CONNECTED
+        OCV.c_state = NOT_CONNECTED
         OCV.CD["color"] = STATECOLOR[NOT_CONNECTED]
         self._pendantFileUploaded = None
         self._drawAfter = None # after handle for modification
@@ -565,13 +564,11 @@ class Application(Tk.Toplevel, Sender):
 
             bFileDialog.append2History(os.path.dirname(filename))
 
-
     def setStatus(self, msg, force_update=False):
         self.statusbar.configText(text=msg, fill="DarkBlue")
         if force_update:
             self.statusbar.update_idletasks()
             self.bufferbar.update_idletasks()
-
 
     def updateStatus(self, event):
         """Set a status message from an event"""
@@ -588,7 +585,6 @@ class Application(Tk.Toplevel, Sender):
 
     def saveMems(self, event=None):
         MemoryPanel.Config.saveMemory()
-
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
@@ -1127,7 +1123,7 @@ class Application(Tk.Toplevel, Sender):
 
 
     def alarmClear(self, event=None):
-        self._alarm = False
+        OCV.s_alarm = False
 
 
     def showInfo(self, event=None):
@@ -1995,7 +1991,7 @@ class Application(Tk.Toplevel, Sender):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
-            self.mcontrol.unlock(True)
+            OCV.mcontrol.unlock(True)
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
@@ -2471,7 +2467,7 @@ class Application(Tk.Toplevel, Sender):
             self.update()    # very tricky function of Tk
         except Tk.TclError:
             pass
-        return self._stop
+        return OCV.s_stop
 
 
     def run(self, lines=None):
@@ -2489,7 +2485,7 @@ class Application(Tk.Toplevel, Sender):
             return
 
         if self.running:
-            if self._pause:
+            if OCV.s_pause:
                 self.resume()
                 return
             tkMessageBox.showerror(
@@ -2531,7 +2527,7 @@ class Application(Tk.Toplevel, Sender):
             self._paths = self.gcode.compile(self.queue, self.checkStop)
             if self._paths is None:
                 self.emptyQueue()
-                self.purgeController()
+                OCV.mcontrol.purgeController()
                 return
             elif not self._paths:
                 self.runEnded()
@@ -2716,16 +2712,15 @@ class Application(Tk.Toplevel, Sender):
 
         # Update position if needed
         if self._posUpdate:
-            state = OCV.CD["state"]
-            #print Sender.ERROR_CODES[state]
+            #print Sender.ERROR_CODES[OCV.c_state]
             try:
-                OCV.CD["color"] = STATECOLOR[state]
+                OCV.CD["color"] = STATECOLOR[OCV.c_state]
             except KeyError:
-                if self._alarm:
+                if OCV.s_alarm:
                     OCV.CD["color"] = STATECOLOR["Alarm"]
                 else:
                     OCV.CD["color"] = STATECOLORDEF
-            self._pause = ("Hold" in state)
+            OCV.s_pause = ("Hold" in OCV.c_state)
             self.dro.updateState()
             self.dro.updateCoords()
             self.canvasFrame.canvas.gantry(
@@ -2735,7 +2730,7 @@ class Application(Tk.Toplevel, Sender):
                 OCV.CD["mx"],
                 OCV.CD["my"],
                 OCV.CD["mz"])
-            if state == "Run":
+            if OCV.c_state == "Run":
                 self.gstate.updateFeed()
                 #self.xxx.updateSpindle()
             self._posUpdate = False

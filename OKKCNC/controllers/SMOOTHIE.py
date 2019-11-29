@@ -52,7 +52,7 @@ class Controller(_GenericController):
 		l= ln.split('|')
 
 		# strip off status
-		OCV.CD["state"]= l[0]
+		OCV.c_state= l[0]
 
 		# strip of rest into a dict of name: [values,...,]
 		d= { a: [float(y) for y in b.split(',')] for a, b in [x.split(':') for x in l[1:]] }

@@ -436,28 +436,24 @@ class CNCCanvas(Tk.Canvas, object):
         elif self.view == VIEW_ISO3:
             return -0.5*(u/S60+v/C60), -0.5*(u/S60-v/C60), None
 
-
     # Image (pixel) coordinates to machine
 
     def image2Machine(self, x, y):
         return self.canvas2Machine(self.canvasx(x), self.canvasy(y))
 
-
     # Move gantry to mouse location
 
     def actionGantry(self, x, y):
         u, v, w = self.image2Machine(x, y)
-        self.app.goto(u, v, w)
+        OCV.mcontrol.goto(u, v, w)
         self.setAction(ACTION_SELECT)
-
 
     def actionWPOS(self, x, y):
         """Set the work coordinates to mouse location"""
         u, v, w = self.image2Machine(x, y)
-        #print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
-        self.app.mcontrol._wcsSet(u, v, w)
+        # print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
+        OCV.mcontrol.wcs_set(u, v, w)
         self.setAction(ACTION_SELECT)
-
 
     def actionAddOrient(self, x, y):
         """Add an orientation marker at mouse location"""

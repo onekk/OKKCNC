@@ -3,6 +3,9 @@
 #
 # Author: carlo.dormeletti@gmail.com
 # Date: 26 Oct 2019
+"""
+Sender.py
+"""
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -14,14 +17,14 @@ import glob
 import traceback
 import time
 import threading
-#import webbrowser
+# import webbrowser
 from datetime import datetime
 
 import rexx
 
 try:
     import serial
-except:
+except ImportError:
     serial = None
 
 try:
@@ -77,16 +80,15 @@ class Sender(object):
     MSG_BUFFER = 0  # write to buffer one command
     MSG_SEND = 1  # send message
     MSG_RECEIVE = 2  # receive message from controller
-    MSG_OK = 3  # ok response from controller, move top most command to terminal
+    MSG_OK = 3  # ok response from controller, move top most command to queue
     MSG_ERROR = 4  # error message or exception
     MSG_RUNEND = 5  # run ended
-    MSG_CLEAR = 6 # clear buffer
+    MSG_CLEAR = 6  # clear buffer
 
     def __init__(self):
         self.history = []
         self._historyPos = None
-
-        #self.mcontrol     = None
+        print("Init Sender > ", self)
         self.controllers = {}
         self.controllerLoad()
         self.controllerSet("GRBL1")
@@ -111,9 +113,10 @@ class Sender(object):
         self.cleanAfter = False
         self._runLines = 0
         self._quit = 0        # Quit counter to exit program
-        self._stop = False    # Raise to stop current run
-        self._pause = False    # machine is on Hold
-        self._alarm = True     # Display alarm message if true
+        OCV.s_stop = False   # Raise to stop current run
+        OCV.s_stop_req = False  # Indicator that a stop is requested by user
+        OCV.s_pause = False  # machine is on Hold
+        OCV.s_alarm = True   # Display alarm message if true
         self._msg = None
         self._sumcline = 0
         self._lastFeed = 0
@@ -122,16 +125,17 @@ class Sender(object):
         self._onStart = ""
         self._onStop = ""
 
-
     def controllerLoad(self):
         """Find plugins in the controllers directory and load them"""
-        for f in glob.glob("%s/controllers/*.py"%(Utils.prgpath)):
+        for f in glob.glob("{0}/controllers/*.py".format(Utils.prgpath)):
             name, ext = os.path.splitext(os.path.basename(f))
-            if name[0] == '_': continue
-            #print("Loaded motion controller plugin: %s"%(name))
+            if name[0] == '_':
+                continue
+            # print("Loaded motion controller plugin: %s"%(name))
             try:
-                exec("import %s"%(name))
-                self.controllers[name] = eval("%s.Controller(self)"%(name))
+                exec("import {0}".format(name))
+                self.controllers[name] = eval(
+                    "{format}.Controller(self)".format(name))
             except (ImportError, AttributeError):
                 typ, val, tb = sys.exc_info()
                 traceback.print_exception(typ, val, tb)
@@ -143,20 +147,17 @@ class Sender(object):
         #if len(self.controllers.keys()) < 1: self.controllerLoad()
         return sorted(self.controllers.keys())
 
-
     def controllerSet(self, ctl):
-        #print("Activating motion controller plugin: %s"%(ctl))
+        # print("Activating motion controller plugin: %s"%(ctl))
         if ctl in self.controllers.keys():
             self.controller = ctl
             OCV.CD["controller"] = ctl
-            self.mcontrol = self.controllers[ctl]
-            #self.mcontrol.test()
-
+            OCV.mcontrol = self.controllers[ctl]
+            # OCV.mcontrol.test()
 
     def quit(self, event=None):
         self.saveConfig()
         Pendant.stop()
-
 
     def loadConfig(self):
         self.controllerSet(Utils.getStr("Connection", "controller"))
@@ -164,28 +165,24 @@ class Sender(object):
         GCode.LOOP_MERGE = Utils.getBool("File", "dxfloopmerge")
         self.loadHistory()
 
-
     def saveConfig(self):
         self.saveHistory()
-
 
     def loadHistory(self):
         try:
             f = open(Utils.hisFile, "r")
-        except:
+        except Exception:
             return
         self.history = [x.strip() for x in f]
         f.close()
 
-
     def saveHistory(self):
         try:
             f = open(Utils.hisFile, "w")
-        except:
+        except Exception:
             return
         f.write("\n".join(self.history))
         f.close()
-
 
     def evaluate(self, line):
         """
@@ -193,7 +190,6 @@ class Sender(object):
         can return a python exception, needs to be catched
         """
         return self.gcode.evaluate(CNC.compileLine(line, True), self)
-
 
     def executeGcode(self, line):
         """
@@ -206,7 +202,6 @@ class Sender(object):
             self.sendGCode(line)
             return True
         return False
-
 
     def executeCommand(self, line):
         """Execute a single command"""
@@ -236,7 +231,7 @@ class Sender(object):
 
         # HOME: perform a homing cycle
         elif cmd == "HOME":
-            self.home()
+            OCV.mcontrol.home()
 
         # LO*AD [filename]: load filename containing g-code
         elif rexx.abbrev("LOAD", cmd, 2):
@@ -245,7 +240,7 @@ class Sender(object):
         # OPEN: open serial connection to grbl
         # CLOSE: close serial connection to grbl
         elif cmd in ("OPEN", "CLOSE"):
-            self.openClose()
+            OCV.application.openClose()
 
         # QU*IT: quit program
         # EX*IT: exit program
@@ -262,7 +257,7 @@ class Sender(object):
 
         # FEEDHOLD: feedhold
         elif cmd == "FEEDHOLD":
-            self.feedHold()
+            OCV.mcontrol.feedHold(None)
 
         # REL*ATIVE: switch to relative coordinates
         elif rexx.abbrev("RELATIVE", cmd, 3):
@@ -270,21 +265,21 @@ class Sender(object):
 
         # RESET: perform a soft reset to grbl
         elif cmd == "RESET":
-            self.mcontrol.softReset(clearAlarm)
-            #self.softReset()
+            OCV.mcontrol.softReset(True)
 
         # RUN: run g-code
         elif cmd == "RUN":
-            self.run()
+            OCV.application.run()
 
         # SAFE [z]: safe z to move
         elif cmd == "SAFE":
             try:
                 OCV.CD["safe"] = float(line[1])
-            except:
+            except Exception:
                 pass
 
-            self.statusbar["text"] = "Safe Z= {0:.4f}".format(OCV.CD["safe"])
+            OCV.application.statusbar["text"] = "Safe Z= {0:.4f}".format(
+                OCV.CD["safe"])
 
         # SA*VE [filename]: save to filename or to default name
         elif rexx.abbrev("SAVE", cmd, 2):
@@ -301,47 +296,47 @@ class Sender(object):
         elif cmd == "SET":
             try:
                 x = float(line[1])
-            except:
+            except Exception:
                 x = None
 
             try:
                 y = float(line[2])
-            except:
+            except Exception:
                 y = None
 
             try:
                 z = float(line[3])
-            except:
+            except Exception:
                 z = None
 
-            self._wcsSet(x, y, z)
+            OCV.mcontrol.wcs_set(x, y, z)
 
         elif cmd == "SET0":
-            self._wcsSet(0., 0., 0.)
+            OCV.mcontrol.wcs_set(0., 0., 0.)
 
         elif cmd == "SETX":
             try:
                 x = float(line[1])
-            except:
+            except Exception:
                 x = 0.0
 
-            self._wcsSet(x, None, None)
+            OCV.mcontrol.wcs_set(x, None, None)
 
         elif cmd == "SETY":
             try:
                 y = float(line[1])
-            except:
+            except Exception:
                 y = 0.0
 
-            self._wcsSet(None, y, None)
+            OCV.mcontrol.wcs_set(None, y, None)
 
         elif cmd == "SETZ":
             try:
                 z = float(line[1])
-            except:
+            except Exception:
                 z = 0.0
 
-            self._wcsSet(None, None, z)
+            OCV.mcontrol.wcs_set(None, None, z)
 
         # STOP: stop current run
         elif cmd == "STOP":
@@ -349,21 +344,18 @@ class Sender(object):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
-            self.mcontrol.unlock(True)
-            #self.unlock()
+            OCV.mcontrol.unlock(True)
 
         # Send commands to SMOOTHIE
-        elif self.mcontrol.executeCommand(oline, line, cmd):
+        elif OCV.mcontrol.executeCommand(oline, line, cmd):
             pass
 
         else:
             return _("unknown command"), _("Invalid command {0}").format(oline)
 
-
     def help(self, event=None):
         pass
-        #webbrowser.open(WIKI,new=2)
-
+        # webbrowser.open(WIKI,new=2)
 
     def loadRecent(self, recent):
         filename = Utils.getRecent(recent)
@@ -373,18 +365,14 @@ class Sender(object):
 
         self.load(filename)
 
-
     def _loadRecent0(self, event):
         self.loadRecent(0)
-
 
     def _loadRecent1(self, event):
         self.loadRecent(1)
 
-
     def _loadRecent2(self, event):
         self.loadRecent(2)
-
 
     def _loadRecent3(self, event):
         self.loadRecent(3)
@@ -451,10 +439,9 @@ class Sender(object):
                 self._saveConfigFile()
         elif ext == ".orient":
             # save orientation file
-            self.gcode.orient.save(filename)
-            return self.gcode.saveSVG(filename)
+            return self.gcode.orient.save(filename)
         elif ext == ".txt":
-            #save gcode as txt (only enabled blocks and no OKKCNC metadata)
+            # save gcode as txt (only enabled blocks and no OKKCNC metadata)
             return self.gcode.saveTXT(filename)
         else:
             if filename is not None:
@@ -463,14 +450,12 @@ class Sender(object):
             Utils.addRecent(self.gcode.filename)
             return self.gcode.save()
 
-
     def saveAll(self, event=None):
         if self.gcode.filename:
             self.save(self.gcode.filename)
             if self.gcode.probe.filename:
                 self.save(self.gcode.probe.filename)
         return "break"
-
 
     def serial_write(self, data):
         """Serial write"""
@@ -513,9 +498,9 @@ class Sender(object):
         except IOError:
             pass
         time.sleep(1)
-        OCV.CD["state"] = CONNECTED
-        OCV.CD["color"] = STATECOLOR[OCV.CD["state"]]
-        #self.state.config(text=OCV.CD["state"],
+        OCV.c_state = CONNECTED
+        OCV.CD["color"] = STATECOLOR[OCV.c_state]
+        #self.state.config(text=OCV.c_state,
         #        background=OCV.CD["color"])
         # toss any data already received, see
         # http://pyserial.sourceforge.net/pyserial_api.html#serial.Serial.flushInput
@@ -527,21 +512,19 @@ class Sender(object):
         time.sleep(1)
         self.serial_write("\n\n")
         self._gcount = 0
-        self._alarm = True
+        OCV.s_alarm = True
         self.thread = threading.Thread(target=self.serialIO)
         self.thread.start()
         return True
 
-
-    # Close serial port
-
     def close(self):
+        """Close serial port"""
         if self.serial is None:
             return
 
         try:
             self.stopRun()
-        except:
+        except Exception:
             pass
 
         self._runLines = 0
@@ -550,12 +533,12 @@ class Sender(object):
 
         try:
             self.serial.close()
-        except:
+        except Exception:
             pass
 
         self.serial = None
-        OCV.CD["state"] = NOT_CONNECTED
-        OCV.CD["color"] = STATECOLOR[OCV.CD["state"]]
+        OCV.c_state = NOT_CONNECTED
+        OCV.CD["color"] = STATECOLOR[OCV.c_state]
 
     def sendGCode(self, cmd):
         """
@@ -573,7 +556,6 @@ class Sender(object):
             else:
                 self.queue.put(cmd + "\n")
 
-
     def sendHex(self, hexcode):
         if self.serial is None:
             return
@@ -581,73 +563,15 @@ class Sender(object):
         self.serial_write(chr(int(hexcode, 16)))
         self.serial.flush()
 
+    def resume(self):
+        but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
+        but.config(background=OCV.BACKGROUND)
+        OCV.mcontrol.resume(None)
 
-    # FIXME: legacy wrappers. try to call mcontrol directly instead:
-
-    #def hardReset(self):            self.mcontrol.hardReset()
-    def softReset(self, clearAlarm=True):
-        self.mcontrol.softReset(clearAlarm)
-
-    def unlock(self, clearAlarm=True):
-        self.mcontrol.unlock(clearAlarm)
-
-    def home(self, event=None):
-        self.mcontrol.home(event)
-
-    def viewSettings(self):
-        self.mcontrol.viewSettings()
-
-    def viewParameters(self):
-        self.mcontrol.viewParameters()
-
-    def viewState(self):
-        self.mcontrol.viewState()
-
-    def viewBuild(self):
-        self.mcontrol.viewBuild()
-
-    def viewStartup(self):
-        self.mcontrol.viewStartup()
-
-    def checkGcode(self):
-        self.mcontrol.checkGcode()
-
-    def grblHelp(self):
-        self.mcontrol.grblHelp()
-
-    def grblRestoreSettings(self):
-        self.mcontrol.grblRestoreSettings()
-
-    def grblRestoreWCS(self):
-        self.mcontrol.grblRestoreWCS()
-
-    def grblRestoreAll(self):
-        self.mcontrol.grblRestoreAll()
-
-    def goto(self, x=None, y=None, z=None):
-        self.mcontrol.goto(x, y, z)
-
-    def _wcsSet(self, x, y, z):
-        self.mcontrol._wcsSet(x, y, z) # FIXME Duplicate with ControlPage
-
-    def feedHold(self, event=None):
-        self.mcontrol.feedHold(event)
-
-    def resume(self, event=None):
-        self.mcontrol.resume(event)
-
-    def pause(self, event=None):
-        self.mcontrol.pause(event)
-
-    def purgeController(self):
-        self.mcontrol.purgeController()
-
-    def g28Command(self):
-        self.sendGCode("G28.1") #FIXME: ???
-
-    def g30Command(self):
-        self.sendGCode("G30.1") #FIXME: ???
-
+    def pause(self):
+        but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
+        but.config(background=STATECOLOR["Hold:0"])
+        OCV.mcontrol.pause(None)
 
     def emptyQueue(self):
         while self.queue.qsize() > 0:
@@ -656,31 +580,27 @@ class Sender(object):
             except Empty:
                 break
 
-
     def stopProbe(self):
         if self.gcode.probe.start:
             self.gcode.probe.clear()
 
-
     def getBufferFill(self):
         return self._sumcline * 100. / RX_BUFFER_SIZE
 
-
     def initRun(self):
         self._quit = 0
-        self._pause = False
+        OCV.s_pause = False
         self._paths = None
         self.running = True
-        self.disable()
+        OCV.application.disable()
         self.emptyQueue()
         time.sleep(1)
-
 
     def runEnded(self):
         """Called when run is finished"""
         if self.running:
             self.log.put((Sender.MSG_RUNEND, _("Run ended")))
-            self.log.put((Sender.MSG_RUNEND, str(datetime.now())))
+
             self.log.put((Sender.MSG_RUNEND, str(OCV.CD["msg"])))
             if self._onStop:
                 try:
@@ -690,18 +610,34 @@ class Sender(object):
         self._runLines = 0
         self._quit = 0
         self._msg = None
-        self._pause = False
+
+        if OCV.s_pause is True:
+            OCV.s_pause = False
+            but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
+            but.config(background=OCV.BACKGROUND)
+
+        if OCV.s_stop_req is True:
+            OCV.s_stop_req = False
+            but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
+            but.config(background=OCV.BACKGROUND)
+
         self.running = False
         OCV.CD["running"] = False
-
+        OCV.s_stop = False
 
     def stopRun(self, event=None):
         """Stop the current run"""
-        self.feedHold()
-        self._stop = True
-        # if we are in the process of submitting do not do anything
-        if self._runLines != sys.maxsize:
-            self.purgeController()
+        OCV.mcontrol.feedHold(None)
+        self.log.put((Sender.MSG_RUNEND, "Stop Requested: " + str(datetime.now())))
+        but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
+        but.config(background=STATECOLOR["Hold:0"])
+        OCV.s_stop_req = True
+        print("Controller state", OCV.c_state)
+        if OCV.c_state == "Hold:0":
+            if OCV.s_stop_req is True:
+                self.running = False
+                self.runEnded()
+                self.jobDone()
 
     def jobDone(self):
         """
@@ -709,35 +645,39 @@ class Sender(object):
         So we can purge the controller for the next job
         See https://github.com/vlachoudis/bCNC/issues/1035
         """
-
         if OCV.COM_DEBUG is True:
-            print("Job done. Purging the controller. (Running: {0})".format(self.running))
-        self.purgeController()
-
+            print(
+                "Job done. Purging the controller. (Running: {0})".format(
+                    self.running))
+        OCV.mcontrol.purgeController()
 
     def controllerStateChange(self, state):
         """
         This is called everytime that motion controller changes the state
-        YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT BCNC STATE
-        Right now the primary idea of this is to detect when job stopped running
+        YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT ONEKKCNC STATE
+        Right now the primary idea is to detect when job stopped running
         """
-
         if OCV.COM_DEBUG is True:
-            print("Controller state changed to: {0} (Running: {1})".format(state, self.running))
+            print(
+                "Controller state changed to: {0} (Running: {1})".format(
+                    state,
+                    self.running))
 
-        if state in ("Idle"):
-            self.mcontrol.viewParameters()
-            self.mcontrol.viewState()
+        if state in ("Idle",):
+            OCV.mcontrol.viewParameters()
+            OCV.mcontrol.viewState()
 
-        if self.cleanAfter is True and self.running is False and state in ("Idle"):
+        if self.cleanAfter is True and self.running is False and \
+                state in ("Idle",):
             self.cleanAfter = False
             self.jobDone()
 
-
     def serialIO(self):
         """thread performing I/O on serial line"""
-        self.sio_wait = False  # wait for commands to complete (status change to Idle)
-        self.sio_status = False # waiting for status <...> report
+        # wait for commands to complete (status change to Idle)
+        self.sio_wait = False
+        # waiting for status <...> report
+        self.sio_status = False
         cline = []  # length of pipeline commands
         sline = []  # pipeline commands
         tosend = None  # next string to send
@@ -747,28 +687,28 @@ class Sender(object):
             t = time.time()
             # refresh machine position?
             if t-tr > SERIAL_POLL:
-                self.mcontrol.viewStatusReport()
+                OCV.mcontrol.viewStatusReport()
                 tr = t
 
-                #If Override change, attach feed
+                # If Override change, attach feed
                 if OCV.CD["_OvChanged"]:
-                    self.mcontrol.overrideSet()
+                    OCV.mcontrol.overrideSet()
 
             # Fetch new command to send if...
             if tosend is None and not self.sio_wait and \
-                not self._pause and self.queue.qsize() > 0:
+                    not OCV.s_pause and self.queue.qsize() > 0:
 
                 try:
                     tosend = self.queue.get_nowait()
-                    #print( "+++",repr(tosend))
+                    # print( "+++",repr(tosend))
                     if isinstance(tosend, tuple):
-                        #print "gcount tuple=",self._gcount
+                        # print "gcount tuple=",self._gcount
                         # wait to empty the grbl buffer and status is Idle
                         if tosend[0] == WAIT:
                             # Don't count WAIT until we are idle!
                             self.sio_wait = True
-                            #print "+++ WAIT ON"
-                            #print "gcount=",self._gcount, self._runLines
+#                            print "+++ WAIT ON"
+#                            print "gcount=",self._gcount, self._runLines
                         elif tosend[0] == MSG:
                             # Count executed commands as well
                             self._gcount += 1
@@ -795,8 +735,8 @@ class Sender(object):
                             else:
                                 # Count executed commands as well
                                 self._gcount += 1
-                                #print "gcount str=",self._gcount
-                            #print( "+++ eval=",repr(tosend),type(tosend))
+#                                print "gcount str=",self._gcount
+#                            print( "+++ eval=",repr(tosend),type(tosend))
                         except:
                             for s in str(sys.exc_info()[1]).splitlines():
                                 self.log.put((Sender.MSG_ERROR, s))
@@ -816,13 +756,16 @@ class Sender(object):
 
                     # Modify sent g-code to reflect overrided feed
                     # for controllers without override support
-                    if not self.mcontrol.has_override:
+                    if not OCV.mcontrol.has_override:
                         if OCV.CD["_OvChanged"]:
                             OCV.CD["_OvChanged"] = False
-                            self._newFeed = float(self._lastFeed)*OCV.CD["_OvFeed"]/100.0
-                            if pat is None and self._newFeed!=0 \
+                            self._newFeed = float(
+                                self._lastFeed)*OCV.CD["_OvFeed"]/100.0
+                            if pat is None and self._newFeed != 0 \
                                and not tosend.startswith("$"):
-                                tosend = "f{0:f}{1}".format(self._newFeed, tosend)
+                                tosend = "f{0:f}{1}".format(
+                                    self._newFeed,
+                                    tosend)
 
                         # Apply override Feed
                         if OCV.CD["_OvFeed"] != 100 and self._newFeed != 0:
@@ -844,45 +787,45 @@ class Sender(object):
             if self.serial.inWaiting() or tosend is None:
                 try:
                     line = str(self.serial.readline().decode()).strip()
-                    #print("Received line > ", line)
+#                    print("Received line > ", line)
                 except:
                     self.log.put((Sender.MSG_RECEIVE, str(sys.exc_info()[1])))
                     self.emptyQueue()
                     self.close()
                     return
-                #print ("<R<",repr(line))
-                #print ("*-* stack=",sline,"sum=",sum(cline),"pause=",self._pause)
+#                print ("<R<",repr(line))
+#                print ("*-* stack=",sline,"sum=",sum(cline),"pause=",OCV.s_pause)
                 if not line:
                     pass
-                elif self.mcontrol.parseLine(line, cline, sline):
+                elif OCV.mcontrol.parseLine(line, cline, sline):
                     pass
                 else:
                     self.log.put((Sender.MSG_RECEIVE, line))
 
             # Received external message to stop
-            if self._stop:
+            if OCV.s_stop:
                 self.emptyQueue()
                 tosend = None
                 self.log.put((Sender.MSG_CLEAR, ""))
-                # WARNING if runLines==maxint then it means we are
+                # WARNING if runLines == maxint then it means we are
                 # still preparing/sending lines from from OKKCNC.run(),
                 # so don't stop
                 if self._runLines != sys.maxsize:
-                    self._stop = False
+                    OCV.s_stop = False
 
-            #print "tosend='%s'"%(repr(tosend)),"stack=",sline,
-            #    "sum=",sum(cline),"wait=",wait,"pause=",self._pause
+#            print "tosend='%s'"%(repr(tosend)),"stack=",sline,
+#                "sum=",sum(cline),"wait=",wait,"pause=",OCV.s_pause
             if tosend is not None and sum(cline) < RX_BUFFER_SIZE:
                 self._sumcline = sum(cline)
 #                if isinstance(tosend, list):
 #                    self.serial_write(str(tosend.pop(0)))
 #                    if not tosend: tosend = None
 
-                #print ">S>",repr(tosend),"stack=",sline,"sum=",sum(cline)
-                if self.mcontrol.gcode_case > 0:
+#                print ">S>",repr(tosend),"stack=",sline,"sum=",sum(cline)
+                if OCV.mcontrol.gcode_case > 0:
                     tosend = tosend.upper()
 
-                if self.mcontrol.gcode_case < 0:
+                if OCV.mcontrol.gcode_case < 0:
                     tosend = tosend.lower()
 
                 self.serial_write(tosend)
@@ -891,7 +834,7 @@ class Sender(object):
 
                 tosend = None
                 if not self.running and t-tg > G_POLL:
-                    tosend = "$G\n" #FIXME: move to controller specific class
+                    tosend = "$G\n"  # FIXME: move to controller specific class
                     sline.append(tosend)
                     cline.append(len(tosend))
                     tg = t
