@@ -16,12 +16,12 @@ import OCV
 import undo
 import Unicode
 
-#from dxf import DXF
+# from dxf import DXF
 from bstl import Binary_STL_Writer
 from bpath import eq, Path, Segment
 from bmath import *
 from copy import deepcopy
-#from svgcode import SVGcode
+# from svgcode import SVGcode
 from time import strftime, localtime
 
 IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
@@ -48,56 +48,56 @@ CCW = 3
 
 # Modal Mode from $G and variable set
 MODAL_MODES = {
-    "G0"    : "motion",
-    "G1"    : "motion",
-    "G2"    : "motion",
-    "G3"    : "motion",
-    "G38.2"    : "motion",
-    "G38.3"    : "motion",
-    "G38.4"    : "motion",
-    "G38.5"    : "motion",
-    "G80"    : "motion",
+    "G0": "motion",
+    "G1": "motion",
+    "G2": "motion",
+    "G3": "motion",
+    "G38.2": "motion",
+    "G38.3": "motion",
+    "G38.4": "motion",
+    "G38.5": "motion",
+    "G80": "motion",
 
-    "G54"   : "WCS",
-    "G55"   : "WCS",
-    "G56"   : "WCS",
-    "G57"   : "WCS",
-    "G58"   : "WCS",
-    "G59"   : "WCS",
+    "G54": "WCS",
+    "G55": "WCS",
+    "G56": "WCS",
+    "G57": "WCS",
+    "G58": "WCS",
+    "G59": "WCS",
 
-    "G17"   : "plane",
-    "G18"   : "plane",
-    "G19"   : "plane",
+    "G17": "plane",
+    "G18": "plane",
+    "G19": "plane",
 
-    "G90"    : "distance",
-    "G91"    : "distance",
+    "G90": "distance",
+    "G91": "distance",
 
-    "G91.1" : "arc",
+    "G91.1": "arc",
 
-    "G93"   : "feedmode",
-    "G94"   : "feedmode",
-    "G95"   : "feedmode",
+    "G93": "feedmode",
+    "G94": "feedmode",
+    "G95": "feedmode",
 
-    "G20"    : "units",
-    "G21"    : "units",
+    "G20": "units",
+    "G21": "units",
 
-    "G40"    : "cutter",
+    "G40": "cutter",
 
-    "G43.1" : "tlo",
-    "G49"   : "tlo",
+    "G43.1": "tlo",
+    "G49": "tlo",
 
-    "M0"    : "program",
-    "M1"    : "program",
-    "M2"    : "program",
-    "M30"    : "program",
+    "M0": "program",
+    "M1": "program",
+    "M2": "program",
+    "M30": "program",
 
-    "M3"    : "spindle",
-    "M4"    : "spindle",
-    "M5"    : "spindle",
+    "M3": "spindle",
+    "M4": "spindle",
+    "M5": "spindle",
 
-    "M7"    : "coolant",
-    "M8"    : "coolant",
-    "M9"    : "coolant",
+    "M7": "coolant",
+    "M8": "coolant",
+    "M9": "coolant",
 }
 
 ERROR_HANDLING = {}
@@ -110,21 +110,18 @@ def getValue(name, new, old, default=0.0):
 
     try:
         return new[name]
-    except:
+    except Exception:
         try:
             return old[name]
-        except:
+        except Exception:
             return default
 
 
-#===============================================================================
-# Probing class and linear interpolation
-#===============================================================================
-class Probe:
+class Probe(object):
+    """Probing class and linear interpolation"""
     def __init__(self):
         self.init()
 
-    #----------------------------------------------------------------------
     def init(self):
         self.filename = ""
         self.xmin = 0.0
@@ -147,7 +144,6 @@ class Probe:
         self.start = False  # start collecting probes
         self.saved = False
 
-    #----------------------------------------------------------------------
     def clear(self):
         del self.points[:]
         del self.matrix[:]
@@ -155,20 +151,17 @@ class Probe:
         self.start = False
         self.saved = False
 
-    #----------------------------------------------------------------------
     def isEmpty(self):
         return len(self.matrix) == 0
 
-    #----------------------------------------------------------------------
     def makeMatrix(self):
         del self.matrix[:]
         for j in range(self.yn):
             self.matrix.append([0.0]*(self.xn))
 
-    #----------------------------------------------------------------------
-    # Load autolevel information from file
-    #----------------------------------------------------------------------
     def load(self, filename=None):
+        """Load autolevel information from file"""
+
         if filename is not None:
             self.filename = filename
         self.clear()
@@ -203,15 +196,14 @@ class Probe:
             for j in range(self.yn):
                 for i in range(self.xn):
                     self.add(*read(f))
-        except:
+        except Exception:
             raise
-            #print "Error reading probe file",self.filename
+            # print "Error reading probe file",self.filename
         f.close()
 
-    #----------------------------------------------------------------------
-    # Save level information to file
-    #----------------------------------------------------------------------
     def save(self, filename=None):
+        """Save level information to file"""
+
         if filename is None:
             filename = self.filename
 
@@ -221,32 +213,59 @@ class Probe:
         f = open(filename, "w")
         if ext != '.xyz':
             self.filename = filename
-            f.write("{0:0.f} {1:0.f} {2:d}".format(self.xmin, self.xmax, self.xn))
-            f.write("{0:0.f} {1:0.f} {2:d}".format(self.ymin, self.ymax, self.yn))
-            f.write("{0:0.f} {1:0.f} {2:0.f}".format(self.zmin, self.zmax, OCV.CD["prbfeed"]))
+            f.write(
+                "{0:0.f} {1:0.f} {2:d}".format(
+                    self.xmin,
+                    self.xmax,
+                    self.xn)
+                )
+
+            f.write(
+                "{0:0.f} {1:0.f} {2:d}".format(
+                    self.ymin,
+                    self.ymax,
+                    self.yn)
+                )
+
+            f.write(
+                "{0:0.f} {1:0.f} {2:0.f}".format(
+                    self.zmin,
+                    self.zmax,
+                    OCV.CD["prbfeed"])
+                )
+
             f.write("\n\n")
+
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
+
             for i in range(self.xn):
                 x = self.xmin + self._xstep*i
-                f.write("{0:0.f} {1:0.f} {2:0.f}".format(x, y, self.matrix[j][i]))
+
+                f.write(
+                    "{0:0.f} {1:0.f} {2:0.f}".format(
+                        x, y, self.matrix[j][i])
+                    )
+
             f.write("\n")
+
         f.close()
+
         self.saved = True
 
-    #----------------------------------------------------------------------
-    # Save level information as STL file
-    #----------------------------------------------------------------------
     def saveAsSTL(self, filename=None):
+        """Save level information as STL file"""
+
         if filename is not None:
             self.filename = filename
 
         with open(self.filename, 'wb') as fp:
             writer = Binary_STL_Writer(fp)
-            for j in range(self.yn -1):
+
+            for j in range(self.yn - 1):
                 y1 = self.ymin + self._ystep*j
                 y2 = self.ymin + self._ystep*(j+1)
-                for i in range(self.xn -1):
+                for i in range(self.xn - 1):
                     x1 = self.xmin + self._xstep*i
                     x2 = self.xmin + self._xstep*(i+1)
                     v1 = [x1, y1, self.matrix[j][i]]
@@ -256,34 +275,30 @@ class Probe:
                     writer.add_face([v1, v2, v3, v4])
             writer.close()
 
-    #----------------------------------------------------------------------
-    # Return step
-    #----------------------------------------------------------------------
     def xstep(self):
+        """Return X step"""
         self._xstep = (self.xmax-self.xmin)/float(self.xn-1)
         return self._xstep
 
-    #----------------------------------------------------------------------
     def ystep(self):
+        """Return Y step"""
         self._ystep = (self.ymax-self.ymin)/float(self.yn-1)
         return self._ystep
 
-    #----------------------------------------------------------------------
-    # Return the code needed to scan margins for autoleveling
-    #----------------------------------------------------------------------
     def scanMargins(self):
+        """Return the code needed to scan margins for autoleveling"""
         lines = []
+
         lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymin))
         lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymax))
         lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmax, self.ymax))
         lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmax, self.ymin))
         lines.append("G0 {0:0.f} {1:0.f} {2:0.f}".format(self.xmin, self.ymin))
+
         return lines
 
-    #----------------------------------------------------------------------
-    # Return the code needed to scan for autoleveling
-    #----------------------------------------------------------------------
     def scan(self):
+        """Return the code needed to scan for autoleveling"""
         self.clear()
         self.start = True
         self.makeMatrix()
@@ -291,7 +306,8 @@ class Probe:
         xstep = self._xstep
         lines = [
             "G0 Z{0:0.f}".format(OCV.CD["safe"]),
-            "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)]
+            "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)
+            ]
 
         for j in range(self.yn):
             y = self.ymin + self._ystep*j
@@ -299,10 +315,14 @@ class Probe:
                 lines.append("G0 Z{0:0.f}".format(self.zmax))
                 lines.append("G0 X{0:0.f} Y{1:0.f}".format(x, y))
                 lines.append("%wait")  # added for smoothie
-                lines.append("{0}Z{1:0.f} F{2:0.f}".format(
-                    OCV.CD["prbcmd"],
-                    self.zmin,
-                    OCV.CD["prbfeed"]))
+
+                lines.append(
+                    "{0}Z{1:0.f} F{2:0.f}".format(
+                        OCV.CD["prbcmd"],
+                        self.zmin,
+                        OCV.CD["prbfeed"])
+                    )
+
                 lines.append("%wait")  # added for smoothie
                 x += xstep
             x -= xstep
@@ -310,7 +330,6 @@ class Probe:
         lines.append("G0 Z{0:0.f}".format(self.zmax))
         lines.append("G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin))
         return lines
-
 
     def add(self, x, y, z):
         """Add a probed point to the list and the 3D matrix"""
@@ -346,26 +365,28 @@ class Probe:
         if len(self.points) >= self.xn*self.yn:
             self.start = False
 
-    #----------------------------------------------------------------------
-    # Make z-level relative to the location of (x,y,0)
-    #----------------------------------------------------------------------
     def setZero(self, x, y):
+        """Make z-level relative to the location of (x,y,0)"""
         del self.points[:]
+
         if self.isEmpty():
             self.zeroed = False
             return
+
         zero = self.interpolate(x, y)
         self.xstep()
         self.ystep()
+
         for j, row in enumerate(self.matrix):
             y = self.ymin + self._ystep*j
+
             for i in range(len(row)):
                 x = self.xmin + self._xstep*i
                 row[i] -= zero
                 self.points.append([x, y, row[i]])
+
         self.zeroed = True
 
-    #----------------------------------------------------------------------
     def interpolate(self, x, y):
         ix = (x-self.xmin) / self._xstep
         jy = (y-self.ymin) / self._ystep
@@ -387,11 +408,10 @@ class Probe:
         a1 = 1.0 - a
         b1 = 1.0 - b
 
-        return a1 * b1 * self.matrix[j][i]   + \
-               a1 * b  * self.matrix[j+1][i] + \
-               a * b1 * self.matrix[j][i+1] + \
-               a * b  * self.matrix[j+1][i+1]
-
+        return a1 * b1 * self.matrix[j][i] \
+               + a1 * b  * self.matrix[j+1][i] \
+               + a * b1 * self.matrix[j][i+1] \
+               + a * b  * self.matrix[j+1][i+1]
 
     def splitLine(self, x1, y1, z1, x2, y2, z2):
         """
@@ -424,20 +444,24 @@ class Probe:
         j = int(math.floor((y1-self.ymin) / self._ystep))
 
         if dx > 1e-10:
-            tx = (float(i+1)*self._xstep+self.xmin - x1)/ dx  # distance to next cell
+            # distance to next cell
+            tx = (float(i+1)*self._xstep + self.xmin - x1) / dx
             tdx = self._xstep / dx
         elif dx < -1e-10:
-            tx = (float(i)*self._xstep+self.xmin - x1)/ dx  # distance to next cell
+            # distance to next cell
+            tx = (float(i)*self._xstep + self.xmin - x1) / dx
             tdx = -self._xstep / dx
         else:
-            tx  = 1e10
+            tx = 1e10
             tdx = 0.0
 
         if dy > 1e-10:
-            ty = (float(j+1)*self._ystep+self.ymin - y1)/ dy  # distance to next cell
+            # distance to next cell
+            ty = (float(j+1)*self._ystep + self.ymin - y1) / dy
             tdy = self._ystep / dy
         elif dy < -1e-10:
-            ty = (float(j)*self._ystep+self.ymin - y1)/ dy  # distance to next cell
+            # distance to next cell
+            ty = (float(j)*self._ystep + self.ymin - y1) / dy
             tdy = -self._ystep / dy
         else:
             ty = 1e10
@@ -473,15 +497,17 @@ class Orient:
     """
 
     def __init__(self):
-        self.markers = []        # list of points pairs (xm, ym, x, y)
-                        # xm,ym = machine x,y mpos
-                        # x, y  = desired or gcode location
+        """
+        list of points pairs (xm, ym, x, y)
+        xm,ym = machine x,y mpos
+        x, y  = desired or gcode location
+        """
+        self.markers = []
         self.paths = []
         self.errors = []
         self.filename = ""
         self.clear()
 
-    #-----------------------------------------------------------------------
     def clear(self, item=None):
         if item is None:
             self.clearPaths()
@@ -496,29 +522,24 @@ class Orient:
         self.valid = False
         self.saved = False
 
-    #-----------------------------------------------------------------------
     def clearPaths(self):
         del self.paths[:]
 
-    #-----------------------------------------------------------------------
     def add(self, xm, ym, x, y):
         self.markers.append((xm, ym, x, y))
         self.valid = False
         self.saved = False
 
-    #-----------------------------------------------------------------------
     def addPath(self, path):
         self.paths.append(path)
 
-    #-----------------------------------------------------------------------
     def __getitem__(self, i):
         return self.markers[i]
 
-    #-----------------------------------------------------------------------
     def __len__(self):
         return len(self.markers)
 
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     # For the next module
     # Transformation equation is the following
 
@@ -526,7 +547,6 @@ class Orient:
 
     # Xm = [xm ym]^t
     # X  = [x y]^t
-
 
     #       / cosf  -sinf \   / c  -s \
     #   R = |             | = |       |
@@ -565,7 +585,6 @@ class Orient:
         or none on failure
         """
 
-
         self.valid = False
         if len(self.markers) < 2:
             raise Exception("Too few markers")
@@ -577,25 +596,25 @@ class Orient:
             A.append([x, -y, 1.0, 0.0])
             B.append([xm])
 
-            A.append([y, x, 0.0, 1.0]);
+            A.append([y, x, 0.0, 1.0])
             B.append([ym])
 
         # The solution of the overdetermined system A X = B
         try:
             c, s, self.xo, self.yo = solveOverDetermined(Matrix(A), Matrix(B))
-        except:
+        except Exception:
             raise Exception("Unable to solve system")
 
-        #print "c,s,xo,yo=",c,s,xo,yo
+        # print "c,s,xo,yo=",c,s,xo,yo
 
         # Normalize the coefficients
-        r = sqrt(c*c + s*s)    # length should be 1.0
+        r = sqrt(c*c + s*s)  # length should be 1.0
         if abs(r-1.0) > 0.1:
             raise Exception("Resulting system is too skew")
 
-#        print "r=",r
-        #xo /= r
-        #yo /= r
+        # print "r=",r
+        # xo /= r
+        # yo /= r
         self.phi = atan2(s, c)
 
         if abs(self.phi) < TOLERANCE:
@@ -604,7 +623,6 @@ class Orient:
         self.valid = True
 
         return self.phi, self.xo, self.yo
-
 
     def error(self):
         """@return minimum, average and maximum error"""
@@ -630,14 +648,11 @@ class Orient:
 
         return minerr, sumerr/float(len(self.markers)), maxerr
 
-
     def gcode2machine(self, x, y):
         """Convert gcode to machine coordinates"""
         c = cos(self.phi)
         s = sin(self.phi)
-        return    c*x - s*y + self.xo, \
-            s*x + c*y + self.yo
-
+        return c*x - s*y + self.xo, s*x + c*y + self.yo
 
     def machine2gcode(self, x, y):
         """Convert machine to gcode coordinates"""
@@ -646,7 +661,6 @@ class Orient:
         x -= self.xo
         y -= self.yo
         return     c*x + s*y, -s*x + c*y
-
 
     def load(self, filename=None):
         """Load orient information from file"""
@@ -659,7 +673,6 @@ class Orient:
         for line in f:
             self.add(*map(float, line.split()))
         f.close()
-
 
     def save(self, filename=None):
         """Save orient information to file"""
@@ -679,7 +692,6 @@ class CNC:
         self.initPath()
         self.resetAllMargins()
 
-
     @staticmethod
     def updateG():
         """Update G variables from "G" string"""
@@ -695,111 +707,108 @@ class CNC:
                 if var is not None:
                     OCV.CD[var] = g
 
-    #----------------------------------------------------------------------
     def __getitem__(self, name):
         return OCV.CD[name]
 
-    #----------------------------------------------------------------------
     def __setitem__(self, name, value):
         OCV.CD[name] = value
 
-    #----------------------------------------------------------------------
     @staticmethod
     def loadConfig(config):
         section = "CNC"
         try:
             OCV.inch = bool(int(config.get(section, "units")))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.lasercutter = bool(int(config.get(section, "lasercutter")))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.laseradaptive = bool(int(config.get(section, "laseradaptive")))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.doublesizeicon = bool(int(config.get(section, "doublesizeicon")))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.acceleration_x = float(config.get(section, "acceleration_x"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.acceleration_y = float(config.get(section, "acceleration_y"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.acceleration_z = float(config.get(section, "acceleration_z"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.feedmax_x = float(config.get(section, "feedmax_x"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.feedmax_y = float(config.get(section, "feedmax_y"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.feedmax_z = float(config.get(section, "feedmax_z"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.travel_x = float(config.get(section, "travel_x"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.travel_y = float(config.get(section, "travel_y"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.travel_z = float(config.get(section, "travel_z"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.accuracy = float(config.get(section, "accuracy"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.digits = int(config.get(section, "round"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.drozeropad = int(config.get(section, "drozeropad"))
-        except:
+        except Exception:
             pass
 
         try:
             OCV.startup = config.get(section, "startup")
-        except:
+        except Exception:
             pass
 
         try:
             OCV.header = config.get(section, "header")
-        except:
+        except Exception:
             pass
 
         try:
             OCV.footer = config.get(section, "footer")
-        except:
+        except Exception:
             pass
 
         if OCV.inch:
@@ -821,28 +830,29 @@ class CNC:
         for cmd, value in config.items(section):
             try:
                 ERROR_HANDLING[cmd.upper()] = int(value)
-            except:
+            except Exception:
                 pass
 
-    #----------------------------------------------------------------------
     @staticmethod
     def saveConfig(config):
         pass
 
-    #----------------------------------------------------------------------
     def initPath(self, x=None, y=None, z=None):
         if x is None:
             self.x = self.xval = OCV.CD['wx'] or 0
         else:
             self.x = self.xval = x
+
         if y is None:
             self.y = self.yval = OCV.CD['wy'] or 0
         else:
             self.y = self.yval = y
+
         if z is None:
             self.z = self.zval = OCV.CD['wz'] or 0
         else:
             self.z = self.zval = z
+
         self.ival = self.jval = self.kval = 0.0
         self.uval = self.vval = self.wval = 0.0
         self.dx = self.dy = self.dz = 0.0
@@ -865,45 +875,40 @@ class CNC:
         self.totalLength = 0.0
         self.totalTime = 0.0
 
-    #----------------------------------------------------------------------
     def resetEnableMargins(self):
         # Selected blocks margin
         OCV.CD["xmin"] = OCV.CD["ymin"] = OCV.CD["zmin"] = 1000000.0
         OCV.CD["xmax"] = OCV.CD["ymax"] = OCV.CD["zmax"] = -1000000.0
 
-    #----------------------------------------------------------------------
     def resetAllMargins(self):
         self.resetEnableMargins()
         # All blocks margin
         OCV.CD["axmin"] = OCV.CD["aymin"] = OCV.CD["azmin"] = 1000000.0
         OCV.CD["axmax"] = OCV.CD["aymax"] = OCV.CD["azmax"] = -1000000.0
 
-    #----------------------------------------------------------------------
     @staticmethod
     def isMarginValid():
-        return    OCV.CD["xmin"] <= OCV.CD["xmax"] and \
+        return OCV.CD["xmin"] <= OCV.CD["xmax"] and \
             OCV.CD["ymin"] <= OCV.CD["ymax"] and \
             OCV.CD["zmin"] <= OCV.CD["zmax"]
 
-    #----------------------------------------------------------------------
     @staticmethod
     def isAllMarginValid():
-        return    OCV.CD["axmin"] <= OCV.CD["axmax"] and \
+        return OCV.CD["axmin"] <= OCV.CD["axmax"] and \
             OCV.CD["aymin"] <= OCV.CD["aymax"] and \
             OCV.CD["azmin"] <= OCV.CD["azmax"]
 
-
     @staticmethod
-    def fmt(c, v, d=None):
+    def fmt(c, val, d=None):
         """Number formating"""
         if d is None:
-            d = OCV.digits
-        #Don't know why, but in some cases floats are not truncated by format string unless rounded
-        #I guess it's vital idea to round them rather than truncate anyway!
-        v = round(v, d)
-        #return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
-        return "{0}{2:0.{1}f}".format(c, d, v)
-
+            digits = OCV.digits
+        # Don't know why, but in some cases floats are not truncated
+        # by format string unless rounded
+        # I guess it's vital idea to round them rather than truncate anyway!
+        r_val = round(val, digits)
+        # return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
+        return "{0}{2:0.{1}f}".format(c, digits, r_val)
 
     @staticmethod
     def gcode(g, pairs):
@@ -912,7 +917,6 @@ class CNC:
             s += " {0}{1:0.{2}f}".format(c, round(v, OCV.digits), OCV.digits)
         return s
 
-
     @staticmethod
     def _gcode(g, **args):
         s = "G{0}".format(g)
@@ -920,34 +924,30 @@ class CNC:
             s += ' ' + CNC.fmt(n, v)
         return s
 
-    #----------------------------------------------------------------------
     @staticmethod
     def _goto(g, x=None, y=None, z=None, **args):
         s = "G{0}".format(g)
         if x is not None:
-            s += ' '+ CNC.fmt('X', x)
+            s += ' ' + CNC.fmt('X', x)
 
         if y is not None:
-            s += ' '+ CNC.fmt('Y', y)
+            s += ' ' + CNC.fmt('Y', y)
 
         if z is not None:
-            s += ' '+ CNC.fmt('Z', z)
+            s += ' ' + CNC.fmt('Z', z)
 
         for n, v in args.items():
             s += ' ' + CNC.fmt(n, v)
         return s
 
-    #----------------------------------------------------------------------
     @staticmethod
     def grapid(x=None, y=None, z=None, **args):
         return CNC._goto(0, x, y, z, **args)
 
-    #----------------------------------------------------------------------
     @staticmethod
     def gline(x=None, y=None, z=None, **args):
         return CNC._goto(1, x, y, z, **args)
 
-    #----------------------------------------------------------------------
     @staticmethod
     def glinev(g, v, feed=None):
         pairs = zip("XYZ", v)
@@ -955,38 +955,35 @@ class CNC:
             pairs.append(("F", feed))
         return CNC.gcode(g, pairs)
 
-    #----------------------------------------------------------------------
     @staticmethod
     def garcv(g, v, ijk):
         return CNC.gcode(g, zip("XYZ", v) + zip("IJ", ijk[:2]))
 
-    #----------------------------------------------------------------------
     @staticmethod
     def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
         s = "G{0}".format(g)
         if x is not None:
-            s += ' '+CNC.fmt('X', x)
+            s += ' ' + CNC.fmt('X', x)
 
         if y is not None:
-            s += ' '+CNC.fmt('Y', y)
+            s += ' ' + CNC.fmt('Y', y)
 
         if z is not None:
-            s += ' '+CNC.fmt('Z', z)
+            s += ' ' + CNC.fmt('Z', z)
 
         if i is not None:
-            s += ' '+CNC.fmt('I', i)
+            s += ' ' + CNC.fmt('I', i)
 
         if j is not None:
-            s += ' '+CNC.fmt('J', j)
+            s += ' ' + CNC.fmt('J', j)
 
         if k is not None:
-            s += ' '+CNC.fmt('K', k)
+            s += ' ' + CNC.fmt('K', k)
 
         for n, v in args.items():
             s += ' ' + CNC.fmt(n, v)
 
         return s
-
 
     @staticmethod
     def zenter(z, d=None):
@@ -1001,14 +998,12 @@ class CNC:
                 CNC.fmt("Z", z, d),
                 CNC.fmt("F", OCV.CD["cutfeedz"]))
 
-    #----------------------------------------------------------------------
     @staticmethod
     def zexit(z, d=None):
         if OCV.lasercutter:
             return "M5"
         else:
             return "G0 {0}".format(CNC.fmt("Z", z, d))
-
 
     @staticmethod
     def zsafe():
@@ -1018,10 +1013,12 @@ class CNC:
         """
         return CNC.zexit(OCV.CD["safe"])
 
-
     @staticmethod
     def parseLine(line):
-        """@return line in broken a list of commands, None if empty or comment"""
+        """@return
+            lines breaking a line containing list of commands,
+            None if empty or comment
+        """
         # skip empty lines
         if len(line) == 0 or line[0] in ("%", "(", "#", ";"):
             return None
@@ -1038,13 +1035,11 @@ class CNC:
         line = CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
-    # -----------------------------------------------------------------------------
-    #----------------------------------------------------------------------
     @staticmethod
     def compileLine(line, space=False):
         """
          @return line,comment
-        line broken in a list of commands,
+        line s breaking a line containing list of commands,
         None,"" if empty or comment
         else compiled expressions,""
         """
@@ -1069,13 +1064,16 @@ class CNC:
                 cmd = pat.group(1)
                 args = pat.group(2)
             else:
-                cmd  = None
+                cmd = None
                 args = None
 
             if cmd == "%wait":
                 return (WAIT,)
             elif cmd == "%msg":
-                if not args: args = None
+
+                if not args:
+                    args = None
+
                 return (MSG, args)
             elif cmd == "%update":
                 return (UPDATE, args)
@@ -1085,7 +1083,7 @@ class CNC:
             else:
                 try:
                     return compile(line[1:], "", "exec")
-                except:
+                except Exception:
                     # FIXME show the error!!!!
                     return None
 
@@ -1093,7 +1091,7 @@ class CNC:
         if line[0] == '_':
             try:
                 return compile(line, "", "exec")
-            except:
+            except Exception:
                 # FIXME show the error!!!!
                 return None
 
@@ -1107,8 +1105,8 @@ class CNC:
         paren = 0  # parenthesis count ()
         expr = ""  # expression string
         cmd = ""  # cmd string
-        inComment = False    # inside inComment
-        for i,ch in enumerate(line):
+        inComment = False  # inside inComment
+        for i, ch in enumerate(line):
             if ch == '(':
                 # comment start?
                 paren += 1
@@ -1123,13 +1121,17 @@ class CNC:
                 if not inComment:
                     expr += ch
 
-                if paren==0 and inComment:
-                    inComment=False
+                if paren == 0 and inComment:
+                    inComment = False
             elif ch == '[':
                 # expression start?
                 if not inComment:
-                    if OCV.stdexpr: ch='('
+
+                    if OCV.stdexpr:
+                        ch = '('
+
                     braket += 1
+
                     if braket == 1:
                         if cmd:
                             out.append(cmd)
@@ -1138,24 +1140,30 @@ class CNC:
                         expr += ch
                 else:
                     OCV.comment += ch
+
             elif ch == ']':
                 # expression end?
                 if not inComment:
-                    if OCV.stdexpr: ch=')'
+
+                    if OCV.stdexpr:
+                        ch = ')'
                     braket -= 1
+
                     if braket == 0:
                         try:
-                            out.append(compile(expr,"","eval"))
-                        except:
+                            out.append(compile(expr, "", "eval"))
+                        except Exception:
                             # FIXME show the error!!!!
                             pass
-                        #out.append("<<"+expr+">>")
+                        # out.append("<<"+expr+">>")
                         expr = ""
                     else:
                         expr += ch
+
                 else:
                     OCV.comment += ch
-            elif ch=='=':
+
+            elif ch == '=':
                 # check for assignments (FIXME very bad)
                 if not out and braket == 0 and paren == 0:
                     for i in " ()-+*/^$":
@@ -1164,8 +1172,8 @@ class CNC:
                             break
                     else:
                         try:
-                            return compile(line,"","exec")
-                        except:
+                            return compile(line, "", "exec")
+                        except Exception:
                             # FIXME show the error!!!!
                             return None
             elif ch == ';':
@@ -1189,7 +1197,8 @@ class CNC:
             elif inComment:
                 OCV.comment += ch
 
-        if cmd: out.append(cmd)
+        if cmd:
+            out.append(cmd)
 
         # return output commands
         if len(out) == 0:
@@ -1198,29 +1207,27 @@ class CNC:
             return out
         return out[0]
 
-
     @staticmethod
     def breakLine(line):
         """Break line into commands"""
-        if line is None: return None
+        if line is None:
+            return None
         # Insert space before each command
-        line = CMDPAT.sub(r" \1",line).lstrip()
+        line = CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
-    #----------------------------------------------------------------------
-    # Create path for one g command
-    #----------------------------------------------------------------------
     def motionStart(self, cmds):
-        #print "\n<<<",cmds
-        self.mval = 0    # reset m command
+        """Create path for one g command"""
+        # print "\n<<<",cmds
+        self.mval = 0  # reset m command
         for cmd in cmds:
             c = cmd[0].upper()
             try:
                 value = float(cmd[1:])
-            except:
+            except Exception:
                 value = 0
 
-            if   c == "X":
+            if c == "X":
                 self.xval = value*self.unit
                 if not self.absolute:
                     self.xval += self.x
@@ -1249,54 +1256,54 @@ class CNC:
                 decimal = int(round((value - gcode)*10))
 
                 # Execute immediately
-                if gcode in (4,10,53):
-                    pass    # do nothing but don't record to motion
-                elif gcode==17:
+                if gcode in (4, 10, 53):
+                    pass  # do nothing but don't record to motion
+                elif gcode == 17:
                     self.plane = XY
 
-                elif gcode==18:
+                elif gcode == 18:
                     self.plane = XZ
 
-                elif gcode==19:
+                elif gcode == 19:
                     self.plane = YZ
 
-                elif gcode==20:    # Switch to inches
+                elif gcode == 20:  # Switch to inches
                     if OCV.inch:
                         self.unit = 1.0
                     else:
                         self.unit = 25.4
 
-                elif gcode==21:    # Switch to mm
+                elif gcode == 21:  # Switch to mm
                     if OCV.inch:
                         self.unit = 1.0/25.4
                     else:
                         self.unit = 1.0
 
-                elif gcode==80:
+                elif gcode == 80:
                     # turn off canned cycles
                     self.gcode = None
-                    self.dz    = 0
-                    self.zval  = self.z
+                    self.dz = 0
+                    self.zval = self.z
 
-                elif gcode==90:
+                elif gcode == 90:
                     if decimal == 0:
                         self.absolute = True
                     elif decimal == 1:
                         self.arcabsolute = True
 
-                elif gcode==91:
+                elif gcode == 91:
                     if decimal == 0:
                         self.absolute = False
                     elif decimal == 1:
                         self.arcabsolute = False
 
-                elif gcode in (93,94,95):
+                elif gcode in (93, 94, 95):
                     OCV.CD["feedmode"] = gcode
 
-                elif gcode==98:
+                elif gcode == 98:
                     self.retractz = True
 
-                elif gcode==99:
+                elif gcode == 99:
                     self.retractz = False
 
                 else:
@@ -1347,40 +1354,45 @@ class CNC:
             elif c == "W":
                 self.wval = value*self.unit
 
-    #----------------------------------------------------------------------
-    # Return center x,y,z,r for arc motions 2,3 and set self.rval
-    #----------------------------------------------------------------------
     def motionCenter(self):
-        if self.rval>0.0:
+        """Return center x,y,z,r for arc motions 2,3 and set self.rval"""
+
+        if self.rval > 0.0:
             if self.plane == XY:
-                x  = self.x
-                y  = self.y
+                x = self.x
+                y = self.y
                 xv = self.xval
                 yv = self.yval
             elif self.plane == XZ:
-                x  = self.x
-                y  = self.z
+                x = self.x
+                y = self.z
                 xv = self.xval
                 yv = self.zval
             else:
-                x  = self.y
-                y  = self.z
+                x = self.y
+                y = self.z
                 xv = self.yval
                 yv = self.zval
 
             ABx = xv-x
             ABy = yv-y
-            Cx  = 0.5*(x+xv)
-            Cy  = 0.5*(y+yv)
-            AB  = math.sqrt(ABx**2 + ABy**2)
-            try: OC  = math.sqrt(self.rval**2 - AB**2/4.0)
-            except: OC = 0.0
-            if self.gcode==2: OC = -OC    # CW
+            Cx = 0.5*(x+xv)
+            Cy = 0.5*(y+yv)
+            AB = math.sqrt(ABx**2 + ABy**2)
+
+            try:
+                OC = math.sqrt(self.rval**2 - AB**2/4.0)
+            except Exception:
+                OC = 0.0
+
+            if self.gcode == 2:
+                OC = -OC  # CW
+
             if AB != 0.0:
                 return Cx-OC*ABy/AB, Cy + OC*ABx/AB
             else:
                 # Error!!!
-                return x,y
+                return x, y
         else:
             # Center
             xc = self.x + self.ival
@@ -1389,35 +1401,35 @@ class CNC:
             self.rval = math.sqrt(self.ival**2 + self.jval**2 + self.kval**2)
 
             if self.plane == XY:
-                return xc,yc
+                return xc, yc
             elif self.plane == XZ:
-                return xc,zc
+                return xc, zc
             else:
-                return yc,zc
+                return yc, zc
 
         # Error checking
-        #err = abs(self.rval - math.sqrt((self.xval-xc)**2 + (self.yval-yc)**2 + (self.zval-zc)**2))
-        #if err/self.rval>0.001:
-            #print "Error invalid arc", self.xval, self.yval, self.zval, err
-        #return xc,yc,zc
+        """
+        err = abs(self.rval - math.sqrt((self.xval-xc)**2 + (self.yval-yc)**2 + (self.zval-zc)**2))
+        if err/self.rval>0.001:
+            print "Error invalid arc", self.xval, self.yval, self.zval, err
+        return xc,yc,zc
+        """
 
-    #----------------------------------------------------------------------
-    # Create path for one g command
-    #----------------------------------------------------------------------
     def motionPath(self):
+        """Create path for one g command"""
         xyz = []
 
         # Execute g-code
-        if self.gcode in (0,1):    # fast move or line
+        if self.gcode in (0, 1):  # fast move or line
             if self.xval-self.x != 0.0 or \
                self.yval-self.y != 0.0 or \
                self.zval-self.z != 0.0:
-                xyz.append((self.x,self.y,self.z))
-                xyz.append((self.xval,self.yval,self.zval))
+                xyz.append((self.x, self.y, self.z))
+                xyz.append((self.xval, self.yval, self.zval))
 
-        elif self.gcode in (2,3):    # CW=2,CCW=3 circle
-            xyz.append((self.x,self.y,self.z))
-            uc,vc = self.motionCenter()
+        elif self.gcode in (2, 3):    # CW=2,CCW=3 circle
+            xyz.append((self.x, self.y, self.z))
+            uc, vc = self.motionCenter()
 
             gcode = self.gcode
             if self.plane == XY:
@@ -1448,111 +1460,123 @@ class CNC:
                 sagitta = 1.0-OCV.accuracy/self.rval
             except ZeroDivisionError:
                 sagitta = 0.0
-            if sagitta>0.0:
+            if sagitta > 0.0:
                 df = 2.0*math.acos(sagitta)
                 df = min(df, math.pi/4.0)
             else:
                 df = math.pi/4.0
 
-            if gcode==2:
-                if phi1>=phi0-1e-10: phi1 -= 2.0*math.pi
-                ws  = (w1-w0)/(phi1-phi0)
+            if gcode == 2:
+                if phi1 >= phi0-1e-10:
+                    phi1 -= 2.0 * math.pi
+                ws = (w1-w0)/(phi1-phi0)
                 phi = phi0 - df
-                while phi>phi1:
+
+                while phi > phi1:
                     u = uc + self.rval*math.cos(phi)
                     v = vc + self.rval*math.sin(phi)
                     w = w0 + (phi-phi0)*ws
                     phi -= df
                     if self.plane == XY:
-                        xyz.append((u,v,w))
+                        xyz.append((u, v, w))
                     elif self.plane == XZ:
-                        xyz.append((u,w,v))
+                        xyz.append((u, w, v))
                     else:
-                        xyz.append((w,u,v))
+                        xyz.append((w, u, v))
             else:
-                if phi1<=phi0+1e-10: phi1 += 2.0*math.pi
-                ws  = (w1-w0)/(phi1-phi0)
+                if phi1 <= phi0+1e-10:
+                    phi1 += 2.0 * math.pi
+
+                ws = (w1-w0)/(phi1-phi0)
                 phi = phi0 + df
-                while phi<phi1:
+
+                while phi < phi1:
                     u = uc + self.rval*math.cos(phi)
                     v = vc + self.rval*math.sin(phi)
                     w = w0 + (phi-phi0)*ws
                     phi += df
+
                     if self.plane == XY:
-                        xyz.append((u,v,w))
+                        xyz.append((u, v, w))
                     elif self.plane == XZ:
-                        xyz.append((u,w,v))
+                        xyz.append((u, w, v))
                     else:
-                        xyz.append((w,u,v))
+                        xyz.append((w, u, v))
 
-            xyz.append((self.xval,self.yval,self.zval))
+            xyz.append((self.xval, self.yval, self.zval))
 
-        elif self.gcode==4:        # Dwell
+        elif self.gcode == 4:  # Dwell
             self.totalTime = self.pval
 
-        elif self.gcode in (81,82,83,85,86,89): # Canned cycles
-            #print "x=",self.x
-            #print "y=",self.y
-            #print "z=",self.z
-            #print "dx=",self.dx
-            #print "dy=",self.dy
-            #print "dz=",self.dz
-            #print "abs=",self.absolute,"retract=",self.retractz
+        elif self.gcode in (81, 82, 83, 85, 86, 89):  # Canned cycles
+            """
+            print "x=",self.x
+            print "y=",self.y
+            print "z=",self.z
+            print "dx=",self.dx
+            print "dy=",self.dy
+            print "dz=",self.dz
+            print "abs=",self.absolute,"retract=",self.retractz
+            """
 
             # FIXME Assuming only on plane XY
             if self.absolute:
                 # FIXME is it correct?
                 self.lval = 1
+
                 if self.retractz:
                     clearz = max(self.rval, self.z)
                 else:
                     clearz = self.rval
-                drill  = self.zval
+                drill = self.zval
             else:
                 clearz = self.z + self.rval
-                drill  = clearz + self.dz
-            #print "clearz=",clearz
-            #print "drill=",drill
+                drill = clearz + self.dz
+            """
+            print "clearz=",clearz
+            print "drill=",drill
+            """
+            x, y, z = self.x, self.y, self.z
+            xyz.append((x, y, z))
 
-            x,y,z = self.x, self.y, self.z
-            xyz.append((x,y,z))
             if z != clearz:
                 z = clearz
-                xyz.append((x,y,z))
+                xyz.append((x, y, z))
+
             for l in range(self.lval):
                 # Rapid move parallel to XY
                 x += self.dx
                 y += self.dy
-                xyz.append((x,y,z))
+                xyz.append((x, y, z))
 
                 # Rapid move parallel to clearz
                 if self.z > clearz:
-                    xyz.append((x,y,clearz))
+                    xyz.append((x, y, clearz))
 
                 # Drill to z
-                xyz.append((x,y,drill))
+                xyz.append((x, y, drill))
 
                 # Move to original position
                 z = clearz
-                xyz.append((x,y,z))    # ???
+                xyz.append((x, y, z))    # ???
 
-        #for a in xyz: print a
+#        for a in xyz: print a
 
         return xyz
 
-    #----------------------------------------------------------------------
-    # move to end position
-    #----------------------------------------------------------------------
     def motionEnd(self):
-        #print "x=",self.x
-        #print "y=",self.y
-        #print "z=",self.z
-        #print "dx=",self.dx
-        #print "dy=",self.dy
-        #print "dz=",self.dz
-        #print "abs=",self.absolute,"retract=",self.retractz
+        """move to end position"""
+        """
+        print "x=",self.x
+        print "y=",self.y
+        print "z=",self.z
+        print "dx=",self.dx
+        print "dy=",self.dy
+        print "dz=",self.dz
+        print "abs=",self.absolute,"retract=",self.retractz
+        """
 
-        if self.gcode in (0,1,2,3):
+        if self.gcode in (0, 1, 2, 3):
             self.x = self.xval
             self.y = self.yval
             self.z = self.zval
@@ -1560,10 +1584,10 @@ class CNC:
             self.dy = 0
             self.dz = 0
 
-            if self.gcode >= 2: # reset at the end
+            if self.gcode >= 2:  # reset at the end
                 self.rval = self.ival = self.jval = self.kval = 0.0
 
-        elif self.gcode in (28,30,92):
+        elif self.gcode in (28, 30, 92):
             self.x = 0.0
             self.y = 0.0
             self.z = 0.0
@@ -1572,7 +1596,7 @@ class CNC:
             self.dz = 0
 
         # FIXME L is not taken into account for repetitions!!!
-        elif self.gcode in (81,82,83):
+        elif self.gcode in (81, 82, 83):
             # FIXME Assuming only on plane XY
             if self.absolute:
                 self.lval = 1
@@ -1583,11 +1607,11 @@ class CNC:
                 drill = self.zval
             else:
                 retract = self.z + self.rval
-                drill   = retract + self.dz
+                drill = retract + self.dz
 
             self.x += self.dx*self.lval
             self.y += self.dy*self.lval
-            self.z  = retract
+            self.z = retract
 
             self.xval = self.x
             self.yval = self.y
@@ -1595,15 +1619,15 @@ class CNC:
             self.dy = 0
             self.dz = drill - retract
 
-    #----------------------------------------------------------------------
-    # Doesn't work correctly for G83 (peck drilling)
-    #----------------------------------------------------------------------
     def pathLength(self, block, xyz):
+        """Calculate Path Length"""
+        # FIXME: Doesn't work correctly for G83 (peck drilling)
         # For XY plan
         p = xyz[0]
         length = 0.0
         for i in xyz:
-            length += math.sqrt((i[0]-p[0])**2 + (i[1]-p[1])**2 + (i[2]-p[2])**2)
+            length += math.sqrt(
+                (i[0]-p[0])**2 + (i[1]-p[1])**2 + (i[2]-p[2])**2)
             p = i
 
         if self.gcode == 0:
@@ -1623,13 +1647,13 @@ class CNC:
 
                 block.time += t
                 self.totalTime += t
-            except:
+            except Exception:
                 pass
+
             block.length += length
 
         self.totalLength += length
 
-    #----------------------------------------------------------------------
     def pathMargins(self, block):
         if block.enable:
             OCV.CD["xmin"] = min(OCV.CD["xmin"], block.xmin)
@@ -1646,19 +1670,24 @@ class CNC:
         OCV.CD["aymax"] = max(OCV.CD["aymax"], block.ymax)
         OCV.CD["azmax"] = max(OCV.CD["azmax"], block.zmax)
 
-    #----------------------------------------------------------------------
-    # Instead of the current code, override with the custom user lines
-    # @param program a list of lines to execute
-    # @return the new list of lines
-    #----------------------------------------------------------------------
     @staticmethod
     def compile(program):
+        """
+        Instead of the current code, override with the custom user lines
+        # @param program a list of lines to execute
+        # @return the new list of lines
+        """
+
         lines = []
-        for j,line in enumerate(program):
+
+        for j, line in enumerate(program):
             newcmd = []
             cmds = CNC.compileLine(line)
-            if cmds is None: continue
-            if isinstance(cmds,str):
+
+            if cmds is None:
+                continue
+
+            if isinstance(cmds, str):
                 cmds = CNC.breakLine(cmds)
             else:
                 # either CodeType or tuple, list[] append at it as is
@@ -1667,35 +1696,42 @@ class CNC:
 
             for cmd in cmds:
                 c = cmd[0]
-                try: value = float(cmd[1:])
-                except: value = 0.0
-                if c.upper() in ("F","X","Y","Z","I","J","K","R","P"):
-                    cmd = CNC.fmt(c,value)
+                try:
+                    value = float(cmd[1:])
+                except Exception:
+                    value = 0.0
+
+                if c.upper() in ("F", "X", "Y", "Z", "I", "J", "K", "R", "P"):
+                    cmd = CNC.fmt(c, value)
                 else:
-                    opt = ERROR_HANDLING.get(cmd.upper(),0)
-                    if opt == SKIP: cmd = None
+                    opt = ERROR_HANDLING.get(cmd.upper(), 0)
+
+                    if opt == SKIP:
+                        cmd = None
 
                 if cmd is not None:
                     newcmd.append(cmd)
             lines.append("".join(newcmd))
         return lines
 
-    #----------------------------------------------------------------------
-    # code to change manually tool
-    #----------------------------------------------------------------------
     def toolChange(self, tool=None):
+        """code to change manually tool"""
         if tool is not None:
             # Force a change
             self.tool = tool
             self._lastTool = None
 
         # check if it is the same tool
-        if self.tool is None or self.tool == self._lastTool: return []
+        if self.tool is None or self.tool == self._lastTool:
+            return []
 
         # create the necessary code
         lines = []
-        lines.append("$g")    # remember state and populate variables, FIXME: move to ./controllers/_GenericController.py
-        lines.append("M5")    # stop spindle
+        # FIXME:
+        # move to ./controllers/_GenericController.py
+        lines.append("$G")  # remember state and populate variables,
+
+        lines.append("M5")  # stop spindle
         lines.append("%wait")
         lines.append("%_x,_y,_z = wx,wy,wz")    # remember position
         lines.append("G53 G0 z[toolchangez]")
@@ -1703,10 +1739,16 @@ class CNC:
         lines.append("%wait")
 
         if OCV.comment:
-            lines.append("%%msg Tool change T%02d (%s)"%(self.tool,OCV.comment))
+            lines.append(
+                "%%msg Tool change T{0:2d} (1)".format(
+                    self.tool,
+                    OCV.comment)
+                )
         else:
-            lines.append("%%msg Tool change T%02d"%(self.tool))
-        lines.append("M0")    # feed hold
+            lines.append(
+                "%%msg Tool change T{1:2d}".format(self.tool))
+
+        lines.append("M0")  # feed hold
 
         if OCV.toolPolicy < 4:
             lines.append("G53 G0 x[toolprobex] y[toolprobey]")
@@ -1715,28 +1757,33 @@ class CNC:
             # fixed WCS
             if OCV.CD["fastprbfeed"]:
                 prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
-                OCV.CD["prbcmdreverse"] = (OCV.CD["prbcmd"][:-1] +
-                                 prb_reverse[OCV.CD["prbcmd"][-1]])
+                OCV.CD["prbcmdreverse"] = (
+                    OCV.CD["prbcmd"][:-1] +
+                    prb_reverse[OCV.CD["prbcmd"][-1]])
+
                 currentFeedrate = OCV.CD["fastprbfeed"]
+
                 while currentFeedrate > OCV.CD["prbfeed"]:
                     lines.append("%wait")
-                    lines.append("G91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
-                            CNC.fmt('f',currentFeedrate)))
+                    lines.append(
+                        "G91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
+                            CNC.fmt('f', currentFeedrate)))
                     lines.append("%wait")
                     lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
-                            CNC.fmt('f',currentFeedrate)))
+                        CNC.fmt('f', currentFeedrate)))
                     currentFeedrate /= 10
             lines.append("%wait")
-            lines.append("G91 [prbcmd] F[prbfeed] Z[toolprobez-mz-tooldistance]")
+            lines.append(
+                "G91 [prbcmd] F[prbfeed] Z[toolprobez-mz-tooldistance]")
 
-            if OCV.toolPolicy==2:
+            if OCV.toolPolicy == 2:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
                 p = OCV.WCS.index(OCV.CD["WCS"])+1
                 lines.append("G10L20P{0:d} Z[toolheight]".format(p))
                 lines.append("%wait")
 
-            elif OCV.toolPolicy==3:
+            elif OCV.toolPolicy == 3:
                 # Modify the tool length, update the TLO
                 lines.append("G4 P1")    # wait a sec to get the probe info
                 lines.append("%wait")
@@ -1753,18 +1800,17 @@ class CNC:
             lines.append("M0")    # feed hold
 
         # restore state
-        lines.append("G90") # restore mode
-        lines.append("G0 x[_x] y[_y]") # ... x,y position
-        lines.append("G0 z[_z]") # ... z position
-        lines.append("F[feed] [spindle]") #.. feed and spindle
-        lines.append("G4 P5") # wait 5s for spindle to speed up
+        lines.append("G90")  # restore mode
+        lines.append("G0 x[_x] y[_y]")     # x,y position
+        lines.append("G0 z[_z]")           # z position
+        lines.append("F[feed] [spindle]")  # feed and spindle
+        lines.append("G4 P5")              # wait 5s for spindle to speed up
 
         # remember present tool
         self._lastTool = self.tool
         return lines
 
-    #----------------------------------------------------------------------
-    # code to expand G80-G89 macro code - canned cycles
+    # --------------------------------------------------------------
     # example:
     # code to expand G83 code - peck drilling cycle
     # format:    (G98 / G99 opt.) G83 X~ Y~ Z~ A~ R~ L~ Q~
@@ -1772,41 +1818,47 @@ class CNC:
     #            ...
     #            G80
     # Notes: G98, G99, Z, R, Q, F are unordered parameters
-    #----------------------------------------------------------------------
+    # --------------------------------------------------------------
     def macroGroupG8X(self):
+        """code to expand G80-G89 macro code - canned cycles"""
         lines = []
 
-        #print "x=",self.x
-        #print "y=",self.y
-        #print "z=",self.z
-        #print "dx=",self.dx
-        #print "dy=",self.dy
-        #print "dz=",self.dz
-        #print "abs=",self.absolute,"retract=",self.retractz
-
+        """
+        print "x=",self.x
+        print "y=",self.y
+        print "z=",self.z
+        print "dx=",self.dx
+        print "dy=",self.dy
+        print "dz=",self.dz
+        print "abs=",self.absolute,"retract=",self.retractz
+        """
         # FIXME Assuming only on plane XY
         if self.absolute:
             # FIXME is it correct?
             self.lval = 1
+
             if self.retractz:
                 clearz = max(self.rval, self.z)
             else:
                 clearz = self.rval
-            drill   = self.zval
+
+            drill = self.zval
             retract = self.rval
         else:
-            clearz  = self.z + self.rval
+            clearz = self.z + self.rval
             retract = clearz
-            drill   = clearz + self.dz
-        #print "clearz=",clearz
-        #print "drill=",drill
+            drill = clearz + self.dz
+        """
+        print "clearz=",clearz
+        print "drill=",drill
+        """
 
         if self.gcode == 83:    # peck drilling
             peck = self.qval
         else:
             peck = 100000.0    # a large value
 
-        x,y,z = self.x, self.y, self.z
+        x, y, z = self.x, self.y, self.z
         if z < clearz:
             z = clearz
             lines.append(CNC.grapid(z=z/self.unit))
@@ -1815,7 +1867,7 @@ class CNC:
             # Rapid move parallel to XY
             x += self.dx
             y += self.dy
-            lines.append(CNC.grapid(x/self.unit,y/self.unit))
+            lines.append(CNC.grapid(x/self.unit, y/self.unit))
 
             # Rapid move parallel to retract
             zstep = max(drill, retract - peck)
@@ -1828,65 +1880,68 @@ class CNC:
                 zstep -= peck
 
                 # Drill to z
-                lines.append(CNC.gline(z=z/self.unit,f=self.feed/self.unit))
+                lines.append(CNC.gline(z=z/self.unit, f=self.feed/self.unit))
 
             # 82=dwell, 86=boring-stop, 89=boring-dwell
-            if self.gcode in (82,86,89):
-                lines.append(CNC._gcode(4,p=self.pval))
+            if self.gcode in (82, 86, 89):
+                lines.append(CNC._gcode(4, p=self.pval))
 
                 if self.gcode == 86:
                     lines.append("M5")    # stop spindle???
 
             # Move to original position
-            if self.gcode in (85,89):    # boring cycle
+            if self.gcode in (85, 89):     # boring cycle
                 z = retract
-                lines.append(CNC.gline(z=z/self.unit,f=self.feed/self.unit))
+                lines.append(CNC.gline(z=z/self.unit, f=self.feed/self.unit))
 
             z = clearz
             lines.append(CNC.grapid(z=z/self.unit))
 
             if self.gcode == 86:
                 lines.append("M3")    # restart spindle???
-        #print "-"*50
-        #for a in lines: print a
-        #print "-"*50
+        """
+        print "-"*50
+        for a in lines: print a
+        print "-"*50
+        """
         return lines
 
 
-#===============================================================================
-# Block of g-code commands. A gcode file is represented as a list of blocks
-# - Commands are grouped as (non motion commands Mxxx)
-# - Basic shape from the first rapid move command to the last rapid z raise
-#   above the working surface
-#
-# Inherits from list and contains:
-#    - a list list of gcode lines
-#    - (imported shape)
-#===============================================================================
 class Block(list):
+    """
+    Block of g-code commands. A gcode file is represented as a list of blocks
+     - Commands are grouped as (non motion commands Mxxx)
+     - Basic shape from the first rapid move command to the last rapid z raise
+       above the working surface
+    -
+     Inherits from list and contains:
+        - a list list of gcode lines
+        - (imported shape)
+    """
+
     def __init__(self, name=None):
         # Copy constructor
         if isinstance(name, Block):
             self.copy(name)
             return
-        self._name    = name
-        self.enable   = True        # Enabled/Visible in drawing
-        self.expand   = False        # Expand in editor
-        self.color    = None        # Custom color for path
-        self._path    = []        # canvas drawing paths
+        self._name = name
+        self.enable = True      # Enabled/Visible in drawing
+        self.expand = False     # Expand in editor
+        self.color = None       # Custom color for path
+        self._path = []         # canvas drawing paths
+        # (entry point first non rapid motion)
         self.sx = self.sy = self.sz = 0    # start  coordinates
-                        # (entry point first non rapid motion)
+
         self.ex = self.ey = self.ez = 0    # ending coordinates
         self.resetPath()
 
-    #----------------------------------------------------------------------
     def copy(self, src):
-        self._name  = src._name
+        self._name = src._name
         self.enable = src.enable
         self.expand = src.expand
-        self.color  = src.color
-        self[:]     = src[:]
-        self._path  = []
+        self.color = src.color
+        self[:] = src[:]
+        self._path = []
         self.sx = src.sx
         self.sy = src.sy
         self.sz = src.sz
@@ -1894,14 +1949,11 @@ class Block(list):
         self.ey = src.ey
         self.ez = src.ez
 
-    #----------------------------------------------------------------------
     def name(self):
         return self._name is None and "block" or self._name
 
-    #----------------------------------------------------------------------
-    # @return name without the operation
-    #----------------------------------------------------------------------
     def nameNop(self):
+        """@return name without the operation"""
         name = self.name()
         pat = OPPAT.match(name)
         if pat is None:
@@ -1909,108 +1961,115 @@ class Block(list):
         else:
             return pat.group(1).strip()
 
-    #----------------------------------------------------------------------
-    # Tests if block contains operation type
-    #----------------------------------------------------------------------
     def operationTest(self, op, name=None):
-        if name is None: name = self.name()
+        """Tests if block contains operation type"""
+        if name is None:
+            name = self.name()
+
         pat = OPPAT.match(name)
         if pat is not None:
             ops = pat.group(2)
             ops = re.split('\W+', ops)
-            if op in ops: return True
+
+            if op in ops:
+                return True
         return False
 
-    #----------------------------------------------------------------------
-    # Get block operation value
-    #----------------------------------------------------------------------
     def operationGet(self, op, name=None):
-        if name is None: name = self.name()
+        """Get block operation value"""
+        if name is None:
+            name = self.name()
+
         pat = OPPAT.match(name)
         if pat is not None:
             ops = pat.group(2)
             ops = re.split(',', ops)
             for opp in ops:
-                t = re.split(':',opp)
-                if t[0] == op: return t[1]
+                t = re.split(':', opp)
+
+                if t[0] == op:
+                    return t[1]
         return None
 
-    #----------------------------------------------------------------------
-    # Tests if block contains operation on
-    # inside of the part (-1), outside (1), or can't decide (0)
-    #----------------------------------------------------------------------
     def operationSide(self, name=None):
-        #if self.operationTest('pocket', name): return -1
-        if self.operationTest('in', name) and not self.operationTest('out', name): return -1
-        if self.operationTest('out', name) and not self.operationTest('in', name): return 1
+        """
+        Tests if block contains operation on
+        inside of the part (-1), outside (1), or can't decide (0)
+        """
+        # if self.operationTest('pocket', name): return -1
+
+        if self.operationTest('in', name) and not self.operationTest('out', name):
+            return -1
+
+        if self.operationTest('out', name) and not self.operationTest('in', name):
+            return 1
+
         return 0
 
-    #----------------------------------------------------------------------
-    # @return the new name with an operation (static)
-    #----------------------------------------------------------------------
     @staticmethod
     def operationName(name, operation, remove=None):
+        """@return the new name with an operation (static)"""
         pat = OPPAT.match(name)
         if pat is None:
-            return "%s [%s]"%(name,operation)
+            return "{0} [{1}]".format(name, operation)
         else:
             name = pat.group(1).strip()
             ops = pat.group(2).split(',')
             if ":" in operation:
-                oid,opt = operation.split(":")
+                oid, opt = operation.split(":")
             else:
                 oid = operation
                 opt = None
 
             found = False
-            for i,o in enumerate(ops):
+            for i, o in enumerate(ops):
                 if ":" in o:
-                    o,c = o.split(":")
+                    o, c = o.split(":")
                     try:
                         c = int(c)
-                    except:
+                    except Exception:
                         c = 1
                 else:
                     c = 1
 
-                if remove and o in remove: ops[i]=""
-                if not found and o==oid:
+                if remove and o in remove:
+                    ops[i] = ""
+
+                if not found and o == oid:
                     if opt is not None or c is None:
                         ops[i] = operation
                     else:
-                        ops[i] = "%s:%d"%(oid,c+1)
+                        ops[i] = "{0}:{1}".format(oid, c+1)
                     found = True
 
             # remove all empty
-            ops = filter(lambda x:x!="", ops)
+            ops = filter(lambda x: x != "", ops)
 
             if not found:
                 ops.append(operation)
 
-            return "%s [%s]"%(name,','.join(ops))
-
+            return "{0} [{1}]".format(name, ','.join(ops))
 
     def addOperation(self, operation, remove=None):
         """Add a new operation to the block's name"""
         self._name = Block.operationName(self.name(), operation, remove)
 
-    #----------------------------------------------------------------------
     def header(self):
         e = self.expand and Unicode.BLACK_DOWN_POINTING_TRIANGLE \
-                or  Unicode.BLACK_RIGHT_POINTING_TRIANGLE
+            or Unicode.BLACK_RIGHT_POINTING_TRIANGLE
+
         v = self.enable and Unicode.BALLOT_BOX_WITH_X \
-                or  Unicode.BALLOT_BOX
+            or Unicode.BALLOT_BOX
 
         try:
-            #return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
-            return u"{0} {1} {2} - [{3}]".format(e, v, self.name(), len(self))
+            # return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
+            return u"{0} {1} {2} - [{3}]".format(
+                e, v, self.name(), len(self))
         except UnicodeDecodeError:
-            #return "%s %s %s - [%d]"%(e, v, self.name().decode("ascii","replace"), len(self))
-            return u"{0} {1} {2} - [{3}]".format(e, v, self.name().decode("ascii","replace"), len(self))
+            return u"{0} {1} {2} - [{3}]".format(
+                e, v, self.name().decode("ascii", "replace"), len(self))
         except UnicodeEncodeError:
-            print(e,v,self.name(), len(self))
-        #    return "{0} {1} {2} - [{3:d}]".format(e, v, self.name().encode('ascii', 'ignore').decode("ascii","replace"), len(self))
-
+            print(e, v, self.name(), len(self))
 
     def write_header(self):
         header = ''
@@ -2021,24 +2080,23 @@ class Block(list):
             header += "(Block-color: {0})\n".format(self.color)
         return header
 
-
     def write(self, f):
         f.write(self.write_header())
         for line in self:
-            if self.enable: f.write("{0}\n".format(line))
-            else: f.write("(Block-X: {0})\n".format(line.replace('(','[').replace(')',']')))
 
-    #----------------------------------------------------------------------
-    # Return a dump object for pickler
-    #----------------------------------------------------------------------
+            if self.enable:
+                f.write("{0}\n".format(line))
+            else:
+                f.write("(Block-X: {0})\n".format(
+                    line.replace('(', '[').replace(')', ']')))
+
     def dump(self):
+        """Return a dump object for pickler"""
         return self.name(), self.enable, self.expand, self.color, self
 
-    #----------------------------------------------------------------------
-    # Create a block from a dump object from unpickler
-    #----------------------------------------------------------------------
     @staticmethod
     def load(obj):
+        """Create a block from a dump object from unpickler"""
         name, enable, expand, color, code = obj
         block = Block(name)
         block.enable = enable
@@ -2047,73 +2105,72 @@ class Block(list):
         block.extend(code)
         return block
 
-    #----------------------------------------------------------------------
     def append(self, line):
         if line.startswith("(Block-"):
             pat = BLOCKPAT.match(line)
             if pat:
                 name, value = pat.groups()
                 value = value.strip()
-                if name=="name":
+
+                if name == "name":
                     self._name = value
                     return
-                elif name=="expand":
+                elif name == "expand":
                     self.expand = bool(int(value))
                     return
-                elif name=="enable":
+                elif name == "enable":
                     self.enable = bool(int(value))
                     return
-                elif name=="tab":
-                    #Handled elsewhere
+                elif name == "tab":
+                    # Handled elsewhere
                     return
-                elif name=="color":
+                elif name == "color":
                     self.color = value
                     return
-                elif name=="X": #uncomment
-                    list.append(self, value.replace('[','(').replace(']',')'))
+                elif name == "X":  # uncomment
+                    list.append(
+                        self,
+                        value.replace('[', '(').replace(']', ')'))
                     return
+
         if self._name is None and ("id:" in line) and ("End" not in line):
             pat = IDPAT.match(line)
-            if pat: self._name = pat.group(1)
+
+            if pat:
+                self._name = pat.group(1)
+
         list.append(self, line)
 
-    #----------------------------------------------------------------------
     def resetPath(self):
         del self._path[:]
-        self.xmin = self.ymin = self.zmin =  1000000.0
+        self.xmin = self.ymin = self.zmin = 1000000.0
         self.xmax = self.ymax = self.zmax = -1000000.0
         self.length = 0.0    # cut length
-        self.rapid  = 0.0    # rapid length
-        self.time   = 0.0
+        self.rapid = 0.0     # rapid length
+        self.time = 0.0
 
-    #----------------------------------------------------------------------
     def hasPath(self):
         return bool(self._path)
 
-    #----------------------------------------------------------------------
     def addPath(self, p):
         self._path.append(p)
 
-    #----------------------------------------------------------------------
     def path(self, item):
         try:
             return self._path[item]
-        except:
+        except Exception:
             return None
 
-    #----------------------------------------------------------------------
     def startPath(self, x, y, z):
         self.sx = x
         self.sy = y
         self.sz = z
 
-    #----------------------------------------------------------------------
     def endPath(self, x, y, z):
         self.ex = x
         self.ey = y
         self.ez = z
 
-    #----------------------------------------------------------------------
     def pathMargins(self, xyz):
         self.xmin = min(self.xmin, min([i[0] for i in xyz]))
         self.ymin = min(self.ymin, min([i[1] for i in xyz]))
@@ -2123,39 +2180,33 @@ class Block(list):
         self.zmax = max(self.zmax, max([i[2] for i in xyz]))
 
 
-#===============================================================================
-# Gcode file
-#===============================================================================
-class GCode:
+class GCode(object):
+    """Gcode file"""
     LOOP_MERGE = False
 
-    #----------------------------------------------------------------------
     def __init__(self):
         self.cnc = CNC()
-        self.header   = ""
-        self.footer   = ""
+        self.header = ""
+        self.footer = ""
         self.undoredo = undo.UndoRedo()
-        self.probe    = Probe()
-        self.orient   = Orient()
-        self.vars     = {}  # local variables
+        self.probe = Probe()
+        self.orient = Orient()
+        self.vars = {}  # local variables
         self.init()
 
-    #----------------------------------------------------------------------
     def init(self):
         self.filename = ""
-        self.blocks   = []  # list of blocks
+        self.blocks = []  # list of blocks
         self.gcodelines = ["",]  # Add a starting 0 pos to better align index
         self.vars.clear()
         self.undoredo.reset()
-#        self.probe.init()
+        # self.probe.init()
 
         self._lastModified = 0
         self._modified = False
 
-    #----------------------------------------------------------------------
-    # Recalculate enabled path margins
-    #----------------------------------------------------------------------
     def calculateEnableMargins(self):
+        """Recalculate enabled path margins"""
         self.cnc.resetEnableMargins()
         for block in self.blocks:
             if block.enable:
@@ -2166,50 +2217,48 @@ class GCode:
                 OCV.CD["ymax"] = max(OCV.CD["ymax"], block.ymax)
                 OCV.CD["zmax"] = max(OCV.CD["zmax"], block.zmax)
 
-    #----------------------------------------------------------------------
-    def isModified(self): return self._modified
+    def isModified(self):
+        return self._modified
 
-    #----------------------------------------------------------------------
-    def resetModified(self): self._modified = False
+    def resetModified(self):
+        self._modified = False
 
-    #----------------------------------------------------------------------
-    def __getitem__(self, item):        return self.blocks[item]
+    def __getitem__(self, item):
+        return self.blocks[item]
 
-    #----------------------------------------------------------------------
-    def __setitem__(self, item, value):    self.blocks[item] = value
+    def __setitem__(self, item, value):
+        self.blocks[item] = value
 
-    #----------------------------------------------------------------------
-    # Evaluate code expressions if any and return line
-    #----------------------------------------------------------------------
     def evaluate(self, line, app=None):
-        if isinstance(line,int):
+        """Evaluate code expressions if any and return line"""
+        if isinstance(line, int):
             return None
 
-        elif isinstance(line,list):
-            for i,expr in enumerate(line):
+        elif isinstance(line, list):
+            for i, expr in enumerate(line):
+
                 if isinstance(expr, types.CodeType):
                     result = eval(expr, OCV.CD, self.vars)
-                    if isinstance(result,float):
+
+                    if isinstance(result, float):
                         line[i] = str(round(result, OCV.digits))
                     else:
                         line[i] = str(result)
             return "".join(line)
 
         elif isinstance(line, types.CodeType):
-            #import traceback
-            #traceback.print_stack()
+            # import traceback
+            # traceback.print_stack()
             v = self.vars
             v['os'] = os
             v['app'] = app
-            return eval(line,OCV.CD,self.vars)
+            return eval(line, OCV.CD, self.vars)
 
         else:
             return line
 
-    #----------------------------------------------------------------------
-    # add new line to list create block if necessary
-    #----------------------------------------------------------------------
     def _addLine(self, line):
+        """add new line to list create block if necessary"""
         if line.startswith("(Block-name:"):
             self._blocksExist = True
             pat = BLOCKPAT.match(line)
@@ -2221,13 +2270,15 @@ class GCode:
                     self.blocks[-1]._name = value
                 return
 
-        #FIXME: Code to import legacy tabs can be probably removed in year 2020 or so:
+        # FIXME: Code to import legacy tabs
+        # can be probably removed in year 2020 or so:
         if line.startswith("(Block-tab:"):
             pat = BLOCKPAT.match(line)
             if pat:
                 value = pat.group(2).strip()
-                items = map(float,value.split())
-                tablock = Block("legacy [tab,island,minz:{0:0.f}]".format(items[4]))
+                items = map(float, value.split())
+                tablock = Block(
+                    "legacy [tab,island,minz:{0:0.f}]".format(items[4]))
                 tablock.color = "orange"
                 tablock.extend(self.createTab(*items))
                 self.insBlocks(-1, [tablock], "Legacy tab")
@@ -2237,7 +2288,7 @@ class GCode:
             self.blocks.append(Block("Header"))
 
         cmds = CNC.parseLine(line)
-        #print("_addLine ", line, cmds)
+        # print("_addLine ", line, cmds)
         if cmds is None:
             self.blocks[-1].append(line)
             return
@@ -2246,7 +2297,7 @@ class GCode:
 
         # Add line to the list for display
         self.gcodelines.append(line)
-        #print("_addLine ", len(self.gcodelines), line)
+        # print("_addLine ", len(self.gcodelines), line)
 
         # rapid move up = end of block
         if self._blocksExist:
@@ -2254,7 +2305,7 @@ class GCode:
         elif self.cnc.gcode == 0 and self.cnc.dz > 0.0:
             self.blocks[-1].append(line)
             self.blocks.append(Block())
-        elif self.cnc.gcode == 0 and len(self.blocks)==1:
+        elif self.cnc.gcode == 0 and len(self.blocks) == 1:
             self.blocks.append(Block())
             self.blocks[-1].append(line)
         else:
@@ -2262,33 +2313,37 @@ class GCode:
 
         self.cnc.motionEnd()
 
-    #----------------------------------------------------------------------
-    # Load a file into editor
-    #----------------------------------------------------------------------
     def load(self, filename=None):
-        if filename is None: filename = self.filename
+        """Load a file into editor"""
+        if filename is None:
+            filename = self.filename
+
         self.init()
         self.filename = filename
-        try: f = open(self.filename,"r")
-        except: return False
+
+        try:
+            f = open(self.filename, "r")
+        except Exception:
+            return False
+
         self._lastModified = os.stat(self.filename).st_mtime
         self.cnc.initPath()
         self.cnc.resetAllMargins()
         self._blocksExist = False
         for line in f:
-            self._addLine(line[:-1].replace("\x0d",""))
+            self._addLine(line[:-1].replace("\x0d", ""))
         self._trim()
         f.close()
         return True
 
-    #----------------------------------------------------------------------
-    # Save to a file
-    #----------------------------------------------------------------------
     def save(self, filename=None):
-        if filename is not None: self.filename = filename
+        """Save to a file"""
+        if filename is not None:
+            self.filename = filename
+
         try:
-            f = open(self.filename,"w")
-        except:
+            f = open(self.filename, "w")
+        except Exception:
             return False
 
         for block in self.blocks:
@@ -2298,37 +2353,43 @@ class GCode:
         self._modified = False
         return True
 
-    #----------------------------------------------------------------------
-    # Save in TXT format
-    # -Enabled Blocks only
-    # -Clened from OKKCNC metadata and comments
-    # -Uppercase
-    #----------------------------------------------------------------------
     def saveTXT(self, filename):
+        """
+        Save in TXT format
+        Enabled Blocks only
+        Cleaned from OKKCNC metadata and comments
+        Uppercase
+        """
         txt = open(filename, 'w')
         for block in self.blocks:
             if block.enable:
                 for line in block:
                     cmds = CNC.parseLine(line)
-                    if cmds is None: continue
-                    txt.write("{0}\n".format(line.upper()))
+
+                    if cmds is None:
+                        continue
+
+                txt.write("{0}\n".format(line.upper()))
         txt.close()
         return True
 
-    #----------------------------------------------------------------------
     def addBlockFromString(self, name, text):
-        if not text: return
+
+        if not text:
+            return
+
         block = Block(name)
         block.extend(text.splitlines())
         self.blocks.append(block)
 
-    #----------------------------------------------------------------------
-    # If empty insert a header and a footer
-    #----------------------------------------------------------------------
     def headerFooter(self):
+        """Check if Block is empty:
+             If Empty insert a header and a footer
+            """
         if not self.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
-            curr_header = "(Created By OKKCNC version {0}) \n".format(OCV._version)
+            curr_header = "(Created By OKKCNC version {0}) \n".format(
+                OCV._version)
             curr_header += "(Date: {0})\n".format(currDate)
             curr_header += self.header
 
@@ -2337,51 +2398,57 @@ class GCode:
             return True
         return False
 
-    #----------------------------------------------------------------------
-    # get document margins
-    #----------------------------------------------------------------------
+# CHECK if it is a remnant of SVG or DXF imports
     def getMargins(self):
-        #Get bounding box of document
-        minx,miny,maxx,maxy = 0,0,0,0
-        for i,block in enumerate(self.blocks):
-            paths = self.toPath(i)
-            for path in paths:
-                minx2,miny2,maxx2,maxy2 = path.bbox()
-                minx,miny,maxx,maxy = min(minx,minx2), min(miny,miny2), max(maxx,maxx2), max(maxy,maxy2)
-        return minx,miny,maxx,maxy
+        """get document margins"""
+        # Get bounding box of document
+        min_x, min_y, max_x, max_y = 0, 0, 0, 0
+        for idx, block in enumerate(self.blocks):
+            paths = self.toPath(idx)
 
-    #----------------------------------------------------------------------
-    # Import POINTS from entities
-    #----------------------------------------------------------------------
+            for path in paths:
+                min_x2, min_y2, max_x2, max_y2 = path.bbox()
+                min_x = min(min_x, min_x2)
+                min_y = min(min_y, min_y2)
+                max_x = max(max_x, max_x2)
+                max_y = max(max_y, max_y2)
+
+        return min_x, min_y, max_x, max_y
+
     def importEntityPoints(self, pos, entities, name, enable=True, color=None):
+        """Import POINTS from entities"""
         undoinfo = []
         i = 0
-        while i<len(entities):
+
+        while i < len(entities):
             if entities[i].type != "POINT":
                 i += 1
                 continue
 
-            block = Block("%s [P]"%(name))
+            block = Block("{0} [P]".format(name))
             block.enable = enable
 
             block.color = entities[i].color()
             if block.color is None:
                 block.color = color
 
-            x,y = entities[i].start()
-            block.append("G0 {0} {1}}".format(self.fmt("X",x,7),self.fmt("Y",y,7)))
+            x, y = entities[i].start()
+            block.append("G0 {0} {1}}".format(
+                self.fmt("X", x, 7),
+                self.fmt("Y", y, 7)))
             block.append(CNC.zenter(self.cnc["surface"]))
             block.append(CNC.zsafe())
-            undoinfo.append(self.addBlockUndo(pos,block))
-            if pos is not None: pos += 1
+            undoinfo.append(self.addBlockUndo(pos, block))
+
+            if pos is not None:
+                pos += 1
+
             del entities[i]
 
         return undoinfo
 
-    #----------------------------------------------------------------------
-    # convert a block to path
-    #----------------------------------------------------------------------
     def toPath(self, bid):
+        """convert a block to path"""
         block = self.blocks[bid]
         paths = []
         path = Path(block.name())
@@ -2392,246 +2459,320 @@ class GCode:
         # ignore the deeper ones
         passno = 0
         for line in block:
-            #flatten helical paths
-            line = re.sub(r"\s?z-?[0-9\.]+","",line)
+            # flatten helical paths
+            line = re.sub(r"\s?z-?[0-9\.]+", "", line)
 
-            #break after first depth pass
+            # break after first depth pass
             if line == "( ---------- cut-here ---------- )":
-                passno=0
+                passno = 0
                 if path:
                     paths.append(path)
                     path = Path(block.name())
-            if line[:5] == "(pass": passno+=1
-            if passno > 1: continue
+
+            if line[:5] == "(pass":
+                passno += 1
+
+            if passno > 1:
+                continue
 
             cmds = CNC.parseLine(line)
-            if cmds is None: continue
+
+            if cmds is None:
+                continue
+
             self.cnc.motionStart(cmds)
             end = Vector(self.cnc.xval, self.cnc.yval)
-            if self.cnc.gcode == 0:        # rapid move (new block)
+            if self.cnc.gcode == 0:  # rapid move (new block)
                 if path:
                     paths.append(path)
                     path = Path(block.name())
-            elif self.cnc.gcode == 1:    # line
-                if (self.cnc.dx != 0.0 or self.cnc.dy != 0.0):
+            elif self.cnc.gcode == 1:  # line
+                if self.cnc.dx != 0.0 or self.cnc.dy != 0.0:
                     path.append(Segment(1, start, end))
-            elif self.cnc.gcode in (2,3):    # arc
-                xc,yc = self.cnc.motionCenter()
-                center = Vector(xc,yc)
-                path.append(Segment(self.cnc.gcode, start,end, center))
+            elif self.cnc.gcode in (2, 3):  # arc
+                xc, yc = self.cnc.motionCenter()
+                center = Vector(xc, yc)
+                path.append(Segment(self.cnc.gcode, start, end, center))
             self.cnc.motionEnd()
             start = end
-        if path: paths.append(path)
+
+        if path:
+            paths.append(path)
+
         return paths
 
-    #----------------------------------------------------------------------
-    # create a block from Path
-        # @param z    I       ending depth
-        # @param zstart    I       starting depth
-    #----------------------------------------------------------------------
-    def fromPath(self, path, block=None, z=None, retract=True, entry=False, exit=True, zstart=None, ramp=None, comments=True, exitpoint=None, truncate=None):
-        #Recursion for multiple paths
+    def fromPath(self, path, block=None, z=None, retract=True, entry=False,
+                 exit=True, zstart=None, ramp=None, comments=True,
+                 exitpoint=None, truncate=None):
+        """Create a block from Path
+        @param z    I       ending depth
+        @param zstart    I       starting depth
+        """
+
+        # Recursion for multiple paths
         if not isinstance(path, Path):
             block = Block("new")
             for p in path:
-                block.extend(self.fromPath(p, None, z, retract, entry, exit, zstart, ramp, comments, exitpoint, truncate))
+                block.extend(
+                    self.fromPath(
+                            p, None, z, retract, entry, exit,
+                            zstart, ramp, comments, exitpoint, truncate))
+
                 block.append("( ---------- cut-here ---------- )")
-            del block[-1] #remove trailing cut-here
+            del block[-1]  # remove trailing cut-here
             return block
 
-        if z is None: z = self.cnc["surface"]
-        if zstart is None: zstart = z
+        if z is None:
+            z = self.cnc["surface"]
 
-        #Calculate helix step
+        if zstart is None:
+            zstart = z
+
+        # Calculate helix step
         zstep = abs(z-zstart)
 
-        #Preprocess ramp
-        if ramp is None: ramp = 0
-        if ramp==0: ramp = path.length() #full helix (default)
-        ramp = min(ramp, path.length()) #Never ramp longer than single pass!
+        # Preprocess ramp
+        if ramp is None:
+            ramp = 0
 
-        #Calculate helical feedrate
+        if ramp == 0:
+            ramp = path.length()  # full helix (default)
+
+        ramp = min(ramp, path.length())  # Never ramp longer than single pass!
+
+        # Calculate helical feedrate
         helixfeed = self.cnc["cutfeed"]
+
         if zstep > 0:
-            #Compensate helix feed, so we never plunge too fast on short/steep paths
-            #FIXME: Add UI to disable this feature??? Not sure if that's needed.
-            rampratio = zstep/min(path.length(),ramp)
-            helixfeed2 = round(self.cnc["cutfeedz"]/rampratio)
+            # Compensate helix feed
+            # so we never plunge too fast on short/steep paths
+            # FIXME: Add UI to disable this feature???
+            # Not sure if that's needed.
+            rampratio = zstep/min(path.length(), ramp)
+            helixfeed2 = round(self.cnc["cutfeedz"] / rampratio)
             helixfeed = min(self.cnc["cutfeed"], helixfeed2)
 
-        #
         if block is None:
             if isinstance(path, Path):
                 block = Block(path.name)
             else:
                 block = Block(path[0].name)
 
-        #Generate g-code for single path segment
+        # Generate g-code for single path segment
         def addSegment(segment, z=None, cm=""):
-            x,y = segment.B
+            x, y = segment.B
 
-            #Generate LINE
+            # Generate LINE
             if segment.type == Segment.LINE:
-                x,y = segment.B
-                #rounding problem from #903 was manifesting here. Had to lower the decimal precision to OCV.digits
-                if z is None: block.append("G1 {0} {1}".format(
-                        self.fmt("X",x,7),
-                        self.fmt("Y",y,7))+cm)
-                else: block.append("G1 {0} {1} {2}".format(
-                        self.fmt("X",x,7),
-                        self.fmt("Y",y,7),
-                        self.fmt("Z",z,7))+cm)
+                x, y = segment.B
+                # rounding problem from #903 was manifesting here.
+                # Had to lower the decimal precision to OCV.digits
+                if z is None:
+                    block.append("G1 {0} {1}".format(
+                        self.fmt("X", x, 7),
+                        self.fmt("Y", y, 7)) + cm)
+                else:
+                    block.append("G1 {0} {1} {2}".format(
+                        self.fmt("X", x, 7),
+                        self.fmt("Y", y, 7),
+                        self.fmt("Z", z, 7)) + cm)
 
-            #Generate ARCS
+            # Generate ARCS
             elif segment.type in (Segment.CW, Segment.CCW):
                 ij = segment.C - segment.A
-                if abs(ij[0])<1e-5: ij[0] = 0.
-                if abs(ij[1])<1e-5: ij[1] = 0.
+
+                if abs(ij[0]) < 1e-5:
+                    ij[0] = 0.
+
+                if abs(ij[1]) < 1e-5:
+                    ij[1] = 0.
+
                 if z is None:
                     block.append("G{0:d} {1} {2} {3} {4}".format(
                             segment.type,
-                            self.fmt("X",x,7),
-                            self.fmt("Y",y,7),
-                            self.fmt("I",ij[0],7),
-                            self.fmt("J",ij[1],7))+cm)
+                            self.fmt("X", x, 7),
+                            self.fmt("Y", y, 7),
+                            self.fmt("I", ij[0], 7),
+                            self.fmt("J", ij[1], 7)) + cm)
                 else:
                     block.append("G{0:d} {1} {2} {3} {4} {5}".format(
                             segment.type,
-                            self.fmt("X",x,7),
-                            self.fmt("Y",y,7),
-                            self.fmt("I",ij[0],7),
-                            self.fmt("J",ij[1],7),
-                            self.fmt("Z",z,7))+cm)
+                            self.fmt("X", x, 7),
+                            self.fmt("Y", y, 7),
+                            self.fmt("I", ij[0], 7),
+                            self.fmt("J", ij[1], 7),
+                            self.fmt("Z", z, 7)) + cm)
 
-        #Get island height of segment
+        # Get island height of segment
         def getSegmentZTab(segment, altz=float("-inf")):
             if segment._inside:
                 return max(segment._inside)
-            else: return altz
+            else:
+                return altz
 
-        #Generate block from path
+        # Generate block from path
         if isinstance(path, Path):
-            x,y = path[0].A
+            x, y = path[0].A
 
-            #decide if flat or ramp/helical:
+            # decide if flat or ramp/helical:
             if z == zstart:
                 zh = z
 
             elif zstart is not None:
                 zh = zstart
 
-            #test if not starting in tab/island!
+            # test if not starting in tab/island!
             ztab = getSegmentZTab(path[0], z)
 
-            #Retract to zsafe
-            if retract: block.append("G0 {0}".format(self.fmt("Z",OCV.CD["safe"],7)))
+            # Retract to zsafe
+            if retract:
+                block.append(
+                    "G0 {0}".format(
+                        self.fmt("Z", OCV.CD["safe"], 7)))
 
-            #Rapid to beginning of the path
-            block.append("G0 {0} {1}".format(self.fmt("X",x,7),self.fmt("Y",y,7)))
+            # Rapid to beginning of the path
+            block.append(
+                "G0 {0} {1}".format(
+                        self.fmt("X", x, 7),
+                        self.fmt("Y", y, 7)))
 
-            #Descend to pass (plunge to the beginning of path)
+            # Descend to pass (plunge to the beginning of path)
             if entry:
-                #if entry feed to Z
-                block.append(CNC.zenter(max(zh, ztab),7))
+                # if entry feed to Z
+                block.append(CNC.zenter(max(zh, ztab), 7))
             else:
-                #without entry just rapid to Z
-                block.append("G0 {0}".format(self.fmt("Z",max(zh, ztab),7)))
+                # without entry just rapid to Z
+                block.append(
+                    "G0 {0}".format(self.fmt("Z", max(zh, ztab), 7)))
 
-            #Begin pass
-            #if comments: block.append("(pass %f)"%(max(zh, ztab)))
-            if comments: block.append("(entered)")
+            # Begin pass
+            # if comments: block.append("(pass %f)"%(max(zh, ztab)))
+            if comments:
+                block.append("(entered)")
 
-            #Loop over segments
+            # Loop over segments
             setfeed = True
             ztabprev = float("-inf")
             ramping = True
-            for sid,segment in enumerate(path):
+
+            for sid, segment in enumerate(path):
                 zhprev = zh
 
-                #Ramp down
-                zh -= (segment.length()/ramp)*zstep #ramp
-                zh = max(zh, z) #Never cut deeper than z!
+                # Ramp down
+                zh -= (segment.length()/ramp)*zstep  # ramp
+                zh = max(zh, z)  # Never cut deeper than z!
 
-                #Reset feedrate if not ramping anymore
+                # Reset feedrate if not ramping anymore
                 if zh == zhprev and ramping:
                     helixfeed = self.cnc["cutfeed"]
                     setfeed = True
                     ramping = False
 
-                #Get tab height
+                # Get tab height
                 ztab = getSegmentZTab(segment)
 
-                #Retract over tabs
-                if ztab != ztabprev: #has tab height changed? tab boundary crossed?
-                    if (ztab == float("-inf") or ztab < ztabprev) and (zh < ztabprev or zhprev < ztabprev): #if we need to enter the toolpath after done clearing the tab
-                        if comments: block.append("(tab down "+str(max(zhprev,ztab))+")")
-                        block.append(CNC.zenter(max(zhprev,ztab),7))
+                # Retract over tabs
+                if ztab != ztabprev:
+                    # has tab height changed? tab boundary crossed?
+                    if (ztab == float("-inf") or ztab < ztabprev) and \
+                          (zh < ztabprev or zhprev < ztabprev):
+                        # Check if we need to enter the toolpath after
+                        # having done clearing the tab
+
+                        if comments:
+                            block.append(
+                                    "(tab down "+str(max(zhprev, ztab))+")")
+
+                        block.append(CNC.zenter(max(zhprev, ztab), 7))
                         setfeed = True
-                    elif zh < ztab or zhprev < ztab: #if we need to go higher in order to clear the tab
-                        if comments: block.append("(tab up "+str(max(zh, ztab))+")")
-                        block.append(CNC.zexit(max(zh, ztab),7))
+                    elif zh < ztab or zhprev < ztab:
+                        # Check if we need to go higher in order to
+                        # clear the tab
+                        if comments:
+                            block.append("(tab up "+str(max(zh, ztab))+")")
+                        block.append(CNC.zexit(max(zh, ztab), 7))
                         setfeed = True
                 ztabprev = ztab
 
-                #Cut next segment of toolpath
-                addSegment(segment, max(zh, ztab)) #Never cut deeper than tabs!
+                # Cut next segment of toolpath
+                # has tab height changed? tab boundary crossed?
+                addSegment(segment, max(zh, ztab))
 
-                #Set feed if needed
+                # Set feed if needed
                 if setfeed:
-                    block[-1] += " %s"%(self.fmt("f",round(helixfeed)))
+                    block[-1] += " {0}".format(self.fmt("f", round(helixfeed)))
                     setfeed = False
 
-                #Truncate
+                # Truncate
                 if truncate is not None:
                     truncate -= segment.length()
-                    if truncate <= -1e-7: break
 
-            #Exit toolpath
+                    if truncate <= -1e-7:
+                        break
+
+            # Exit toolpath
             if exit:
-                if comments: block.append("(exiting)")
+                if comments:
+                    block.append("(exiting)")
+
                 if exitpoint is not None:
-                    block.append('g1 %s %s'%(self.fmt("x",exitpoint[0]),self.fmt("y",exitpoint[1])))
+                    block.append(
+                            'G1 {0} {1}'.format(
+                                    self.fmt("X", exitpoint[0]),
+                                    self.fmt("Y", exitpoint[1])))
                 block.append(CNC.zsafe())
 
         return block
 
-    #----------------------------------------------------------------------
-    # Import paths as block
-    # return ids of blocks added in newblocks list if declared
-    #----------------------------------------------------------------------
-    def importPath(self, pos, paths, newblocks=None, enable=True, multiblock=True):
+    def importPath(self, pos, paths, newblocks=None,
+                   enable=True, multiblock=True):
+        """
+        Import paths as block
+        return ids of blocks added in newblocks list if declared
+        """
+
         undoinfo = []
-        if isinstance(paths,Path):
+
+        if isinstance(paths, Path):
             block = self.fromPath(paths)
             block.enable = enable
-            block.color  = paths.color
-            undoinfo.append(self.addBlockUndo(pos,block))
-            if newblocks is not None: newblocks.append(pos)
+            block.color = paths.color
+            undoinfo.append(self.addBlockUndo(pos, block))
+
+            if newblocks is not None:
+                newblocks.append(pos)
         else:
             block = None
+
             for path in paths:
                 if block is None:
                     block = Block(path.name)
                 block = self.fromPath(path, block)
                 if multiblock:
                     block.enable = enable
-                    undoinfo.append(self.addBlockUndo(pos,block))
-                    if newblocks is not None: newblocks.append(pos)
-                    if pos is not None: pos += 1
+                    undoinfo.append(self.addBlockUndo(pos, block))
+
+                    if newblocks is not None:
+                        newblocks.append(pos)
+
+                    if pos is not None:
+                        pos += 1
+
                     block = None
             if not multiblock:
                 block.enable = enable
-                undoinfo.append(self.addBlockUndo(pos,block))
-                if newblocks is not None: newblocks.append(pos)
+                undoinfo.append(self.addBlockUndo(pos, block))
+
+                if newblocks is not None:
+                    newblocks.append(pos)
+
         return undoinfo
 
-    #----------------------------------------------------------------------
-    # sync file timestamp
-    #----------------------------------------------------------------------
     def syncFileTime(self):
+        """sync file timestamp"""
         try:
             self._lastModified = os.stat(self.filename).st_mtime
-        except:
+        except Exception:
             return False
 
     #----------------------------------------------------------------------
@@ -2640,7 +2781,7 @@ class GCode:
     def checkFile(self):
         try:
             return os.stat(self.filename).st_mtime > self._lastModified
-        except:
+        except Exception:
             return False
 
     #----------------------------------------------------------------------
@@ -3307,7 +3448,7 @@ class GCode:
                     if c not in "XYZIJKR": continue
                     try:
                         new[c] = old[c] = float(cmd[1:])*self.cnc.unit
-                    except:
+                    except Exception:
                         new[c] = old[c] = 0.0
 
                 # Modify values with func
@@ -3332,7 +3473,7 @@ class GCode:
                         try:
                             if c not in present and new.get(c) != old.get(c):
                                 newcmd.append(self.fmt(c,new[c]/self.cnc.unit))
-                        except:
+                        except Exception:
                             pass
                     undoinfo.append(self.setLineUndo(bid,lid," ".join(newcmd)))
                 self.cnc.motionEnd()
@@ -3711,7 +3852,7 @@ class GCode:
                     c = cmd[0]
                     try:
                         value = float(cmd[1:])
-                    except:
+                    except Exception:
                         value = 0.0
 
                     if c.upper() in ("F","X","Y","Z","I","J","K","R","P"):

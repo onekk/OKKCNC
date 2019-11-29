@@ -77,7 +77,7 @@ ERROR_CODES = {
 
 
 # Convert Grbl V1.0 codes to Grbl V0.9
-for e1,e0 in (	("error: Expected command letter", "error:1"),
+for e1, e0 in (	("error: Expected command letter", "error:1"),
 		("error: Bad number format", "error:2"),
 		("error: Invalid statement", "error:3"),
 		("error: Value < 0", "error:4"),
