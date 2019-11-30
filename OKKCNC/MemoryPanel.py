@@ -148,7 +148,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # Right Button Clicked, set mem
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
-                mem_name = Utils.InputValue(OCV.application, "ME")
+                mem_name = Utils.InputValue(OCV.APP, "ME")
                 #print("MG mem_name = ", mem_name)
                 if mem_name is None:
                     mem_name = mem_key
@@ -216,7 +216,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             wd.config(text=label, background=but_color)
 
     def clrX(self):
-        mem_num = Utils.InputValue(OCV.application, "MN")
+        mem_num = Utils.InputValue(OCV.APP, "MN")
 
         #print("clrX >", mem_num)
 
@@ -266,14 +266,14 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                 #print("sBM md >> ", md)
                 if  md[3] == 1:
                     OCV.WK_mem = mem_num
-                    OCV.application.event_generate("<<SetMem>>")
+                    OCV.APP.event_generate("<<SetMem>>")
 
     def resetMemView(self):
         indices = [i for i, x in enumerate(OCV.WK_active_mems) if x == 2]
         for mem in indices:
             print("resetMemView index = ", mem)
             OCV.WK_mem = mem
-            OCV.application.event_generate("<<ClrMem>>")
+            OCV.APP.event_generate("<<ClrMem>>")
 
 
 

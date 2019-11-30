@@ -20,10 +20,8 @@ import tkExtra
 import CNCRibbon
 
 
-#===============================================================================
-# Terminal Group
-#===============================================================================
 class TerminalGroup(CNCRibbon.ButtonGroup):
+    """Terminal Group"""
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, N_("Terminal"), app)
 
@@ -40,7 +38,6 @@ class TerminalGroup(CNCRibbon.ButtonGroup):
         tkExtra.Balloon.set(but, _("Clear terminal"))
 
 
-
 class CommandsGroup(CNCRibbon.ButtonMenuGroup):
     """Commands Group"""
     def __init__(self, master, app):
@@ -55,7 +52,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         self.grid3rows()
 
         # Disable state for some SMOOTHIE commands
-        state = OCV.application.controller in ("GRBL0", "GRBL1") and Tk.NORMAL or Tk.DISABLED,
+        state = OCV.APP.controller in ("GRBL0", "GRBL1") and Tk.NORMAL or Tk.DISABLED,
 
         # ---
         col, row = 0, 0
@@ -165,7 +162,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         col += 1
-        row = 1
+        row = 0
 
         but = Ribbon.LabelButton(
             self.frame,
@@ -182,14 +179,25 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         self.addWidget(but)
 
+        row = 1
 
-#===============================================================================
+        but = Ribbon.LabelButton(
+            self.frame,
+            self,
+            "<<ERR_HELP>>",
+            text=_("Error Help"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
+
 class TerminalFrame(CNCRibbon.PageFrame):
     """TerminalFrame class"""
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, N_("Terminal"), app)
 
-        # ---
         self.terminal = Tk.Listbox(
             self,
             background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
@@ -210,7 +218,6 @@ class TerminalFrame(CNCRibbon.PageFrame):
         self.terminal.bind("<Control-Key-c>", self.copy)
         tkExtra.Balloon.set(self.terminal, _("Terminal communication with controller"))
 
-        # ---
         self.buffer = Tk.Listbox(
             self,
             background="LightYellow",
@@ -237,10 +244,8 @@ class TerminalFrame(CNCRibbon.PageFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-
     def clear(self, event=None):
         self.terminal.delete(0, Tk.END)
-
 
     def copy(self, event):
         self.clipboard_clear()
@@ -249,13 +254,11 @@ class TerminalFrame(CNCRibbon.PageFrame):
         return "break"
 
 
-
 class TerminalPage(CNCRibbon.Page):
     """Terminal Page"""
     __doc__ = _("Serial Terminal")
     _name_ = "Terminal"
     _icon_ = "terminal"
-
 
     def register(self):
         """Add a widget in the widgets list to enable disable during the run"""

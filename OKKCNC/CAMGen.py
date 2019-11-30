@@ -128,14 +128,14 @@ def line(self, app, end_depth, mem_0, mem_1):
     blocks.append(block)
 
     if blocks is not None:
-        active = OCV.application.activeBlock()
+        active = OCV.APP.activeBlock()
 
         if active == 0:
             active = 1
 
-        OCV.application.gcode.insBlocks(active, blocks, "Line Cut")
-        OCV.application.refresh()
-        OCV.application.setStatus(_("Line Cut: Generated line cut code"))
+        OCV.APP.gcode.insBlocks(active, blocks, "Line Cut")
+        OCV.APP.refresh()
+        OCV.APP.setStatus(_("Line Cut: Generated line cut code"))
 
 
 def pocket(self, app, end_depth, mem_0, mem_1):
@@ -296,11 +296,11 @@ def pocket(self, app, end_depth, mem_0, mem_1):
     blocks.append(block)
 
     if blocks is not None:
-        active = OCV.application.activeBlock()
+        active = OCV.APP.activeBlock()
 
         if active == 0:
             active = 1
 
-        OCV.application.gcode.insBlocks(active, blocks, "Line Cut")
-        OCV.application.refresh()
-        OCV.application.setStatus(_("Line Cut: Generated line cut code"))
+        OCV.APP.gcode.insBlocks(active, blocks, "Line Cut")
+        OCV.APP.refresh()
+        OCV.APP.setStatus(_("Line Cut: Generated line cut code"))

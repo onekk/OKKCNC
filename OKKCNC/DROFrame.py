@@ -279,14 +279,12 @@ class DROFrame(CNCRibbon.PageFrame):
 
         menu.tk_popup(event.x_root, event.y_root)
 
-    #----------------------------------------------------------------------
     def updateState(self):
-        msg = OCV.application._msg or OCV.c_state
+        msg = OCV.APP._msg or OCV.c_state
         if OCV.CD["pins"] is not None and OCV.CD["pins"] != "":
             msg += " ["+OCV.CD["pins"]+"]"
         self.state.config(text=msg, background=OCV.CD["color"])
 
-    #----------------------------------------------------------------------
     def updateCoords(self):
         try:
             focus = self.focus_get()
@@ -306,27 +304,30 @@ class DROFrame(CNCRibbon.PageFrame):
         self.ymachine["text"] = cmd.padFloat(OCV.drozeropad, OCV.CD["my"])
         self.zmachine["text"] = cmd.padFloat(OCV.drozeropad, OCV.CD["mz"])
 
-
     def setX(self, event=None):
-        if OCV.application.running: return
+        if OCV.s_running:
+            return
+
         try:
             value = round(eval(self.xwork.get(), None, OCV.CD), 3)
             OCV.mcontrol.wcs_set(value, None, None)
         except:
             pass
 
-    #----------------------------------------------------------------------
     def setY(self, event=None):
-        if OCV.application.running: return
+        if OCV.s_running:
+            return
+
         try:
             value = round(eval(self.ywork.get(), None, OCV.CD), 3)
             OCV.mcontrol.wcs_set(None, value, None)
         except:
             pass
 
-    #----------------------------------------------------------------------
     def setZ(self, event=None):
-        if OCV.application.running: return
+        if OCV.s_running:
+            return
+
         try:
             value = round(eval(self.zwork.get(), None, OCV.CD), 3)
             OCV.mcontrol.wcs_set(None, None, value)

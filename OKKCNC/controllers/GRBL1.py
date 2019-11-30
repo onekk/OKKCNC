@@ -10,26 +10,27 @@ from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, V
 from CNC import CNC
 import time
 
-OV_FEED_100     = b'\x90'        # Extended override commands
-OV_FEED_i10     = b'\x91'
-OV_FEED_d10     = b'0x92'
-OV_FEED_i1      = b'0x93'
-OV_FEED_d1      = b'0x94'
+# Extended override commands
+OV_FEED_100 = b'\x90'
+OV_FEED_i10 = b'\x91'
+OV_FEED_d10 = b'0x92'
+OV_FEED_i1 = b'0x93'
+OV_FEED_d1 = b'0x94'
 
-OV_RAPID_100    = b'0x95'
-OV_RAPID_50     = b'0x96'
-OV_RAPID_25     = b'0x97'
+OV_RAPID_100 = b'0x95'
+OV_RAPID_50 = b'0x96'
+OV_RAPID_25 = b'0x97'
 
-OV_SPINDLE_100  = b'0x99'
-OV_SPINDLE_i10  = b'0x9A'
-OV_SPINDLE_d10  = b'0x9B'
-OV_SPINDLE_i1   = b'0x9C'
-OV_SPINDLE_d1   = b'0x9D'
+OV_SPINDLE_100 = b'0x99'
+OV_SPINDLE_i10 = b'0x9A'
+OV_SPINDLE_d10 = b'0x9B'
+OV_SPINDLE_i1 = b'0x9C'
+OV_SPINDLE_d1 = b'0x9D'
 
 OV_SPINDLE_STOP = b'0x9E'
 
 OV_FLOOD_TOGGLE = b'0xA0'
-OV_MIST_TOGGLE  = b'0xA1'
+OV_MIST_TOGGLE = b'0xA1'
 
 
 class Controller(_GenericGRBL):
@@ -37,7 +38,7 @@ class Controller(_GenericGRBL):
         self.gcode_case = 0
         self.has_override = True
         self.master = master
-        #print("grbl1 loaded")
+        # print("grbl1 loaded")
 
     def jog(self, dir):
         self.master.sendGCode("$J=G91 {0} F100000".format(dir))
@@ -46,64 +47,65 @@ class Controller(_GenericGRBL):
         OCV.CD["_OvChanged"] = False  # Temporary
         # Check feed
         diff = OCV.CD["_OvFeed"] - OCV.CD["OvFeed"]
-        if diff==0:
+        if diff == 0:
             pass
         elif OCV.CD["_OvFeed"] == 100:
             self.master.serial_write_byte(OV_FEED_100)
         elif diff >= 10:
             self.master.serial_write_byte(OV_FEED_i10)
-            OCV.CD["_OvChanged"] = diff>10
+            OCV.CD["_OvChanged"] = diff > 10
         elif diff <= -10:
             self.master.serial_write_byte(OV_FEED_d10)
-            OCV.CD["_OvChanged"] = diff<-10
+            OCV.CD["_OvChanged"] = diff < -10
         elif diff >= 1:
             self.master.serial_write_byte(OV_FEED_i1)
-            OCV.CD["_OvChanged"] = diff>1
+            OCV.CD["_OvChanged"] = diff > 1
         elif diff <= -1:
             self.master.serial_write_byte(OV_FEED_d1)
-            OCV.CD["_OvChanged"] = diff<-1
+            OCV.CD["_OvChanged"] = diff < -1
         # Check rapid
-        target  = OCV.CD["_OvRapid"]
+        target = OCV.CD["_OvRapid"]
         current = OCV.CD["OvRapid"]
         if target == current:
             pass
         elif target == 100:
             self.master.serial_write_byte(OV_RAPID_100)
         elif target == 75:
-            self.master.serial_write_byte(OV_RAPID_50)    # FIXME: GRBL protocol does not specify 75% override command at all
+            # FIXME: GRBL protocol does not specify 75% override
+            # command at all
+            self.master.serial_write_byte(OV_RAPID_50)
         elif target == 50:
             self.master.serial_write_byte(OV_RAPID_50)
         elif target == 25:
             self.master.serial_write_byte(OV_RAPID_25)
         # Check Spindle
         diff = OCV.CD["_OvSpindle"] - OCV.CD["OvSpindle"]
-        if diff==0:
+        if diff == 0:
             pass
         elif OCV.CD["_OvSpindle"] == 100:
             self.master.serial_write_byte(OV_SPINDLE_100)
         elif diff >= 10:
             self.master.serial_write_byte(OV_SPINDLE_i10)
-            OCV.CD["_OvChanged"] = diff>10
+            OCV.CD["_OvChanged"] = diff > 10
         elif diff <= -10:
             self.master.serial_write_byte(OV_SPINDLE_d10)
-            OCV.CD["_OvChanged"] = diff<-10
+            OCV.CD["_OvChanged"] = diff < -10
         elif diff >= 1:
             self.master.serial_write_byte(OV_SPINDLE_i1)
-            OCV.CD["_OvChanged"] = diff>1
+            OCV.CD["_OvChanged"] = diff > 1
         elif diff <= -1:
             self.master.serial_write_byte(OV_SPINDLE_d1)
-            OCV.CD["_OvChanged"] = diff<-1
-
+            OCV.CD["_OvChanged"] = diff < -1
 
     def parseBracketAngle(self, line, cline):
         self.master.sio_status = False
         fields = line[1:-1].split("|")
         OCV.CD["pins"] = ""
 
-        #Report if state has changed
-        if OCV.c_state != fields[0] or self.master.runningPrev != self.master.running:
+        # Report if state has changed
+        if OCV.c_state != fields[0] or OCV.s_runningPrev != OCV.s_running:
             self.master.controllerStateChange(fields[0])
-        self.master.runningPrev = self.master.running
+        OCV.s_runningPrev = OCV.s_running
         OCV.c_state = fields[0]
 
         for field in fields[1:]:
@@ -166,13 +168,13 @@ class Controller(_GenericGRBL):
                 try:
                     OCV.CD["pins"] = word[1]
                     if 'S' in word[1]:
-                        if OCV.c_state == 'Idle' and not self.master.running:
+                        if OCV.c_state == 'Idle' and not OCV.s_running:
                             print("Stream requested by CYCLE START machine button")
                             self.master.event_generate("<<Run>>", when = 'tail')
                         else:
                             print(
                                     "Ignoring machine stream request, because of state: ",
-                                    OCV.c_state, self.master.running)
+                                    OCV.c_state, OCV.s_running)
                 except (ValueError,IndexError):
                     break
 
@@ -188,7 +190,7 @@ class Controller(_GenericGRBL):
             OCV.CD["prbx"] = float(word[1])
             OCV.CD["prby"] = float(word[2])
             OCV.CD["prbz"] = float(word[3])
-            # if self.running:
+
             self.master.gcode.probe.add(
                  OCV.CD["prbx"]-OCV.CD["wcox"],
                  OCV.CD["prby"]-OCV.CD["wcoy"],

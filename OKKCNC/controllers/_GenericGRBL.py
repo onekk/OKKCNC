@@ -56,6 +56,7 @@ ERROR_CODES = {
     "error:35" : _("A G2 or G3 arc, traced with the offset definition, is missing the IJK offset word in the selected plane to trace the arc."),
     "error:36" : _("There are unused, leftover G-code words that aren't used by any command in the block."),
     "error:37" : _("The G43.1 dynamic tool length offset command cannot apply an offset to an axis other than its configured axis. The Grbl default axis is the Z-axis."),
+    "error:38" : _("Tool number greater than max supported value."),
 
     "ALARM:1" : _("Hard limit triggered. Machine position is likely lost due to sudden and immediate halt. Re-homing is highly recommended."),
     "ALARM:2" : _("G-code motion target exceeds machine travel. Machine position safely retained. Alarm may be unlocked."),
@@ -77,7 +78,8 @@ ERROR_CODES = {
 
 
 # Convert Grbl V1.0 codes to Grbl V0.9
-for e1, e0 in (    ("error: Expected command letter", "error:1"),
+for e1, e0 in (
+        ("error: Expected command letter", "error:1"),
         ("error: Bad number format", "error:2"),
         ("error: Invalid statement", "error:3"),
         ("error: Value < 0", "error:4"),
@@ -119,7 +121,7 @@ for e1, e0 in (    ("error: Expected command letter", "error:1"),
         ("ALARM: Homing fail", "ALARM:6"),
         ("ALARM: Homing fail", "ALARM:7"),
         ("ALARM: Homing fail", "ALARM:8"),
-        ("ALARM: Homing fail", "ALARM:9") ):
+        ("ALARM: Homing fail", "ALARM:9")):
     ERROR_CODES[e1] = ERROR_CODES[e0]
 
 

@@ -234,7 +234,7 @@ class _GenericController:
 
             OCV.c_state = line
 
-            if self.master.running:
+            if OCV.s_running:
                 OCV.s_stop = True
 
         elif line.find("ok")>=0:
@@ -252,7 +252,7 @@ class _GenericController:
             if pat:
                 OCV.CD["grbl_{0}".format(pat.group(1))] = pat.group(2)
 
-        elif line[:4]=="Grbl" or line[:13]=="CarbideMotion":  # and self.running:
+        elif line[:4]=="Grbl" or line[:13]=="CarbideMotion":
             #tg = time.time()
             self.master.log.put((self.master.MSG_RECEIVE, line))
             OCV.s_stop = True

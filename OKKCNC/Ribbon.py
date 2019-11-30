@@ -2,258 +2,272 @@
 #
 # Author: carlo.dormeletti@gmail.com
 # Date: 26 Oct 2019
+"""Ribbon.py
+
+   Thisfile set the ribbon on top of pages
+"""
 
 from __future__ import absolute_import
 from __future__ import print_function
 
 try:
-    from Tkinter import *
+    import Tkinter as Tk
 except ImportError:
-    from tkinter import *
+    import tkinter as Tk
 
 import OCV
 import Utils
 import tkExtra
 
-
-
 # Ribbon show state
-RIBBON_HIDDEN =  0    # Hidden
-RIBBON_SHOWN  =  1    # Displayed
-RIBBON_TEMP   = -1    # Show temporarily
+RIBBON_HIDDEN = 0  # Hidden
+RIBBON_SHOWN = 1   # Displayed
+RIBBON_TEMP = -1   # Show temporarily
 
 
-#===============================================================================
-# Frame Group with a button at bottom
-#===============================================================================
-class LabelGroup(Frame):
+class LabelGroup(Tk.Frame):
+    """Frame Group with a button at bottom"""
     def __init__(self, master, name, command=None, **kw):
-        Frame.__init__(self, master, **kw)
+        Tk.Frame.__init__(self, master, **kw)
         self.name = name
-        self.config(    #bg="Green",
-                background=OCV.BACKGROUND,
-                borderwidth=0,
-                highlightthickness=0,
-                pady=0)
+        self.config(
+            background=OCV.BACKGROUND,
+            borderwidth=0,
+            highlightthickness=0,
+            pady=0)
 
         # right frame as a separator
-        f = Frame(self, borderwidth=2, relief=GROOVE, background=OCV.BACKGROUND_DISABLE)
-        f.pack(side=RIGHT, fill=Y, padx=0, pady=0)
+        sep = Tk.Frame(
+            self,
+            borderwidth=2,
+            relief=Tk.GROOVE,
+            background=OCV.BACKGROUND_DISABLE)
+
+        sep.pack(side=Tk.RIGHT, fill=Tk.Y, padx=0, pady=0)
 
         # frame to insert the buttons
-        self.frame = Frame(self,
-                #bg="Orange",
-                background=OCV.BACKGROUND,
-                padx=0,
-                pady=0)
-        self.frame.pack(side=TOP, expand=TRUE, fill=BOTH, padx=0, pady=0)
+        self.frame = Tk.Frame(
+            self,
+            background=OCV.BACKGROUND,
+            padx=0,
+            pady=0)
+
+        self.frame.pack(side=Tk.TOP, expand=Tk.TRUE,
+                        fill=Tk.BOTH, padx=0, pady=0)
 
         if command:
-            self.label = LabelButton(self, self, "<<%s>>"%(name), text=name)
-            self.label.config(command=command,
+            self.label = LabelButton(
+                self,
+                self,
+                "<<{0}>>".format(name),
+                text=name)
+
+            self.label.config(
+                command=command,
                 image=Utils.icons["triangle_down"],
                 foreground=OCV.FOREGROUND_GROUP,
                 background=OCV.BACKGROUND_GROUP,
                 highlightthickness=0,
                 borderwidth=0,
                 pady=0,
-                compound=RIGHT)
+                compound=Tk.RIGHT)
         else:
-            self.label = Label(self, text=_(name),
-                    font = OCV.RIBBON_FONT,
-                    foreground = OCV.FOREGROUND_GROUP,
-                    background = OCV.BACKGROUND_GROUP,
-                    padx=2,
-                    pady=0)    # Button takes 1px for border width
-        self.label.pack(side=BOTTOM, fill=X, pady=0)
+            self.label = Tk.Label(
+                self,
+                text=_(name),
+                font=OCV.RIBBON_FONT,
+                foreground=OCV.FOREGROUND_GROUP,
+                background=OCV.BACKGROUND_GROUP,
+                padx=2,
+                pady=0)    # Button takes 1px for border width
 
-    #-----------------------------------------------------------------------
+        self.label.pack(side=Tk.BOTTOM, fill=Tk.X, pady=0)
+
     def grid2rows(self):
+        """grid2rows"""
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.grid_rowconfigure(1, weight=1)
 
-    #-----------------------------------------------------------------------
     def grid3rows(self):
+        """grid3rows"""
         self.grid2rows()
         self.frame.grid_rowconfigure(2, weight=1)
 
 
-#===============================================================================
-class _KeyboardFocus:
-    #-----------------------------------------------------------------------
-    def _bind(self):
-        self.bind("<Return>",        self._invoke)
-        self.bind("<FocusIn>",        self._focusIn)
-        self.bind("<FocusOut>",        self._focusOut)
+class _KeyboardFocus(object):
+    """_KeyboardFocus class"""
 
-    #-----------------------------------------------------------------------
+    def _bind(self):
+        self.bind("<Return>", self._invoke)
+        self.bind("<FocusIn>", self._focusIn)
+        self.bind("<FocusOut>", self._focusOut)
+
     def _focusIn(self, event):
         self.__backgroundColor = self.cget("background")
-        self.config(background = OCV.ACTIVE_COLOR)
+        self.config(background=OCV.ACTIVE_COLOR)
 
-    #-----------------------------------------------------------------------
     def _focusOut(self, event):
-        self.config(background = self.__backgroundColor)
+        self.config(background=self.__backgroundColor)
 
-    #-----------------------------------------------------------------------
     def _invoke(self, event):
         self.invoke()
 
 
-#===============================================================================
-# Button with Label that generates a Virtual Event or calls a command
-#===============================================================================
-class LabelButton(Button, _KeyboardFocus):
+class LabelButton(Tk.Button, _KeyboardFocus):
+    """Button with Label that generates a Virtual Event or calls a command"""
     def __init__(self, master, recipient=None, event=None, **kw):
-        Button.__init__(self, master, **kw)
+        Tk.Button.__init__(self, master, **kw)
         self.config(
-                relief = FLAT,
-                activebackground = OCV.ACTIVE_COLOR,
-                font = OCV.RIBBON_FONT,
-                borderwidth = 1,
-                highlightthickness = 0,
-                padx = 2,
-                pady = 0)
+            relief=Tk.FLAT,
+            activebackground=OCV.ACTIVE_COLOR,
+            font=OCV.RIBBON_FONT,
+            borderwidth=1,
+            highlightthickness=0,
+            padx=2,
+            pady=0)
         _KeyboardFocus._bind(self)
 
         if recipient is not None:
-            self.config(command = self.sendEvent)
+            self.config(command=self.sendEvent)
             self._recipient = recipient
             self._event = event
         else:
             self._recipient = None
             self._event = None
 
-    #-----------------------------------------------------------------------
     def sendEvent(self):
         self._recipient.event_generate(self._event)
 
 
-#===============================================================================
-class LabelCheckbutton(Checkbutton, _KeyboardFocus):
+class LabelCheckbutton(Tk.Checkbutton, _KeyboardFocus):
     def __init__(self, master, **kw):
-        Checkbutton.__init__(self, master, **kw)
-        self.config(    selectcolor        = OCV.LABEL_SELECT_COLOR,
-                activebackground   = OCV.ACTIVE_COLOR,
-                background         = OCV.BACKGROUND,
-                indicatoron        = 0,
-                relief             = FLAT,
-                borderwidth        = 0,
-                highlightthickness = 0,
-                padx               = 0,
-                pady               = 0,
-                font               = OCV.RIBBON_FONT
-            )
-        _KeyboardFocus._bind(self)
-
-
-#===============================================================================
-class LabelRadiobutton(Radiobutton, _KeyboardFocus):
-    def __init__(self, master, **kw):
-        Radiobutton.__init__(self, master, **kw)
+        Tk.Checkbutton.__init__(self, master, **kw)
         self.config(
-            selectcolor        = OCV.LABEL_SELECT_COLOR,
-            activebackground   = OCV.ACTIVE_COLOR,
-            background         = OCV.BACKGROUND,
-            indicatoron        = 0,
-            borderwidth        = 0,
-            highlightthickness = 0,
-            pady               = 0,
-            font               = OCV.RIBBON_FONT
+            selectcolor=OCV.LABEL_SELECT_COLOR,
+            activebackground=OCV.ACTIVE_COLOR,
+            background=OCV.BACKGROUND,
+            indicatoron=0,
+            relief=Tk.FLAT,
+            borderwidth=0,
+            highlightthickness=0,
+            padx=0,
+            pady=0,
+            font=OCV.RIBBON_FONT
         )
+
         _KeyboardFocus._bind(self)
 
 
-#===============================================================================
+class LabelRadiobutton(Tk.Radiobutton, _KeyboardFocus):
+    def __init__(self, master, **kw):
+        Tk.Radiobutton.__init__(self, master, **kw)
+        self.config(
+            selectcolor=OCV.LABEL_SELECT_COLOR,
+            activebackground=OCV.ACTIVE_COLOR,
+            background=OCV.BACKGROUND,
+            indicatoron=0,
+            borderwidth=0,
+            highlightthickness=0,
+            pady=0,
+            font=OCV.RIBBON_FONT
+        )
+
+        _KeyboardFocus._bind(self)
+
+
 class LabelCombobox(tkExtra.Combobox, _KeyboardFocus):
     def __init__(self, master, **kw):
         tkExtra.Combobox.__init__(self, master, **kw)
+
         self.config(background=OCV.BACKGROUND, font=OCV.RIBBON_FONT)
-        Frame.config(self, background=OCV.BACKGROUND, padx=0, pady=0)
+
+        Tk.Frame.config(self, background=OCV.BACKGROUND, padx=0, pady=0)
+
         _KeyboardFocus._bind(self)
 
-    #-----------------------------------------------------------------------
     def _focusOut(self, event):
-        self.config(background = OCV.BACKGROUND) #self.__backgroundColor)
-        Frame.config(self, background= OCV.BACKGROUND) #self.__backgroundColor)
+        self.config(background=OCV.BACKGROUND)
+
+        Tk.Frame.config(self, background=OCV.BACKGROUND)
 
 
-#===============================================================================
-# Button with Label that popup a menu
-#===============================================================================
-class MenuButton(Button, _KeyboardFocus):
+class MenuButton(Tk.Button, _KeyboardFocus):
+    """Button with Label that popup a menu"""
     def __init__(self, master, menulist, **kw):
-        Button.__init__(self, master, **kw)
-        self.config(    relief           = FLAT,
-                activebackground = OCV.ACTIVE_COLOR,
-                font             = OCV.RIBBON_FONT,
-                borderwidth      = 0,
-                highlightthickness= 0,
-                padx             = 2,
-                pady             = 0,
-                command          = self.showMenu)
+        Tk.Button.__init__(self, master, **kw)
+        self.config(
+            relief=Tk.FLAT,
+            activebackground=OCV.ACTIVE_COLOR,
+            font=OCV.RIBBON_FONT,
+            borderwidth=0,
+            highlightthickness=0,
+            padx=2,
+            pady=0,
+            command=self.showMenu)
 
         _KeyboardFocus._bind(self)
         self.bind("<Return>", self.showMenu)
+
         if menulist is not None:
             self._menu = MenuButton.createMenuFromList(self, menulist)
         else:
             self._menu = None
 
-    #-----------------------------------------------------------------------
     def showMenu(self, event=None):
         if self._menu is not None:
             self._showMenu(self._menu)
         else:
             self._showMenu(self.createMenu())
 
-    #-----------------------------------------------------------------------
     def _showMenu(self, menu):
         if menu is not None:
             menu.tk_popup(
                 self.winfo_rootx(),
                 self.winfo_rooty() + self.winfo_height())
 
-    #-----------------------------------------------------------------------
     def createMenu(self):
         return None
 
-    #-----------------------------------------------------------------------
     @staticmethod
     def createMenuFromList(master, menulist):
-        mainmenu = menu = Menu(master, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
+        mainmenu = menu = Tk.Menu(
+            master,
+            tearoff=0,
+            activebackground=OCV.ACTIVE_COLOR)
+
         for item in menulist:
             if item is None:
                 menu.add_separator()
-            elif isinstance(item,str):
-                menu = Menu(mainmenu)
+            elif isinstance(item, str):
+                menu = Tk.Menu(mainmenu)
                 mainmenu.add_cascade(label=item, menu=menu)
             else:
                 name, icon, cmd = item
-                if icon is None: icon = "empty"
-                menu.add_command(label=name,
-                        image=Utils.icons[icon],
-                        compound=LEFT,
-                        command=cmd)
+
+                if icon is None:
+                    icon = "empty"
+
+                menu.add_command(
+                    label=name,
+                    image=Utils.icons[icon],
+                    compound=Tk.LEFT,
+                    command=cmd)
+
         return menu
 
 
-#===============================================================================
-# A label group with a drop down menu
-#===============================================================================
 class MenuGroup(LabelGroup):
+    """A label group with a drop down menu"""
     def __init__(self, master, name, menulist=None, **kw):
         LabelGroup.__init__(self, master, name, command=self._showMenu, **kw)
         self._menulist = menulist
 
-    #-----------------------------------------------------------------------
     def createMenu(self):
         if self._menulist is not None:
             return MenuButton.createMenuFromList(self, self._menulist)
         else:
             return None
 
-    #-----------------------------------------------------------------------
     def _showMenu(self):
         menu = self.createMenu()
         if menu is not None:
@@ -262,349 +276,380 @@ class MenuGroup(LabelGroup):
                 self.winfo_rooty() + self.winfo_height())
 
 
-#===============================================================================
-# Context group for a specific item in the Ribbon
-#===============================================================================
-#class ContextGroup(LabelGroup):
-#    def __init__(self, master, name, **kw):
-#        LabelGroup.__init__(self, master, name, **kw)
-
-
-#===============================================================================
-# Page Tab buttons
-#===============================================================================
-class TabButton(Radiobutton):
+class TabButton(Tk.Radiobutton):
+    """Page Tab buttons"""
     def __init__(self, master, **kw):
-        Radiobutton.__init__(self, master, **kw)
-        self.config(selectcolor   = OCV.BACKGROUND,
-                activebackground   = OCV.ACTIVE_COLOR,
-                indicatoron        = 0,
-                relief             = FLAT,
-                font               = OCV.RIBBON_TABFONT,
-                borderwidth        = 0,
-                highlightthickness = 0,
-                padx               = 5,
-                pady               = 0,
-                background         = OCV.BACKGROUND_DISABLE
-            )
-        self.bind("<FocusIn>",        self._focusIn)
-        self.bind("<FocusOut>",        self._focusOut)
+        Tk.Radiobutton.__init__(self, master, **kw)
+        self.config(
+            selectcolor=OCV.BACKGROUND,
+            activebackground=OCV.ACTIVE_COLOR,
+            indicatoron=0,
+            relief=Tk.FLAT,
+            font=OCV.RIBBON_TABFONT,
+            borderwidth=0,
+            highlightthickness=0,
+            padx=5,
+            pady=0,
+            background=OCV.BACKGROUND_DISABLE
+        )
 
-    #-----------------------------------------------------------------------
-    # Bind events on TabFrame
-    #----------------------------------------------------------------------
+        self.bind("<FocusIn>", self._focusIn)
+        self.bind("<FocusOut>", self._focusOut)
+
     def bindClicks(self, tabframe):
-        self.bind("<Double-1>",         tabframe.double)
-        self.bind("<Button-1>",         tabframe.dragStart)
-        self.bind("<B1-Motion>",        tabframe.drag)
-        self.bind("<ButtonRelease-1>",  tabframe.dragStop)
+        """Bind events on TabFrame"""
+        self.bind("<Double-1>", tabframe.double)
+        self.bind("<Button-1>", tabframe.dragStart)
+        self.bind("<B1-Motion>", tabframe.drag)
+        self.bind("<ButtonRelease-1>", tabframe.dragStop)
         self.bind("<Control-ButtonRelease-1>", tabframe.pinActive)
 
-        self.bind("<Left>",        tabframe._tabLeft)
-        self.bind("<Right>",        tabframe._tabRight)
-        self.bind("<Down>",        tabframe._tabDown)
+        self.bind("<Left>", tabframe._tabLeft)
+        self.bind("<Right>", tabframe._tabRight)
+        self.bind("<Down>", tabframe._tabDown)
 
-    #----------------------------------------------------------------------
     def _focusIn(self, evenl=None):
-        self.config(selectcolor = OCV.ACTIVE_COLOR)
+        self.config(selectcolor=OCV.ACTIVE_COLOR)
 
-    #----------------------------------------------------------------------
     def _focusOut(self, evenl=None):
-        self.config(selectcolor = OCV.BACKGROUND)
+        self.config(selectcolor=OCV.BACKGROUND)
 
 
-#===============================================================================
-# Page
-#===============================================================================
-class Page:        # <--- should be possible to be a toplevel as well
-    _motionClasses = (LabelButton, LabelRadiobutton, LabelCheckbutton, LabelCombobox, MenuButton)
+class Page(object):  # <--- should be possible to be a toplevel as well
+    """Page"""
+    _motionClasses = (
+        LabelButton,
+        LabelRadiobutton,
+        LabelCheckbutton,
+        LabelCombobox,
+        MenuButton)
+
     _name_ = None
-    _icon_ = None
-    _doc_  = "Tooltip"
 
-    #-----------------------------------------------------------------------
+    _icon_ = None
+
+    _doc_ = "Tooltip"
+
     def __init__(self, master, **kw):
         self.master = master
-        self.name   = self._name_
-        self._icon  = Utils.icons[self._icon_]
-        self._tab   = None    # Tab button
+        self.name = self._name_
+        self._icon = Utils.icons[self._icon_]
+        self._tab = None  # Tab button
         self.ribbons = []
-        self.frames  = []
+        self.frames = []
         self.init()
         self.create()
 
-    #-----------------------------------------------------------------------
-    # Override initialization
-    #-----------------------------------------------------------------------
     def init(self):
+        """Override initialization"""
         pass
 
-    #-----------------------------------------------------------------------
-    # The tab page can change master if undocked
-    #-----------------------------------------------------------------------
-    # FIXME XXX SHOULD BE REMOVED
-    #-----------------------------------------------------------------------
     def create(self):
+        """The tab page can change master if undocked"""
         self.createPage()
-#        self.ribbonBindMotion()
-#        self.refresh()
 
-    #-----------------------------------------------------------------------
-    # FIXME XXX SHOULD BE REMOVED
-    #-----------------------------------------------------------------------
     def createPage(self):
-        self.page = Frame(self.master._pageFrame)
+        self.page = Tk.Frame(self.master._pageFrame)
         return self.page
 
-    #-----------------------------------------------------------------------
-    # Called when a page is activated
-    #-----------------------------------------------------------------------
     def activate(self):
+        """Called when a page is activated"""
         pass
 
-    #-----------------------------------------------------------------------
     def refresh(self):
         pass
 
-    # ----------------------------------------------------------------------
-    def canUndo(self):    return True
+    def canUndo(self):
+        return True
 
-    # ----------------------------------------------------------------------
-    def canRedo(self):    return True
+    def canRedo(self):
+        return True
 
-    # ----------------------------------------------------------------------
-    def resetUndo(self):    pass
+    def resetUndo(self):
+        pass
 
-    # ----------------------------------------------------------------------
-    def undo(self, event=None): pass
+    def undo(self, event=None):
+        pass
 
-    # ----------------------------------------------------------------------
-    def redo(self, event=None): pass
+    def redo(self, event=None):
+        pass
 
-    # ----------------------------------------------------------------------
     def refreshUndoButton(self):
-        # Check if frame provides undo/redo
-        if self.master is None: return
-        if self.page is None: return
+        """Check if frame provides undo/redo"""
+        if self.master is None:
+            return
+
+        if self.page is None:
+            return
 
         if self.canUndo():
-            state = NORMAL
+            state = Tk.NORMAL
         else:
-            state = DISABLED
+            state = Tk.DISABLED
+
         self.master.tool["undo"].config(state=state)
         self.master.tool["undolist"].config(state=state)
 
         if self.canRedo():
-            state = NORMAL
+            state = Tk.NORMAL
         else:
-            state = DISABLED
+            state = Tk.DISABLED
+
         self.master.tool["redo"].config(state=state)
 
-    #-----------------------------------------------------------------------
     def keyboardFocus(self):
         self._tab.focus_set()
 
-    #-----------------------------------------------------------------------
-    # Return the closest widget along a direction
-    #-----------------------------------------------------------------------
     @staticmethod
-    def __compareDown(x,y,xw,yw):  return yw>y+1
+    def __compareDown(x, y, xw, yw):
+        """Return the closest widget in Up direction"""
+        return yw > y+1
 
     @staticmethod
-    def __compareUp(x,y,xw,yw):    return yw<y-1
+    def __compareUp(x, y, xw, yw):
+        """Return the closest widget in Down direction"""
+        return yw < y-1
 
     @staticmethod
-    def __compareRight(x,y,xw,yw): return xw>x+1
+    def __compareRight(x, y, xw, yw):
+        """Return the closest widget in Right direction"""
+        return xw > x+1
 
     @staticmethod
-    def __compareLeft(x,y,xw,yw):  return xw<x-1
+    def __compareLeft(x, y, xw, yw):
+        """Return the closest widget in Left direction"""
+        return xw < x-1
 
-    #-----------------------------------------------------------------------
     @staticmethod
     def __closest(widget, compare, x, y):
         closest = None
         dc2 = 10000000
-        if widget is None: return closest, dc2
+
+        if widget is None:
+            return closest, dc2
+
         for child in widget.winfo_children():
+
             for class_ in Page._motionClasses:
+
                 if isinstance(child, class_):
-                    if child["state"] == DISABLED: continue
+
+                    if child["state"] == Tk.DISABLED:
+                        continue
+
                     xw = child.winfo_rootx()
                     yw = child.winfo_rooty()
-                    if compare(x,y,xw,yw):
+
+                    if compare(x, y, xw, yw):
                         d2 = (xw-x)**2 + (yw-y)**2
                         if d2 < dc2:
                             closest = child
                             dc2 = d2
                     break
             else:
-                c,d2 = Page.__closest(child, compare, x, y)
+                c, d2 = Page.__closest(child, compare, x, y)
                 if d2 < dc2:
                     closest = c
                     dc2 = d2
         return closest, dc2
 
-    #-----------------------------------------------------------------------
-    # Select/Focus the closest element
-    #-----------------------------------------------------------------------
     def _ribbonUp(self, event=None):
+        """Select/Focus the closest Up element"""
         x = event.widget.winfo_rootx()
         y = event.widget.winfo_rooty()
-        closest,d2 = Page.__closest(self.ribbon, Page.__compareUp, x, y)
+        closest, d2 = Page.__closest(self.ribbon, Page.__compareUp, x, y)
         if closest is not None:
             closest.focus_set()
 
-    #-----------------------------------------------------------------------
     def _ribbonDown(self, event=None):
+        """Select/Focus the closest Down element"""
         x = event.widget.winfo_rootx()
         y = event.widget.winfo_rooty()
-        closest,d2 = Page.__closest(self.ribbon, Page.__compareDown, x, y)
+        closest, d2 = Page.__closest(self.ribbon, Page.__compareDown, x, y)
         if closest is not None:
             closest.focus_set()
 
-    #-----------------------------------------------------------------------
     def _ribbonLeft(self, event=None):
+        """Select/Focus the closest Left element"""
         x = event.widget.winfo_rootx()
         y = event.widget.winfo_rooty()
-        closest,d2 = Page.__closest(self.ribbon, Page.__compareLeft, x, y)
+        closest, d2 = Page.__closest(self.ribbon, Page.__compareLeft, x, y)
         if closest is not None:
             closest.focus_set()
 
-    #-----------------------------------------------------------------------
     def _ribbonRight(self, event=None):
+        """Select/Focus the closest Righth element"""
         x = event.widget.winfo_rootx()
         y = event.widget.winfo_rooty()
-        closest,d2 = Page.__closest(self.ribbon, Page.__compareRight, x, y)
+        closest, d2 = Page.__closest(self.ribbon, Page.__compareRight, x, y)
         if closest is not None:
             closest.focus_set()
 
 
-#===============================================================================
-# TabRibbonFrame
-#===============================================================================
-class TabRibbonFrame(Frame):
+class TabRibbonFrame(Tk.Frame):
+    """TabRibbonFrame"""
     def __init__(self, master, **kw):
-        Frame.__init__(self, master, kw)
+        Tk.Frame.__init__(self, master, kw)
         self.config(background=OCV.BACKGROUND_DISABLE)
 
-        self.oldActive  = None
-        self.activePage = StringVar(self)
-        self.tool       = {}
-        self.pages      = {}
+        self.oldActive = None
+        self.activePage = Tk.StringVar(self)
+        self.tool = {}
+        self.pages = {}
 
         # === Top frame with buttons ===
-        frame = Frame(self, background=OCV.BACKGROUND_DISABLE)
-        frame.pack(side=TOP, fill=X)
+        frame = Tk.Frame(self, background=OCV.BACKGROUND_DISABLE)
+        frame.pack(side=Tk.TOP, fill=Tk.X)
 
         # --- Basic buttons ---
-        b = LabelButton(frame, self, "<<New>>",
-                image=Utils.icons["new"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("New file"))
-        b.pack(side=LEFT)
+        but = LabelButton(
+            frame,
+            self,
+            "<<New>>",
+            image=Utils.icons["new"],
+            background=OCV.BACKGROUND_DISABLE)
 
-        b = LabelButton(frame, self, "<<Open>>",
-                image=Utils.icons["load"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("Open file [Ctrl-O]"))
-        b.pack(side=LEFT)
+        tkExtra.Balloon.set(but, _("New file"))
 
-        b = LabelButton(frame, self, "<<Save>>",
-                image=Utils.icons["save"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("Save all [Ctrl-S]"))
-        b.pack(side=LEFT)
+        but.pack(side=Tk.LEFT)
 
-        b = LabelButton(frame, self, "<<Undo>>",
-                image=Utils.icons["undo"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("Undo [Ctrl-Z]"))
-        b.pack(side=LEFT)
-        self.tool["undo"] = b
+        but = LabelButton(
+            frame,
+            self,
+            "<<Open>>",
+            image=Utils.icons["load"],
+            background=OCV.BACKGROUND_DISABLE)
 
-        b = LabelButton(frame, image=Utils.icons["triangle_down"],
-                command=self.undolist,
-                background=OCV.BACKGROUND_DISABLE)
-        b.pack(side=LEFT)
-        self.tool["undolist"] = b
+        tkExtra.Balloon.set(but, _("Open file [Ctrl-O]"))
 
-        b = LabelButton(frame, self, "<<Redo>>",
-                image=Utils.icons["redo"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("Redo [Ctrl-Y]"))
-        b.pack(side=LEFT)
-        self.tool["redo"] = b
+        but.pack(side=Tk.LEFT)
 
-        Label(frame, image=Utils.icons["sep"],
-                background=OCV.BACKGROUND_DISABLE).pack(side=LEFT, padx=3)
+        but = LabelButton(
+            frame,
+            self,
+            "<<Save>>",
+            image=Utils.icons["save"],
+            background=OCV.BACKGROUND_DISABLE)
 
-        # --- Help ---
-        b = LabelButton(frame, self, "<<Help>>",
-                image=Utils.icons["info"],
-                background=OCV.BACKGROUND_DISABLE)
-        tkExtra.Balloon.set(b, _("Help [F1]"))
-        b.pack(side=RIGHT, padx=2)
+        tkExtra.Balloon.set(but, _("Save all [Ctrl-S]"))
 
-        Label(frame, image=Utils.icons["sep"],
-                background=OCV.BACKGROUND_DISABLE).pack(side=RIGHT, padx=3)
+        but.pack(side=Tk.LEFT)
+
+        but = LabelButton(
+            frame,
+            self, "<<Undo>>",
+            image=Utils.icons["undo"],
+            background=OCV.BACKGROUND_DISABLE)
+
+        tkExtra.Balloon.set(but, _("Undo [Ctrl-Z]"))
+
+        but.pack(side=Tk.LEFT)
+
+        self.tool["undo"] = but
+
+        but = LabelButton(
+            frame,
+            image=Utils.icons["triangle_down"],
+            command=self.undolist,
+            background=OCV.BACKGROUND_DISABLE)
+
+        but.pack(side=Tk.LEFT)
+
+        self.tool["undolist"] = but
+
+        but = LabelButton(
+            frame,
+            self,
+            "<<Redo>>",
+            image=Utils.icons["redo"],
+            background=OCV.BACKGROUND_DISABLE)
+
+        tkExtra.Balloon.set(but, _("Redo [Ctrl-Y]"))
+
+        but.pack(side=Tk.LEFT)
+
+        self.tool["redo"] = but
+
+        lab = Tk.Label(
+            frame,
+            image=Utils.icons["sep"],
+            background=OCV.BACKGROUND_DISABLE)
+
+        lab.pack(side=Tk.LEFT, padx=3)
+
+        but = LabelButton(
+            frame,
+            self,
+            "<<Help>>",
+            image=Utils.icons["info"],
+            background=OCV.BACKGROUND_DISABLE)
+
+        tkExtra.Balloon.set(but, _("Help [F1]"))
+
+        but.pack(side=Tk.RIGHT, padx=2)
+
+        lab = Tk.Label(
+            frame,
+            image=Utils.icons["sep"],
+            background=OCV.BACKGROUND_DISABLE)
+
+        lab.pack(side=Tk.RIGHT, padx=3)
 
         # --- TabBar ---
-        self._tabFrame = Frame(frame, background=OCV.BACKGROUND_DISABLE)
-        self._tabFrame.pack(side=LEFT, fill=BOTH, expand=YES)
+        self._tabFrame = Tk.Frame(frame, background=OCV.BACKGROUND_DISABLE)
+        self._tabFrame.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=Tk.YES)
 
         # ==== Ribbon Frame ====
-        self._ribbonFrame = Frame(self,
-                        background=OCV.BACKGROUND,
-                        pady=0,
-                        relief=RAISED)
-        self._ribbonFrame.pack(fill=BOTH, expand=YES, padx=0, pady=0)
+        self._ribbonFrame = Tk.Frame(
+            self,
+            background=OCV.BACKGROUND,
+            pady=0,
+            relief=Tk.RAISED)
+
+        self._ribbonFrame.pack(fill=Tk.BOTH, expand=Tk.YES, padx=0, pady=0)
 
         self.setPageFrame(None)
 
-    #-----------------------------------------------------------------------
     def setPageFrame(self, frame):
         self._pageFrame = frame
 
-    #-----------------------------------------------------------------------
-    def undolist(self, event=None): self.event_generate("<<UndoList>>")
+    def undolist(self, event=None):
+        self.event_generate("<<UndoList>>")
 
-    #-----------------------------------------------------------------------
     def getActivePage(self):
         return self.pages[self.activePage.get()]
 
-    #-----------------------------------------------------------------------
-    # Add page to the tabs
-    #-----------------------------------------------------------------------
-    def addPage(self, page, side=LEFT):
+    def addPage(self, page, side=Tk.LEFT):
+        """Add page to the tabs"""
         self.pages[page.name] = page
-        page._tab = TabButton(self._tabFrame,
-                image    = page._icon,
-                text     = _(page.name),
-                compound = LEFT,
-                value    = page.name,
-                variable = self.activePage,
-                command  = self.changePage)
+        page._tab = TabButton(
+            self._tabFrame,
+            image=page._icon,
+            text=_(page.name),
+            compound=Tk.LEFT,
+            value=page.name,
+            variable=self.activePage,
+            command=self.changePage)
+
         tkExtra.Balloon.set(page._tab, page.__doc__)
 
-        page._tab.pack(side=side, fill=Y, padx=5)
+        page._tab.pack(side=side, fill=Tk.Y, padx=5)
 
-    # ----------------------------------------------------------------------
-    # Unpack the old page
-    # ----------------------------------------------------------------------
     def _forgetPage(self):
+        """Unpack the old page"""
         if self.oldActive:
-            for frame,args in self.oldActive.ribbons:
+            for frame, args in self.oldActive.ribbons:
                 frame.pack_forget()
-            for frame,args in self.oldActive.frames:
+
+            for frame, args in self.oldActive.frames:
                 frame.pack_forget()
+
             self.oldActive = None
 
-    # ----------------------------------------------------------------------
-    # Change ribbon and page
-    # ----------------------------------------------------------------------
     def changePage(self, page=None):
-        #import traceback
-        #traceback.print_stack()
+        """Change ribbon and page"""
+#       import traceback
+#       traceback.print_stack()
 
         if page is not None:
             if not isinstance(page, Page):
@@ -619,53 +664,17 @@ class TabRibbonFrame(Frame):
             except KeyError:
                 return
 
-        if page is self.oldActive: return
+        if page is self.oldActive:
+            return
 
         self._forgetPage()
 
-        for frame,args in page.ribbons:
+        for frame, args in page.ribbons:
             frame.pack(in_=self._ribbonFrame, **args)
 
-        for frame,args in page.frames:
+        for frame, args in page.frames:
             frame.pack(in_=self._pageFrame, **args)
 
         self.oldActive = page
         page.activate()
         self.event_generate("<<ChangePage>>", data=page.name)
-
-#    #-----------------------------------------------------------------------
-#    # Give focus to the tab on the left
-#    #-----------------------------------------------------------------------
-#    def _tabLeft(self, event=None):
-#        slaves = self._tabFrame.pack_slaves()
-#        try:
-#            pos = slaves.index(event.widget)-1
-#        except ValueError:
-#            if event.widget is self.dynamic:
-#                pos = len(slaves)-1
-#            else:
-#                return
-#        if pos < 0: return    # Do not replace First tab
-#        slaves[pos].select()
-#        #self.changePage()
-#        slaves[pos].focus_set()
-#
-#    #-----------------------------------------------------------------------
-#    # Give focus to the tab on the right
-#    #-----------------------------------------------------------------------
-#    def _tabRight(self, event=None):
-#        slaves = self._tabFrame.pack_slaves()
-#        try:
-#            pos = slaves.index(event.widget)+1
-#        except ValueError:
-#            return
-#        if pos < len(slaves):
-#            slaves[pos].select()
-#            #self.changePage()
-#            slaves[pos].focus_set()
-#        else:
-#            # Open dynamic menu
-#            self.dynamic.select()
-#            self.dynamic.focus_set()
-#            self.dynamicMenu()
-#

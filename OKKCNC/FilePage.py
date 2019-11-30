@@ -106,7 +106,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
         col,row=3,0
         b = Ribbon.LabelButton(self.frame, self, "<<Save>>",
                 image=Utils.icons["save32"],
-                command=OCV.application.save,
+                command=OCV.APP.save,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Save gcode/dxf file [Ctrl-S]"))
@@ -136,7 +136,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        b = Ribbon.LabelButton(self.frame, #self.page, "<<Config>>",
 #                text=_("Config"),
 #                image=Utils.icons["config32"],
-##                command=OCV.application.preferences,
+##                command=OCV.APP.preferences,
 #                state=DISABLED,
 #                compound=TOP,
 #                anchor=W,
@@ -162,7 +162,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #                text=_("Updates"),
 #                image=Utils.icons["global"],
 #                compound=LEFT,
-#                command=OCV.application.checkUpdates,
+#                command=OCV.APP.checkUpdates,
 #                anchor=W,
 #                background=OCV.BACKGROUND)
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
@@ -173,7 +173,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
                 text=_("About"),
                 image=Utils.icons["about"],
                 compound=LEFT,
-                command=OCV.application.about,
+                command=OCV.APP.about,
                 anchor=W,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
@@ -194,7 +194,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["start_pendant"],
                 compound=LEFT,
                 anchor=W,
-                command=OCV.application.startPendant,
+                command=OCV.APP.startPendant,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Start pendant"))
@@ -205,7 +205,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["stop_pendant"],
                 compound=LEFT,
                 anchor=W,
-                command=OCV.application.stopPendant,
+                command=OCV.APP.stopPendant,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Stop pendant"))
@@ -223,7 +223,7 @@ class CloseGroup(CNCRibbon.ButtonGroup):
                 text=_("Exit"),
                 image=Utils.icons["exit32"],
                 compound=TOP,
-                command=OCV.application.quit,
+                command=OCV.APP.quit,
                 anchor=W,
                 background=OCV.BACKGROUND)
         b.pack(fill=BOTH, expand=YES)
@@ -276,8 +276,8 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         self.ctrlCombo.grid(row=row, column=col+1, sticky=EW)
         tkExtra.Balloon.set(self.ctrlCombo, _("Select controller board"))
         #self.ctrlCombo.fill(sorted(Utils.CONTROLLER.keys()))
-        self.ctrlCombo.fill(OCV.application.controllerList())
-        self.ctrlCombo.set(OCV.application.controller)
+        self.ctrlCombo.fill(OCV.APP.controllerList())
+        self.ctrlCombo.set(OCV.APP.controller)
         self.addWidget(self.ctrlCombo)
 
         # ---
@@ -316,9 +316,9 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     #-----------------------------------------------------------------------
     def ctrlChange(self):
-        #OCV.application.controller = Utils.CONTROLLER.get(self.ctrlCombo.get(), 0)
+        #OCV.APP.controller = Utils.CONTROLLER.get(self.ctrlCombo.get(), 0)
         #print("selected",self.ctrlCombo.get())
-        OCV.application.controllerSet(self.ctrlCombo.get())
+        OCV.APP.controllerSet(self.ctrlCombo.get())
 
     #-----------------------------------------------------------------------
     def comportClean(self, event=None):
@@ -375,7 +375,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     def saveConfig(self):
         # Connection
-        Utils.setStr("Connection", "controller", OCV.application.controller)
+        Utils.setStr("Connection", "controller", OCV.APP.controller)
         Utils.setStr("Connection", "port", self.portCombo.get().split("\t")[0])
         Utils.setStr("Connection", "baud", self.baudCombo.get())
         Utils.setBool("Connection", "openserial", self.autostart.get())

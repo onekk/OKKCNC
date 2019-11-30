@@ -132,7 +132,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         for idx in range(1, n):
             b = Utils.UserButton(
                 self.frame,
-                OCV.application,
+                OCV.APP,
                 idx,
                 anchor=Tk.W,
                 background=OCV.BACKGROUND)
@@ -197,7 +197,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         """
         print("ControlFrame self.app > ", self.app)
-        print("OCV.application > ", OCV.application)
+        print("OCV.APP > ", OCV.APP)
         """
 
         Tk.Label(self, text="Y").grid(row=6, column=3)
@@ -415,7 +415,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(b)
 
         b = Utils.UserButton(
-                self, OCV.application,
+                self, OCV.APP,
                 0,
                 text=Unicode.LARGE_CIRCLE,
                 command=self.go2origin,
@@ -683,23 +683,23 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if (OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0):
 
-            endDepth = Utils.InputValue(OCV.application, "TD")
+            endDepth = Utils.InputValue(OCV.APP, "TD")
 
             if endDepth is None:
                 return
 
-            CAMGen.line(self, OCV.application, endDepth, "mem_0", "mem_1")
+            CAMGen.line(self, OCV.APP, endDepth, "mem_0", "mem_1")
 
     def pocket(self):
 
         # avoid a dry run if both mem pos are not set
         if (OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0):
-            endDepth = Utils.InputValue(OCV.application, "TD")
+            endDepth = Utils.InputValue(OCV.APP, "TD")
 
             if endDepth is None:
                 return
 
-            CAMGen.pocket(self, OCV.application, endDepth, "mem_0", "mem_1")
+            CAMGen.pocket(self, OCV.APP, endDepth, "mem_0", "mem_1")
 
 
     #----------------------------------------------------------------------

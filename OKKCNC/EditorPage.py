@@ -138,7 +138,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
     #-----------------------------------------------------------------------
     def filter(self, event=None):
         txt = self.filterString.get()
-        OCV.application.insertCommand("FILTER {0}".format(txt), True)
+        OCV.APP.insertCommand("FILTER {0}".format(txt), True)
 
 
 #===============================================================================
@@ -166,7 +166,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
 #        tkExtra.Balloon.set(b, _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
 #        self.addWidget(b)
-        b = Ribbon.LabelButton(self.frame, OCV.application, "<<Add>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP, "<<Add>>",
                 image=Utils.icons["add"],
                 anchor=W,
                 background=OCV.BACKGROUND)
@@ -175,9 +175,9 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
 
         menulist = [    (_("Line"),   "add",
-                lambda a=OCV.application : a.event_generate("<<AddLine>>")),
+                lambda a=OCV.APP : a.event_generate("<<AddLine>>")),
                 (_("Block"),  "add",
-                lambda a=OCV.application : a.event_generate("<<AddBlock>>"))]
+                lambda a=OCV.APP : a.event_generate("<<AddBlock>>"))]
         b = Ribbon.MenuButton(self.frame, menulist,
                 text=_("Add"),
                 image=Utils.icons["triangle_down"],
@@ -213,7 +213,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         col,row=2,0
-        b = Ribbon.LabelButton(self.frame, OCV.application, "<<EnableToggle>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP, "<<EnableToggle>>",
                 image=Utils.icons["toggle"],
                 #text=_("Toggle"),
                 #compound=LEFT,
@@ -224,9 +224,9 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
 
         menulist = [    (_("Enable"),   "enable",
-                lambda a=OCV.application : a.event_generate("<<Enable>>")),
+                lambda a=OCV.APP : a.event_generate("<<Enable>>")),
                 (_("Disable"),  "disable",
-                lambda a=OCV.application : a.event_generate("<<Disable>>"))]
+                lambda a=OCV.APP : a.event_generate("<<Disable>>"))]
         b = Ribbon.MenuButton(self.frame, menulist,
                 text=_("Active"),
                 image=Utils.icons["triangle_down"],
@@ -238,7 +238,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         row += 1
-        b = Ribbon.LabelButton(self.frame, OCV.application, "<<Expand>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP, "<<Expand>>",
                 image=Utils.icons["expand"],
                 text=_("Expand"),
                 compound=LEFT,
@@ -250,7 +250,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         row += 1
-        b = Ribbon.LabelButton(self.frame, OCV.application,  "<<Comment>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Comment>>",
                 image=Utils.icons["comment"],
                 text=_("Comment"),
                 compound=LEFT,
@@ -262,7 +262,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         # ---
         col += 2
         row = 0
-        b = Ribbon.LabelButton(self.frame, OCV.application,  "<<Join>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Join>>",
                 image=Utils.icons["union"],
                 text=_("Join"),
                 compound=LEFT,
@@ -273,7 +273,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
         # ---
         row += 1
-        b = Ribbon.LabelButton(self.frame, OCV.application,  "<<Split>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Split>>",
                 image=Utils.icons["cut"],
                 text=_("Split"),
                 compound=LEFT,
@@ -284,7 +284,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
         # ---
         row += 1
-        b = Ribbon.LabelButton(self.frame, OCV.application,  "<<ClearEditor>>",
+        b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<ClearEditor>>",
                 image=Utils.icons["clear"],
                 text=_("Clear All"),
                 compound=LEFT,
@@ -310,9 +310,9 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Move"),
                 compound=TOP,
                 anchor=W,
-                variable=OCV.application.canvasFrame.canvas.actionVar,
+                variable=OCV.APP.canvasFrame.canvas.actionVar,
                 value=ACTION_MOVE,
-                command=OCV.application.canvasFrame.canvas.setActionMove,
+                command=OCV.APP.canvasFrame.canvas.setActionMove,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Move objects [M]"))
@@ -325,9 +325,9 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
                 text=_("Origin"),
                 compound=TOP,
                 anchor=W,
-                variable=OCV.application.canvasFrame.canvas.actionVar,
+                variable=OCV.APP.canvasFrame.canvas.actionVar,
                 value=ACTION_ORIGIN,
-                command=OCV.application.canvasFrame.canvas.setActionOrigin,
+                command=OCV.APP.canvasFrame.canvas.setActionOrigin,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Move all gcode such as origin is on mouse location [O]"))
@@ -347,7 +347,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
                 ("br",     _("Bottom-Right"),"MOVE BR")):
             menu.add_command(label=n,
                     image=Utils.icons[i], compound=LEFT,
-                    command=lambda a=OCV.application,c=c:a.insertCommand(c,True))
+                    command=lambda a=OCV.APP,c=c:a.insertCommand(c,True))
         return menu
 
 
@@ -564,7 +564,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
                 text=_("Statistics"),
                 compound=LEFT,
                 anchor=W,
-                command=OCV.application.showStats,
+                command=OCV.APP.showStats,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Show statistics for enabled gcode"))
@@ -577,7 +577,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
                 text=_("Info"),
                 compound=LEFT,
                 anchor=W,
-                command=OCV.application.showInfo,
+                command=OCV.APP.showInfo,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Show cutting information on selected blocks [Ctrl-n]"))

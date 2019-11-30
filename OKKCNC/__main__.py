@@ -21,7 +21,7 @@ import getopt
 import socket
 import traceback
 from datetime import datetime
-
+import webbrowser
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
@@ -49,9 +49,6 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     from queue import *
 
-import webbrowser
-
-
 # Load configuration before anything else
 # and if needed replace the  translate function _()
 # before any string is initialized
@@ -73,13 +70,13 @@ from Sender import Sender, NOT_CONNECTED, STATECOLOR, STATECOLORDEF
 import CNCCanvas
 
 
-from CNCRibbon    import Page
-from ToolsPage    import Tools, ToolsPage
-from FilePage     import FilePage
-from ControlPage  import ControlPage
+from CNCRibbon import Page
+from ToolsPage import Tools, ToolsPage
+from FilePage import FilePage
+from ControlPage import ControlPage
 from TerminalPage import TerminalPage
-from ProbePage    import ProbePage
-from EditorPage   import EditorPage
+from ProbePage import ProbePage
+from EditorPage import EditorPage
 
 import MemoryPanel
 
@@ -111,13 +108,12 @@ class Application(Tk.Toplevel, Sender):
     def __init__(self, master, **kw):
         Tk.Toplevel.__init__(self, master, **kw)
 
-        OCV.application = self
+        # OCV.APP
+        OCV.APP = self
 
         print("Application > ", self)
 
-        #Tk.Toplevel.__init__(OCV.application, master, **kw)
-
-        Sender.__init__(OCV.application)
+        Sender.__init__(OCV.APP)
 
         if sys.platform == "win32":
             self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
@@ -311,16 +307,19 @@ class Application(Tk.Toplevel, Sender):
             self.ribbon.addPage(self.pages[name], side)
 
         # Restore last page
-        self.pages["Probe"].tabChange()    # Select "Probe:Probe" tab to show the dialogs!
+        # Select "Probe:Probe" tab to show the dialogs!
+        self.pages["Probe"].tabChange()
         self.ribbon.changePage(Utils.getStr(Utils.__prg__, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
 
-        tkExtra.bindEventData(self, "<<OrientSelect>>",
-                              lambda e, f=probe: f.selectMarker(int(e.data)))
+        tkExtra.bindEventData(
+            self, "<<OrientSelect>>",
+            lambda e, f=probe: f.selectMarker(int(e.data)))
 
-        tkExtra.bindEventData(self, '<<OrientChange>>',
-                              lambda e, s=self: s.canvas.orientChange(int(e.data)))
+        tkExtra.bindEventData(
+            self, '<<OrientChange>>',
+            lambda e, s=self: s.canvas.orientChange(int(e.data)))
 
         self.bind('<<OrientUpdate>>', probe.orientUpdate)
 
@@ -377,8 +376,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<ZmoveUp>>', self.control.moveZup)
         self.bind('<<ZmoveDown>>', self.control.moveZdown)
 
-
-
+        self.bind("<<ERR_HELP>>", self.show_error_panel)
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
 
         tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
@@ -608,7 +606,7 @@ class Application(Tk.Toplevel, Sender):
 
     def acceptKey(self, skipRun=False):
         """Accept the user key if not editing any text"""
-        if not skipRun and self.running:
+        if not skipRun and OCV.s_running:
             return False
         focus = self.focus_get()
         if isinstance(focus, Tk.Entry) or isinstance(focus, Tk.Spinbox) or \
@@ -619,7 +617,7 @@ class Application(Tk.Toplevel, Sender):
 
 
     def quit(self, event=None):
-        if self.running and self._quit < 1:
+        if OCV.s_running and self._quit < 1:
             tkMessageBox.showinfo(
                 _("Running"),
                 _("CNC is currently running, please stop it before."),
@@ -827,7 +825,7 @@ class Application(Tk.Toplevel, Sender):
 
 
     def undo(self, event=None):
-        if not self.running and self.gcode.canUndo():
+        if not OCV.s_running and self.gcode.canUndo():
             self.gcode.undo()
             self.editor.fill()
             self.drawAfter()
@@ -835,7 +833,7 @@ class Application(Tk.Toplevel, Sender):
 
 
     def redo(self, event=None):
-        if not self.running and self.gcode.canRedo():
+        if not OCV.s_running and self.gcode.canRedo():
             self.gcode.redo()
             self.editor.fill()
             self.drawAfter()
@@ -1438,21 +1436,23 @@ class Application(Tk.Toplevel, Sender):
         toplevel.lift()
         toplevel.wait_window()
 
+    def show_error_panel(self, event=None):
+        msg = "Messages"
 
-    #def reportDialog(self, event=None):
-    #    Utils.ReportDialog(self)
+        err_list = cmd.get_errors()
+        msg = "".join(err_list)
 
+        panel = Utils.ErrorWindow(OCV.APP)
+        panel.show_message(err_list)
 
     def viewChange(self, event=None):
-        if self.running:
+        if OCV.s_running:
             self._selectI = 0    # last selection pointer in items
         self.draw()
-
 
     def refresh(self, event=None):
         self.editor.fill()
         self.draw()
-
 
     def draw(self):
         view = CNCCanvas.VIEWS.index(self.canvasFrame.view.get())
@@ -1467,11 +1467,9 @@ class Application(Tk.Toplevel, Sender):
         self._drawAfter = self.after(DRAW_AFTER, self.draw)
         return "break"
 
-
     def canvasFocus(self, event=None):
         self.canvasFrame.canvas.focus_set()
         return "break"
-
 
     def selectAll(self, event=None):
         focus = self.focus_get()
@@ -1482,7 +1480,6 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-
     def unselectAll(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1490,7 +1487,6 @@ class Application(Tk.Toplevel, Sender):
             self.editor.selectClear()
             self.selectionChange()
             return "break"
-
 
     def selectInvert(self, event=None):
         focus = self.focus_get()
@@ -1500,7 +1496,6 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-
     def selectLayer(self, event=None):
         focus = self.focus_get()
         if focus in (self.canvasFrame.canvas, self.editor):
@@ -1509,35 +1504,27 @@ class Application(Tk.Toplevel, Sender):
             self.selectionChange()
             return "break"
 
-
     def find(self, event=None):
         self.ribbon.changePage("Editor")
-        #self.editor.findDialog()
-        #return "break"
-
+#        self.editor.findDialog()
+#        return "break"
 
     def findNext(self, event=None):
         self.ribbon.changePage("Editor")
-        #self.editor.findNext()
-        #return "break"
-
+#        self.editor.findNext()
+#        return "break"
 
     def replace(self, event=None):
         self.ribbon.changePage("Editor")
-        #self.editor.replaceDialog()
-        #return "break"
-
+#        self.editor.replaceDialog()
+#        return "break"
 
     def activeBlock(self):
         return self.editor.activeBlock()
 
-
     def cmdExecute(self, event):
-        """
-        Keyboard binding to <Return>
-        """
+        """Keyboard binding to <Return>"""
         self.commandExecute()
-
 
     def insertCommand(self, cmd, execute=False):
         self.command.delete(0, Tk.END)
@@ -1545,7 +1532,6 @@ class Application(Tk.Toplevel, Sender):
 
         if execute:
             self.commandExecute(False)
-
 
     def commandExecute(self, addHistory=True):
         """
@@ -1569,11 +1555,8 @@ class Application(Tk.Toplevel, Sender):
         self.command.delete(0, Tk.END)
         self.execute(line)
 
-
     def execute(self, line):
-        """
-        Execute a single command
-        """
+        """Execute a single command"""
         try:
             line = self.evaluate(line)
         except:
@@ -1581,7 +1564,7 @@ class Application(Tk.Toplevel, Sender):
                 _("Evaluation error"),
                 sys.exc_info()[1], parent=self)
             return "break"
-        #print ">>>",line
+#        print ">>>",line
 
         if line is None:
             return "break"
@@ -1652,7 +1635,8 @@ class Application(Tk.Toplevel, Sender):
             except:
                 feedz = None
 
-            self.executeOnSelection("CUT", True, depth, step, surface, feed, feedz)
+            self.executeOnSelection(
+                    "CUT", True, depth, step, surface, feed, feedz)
 
         # DOWN: move downward in cutting order the selected blocks
         # UP: move upwards in cutting order the selected blocks
@@ -2139,7 +2123,7 @@ class Application(Tk.Toplevel, Sender):
 
     def commandKey(self, event):
         # FIXME why it is not called?
-        if event.char or event.keysym in ("BackSpace"):
+        if event.char or event.keysym in ("BackSpace",):
             self._historyPos = None
             self._historySearch = None
 
@@ -2209,7 +2193,7 @@ class Application(Tk.Toplevel, Sender):
 
     def newFile(self, event=None):
         """Create a new file"""
-        if self.running:
+        if OCV.s_running:
             return
 
         if self.fileModified():
@@ -2224,7 +2208,7 @@ class Application(Tk.Toplevel, Sender):
 
     def loadDialog(self, event=None):
         """load dialog"""
-        if self.running:
+        if OCV.s_running:
             return
 
         filename = bFileDialog.askopenfilename(
@@ -2243,7 +2227,7 @@ class Application(Tk.Toplevel, Sender):
 
     def saveDialog(self, event=None):
         """save dialog"""
-        if self.running:
+        if OCV.s_running:
             return
 
         fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
@@ -2484,7 +2468,7 @@ class Application(Tk.Toplevel, Sender):
                 parent=self)
             return
 
-        if self.running:
+        if OCV.s_running:
             if OCV.s_pause:
                 self.resume()
                 return
@@ -2712,7 +2696,6 @@ class Application(Tk.Toplevel, Sender):
 
         # Update position if needed
         if self._posUpdate:
-            #print Sender.ERROR_CODES[OCV.c_state]
             try:
                 OCV.CD["color"] = STATECOLOR[OCV.c_state]
             except KeyError:
@@ -2730,9 +2713,10 @@ class Application(Tk.Toplevel, Sender):
                 OCV.CD["mx"],
                 OCV.CD["my"],
                 OCV.CD["mz"])
+
             if OCV.c_state == "Run":
                 self.gstate.updateFeed()
-                #self.xxx.updateSpindle()
+
             self._posUpdate = False
 
         # Update status string
@@ -2755,7 +2739,7 @@ class Application(Tk.Toplevel, Sender):
                 Page.frames["ProbeCommon"].updateTlo()
             self._update = None
 
-        if self.running:
+        if OCV.s_running:
             self.proc_line_n = self._runLines - self.queue.qsize()
             #print(self.proc_line_n)
             self.statusbar.setProgress(
@@ -2839,6 +2823,7 @@ def usage(rc):
     sys.stdout.write("\n")
     sys.exit(rc)
 
+
 def main(args=None):
 
     OCV.root = Tk.Tk()
@@ -2847,13 +2832,13 @@ def main(args=None):
     if sys.version_info[0] != 2:
         sys.stdout.write("="*80+"\n")
         sys.stdout.write(
-                "WARNING: OKKCNC is tested for running on python v2.x for now\n")
+            "WARNING: OKKCNC is tested for running on python v2.x for now\n")
         sys.stdout.write("="*80+"\n")
 
         tkMessageBox.showwarning(
-                "OKKCNC: Unsupported Python version",
-                "Only Python 2 is currently supported by bCNC.\
-                \nContinue on your own risk!")
+            "OKKCNC: Unsupported Python version",
+            "Only Python 2 is currently supported by bCNC.\
+            \nContinue on your own risk!")
         OCV.IS_PY3 = True
 
     Tk.CallWrapper = Utils.CallWrapper
@@ -2915,11 +2900,11 @@ def main(args=None):
 
                     try:
                         filename = Utils.getRecent(i)
-                        #print ("Recent = ", i, maxlen, filename)
+                        # print ("Recent = ", i, maxlen, filename)
                     except:
                         continue
 
-                    if (filename is not None):
+                    if filename is not None:
                         maxlen = max(maxlen, len(os.path.basename(filename)))
 
                 sys.stdout.write("Recent files:\n")
@@ -2958,13 +2943,13 @@ def main(args=None):
             _baud = val
 
         elif opt == "-p":
-            pass #startPendant()
+            pass # startPendant()
 
         elif opt == "-P":
-            pass #stopPendant()
+            pass # stopPendant()
 
         elif opt == "--pendant":
-            pass #startPendant on port
+            pass # startPendant on port
 
         elif opt == "--run":
             run = True

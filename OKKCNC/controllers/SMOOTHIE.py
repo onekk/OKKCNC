@@ -82,7 +82,7 @@ class Controller(_GenericController):
 				OCV.CD["prbx"] = float(pat.group(2))
 				OCV.CD["prby"] = float(pat.group(3))
 				OCV.CD["prbz"] = float(pat.group(4))
-				#if self.running:
+
 				self.master.gcode.probe.add(
 					 OCV.CD["prbx"]
 					+OCV.CD["wx"]

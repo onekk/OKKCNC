@@ -52,7 +52,7 @@ PLANE = {
 # that are spread across many modules
 
 root = None
-application = None
+APP = None
 canvas = None
 mcontrol = None
 RUN_GROUP = None
@@ -108,10 +108,12 @@ step1 = 0.0
 step2 = 0.0
 step3 = 0.0
 step4 = 0.0
-s_alarm = True
-s_pause = False
-s_stop = False
-s_stop_req = False
+s_alarm = None
+s_pause = None
+s_running = None
+s_runningPrev = None
+s_stop = None
+s_stop_req = None
 
 
 # T #

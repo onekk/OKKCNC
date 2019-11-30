@@ -16,9 +16,7 @@ except ImportError:
 import OCV
 from _GenericGRBL import ERROR_CODES
 
-#from Sender import ERROR_CODES
 
-#----------------------------------------------------------------------
 def setX0():
     OCV.mcontrol.wcs_set("0", None, None)
     RefreshMemories()
@@ -46,8 +44,8 @@ def setXYZ0():
 
 def workFocus():
     """Do not give the focus while we are running"""
-    if OCV.application.running:
-        OCV.application.focus_set()
+    if OCV.s_running:
+        OCV.APP.focus_set()
 
 
 def showState():
@@ -63,14 +61,17 @@ def showState():
         _("No info available.\nPlease contact the author."))
 
     tkMessageBox.showinfo(_("State: {0}").format(OCV.c_state),
-                          msg, parent=OCV.application)
-
+                          msg, parent=OCV.APP)
 
 def RefreshMemories():
     for i in range(2, OCV.WK_mem_num):
         if OCV.WK_active_mems[i] == 2:
             OCV.canvas.memDraw(i)
 
+
+def get_errors():
+    err_list = [value for key, value in ERROR_CODES.items() if 'error:' in key.lower()]
+    return err_list
 #
 # Misc functions
 #
