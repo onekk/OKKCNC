@@ -64,7 +64,7 @@ mcontrol = None
 RUN_GROUP = None
 
 """version and date"""
-_version = "0.1.9-dev"
+_version = "0.2.0-dev"
 _date = "26 Dec 2019"
 
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
