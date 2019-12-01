@@ -6,7 +6,7 @@ SOURCES =	OKKCNC/*.py \
 		OKKCNC/lib/stl/*.py \
 		OKKCNC/lib/svg/*.py \
 		OKKCNC/lib/svg/path/*.py \
-		OKKCNC/plugins/*.py
+
 .PHONY = help
 
 help:
@@ -30,9 +30,3 @@ clean:
 	rm -f OKKCNC/lib/svg/*.pyc OKKCNC/lib/svg/*.pyo
 	rm -f OKKCNC/lib/svg/path/*.pyc OKKCNC/lib/svg/path/*.pyo
 	rm -f OKKCNC/plugins/*.pyc OKKCNC/plugins/*.pyo
-
-upload:
-	rm -f dist/*
-	#python2 setup.py sdist upload
-	python2 setup.py sdist
-	twine upload -u $(USER) dist/*

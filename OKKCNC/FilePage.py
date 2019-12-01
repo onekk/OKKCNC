@@ -77,7 +77,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("New gcode/dxf file"))
+        tkExtra.Balloon.set(b, _("New gcode file"))
         self.addWidget(b)
 
         # ---
@@ -86,7 +86,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 image=Utils.icons["open32"],
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Open existing gcode/dxf file [Ctrl-O]"))
+        tkExtra.Balloon.set(b, _("Open existing gcode file [Ctrl-O]"))
         self.addWidget(b)
 
         col,row=1,2
@@ -107,7 +107,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Import gcode/dxf file"))
+        tkExtra.Balloon.set(b, _("Import gcode file"))
         self.addWidget(b)
 
         # ---
@@ -117,7 +117,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 command=OCV.APP.save,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Save gcode/dxf file [Ctrl-S]"))
+        tkExtra.Balloon.set(b, _("Save gcode file [Ctrl-S]"))
         self.addWidget(b)
 
         col,row=3,2
@@ -127,7 +127,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 compound=RIGHT,
                 background=OCV.BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Save gcode/dxf AS"))
+        tkExtra.Balloon.set(b, _("Save gcode as..."))
         self.addWidget(b)
 
 

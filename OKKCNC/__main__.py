@@ -2086,8 +2086,6 @@ class Application(Tk.Toplevel, Sender):
 
         fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
 
-        if ext in (".dxf", ".DXF"):
-            ext = ".ngc"
         filename = bFileDialog.asksaveasfilename(
             master=self,
             title=_("Save file"),
@@ -2201,13 +2199,12 @@ class Application(Tk.Toplevel, Sender):
         if filename is None:
             filename = bFileDialog.askopenfilename(
                 master=self,
-                title=_("Import Gcode/DXF file"),
+                title=_("Import Gcode file"),
                 initialfile=os.path.join(
                     Utils.getUtf("File", "dir"),
                     Utils.getUtf("File", "file")),
                 filetypes=[
                     (_("G-Code"), ("*.ngc", "*.nc", "*.gcode")),
-                    ("DXF", "*.dxf"),
                     ("All", "*")])
         if filename:
             fn, ext = os.path.splitext(filename)

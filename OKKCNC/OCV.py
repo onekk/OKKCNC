@@ -65,7 +65,7 @@ RUN_GROUP = None
 
 """version and date"""
 _version = "0.2.0-dev"
-_date = "01 Dec 2019"
+DXF_date = "26 Dec 2019"
 
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
 _sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
