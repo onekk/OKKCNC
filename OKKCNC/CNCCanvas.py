@@ -122,11 +122,11 @@ class CNCCanvas(Tk.Canvas, object):
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
         OCV.canvas = self
+
         # Global variables
         self.view = 0
-        self.app = app
-        self.cnc = self.app.cnc
-        self.gcode = self.app.gcode
+        self.cnc = OCV.APP.cnc
+        self.gcode = OCV.APP.gcode
         self.actionVar = Tk.IntVar()
 
         # Canvas binding
@@ -186,14 +186,14 @@ class CNCCanvas(Tk.Canvas, object):
         self.x0 = 0.0
         self.y0 = 0.0
         self.zoom = 1.0
-        self.__tzoom = 1.0 # delayed zoom (temporary)
+        self.__tzoom = 1.0  # delayed zoom (temporary)
         self._items = {}
 
         self._x = self._y = 0
         self._xp = self._yp = 0
         self.action = ACTION_SELECT
         self._mouseAction = None
-        self._inDraw = False        # semaphore for parsing
+        self._inDraw = False  # semaphore for parsing
         self._gantry1 = None
         self._gantry2 = None
         self._memA = None
@@ -551,7 +551,7 @@ class CNCCanvas(Tk.Canvas, object):
             i = self.canvasx(event.x)
             j = self.canvasy(event.y)
             x, y, z = self.canvas2xyz(i, j)
-            self.app.insertCommand(
+            OCV.APP.insertCommand(
                 _("origin {0:f} {1:f} {2:f}").format(x, y, z),
                 True)
 
@@ -675,7 +675,7 @@ class CNCCanvas(Tk.Canvas, object):
             if not items:
                 return
 
-            self.app.select(
+            OCV.APP.select(
                 items,
                 self._mouseAction == ACTION_SELECT_DOUBLE,
                 event.state & CONTROL_MASK == 0)
@@ -691,17 +691,14 @@ class CNCCanvas(Tk.Canvas, object):
             dz = self._vz1-self._vz0
             self.status(_("Move by {0:f}, {1:f}, {2:f}").format(dx, dy, dz))
 
-            self.app.insertCommand(
+            OCV.APP.insertCommand(
                 ("move {0:f} {1:f} {2:f}").format(dx, dy, dz), True)
 
         elif self._mouseAction == ACTION_PAN:
             self.panRelease(event)
 
-
     def double(self, event):
-        #self.app.selectBlocks()
         self._mouseAction = ACTION_SELECT_DOUBLE
-
 
     def motion(self, event):
         self.setMouseStatus(event)
@@ -712,7 +709,7 @@ class CNCCanvas(Tk.Canvas, object):
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
 
-#        blocks =  self.app.editor.getSelectedBlocks()
+#        blocks =  OCV:APP.editor.getSelectedBlocks()
 #
 #        from bmath import Vector
 #        P = Vector(x,y)
@@ -720,7 +717,6 @@ class CNCCanvas(Tk.Canvas, object):
 #            for path in self.gcode.toPath(bid):
 #                print path
 #                print path.isInside(P)
-
 
     def snapPoint(self, cx, cy):
         """
@@ -2027,7 +2023,7 @@ class CNCCanvas(Tk.Canvas, object):
             startTime = before = time.time()
             self.cnc.resetAllMargins()
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
-            bid = self.app.editor.getSelectedBlocks()
+            bid = OCV.APP.editor.getSelectedBlocks()
 
             for i, block in enumerate(self.gcode.blocks):
 
@@ -2225,13 +2221,11 @@ class CNCCanvas(Tk.Canvas, object):
         return x, y, z
 
 
-
 class CanvasFrame(Tk.Frame):
     """Canvas Frame with toolbar"""
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Frame.__init__(self, master, *kw, **kwargs)
-        self.app = app
 
         self.draw_axes = Tk.BooleanVar()
         self.draw_grid = Tk.BooleanVar()
@@ -2489,10 +2483,8 @@ class CanvasFrame(Tk.Frame):
 
         lab.pack(side=Tk.RIGHT)
 
-
-
     def addWidget(self, widget):
-        self.app.widgets.append(widget)
+        OCV.APP.widgets.append(widget)
 
 
     def loadConfig(self):

@@ -21,14 +21,12 @@ import OCV
 import CAMGen
 import CNCRibbon
 import Commands as cmd
-import MemoryPanel
+import Interface
 import Ribbon
 import Sender
 import tkExtra
 import Unicode
 import Utils
-
-import DROFrame
 
 #from CNC import Block
 
@@ -41,148 +39,6 @@ _NOZSTEP = 'XY'
 
 OVERRIDES = ["Feed", "Rapid", "Spindle"]
 
-
-#===============================================================================
-# Connection Group
-#===============================================================================
-class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
-    def __init__(self, master, app):
-        CNCRibbon.ButtonMenuGroup.__init__(
-            self,
-            master,
-            N_("Connection"),
-            app,
-            [(_("Hard Reset"), "reset", OCV.mcontrol.hardReset)])
-
-        print("ConnectionGroup app", app)
-
-        self.grid2rows()
-
-        col, row = 0, 0
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=Utils.icons["home32"],
-            text=_("Home"),
-            compound=Tk.TOP,
-            anchor=Tk.W,
-            command=OCV.mcontrol.home(),
-            background=OCV.BACKGROUND)
-
-        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Perform a homing cycle [$H]"))
-
-        self.addWidget(b)
-
-        col, row = 1, 0
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=Utils.icons["unlock"],
-            text=_("Unlock"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=OCV.mcontrol.unlock(True),
-            background=OCV.BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Unlock controller [$X]"))
-
-        self.addWidget(b)
-
-        row += 1
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=Utils.icons["serial"],
-            text=_("Connection"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=self: s.event_generate("<<Connect>>"),
-            background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-        tkExtra.Balloon.set(b, _("Open/Close connection"))
-        self.addWidget(b)
-
-        row += 1
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=Utils.icons["reset"],
-            text=_("Reset"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=OCV.mcontrol.softReset(True),
-            background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-        tkExtra.Balloon.set(b, _("Software reset of controller [ctrl-x]"))
-        self.addWidget(b)
-
-
-#===============================================================================
-# User Group
-#===============================================================================
-class UserGroup(CNCRibbon.ButtonGroup):
-    def __init__(self, master, app):
-        CNCRibbon.ButtonGroup.__init__(self, master, "User", app)
-        self.grid3rows()
-
-        n = Utils.getInt("Buttons", "n", 6)
-
-        for idx in range(1, n):
-            b = Utils.UserButton(
-                self.frame,
-                OCV.APP,
-                idx,
-                anchor=Tk.W,
-                background=OCV.BACKGROUND)
-            col, row = divmod(idx-1, 3)
-
-            b.grid(row=row, column=col, sticky=Tk.NSEW)
-
-            self.addWidget(b)
-
-
-#===============================================================================
-# Run Group
-#===============================================================================
-class RunGroup(CNCRibbon.ButtonGroup):
-    def __init__(self, master, app):
-        CNCRibbon.ButtonGroup.__init__(self, master, "Run", app)
-        OCV.RUN_GROUP = self
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            self, "<<Run>>",
-            image=Utils.icons["start32"],
-            text=_("Start"),
-            compound=Tk.TOP,
-            background=OCV.BACKGROUND)
-        b.pack(side=Tk.LEFT, fill=Tk.BOTH)
-        tkExtra.Balloon.set(b, _("Run g-code commands from editor to controller"))
-        self.addWidget(b)
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            self, "<<Pause>>",
-            name="run_pause",
-            image=Utils.icons["pause32"],
-            text=_("Pause"),
-            compound=Tk.TOP,
-            background=OCV.BACKGROUND)
-        b.pack(side=Tk.LEFT, fill=Tk.BOTH)
-        tkExtra.Balloon.set(b, _("Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"))
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            self, "<<Stop>>",
-            name="run_stop",
-            image=Utils.icons["stop32"],
-            text=_("Stop"),
-            compound=Tk.TOP,
-            background=OCV.BACKGROUND)
-        b.pack(side=Tk.LEFT, fill=Tk.BOTH)
-        tkExtra.Balloon.set(b, _("Pause running program and soft reset controller to empty the buffer."))
 
 
 #===============================================================================
@@ -234,7 +90,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
 
-
         b = Tk.Button(
             self,
             text="{0}".format(OCV.step2),
@@ -247,7 +102,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         bal_text = _("Step2 = {0}").format(OCV.step2)
         tkExtra.Balloon.set(b, bal_text)
         self.addWidget(b)
-
 
         b = Tk.Button(
             self,
@@ -1448,5 +1302,9 @@ class ControlPage(CNCRibbon.Page):
         OCV.wcsvar = Tk.IntVar()
         OCV.wcsvar.set(0)
 
-        self._register((ConnectionGroup, UserGroup, RunGroup, MemoryPanel.MemoryGroup),
-            (DROFrame.DROFrame, ControlFrame, StateFrame))
+        self._register(
+            (Interface.ConnectionGroup,
+             Interface.UserGroup,
+             Interface.RunGroup,
+             Interface.MemoryGroup),
+            (Interface.DROFrame, ControlFrame, StateFrame))

@@ -4,10 +4,9 @@
 #
 # Author: carlo.dormeletti@gmail.com
 # Date: 26 Oct 2019
-"""
-    _main__.py
+"""__main__.py
 
-    This module is the main module
+This module is the main module
 
 """
 
@@ -61,14 +60,14 @@ import bFileDialog
 import tkDialogs
 
 import Commands as cmd
+import Interface
 
 from CNC import WAIT, CNC, GCode
-import Ribbon
+# import Ribbon
 import Pendant
 from Sender import Sender, NOT_CONNECTED, STATECOLOR, STATECOLORDEF
 
 import CNCCanvas
-
 
 from CNCRibbon import Page
 from ToolsPage import Tools, ToolsPage
@@ -77,8 +76,6 @@ from ControlPage import ControlPage
 from TerminalPage import TerminalPage
 from ProbePage import ProbePage
 from EditorPage import EditorPage
-
-import MemoryPanel
 
 _openserial = True # override ini parameters
 _device = None
@@ -127,92 +124,8 @@ class Application(Tk.Toplevel, Sender):
         self.controller = None
         self.loadConfig()
 
-        # --- Ribbon ---
-        self.ribbon = Ribbon.TabRibbonFrame(self)
-        self.ribbon.pack(side=Tk.TOP, fill=Tk.X)
-
-        # Main frame
-        self.paned = Tk.PanedWindow(self, orient=Tk.HORIZONTAL)
-        self.paned.pack(fill=Tk.BOTH, expand=Tk.YES)
-
-        # Status bar
-        frame = Tk.Frame(self)
-        frame.pack(side=Tk.BOTTOM, fill=Tk.X)
-        self.statusbar = tkExtra.ProgressBar(
-            frame,
-            height=20,
-            relief=Tk.SUNKEN)
-
-        self.statusbar.pack(
-            side=Tk.LEFT,
-            fill=Tk.X,
-            expand=Tk.YES)
-
-        self.statusbar.configText(
-            fill="DarkBlue",
-            justify=Tk.LEFT,
-            anchor=Tk.W)
-
-        self.statusz = Tk.Label(
-            frame,
-            foreground="DarkRed",
-            relief=Tk.SUNKEN,
-            anchor=Tk.W,
-            width=10)
-
-        self.statusz.pack(side=Tk.RIGHT)
-
-        self.statusy = Tk.Label(
-            frame,
-            foreground="DarkRed",
-            relief=Tk.SUNKEN,
-            anchor=Tk.W,
-            width=10)
-
-        self.statusy.pack(side=Tk.RIGHT)
-
-        self.statusx = Tk.Label(
-            frame,
-            foreground="DarkRed",
-            relief=Tk.SUNKEN,
-            anchor=Tk.W,
-            width=10)
-
-        self.statusx.pack(side=Tk.RIGHT)
-
-        # Buffer bar
-        self.bufferbar = tkExtra.ProgressBar(
-            frame,
-            height=20,
-            width=40,
-            relief=Tk.SUNKEN)
-
-        self.bufferbar.pack(side=Tk.RIGHT, expand=Tk.NO)
-
-        self.bufferbar.setLimits(0, 100)
-
-        tkExtra.Balloon.set(self.bufferbar, _("Controller buffer fill"))
-
-        # --- Left side ---
-        frame = Tk.Frame(self.paned)
-
-        self.paned.add(frame) #, minsize=340)
-
-        pageframe = Tk.Frame(frame)
-
-        pageframe.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.BOTH)
-
-        self.ribbon.setPageFrame(pageframe)
-
-        # Command bar
-        cmd_f = Tk.Frame(frame)
-        cmd_f.pack(side=Tk.BOTTOM, fill=Tk.X)
-        self.cmdlabel = Tk.Label(cmd_f, text=_("Command:"))
-        self.cmdlabel.pack(side=Tk.LEFT)
-
-        self.command = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
-
-        self.command.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
+        # many widget for main interface are definited in Interface.py
+        Interface.main_interface(OCV.APP)
 
         self.command.bind("<Return>", self.cmdExecute)
         self.command.bind("<Up>", self.commandHistoryUp)
@@ -224,69 +137,7 @@ class Application(Tk.Toplevel, Sender):
         self.command.bind("<Control-Key-Z>", self.redo)
         self.command.bind("<Control-Key-y>", self.redo)
 
-        tkExtra.Balloon.set(
-            self.command,
-            _("MDI Command line: Accept g-code commands or macro " \
-              "commands (RESET/HOME...) or editor commands " \
-              "(move,inkscape, round...) [Space or Ctrl-Space]"))
-
         self.widgets.append(self.command)
-
-        # --- Right side ---
-        frame = Tk.Frame(self.paned)
-        self.paned.add(frame)
-
-        # --- Canvas ---
-        self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
-
-        self.canvasFrame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
-
-        self.linebuffer = Tk.Label(frame, background="khaki")
-
-        self.proc_line = Tk.StringVar()
-
-        self.linebuffer.configure(
-            height=1,
-            anchor=Tk.W,
-            textvariable=self.proc_line)
-
-        self.linebuffer.pack(side=Tk.BOTTOM, fill=Tk.X)
-
-        # fist create Pages
-        self.pages = {}
-        for cls in (ControlPage, EditorPage, FilePage, ProbePage,
-                    TerminalPage, ToolsPage):
-
-            page = cls(self.ribbon, self)
-
-            self.pages[page.name] = page
-
-        # then add their properties (in separate loop)
-        errors = []
-        for name, page in self.pages.items():
-            for n in Utils.getStr(Utils.__prg__, "{0}.ribbon".format(page.name)).split():
-                try:
-                    page.addRibbonGroup(n)
-                except KeyError:
-                    errors.append(n)
-
-            for n in Utils.getStr(Utils.__prg__, "{0}.page".format(page.name)).split():
-                last = n[-1]
-                try:
-                    if last == "*":
-                        page.addPageFrame(n[:-1], fill=Tk.BOTH, expand=Tk.TRUE)
-                    else:
-                        page.addPageFrame(n)
-                except KeyError:
-                    errors.append(n)
-
-        if errors:
-            tkMessageBox.showwarning(
-                "OKKCNC configuration",
-                "The following pages \"{0}\" are found in " \
-                "your ${HOME}/.OKKCNC initialization file, " \
-                "which are either spelled wrongly or " \
-                "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
         # remember the editor list widget
         self.dro = Page.frames["DRO"]
@@ -582,7 +433,7 @@ class Application(Tk.Toplevel, Sender):
         OCV.WK_active_mems[OCV.WK_mem] = 1
 
     def saveMems(self, event=None):
-        MemoryPanel.Config.saveMemory()
+        Interface.Service.saveMemory()
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
@@ -761,7 +612,7 @@ class Application(Tk.Toplevel, Sender):
         self.tools.loadConfig()
         Sender.loadConfig(self)
         self.loadShortcuts()
-        MemoryPanel.Config.loadMemory()
+        Interface.Service.loadMemory()
 
 
     def saveConfig(self):
@@ -781,7 +632,7 @@ class Application(Tk.Toplevel, Sender):
         Sender.saveConfig(self)
         self.tools.saveConfig()
         self.canvasFrame.saveConfig()
-        MemoryPanel.Config.saveMemory()
+        Interface.Service.saveMemory()
 
 
     def loadHistory(self):
