@@ -1,9 +1,14 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Nov 10 15:21:49 2019
+# -*- coding: ascii -*-
+"""OCV.py
 
-@author: carlo
+This module contains the variables used in OKKCNC, it is imported
+almost in every module as it provide an "elegant" way to provide
+"globals" across the program
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
 
 author = "Carlo Dormeletti (onekk)"
@@ -47,9 +52,10 @@ PLANE = {
     "G18": "XZ",
     "G19": "YZ"}
 
-
-# variables that hold significant Tk reference for object
-# that are spread across many modules
+"""these group of variable holds Tk references to various object
+across the program, mainly:
+    OCV.APP >
+"""
 
 root = None
 APP = None
@@ -57,11 +63,15 @@ canvas = None
 mcontrol = None
 RUN_GROUP = None
 
+"""version and date"""
 _version = "0.1.9-dev"
 _date = "26 Dec 2019"
 
+""" used to simplify mosto of the coordinates in Gcode and text strings"""
 _sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
 _gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
+
+"""Other vairables in alphabetical order"""
 
 # A #
 acceleration_x = 25.0  # mm/s^2

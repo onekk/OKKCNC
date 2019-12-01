@@ -1,12 +1,15 @@
-#!/usr/bin/python
 # -*- coding: ascii -*-
-# $Id: OKKCNC.py $
-#
-# Author: carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
 """__main__.py
 
-This module is the main module
+OKKCNC main module
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
 
 """
 

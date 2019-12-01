@@ -1,11 +1,19 @@
 # -*- coding: ascii -*-
-# $Id$
-#
-# Author:    carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
 """Utils.py
-   Module containing some helper functions and get and set the configuration
-   from the INI file
+
+This module contains some helper functions:
+    - get and set the configuration from the INI file
+    - some elements of the interface
+
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
 
 from __future__ import absolute_import

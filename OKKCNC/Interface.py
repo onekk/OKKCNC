@@ -1,10 +1,16 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+# -*- coding: ascii -*-
 """Interface.py
-Created on Sun Dec  1 10:31:22 2019
 
-@author: carlo
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
+
 from __future__ import absolute_import
 from __future__ import print_function
 

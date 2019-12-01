@@ -1,10 +1,12 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Nov 26 12:59:17 2019
+# -*- coding: ascii -*-
+"""Commands.py
 
-@author: carlo
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
+
 
 try:
     import Tkinter as Tk

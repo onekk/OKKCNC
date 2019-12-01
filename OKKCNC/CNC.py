@@ -1,8 +1,16 @@
 # -*- coding: ascii -*-
-# $Id: CNC.py,v 1.8 2014/10/15 15:03:49 bnv Exp $
-#
-# Author: carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
+"""CNC.py
+
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
+"""
 
 from __future__ import absolute_import
 from __future__ import print_function

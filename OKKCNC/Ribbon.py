@@ -1,10 +1,15 @@
 # -*- coding: ascii -*-
-#
-# Author: carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
 """Ribbon.py
 
-   Thisfile set the ribbon on top of pages
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
 
 from __future__ import absolute_import

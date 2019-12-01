@@ -1,13 +1,18 @@
-#!/usr/bin/python
 # -*- coding: ascii -*-
-#
-# Author: carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
 """Sender.py
 
 This module, working joined with files in ./controllers subdir
-is managing the serial communication between the program and the
-CNC controller electronics
+manage serial communication between the program and the CNC controller
+electronics
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
 """
 
 from __future__ import absolute_import

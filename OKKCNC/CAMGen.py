@@ -1,9 +1,8 @@
-#!/usr/bin/env python2
 # -*- coding: ascii -*-
-"""
-Created on Fri Nov  8 16:03:58 2019
+"""CAMGen.py
+Created on Nov 2019
 
-@author: carlo
+@author: carlo.dormeletti@gmail.com
 """
 
 from __future__ import absolute_import

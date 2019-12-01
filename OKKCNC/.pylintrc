@@ -2,7 +2,7 @@
 init-hook='import sys; sys.path.extend(("./", "./lib", "./controllers"))'
 
 [VARIABLES]
-additional-builtins=_
+additional-builtins=_,N_
 
 [MESSAGES CONTROL]
 disable=R0901

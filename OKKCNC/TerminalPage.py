@@ -1,8 +1,16 @@
 # -*- coding: ascii -*-
-# $Id$
-#
-# Author: carlo.dormeletti@gmail.com
-# Date: 26 Oct 2019
+"""TerminalPage.py
+
+
+Credits:
+    this module code is based on bCNC
+    https://github.com/vlachoudis/bCNC
+
+@author: carlo.dormeletti@gmail.com
+
+    https://github.com/onekk/OKKCNC
+
+"""
 
 from __future__ import absolute_import
 from __future__ import print_function
