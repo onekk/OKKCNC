@@ -8,9 +8,9 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 try:
-    from Tkinter import *
+    import Tkinter as Tk
 except ImportError:
-    from tkinter import *
+    import tkinter as Tk
 
 import OCV
 import tkExtra
@@ -22,169 +22,222 @@ import CNCRibbon
 from CNCCanvas import ACTION_MOVE, ACTION_ORIGIN
 
 
-#===============================================================================
-# Clipboard Group
-#===============================================================================
 class ClipboardGroup(CNCRibbon.ButtonGroup):
+    """Clipboard Group"""
+
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, N_("Clipboard"), app)
         self.grid2rows()
 
-        # ---
-        b = Ribbon.LabelButton(self.frame, self, "<<Paste>>",
-                image=Utils.icons["paste32"],
-                text=_("Paste"),
-                compound=TOP,
-                takefocus=FALSE,
-                background=OCV.BACKGROUND)
-        b.grid(row=0, column=0, rowspan=2, padx=0, pady=0, sticky=NSEW)
+        b = Ribbon.LabelButton(
+            self.frame,
+            self,
+            "<<Paste>>",
+            image=Utils.icons["paste32"],
+            text=_("Paste"),
+            compound=Tk.TOP,
+            takefocus=Tk.FALSE,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=0, column=0, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(b, _("Paste [Ctrl-V]"))
+
         self.addWidget(b)
 
-        # ---
-        b = Ribbon.LabelButton(self.frame, self, "<<Cut>>",
-                image=Utils.icons["cut"],
-                text=_("Cut"),
-                compound=LEFT,
-                anchor=W,
-                takefocus=FALSE,
-                background=OCV.BACKGROUND)
+        b = Ribbon.LabelButton(
+            self.frame,
+            self,
+            "<<Cut>>",
+            image=Utils.icons["cut"],
+            text=_("Cut"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            takefocus=Tk.FALSE,
+            background=OCV.BACKGROUND)
+
         tkExtra.Balloon.set(b, _("Cut [Ctrl-X]"))
-        b.grid(row=0, column=1, padx=0, pady=1, sticky=NSEW)
+
+        b.grid(row=0, column=1, padx=0, pady=1, sticky=Tk.NSEW)
+
         self.addWidget(b)
 
-        # ---
-        b = Ribbon.LabelButton(self.frame, self, "<<Copy>>",
-                image=Utils.icons["copy"],
-                text=_("Copy"),
-                compound=LEFT,
-                anchor=W,
-                takefocus=FALSE,
-                background=OCV.BACKGROUND)
+        b = Ribbon.LabelButton(
+            self.frame,
+            self,
+            "<<Copy>>",
+            image=Utils.icons["copy"],
+            text=_("Copy"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            takefocus=Tk.FALSE,
+            background=OCV.BACKGROUND)
+
         tkExtra.Balloon.set(b, _("Copy [Ctrl-C]"))
-        b.grid(row=1, column=1, padx=0, pady=1, sticky=NSEW)
+
+        b.grid(row=1, column=1, padx=0, pady=1, sticky=Tk.NSEW)
+
         self.addWidget(b)
 
 
-#===============================================================================
-# Select Group
-#===============================================================================
 class SelectGroup(CNCRibbon.ButtonGroup):
+    """Select Group"""
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, N_("Select"), app)
         self.grid3rows()
 
-        # ---
-        col,row=0,0
-        b = Ribbon.LabelButton(self.frame, app, "<<SelectAll>>",
-                image=Utils.icons["select_all"],
-                text=_("All"),
-                compound=LEFT,
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        col, row = 0, 0
+
+        b = Ribbon.LabelButton(
+            self.frame,
+            app,
+            "<<SelectAll>>",
+            image=Utils.icons["select_all"],
+            text=_("All"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(b, _("Select all blocks [Ctrl-A]"))
+
         self.addWidget(b)
 
-        # ---
         col += 1
-        b = Ribbon.LabelButton(self.frame, app, "<<SelectNone>>",
-                image=Utils.icons["select_none"],
-                text=_("None"),
-                compound=LEFT,
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b = Ribbon.LabelButton(
+            self.frame,
+            app,
+            "<<SelectNone>>",
+            image=Utils.icons["select_none"],
+            text=_("None"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(b, _("Unselect all blocks [Ctrl-Shift-A]"))
+
         self.addWidget(b)
 
-        # ---
-        col,row=0,1
-        b = Ribbon.LabelButton(self.frame, app, "<<SelectInvert>>",
-                image=Utils.icons["select_invert"],
-                text=_("Invert"),
-                compound=LEFT,
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        col, row = 0, 1
+
+        b = Ribbon.LabelButton(
+            self.frame,
+            app,
+            "<<SelectInvert>>",
+            image=Utils.icons["select_invert"],
+            text=_("Invert"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(b, _("Invert selection [Ctrl-I]"))
+
         self.addWidget(b)
 
-        # ---
         col += 1
-        b = Ribbon.LabelButton(self.frame, app, "<<SelectLayer>>",
-                image=Utils.icons["select_layer"],
-                text=_("Layer"),
-                compound=LEFT,
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b = Ribbon.LabelButton(
+            self.frame,
+            app,
+            "<<SelectLayer>>",
+            image=Utils.icons["select_layer"],
+            text=_("Layer"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(b, _("Select all blocks from current layer"))
+
         self.addWidget(b)
 
-        # ---
         col, row = 0, 2
-        self.filterString = tkExtra.LabelEntry(self.frame,
-                _("Filter"),
-                "DarkGray",
-                background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
-                width=16)
-        self.filterString.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        self.filterString = tkExtra.LabelEntry(
+            self.frame,
+            _("Filter"),
+            "DarkGray",
+            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            width=16)
+
+        self.filterString.grid(
+            row=row,
+            column=col,
+            columnspan=2,
+            padx=0, pady=0,
+            sticky=Tk.NSEW)
+
         tkExtra.Balloon.set(self.filterString, _("Filter blocks"))
+
         self.addWidget(self.filterString)
-        self.filterString.bind("<Return>",   self.filter)
+
+        self.filterString.bind("<Return>", self.filter)
         self.filterString.bind("<KP_Enter>", self.filter)
 
-    #-----------------------------------------------------------------------
     def filter(self, event=None):
         txt = self.filterString.get()
         OCV.APP.insertCommand("FILTER {0}".format(txt), True)
 
 
-#===============================================================================
-# Edit Group
-#===============================================================================
 class EditGroup(CNCRibbon.ButtonMenuGroup):
+    """Edit Group"""
     def __init__(self, master, app):
-        CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Edit"), app,
-            [(_("Autolevel"), "level",    lambda a=app:a.insertCommand("AUTOLEVEL",True)),
-             (_("Color"),     "color",    lambda a=app:a.event_generate("<<ChangeColor>>")),
-             (_("Import"),    "load",     lambda a=app:a.insertCommand("IMPORT",True)),
-             (_("Postprocess Inkscape g-code"),  "inkscape", lambda a=app:a.insertCommand("INKSCAPE all",True)),
-             (_("Round"),     "digits",   lambda s=app:s.insertCommand("ROUND", True))
+        CNCRibbon.ButtonMenuGroup.__init__(
+            self, master,
+            N_("Edit"),
+            app,
+            [(_("Autolevel"), "level",
+              lambda a=app: a.insertCommand("AUTOLEVEL", True)),
+             (_("Color"), "color",
+              lambda a=app: a.event_generate("<<ChangeColor>>")),
+             (_("Import"), "load",
+              lambda a=app: a.insertCommand("IMPORT", True)),
+             (_("Postprocess Inkscape g-code"), "inkscape",
+              lambda a=app: a.insertCommand("INKSCAPE all", True)),
+             (_("Round"), "digits",
+              lambda s=app: s.insertCommand("ROUND", True))
             ])
         self.grid3rows()
 
-        # ---
-        col,row=0,0
-#        b = Ribbon.LabelButton(self.frame, app, "<<Add>>",
-#                image=Utils.icons["add"],
-#                text=_("Add"),
-#                compound=LEFT,
-#                anchor=W,
-#                background=OCV.BACKGROUND)
-#        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-#        tkExtra.Balloon.set(b, _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
-#        self.addWidget(b)
-        b = Ribbon.LabelButton(self.frame, OCV.APP, "<<Add>>",
-                image=Utils.icons["add"],
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
+        col, row = 0, 0
+
+        b = Ribbon.LabelButton(
+            self.frame,
+            OCV.APP,
+            "<<Add>>",
+            image=Utils.icons["add"],
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+
+        tkExtra.Balloon.set(
+            b,
+            _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
+
         self.addWidget(b)
 
-        menulist = [    (_("Line"),   "add",
-                lambda a=OCV.APP : a.event_generate("<<AddLine>>")),
-                (_("Block"),  "add",
-                lambda a=OCV.APP : a.event_generate("<<AddBlock>>"))]
-        b = Ribbon.MenuButton(self.frame, menulist,
-                text=_("Add"),
-                image=Utils.icons["triangle_down"],
-                compound=RIGHT,
-                anchor=W,
-                background=OCV.BACKGROUND)
-        b.grid(row=row, column=col+1, padx=0, pady=0, sticky=NSEW)
+        menulist = [
+            (_("Line"),
+             "add",
+             lambda a=OCV.APP: a.event_generate("<<AddLine>>")),
+            (_("Block"),
+             "add",
+             lambda a=OCV.APP: a.event_generate("<<AddBlock>>"))]
+
+        b = Ribbon.MenuButton(
+            self.frame,
+            menulist,
+            text=_("Add"),
+            image=Utils.icons["triangle_down"],
+            compound=Tk.RIGHT,
+            anchor=Tk.W,
+            background=OCV.BACKGROUND)
+        b.grid(row=row, column=col+1, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
 
         # ---
@@ -192,10 +245,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, app, "<<Clone>>",
                 image=Utils.icons["clone"],
                 text=_("Clone"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Clone selected lines or blocks [Ctrl-D]"))
         self.addWidget(b)
 
@@ -204,10 +257,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, app, "<<Delete>>",
                 image=Utils.icons["x"],
                 text=_("Delete"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Delete selected lines or blocks [Del]"))
         self.addWidget(b)
 
@@ -216,10 +269,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP, "<<EnableToggle>>",
                 image=Utils.icons["toggle"],
                 #text=_("Toggle"),
-                #compound=LEFT,
-                anchor=W,
+                #compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Toggle enable/disable block of g-code [Ctrl-L]"))
         self.addWidget(b)
 
@@ -230,10 +283,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.MenuButton(self.frame, menulist,
                 text=_("Active"),
                 image=Utils.icons["triangle_down"],
-                compound=RIGHT,
-                anchor=W,
+                compound=Tk.RIGHT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col+1, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col+1, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Enable or disable blocks of gcode"))
 
         # ---
@@ -241,10 +294,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP, "<<Expand>>",
                 image=Utils.icons["expand"],
                 text=_("Expand"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Toggle expand/collapse blocks of gcode [Ctrl-E]"))
         self.addWidget(b)
 
@@ -253,10 +306,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Comment>>",
                 image=Utils.icons["comment"],
                 text=_("Comment"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("(Un)Comment selected lines"))
         self.addWidget(b)
         # ---
@@ -265,10 +318,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Join>>",
                 image=Utils.icons["union"],
                 text=_("Join"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Join selected blocks"))
         self.addWidget(b)
         # ---
@@ -276,10 +329,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<Split>>",
                 image=Utils.icons["cut"],
                 text=_("Split"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Split selected blocks"))
         self.addWidget(b)
         # ---
@@ -287,10 +340,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, OCV.APP,  "<<ClearEditor>>",
                 image=Utils.icons["clear"],
                 text=_("Clear All"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Clear Editor Window"))
         self.addWidget(b)
 
@@ -308,13 +361,13 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelRadiobutton(self.frame,
                 image=Utils.icons["move32"],
                 text=_("Move"),
-                compound=TOP,
-                anchor=W,
+                compound=Tk.TOP,
+                anchor=Tk.W,
                 variable=OCV.APP.canvasFrame.canvas.actionVar,
                 value=ACTION_MOVE,
                 command=OCV.APP.canvasFrame.canvas.setActionMove,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Move objects [M]"))
         self.addWidget(b)
 
@@ -323,13 +376,13 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelRadiobutton(self.frame,
                 image=Utils.icons["origin32"],
                 text=_("Origin"),
-                compound=TOP,
-                anchor=W,
+                compound=Tk.TOP,
+                anchor=Tk.W,
                 variable=OCV.APP.canvasFrame.canvas.actionVar,
                 value=ACTION_ORIGIN,
                 command=OCV.APP.canvasFrame.canvas.setActionOrigin,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Move all gcode such as origin is on mouse location [O]"))
         self.addWidget(b)
 
@@ -346,7 +399,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
                 ("rc",     _("Right"),       "MOVE RC"),
                 ("br",     _("Bottom-Right"),"MOVE BR")):
             menu.add_command(label=n,
-                    image=Utils.icons[i], compound=LEFT,
+                    image=Utils.icons[i], compound=Tk.LEFT,
                     command=lambda a=OCV.APP,c=c:a.insertCommand(c,True))
         return menu
 
@@ -366,10 +419,10 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, self, "<Control-Key-Prior>",
                 image=Utils.icons["up"],
                 text=_("Up"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Move selected g-code up [Ctrl-Up, Ctrl-PgUp]"))
         self.addWidget(b)
 
@@ -378,10 +431,10 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, self, "<Control-Key-Next>",
                 image=Utils.icons["down"],
                 text=_("Down"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Move selected g-code down [Ctrl-Down, Ctrl-PgDn]"))
         self.addWidget(b)
 
@@ -390,10 +443,10 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
         b = Ribbon.LabelButton(self.frame, self, "<<Invert>>",
                 image=Utils.icons["swap"],
                 text=_("Invert"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Invert cutting order of selected blocks"))
         self.addWidget(b)
 
@@ -411,11 +464,11 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["rotate_90"],
                 text=_("CW"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("ROTATE CW",True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Rotate selected gcode clock-wise (-90deg)"))
         self.addWidget(b)
 
@@ -424,11 +477,11 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["rotate_180"],
                 text=_("Flip"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("ROTATE FLIP",True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Rotate selected gcode by 180deg"))
         self.addWidget(b)
 
@@ -437,11 +490,11 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["rotate_270"],
                 text=_("CCW"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("ROTATE CCW",True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Rotate selected gcode counter-clock-wise (90deg)"))
         self.addWidget(b)
 
@@ -450,11 +503,11 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["flip_horizontal"],
                 text=_("Horizontal"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("MIRROR horizontal",True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Mirror horizontally X=-X selected gcode"))
         self.addWidget(b)
 
@@ -463,11 +516,11 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["flip_vertical"],
                 text=_("Vertical"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("MIRROR vertical",True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Mirror vertically Y=-Y selected gcode"))
         self.addWidget(b)
 
@@ -488,11 +541,11 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["conventional"],
                 text=_("Conventional"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("DIRECTION CONVENTIONAL", True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Change cut direction to conventional for selected gcode blocks"))
         self.addWidget(b)
 
@@ -501,11 +554,11 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["climb"],
                 text=_("Climb"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("DIRECTION CLIMB", True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Change cut direction to climb for selected gcode blocks"))
         self.addWidget(b)
 
@@ -514,11 +567,11 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["reverse"],
                 text=_("Reverse"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("REVERSE", True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Reverse cut direction for selected gcode blocks"))
         self.addWidget(b)
 
@@ -527,11 +580,11 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["rotate_90"],
                 text=_("Cut CW"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("DIRECTION CW", True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Change cut direction to CW for selected gcode blocks"))
         self.addWidget(b)
 
@@ -540,11 +593,11 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["rotate_270"],
                 text=_("Cut CCW"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=lambda s=app:s.insertCommand("DIRECTION CCW", True),
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Change cut direction to CCW for selected gcode blocks"))
         self.addWidget(b)
 
@@ -562,11 +615,11 @@ class InfoGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["stats"],
                 text=_("Statistics"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=OCV.APP.showStats,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Show statistics for enabled gcode"))
         self.addWidget(b)
 
@@ -575,11 +628,11 @@ class InfoGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(self.frame,
                 image=Utils.icons["info"],
                 text=_("Info"),
-                compound=LEFT,
-                anchor=W,
+                compound=Tk.LEFT,
+                anchor=Tk.W,
                 command=OCV.APP.showInfo,
                 background=OCV.BACKGROUND)
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Show cutting information on selected blocks [Ctrl-n]"))
         self.addWidget(b)
 
@@ -591,14 +644,14 @@ class EditorFrame(CNCRibbon.PageFrame):
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "Editor", app)
         self.editor = CNCList.CNCListbox(self, app,
-                        selectmode=EXTENDED,
+                        selectmode=Tk.EXTENDED,
                         exportselection=0,
                         background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        self.editor.pack(side=LEFT,expand=TRUE, fill=BOTH)
+        self.editor.pack(side=Tk.LEFT,expand=Tk.TRUE, fill=Tk.BOTH)
         self.addWidget(self.editor)
 
-        sb = Scrollbar(self, orient=VERTICAL, command=self.editor.yview)
-        sb.pack(side=RIGHT, fill=Y)
+        sb = Tk.Scrollbar(self, orient=Tk.VERTICAL, command=self.editor.yview)
+        sb.pack(side=Tk.RIGHT, fill=Tk.Y)
         self.editor.config(yscrollcommand=sb.set)
 
 

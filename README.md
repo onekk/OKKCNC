@@ -4,12 +4,19 @@ OKKCNC
 GRBL CNC command sender, autoleveler, g-code editor, digitizer, CAM
 and swiss army knife for all your CNC needs.
 
+OKKCNC is a cross platform program (Windows, Linux, Mac) written in python.
+
+The sender is robust and fast able to work nicely with old or slow hardware like [Raspberry Pi]
+
+Note that on Windows XP you have to use `pyserial==3.0.1` or older as newer version do not work on XP.
+
 An advanced fully featured g-code sender for GRBL, forked from bCNC ver 0.9.14.
 
 The main reason to fork, is the intention to make it resembling professional CNC controller, and adding the
 ability to operate the CNC like a "manual machining tool"
 
 So far I have removed some functions that in my opinion are better done by an appropriate CAM program.
+- SVG and DXF imports.
 - all the CAM operations.
 - all the plugins
 
@@ -27,58 +34,27 @@ I have added some button on the right of the jogging buttons
 
 - "RST" button that reset the code created in the editor and the memA e memB positions.
 
-- a new Memory Panel, to store a number of memory position and (WIP) to pass them to memA and memB 
+- a new Memory Panel, to store a number of memory position and (WIP) to pass them to memA and memB
 
 The "line" and "r_pt" functions send the appropriate code in the editor window.
-
 
 Main goals for the future are:
 
 - add a Z override to make possible to correct the Z position by some amount, useful when pocketing os profiling
-  using materials like plywood that are not perfectly stable in time, so a nominal 5mm plywood is 4.9 or 5.1 
-  making diffcult to cut or ruining too much the sacrifical bed. 
+  using materials like plywood that are not perfectly stable in time, so a nominal 5mm plywood is 4.9 or 5.1
+  making diffcult to cut or ruining too much the sacrifical bed.
 
 - add more "Simple CAM functions" but not using a Plugin mechanism, a proper CAM program is better for complex operations,
   but for cutting along a line or pocketing (surfacing) some area a simple button on the interface is more suited.
   Not much complexity has to be added, like in the "professional" controller, nowadays no one program the machine by the
   machine keyboard, but if you want to:
-  
+
   - Surface a raw stock it's a common practice to "touch down" the stock with the tools and then surface it increasing
     the Z quotw until it is surfaced.
 
   - "Drill" some holes in the stock at a predefined positions, using the tools for doing "helical pocketing" with a proper
     tool engaging
 
-
-Last but not least.
-
-Many thanks to all the bCNC developers,
-
-
-# Old Readme from bCNC
-
-Note: these functions, may or not be present in OKKCNC, most are untouched, but many may be eliminated without warnings
-
-OKKCNC is a cross platform program (Windows, Linux, Mac) written in python.
-
-The sender is robust and fast able to work nicely with old or slow hardware like [Raspberry Pi]
-
-Note that on Windows XP you have to use `pyserial==3.0.1` or older as newer version do not work on XP.
-
-# Installation (manual)
-You will need the following packages to run OKKCNC
-- tkinter the graphical toolkit for python
-  Depending your python/OS it can either be already installed,
-  or under the names tkinter, python-tkinter, python-tk
-- pyserial or under the name python-serial, python-pyserial
-- numpy
-- Optionally:
-- python-imaging-tk: the PIL libraries for autolevel height map
-- python-opencv: for webcam streaming on web pendant
-- scipy: for 100 times faster 3D mesh slicing
-
-Expand the directory or download it from github
-and run the bCNC command
 
 # IMPORTANT! Motion controller (GRBL) settings
 - GRBL should be configured to use **MPos** rather than **Wpos**. This means that `$10=` should be set to odd number. As of GRBL 1.1 we reccomend setting `$10=3`. If you have troubles communicating with your machine, you can try to set failsafe value `$10=1`.
@@ -94,14 +70,23 @@ file will be saved in your home directory ${HOME}/.OKKCNC  or ~/.OKKCNC
 The default configuration is stored on OKKCNC.ini in the
 installation directory.
 
-*PLEASE DO NOT CHANGE THIS FILE, IT'S GOING TO BE OVERWRITTEN ON EACH UPGRADE OF BCNC*
 
-* THESE FEATURES ARE COPIED FROM BCNC, thing may change in the progress of porting *
+# Installation (manual)
+You will need the following packages to run OKKCNC
+- tkinter the graphical toolkit for python
+  Depending your python/OS it can either be already installed,
+  or under the names tkinter, python-tkinter, python-tk
+- pyserial or under the name python-serial, python-pyserial
+- numpy
+- Optionally:
+- python-imaging-tk: the PIL libraries for autolevel height map
+- python-opencv: for webcam streaming on web pendant
+
+
 
 # Features:
+
 - simple and intuitive interface for small screens
-- import/export **g-code**, **dxf** and **svg** files
-- 3D mesh slicing **stl** and **ply** files
 - fast g-code sender (works nicely on RPi and old hardware)
 - workspace configuration (G54..G59 commands)
 - user configurable buttons
@@ -142,3 +127,7 @@ Further documentation is available at: https://pyserial.readthedocs.io/en/latest
   an early stage of development.  Hence there should be plenty of bugs not yet
   spotted. Please use/try it with care, I don't want to be liable if it causes
   any damage :)
+
+Last but not least.
+
+Many thanks to all the bCNC developers,
