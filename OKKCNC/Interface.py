@@ -652,9 +652,8 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Memory"), app,
             [(_("Save Memories"), "save", lambda a=app:a.event_generate("<<SaveMems>>")),
-             (_("Show this Bank"), "view", self.showBankMem),
-             (_("Don't Show this Bank"), "view", self.showBankMem),
-             (_("Don't Show Memories"), "view", self.resetMemView),
+             (_("Toggle this Bank visibility"), "view", self.showBankMem),
+             (_("Don't Show all Memories"), "view", self.resetMemView),
 
              ])
 
@@ -811,7 +810,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         self.selectBank(mem_bank)
 
-
     def selectBank(self, mem_bank):
         # assign the proper values
         OCV.WK_bank = mem_bank
@@ -854,23 +852,23 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             #check if the button is shown
             b_check = self.checkBtnV(mem_num)
 
-            #print ("clrX check > ",b_check)
+#           print ("clrX check > ",b_check)
 
-            if ( b_check > 0):
+            if (b_check > 0):
                 # reset the button state
                 but_name = "but_m_{0}".format(mem_num - OCV.WK_bank_start)
                 label = "M_{0}".format(mem_num)
                 print("clrX but_name > ", but_name)
                 wd = self.frame.nametowidget(but_name)
                 but_color = OCV.BACKGROUND
-                tkExtra.Balloon.set(wd,"Empty")
+                tkExtra.Balloon.set(wd, "Empty")
                 wd.config(text=label, background=but_color)
 
-        #print(OCV.WK_mems)
+#        print(OCV.WK_mems)
 
     def checkBtnV(self, mem_num):
         upp_mem = OCV.WK_bank_start + OCV.WK_bank_mem
-        #print ("check Button {0} in range {1} {2}".format(
+        # print ("check Button {0} in range {1} {2}".format(
         #        mem_num, OCV.WK_bank_start, upp_mem))
         if mem_num in range(OCV.WK_bank_start, upp_mem):
             return mem_num
@@ -878,7 +876,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             return -1
 
     def showBankMem(self):
-        #print("sBM Bank >> ", OCV.WK_bank)
+        # print("sBM Bank >> ", OCV.WK_bank)
         for x in range(0, OCV.WK_bank_mem):
             mem_num = OCV.WK_bank_start + x
             mem_addr = "mem_{0}".format(mem_num)
@@ -888,9 +886,13 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                 # chek if the memory is valid
                 md = OCV.WK_mems[mem_addr]
                 #print("sBM md >> ", md)
-                if  md[3] == 1:
+                if md[3] == 1:
                     OCV.WK_mem = mem_num
-                    OCV.APP.event_generate("<<SetMem>>")
+
+                    if OCV.WK_active_mems[OCV.WK_mem] == 2:
+                        OCV.APP.event_generate("<<ClrMem>>")
+                    else:
+                        OCV.APP.event_generate("<<SetMem>>")
 
     def resetMemView(self):
         indices = [i for i, x in enumerate(OCV.WK_active_mems) if x == 2]

@@ -440,8 +440,11 @@ class Application(Tk.Toplevel, Sender):
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
-        """Show popup dialog asking for value entry, usefull in g-code scripts"""
-        d = tkDialogs.InputDialog(self, title, message, prompt, type_, from_, to_)
+        """Show popup dialog asking for value entry
+           usefull in g-code scripts"""
+        d = tkDialogs.InputDialog(
+            self, title, message, prompt, type_, from_, to_)
+
         v = d.show()
 
         if isinstance(v, basestring):
@@ -1909,8 +1912,10 @@ class Application(Tk.Toplevel, Sender):
 
         self.busy()
         sel = None
-        undoinfo = None    # all operations should return undo information
-        if   cmd == "AUTOLEVEL":
+
+        undoinfo = None  # all operations should return undo information
+
+        if cmd == "AUTOLEVEL":
             sel = self.gcode.autolevel(items)
         elif cmd == "CUT":
             sel = self.gcode.cut(items, *args)
@@ -1922,10 +1927,6 @@ class Application(Tk.Toplevel, Sender):
             sel = self.gcode.drill(items, *args)
         elif cmd == "ORDER":
             self.gcode.orderLines(items, *args)
-        elif cmd == "INKSCAPE":
-            self.gcode.inkscapeLines()
-        elif cmd == "ISLAND":
-            self.gcode.island(items, *args)
         elif cmd == "MIRRORH":
             self.gcode.mirrorHLines(items)
         elif cmd == "MIRRORV":
@@ -1943,6 +1944,13 @@ class Application(Tk.Toplevel, Sender):
         elif cmd == "ROTATE":
             self.gcode.rotateLines(items, *args)
 
+        """
+        elif cmd == "INKSCAPE":
+            self.gcode.inkscapeLines()
+        elif cmd == "ISLAND":
+            self.gcode.island(items, *args)
+        """
+
         # Fill listbox and update selection
         self.editor.fill()
         if sel is not None:
@@ -1952,8 +1960,8 @@ class Application(Tk.Toplevel, Sender):
                 self.editor.select(sel, clear=True)
         self.drawAfter()
         self.notBusy()
-        self.setStatus("{0} {1}".format(cmd, " ".join([str(a) for a in args if a is not None])))
-
+        self.setStatus("{0} {1}".format(cmd, " ".join(
+            [str(a) for a in args if a is not None])))
 
     def edit(self, event=None):
         page = self.ribbon.getActivePage()
@@ -2027,11 +2035,9 @@ class Application(Tk.Toplevel, Sender):
         if self._historyPos is not None:
             self.command.insert(0, self.history[self._historyPos])
 
-
     def select(self, items, double, clear, toggle=True):
         self.editor.select(items, double, clear, toggle)
         self.selectionChange()
-
 
     def selectionChange(self, event=None):
         """Selection has changed highlight the canvas"""
@@ -2043,7 +2049,6 @@ class Application(Tk.Toplevel, Sender):
 
         self.canvasFrame.canvas.select(items)
         self.canvasFrame.canvas.activeMarker(self.editor.getActive())
-
 
     def newFile(self, event=None):
         """Create a new file"""
@@ -2078,7 +2083,6 @@ class Application(Tk.Toplevel, Sender):
 
         return "break"
 
-
     def saveDialog(self, event=None):
         """save dialog"""
         if OCV.s_running:
@@ -2096,7 +2100,6 @@ class Application(Tk.Toplevel, Sender):
             self.save(filename)
 
         return "break"
-
 
     def fileModified(self):
         if self.gcode.isModified():
@@ -2194,7 +2197,6 @@ class Application(Tk.Toplevel, Sender):
     def reload(self, event=None):
         self.load(self.gcode.filename)
 
-
     def importFile(self, filename=None):
         if filename is None:
             filename = bFileDialog.askopenfilename(
@@ -2221,7 +2223,6 @@ class Application(Tk.Toplevel, Sender):
             self.editor.fill()
             self.draw()
             self.canvasFrame.canvas.fit2Screen()
-
 
     def focus_in(self, event):
         if self._inFocus:
@@ -2299,11 +2300,10 @@ class Application(Tk.Toplevel, Sender):
         """
 
         try:
-            self.update()    # very tricky function of Tk
+            self.update()  # very tricky function of Tk
         except Tk.TclError:
             pass
         return OCV.s_stop
-
 
     def run(self, lines=None):
         """
@@ -2359,7 +2359,7 @@ class Application(Tk.Toplevel, Sender):
             self.statusbar.setLimits(0, 9999)
             self.statusbar.setProgress(0, 0)
 
-            self._paths = self.gcode.compile(self.queue, self.checkStop)
+            self._paths = self.gcode.comp_level(self.queue, self.checkStop)
             if self._paths is None:
                 self.emptyQueue()
                 OCV.mcontrol.purgeController()
@@ -2396,15 +2396,15 @@ class Application(Tk.Toplevel, Sender):
             self._runLines = len(self._paths) + 1  # plus the wait
         else:
             n = 1        # including one wait command
-            for line in CNC.compile(lines):
+            for line in CNC.compile_pgm(lines):
                 if line is not None:
                     if isinstance(line, str):
                         self.queue.put(line+"\n")
                     else:
                         self.queue.put(line)
                     n += 1
-            self._runLines = n    # set it at the end to be sure that all lines are queued
-        self.queue.put((WAIT,))        # wait at the end to become idle
+            self._runLines = n  # set it at the end to be sure that all lines are queued
+        self.queue.put((WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
         self.statusbar.setLimits(0, self._runLines)
