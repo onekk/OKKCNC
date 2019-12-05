@@ -1,7 +1,6 @@
 # -*- coding: ascii -*-
 """CNC.py
 
-
 Credits:
     this module code is based on bCNC
     https://github.com/vlachoudis/bCNC
@@ -15,44 +14,19 @@ Credits:
 from __future__ import absolute_import
 from __future__ import print_function
 
-import os
-import re
+# import os
+# import re
 import math
-import types
 
 import OCV
-import undo
-import Unicode
+# import Probe
+# import Block
 
 # from dxf import DXF
-from bstl import Binary_STL_Writer
-from bpath import eq, Path, Segment
+
 import bmath
-from copy import deepcopy
+# from copy import deepcopy
 # from svgcode import SVGcode
-from time import strftime, localtime
-
-IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
-PARENPAT = re.compile(r"(\(.*?\))")
-SEMIPAT = re.compile(r"(;.*)")
-OPPAT = re.compile(r"(.*)\[(.*)\]")
-CMDPAT = re.compile(r"([A-Za-z]+)")
-BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
-AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
-
-STOP = 0
-SKIP = 1
-ASK = 2
-MSG = 3
-WAIT = 4
-UPDATE = 5
-
-XY = 0
-XZ = 1
-YZ = 2
-
-CW = 2
-CCW = 3
 
 # Modal Mode from $G and variable set
 MODAL_MODES = {
@@ -108,10 +82,6 @@ MODAL_MODES = {
     "M9": "coolant",
 }
 
-ERROR_HANDLING = {}
-TOLERANCE = 1e-7
-MAXINT = 1000000000    # python3 doesn't have maxint
-
 
 def getValue(name, new, old, default=0.0):
     """Return a value combined from two dictionaries new/old"""
@@ -125,379 +95,7 @@ def getValue(name, new, old, default=0.0):
             return default
 
 
-class Probe(object):
-    """Probing class and linear interpolation"""
-    def __init__(self):
-        self.init()
-
-    def init(self):
-        self.filename = ""
-        self.xmin = 0.0
-        self.ymin = 0.0
-        self.zmin = -10.0
-
-        self.xmax = 10.0
-        self.ymax = 10.0
-        self.zmax = 3.0
-
-        self._xstep = 1.0
-        self._ystep = 1.0
-
-        self.xn = 5
-        self.yn = 5
-
-        self.points = []  # probe points
-        self.matrix = []  # 2D matrix with Z coordinates
-        self.zeroed = False  # if probe was zeroed at any location
-        self.start = False  # start collecting probes
-        self.saved = False
-
-    def clear(self):
-        del self.points[:]
-        del self.matrix[:]
-        self.zeroed = False
-        self.start = False
-        self.saved = False
-
-    def isEmpty(self):
-        return len(self.matrix) == 0
-
-    def makeMatrix(self):
-        del self.matrix[:]
-        for j in range(self.yn):
-            self.matrix.append([0.0]*(self.xn))
-
-    def load(self, filename=None):
-        """Load autolevel information from file"""
-
-        if filename is not None:
-            self.filename = filename
-        self.clear()
-        self.saved = True
-
-        def read(f):
-            while True:
-                line = f.readline()
-                if len(line) == 0:
-                    raise ValueError("Line is empty")
-
-                line = line.strip()
-
-                if line:
-                    return map(float, line.split())
-
-        f = open(self.filename, "r")
-        self.xmin, self.xmax, self.xn = read(f)
-        self.ymin, self.ymax, self.yn = read(f)
-        self.zmin, self.zmax, feed = read(f)
-        OCV.CD["prbfeed"] = feed
-
-        self.xn = max(2, int(self.xn))
-        self.yn = max(2, int(self.yn))
-
-        self.makeMatrix()
-        self.xstep()
-        self.ystep()
-
-        self.start = True
-        try:
-            for j in range(self.yn):
-                for i in range(self.xn):
-                    self.add(*read(f))
-        except Exception:
-            raise
-            # print "Error reading probe file",self.filename
-        f.close()
-
-    def save(self, filename=None):
-        """Save level information to file"""
-
-        if filename is None:
-            filename = self.filename
-
-        fn, ext = os.path.splitext(filename)
-        ext = ext.lower()
-
-        f = open(filename, "w")
-        if ext != '.xyz':
-            self.filename = filename
-            f.write(
-                "{0:0.f} {1:0.f} {2:d}".format(
-                    self.xmin,
-                    self.xmax,
-                    self.xn)
-                )
-
-            f.write(
-                "{0:0.f} {1:0.f} {2:d}".format(
-                    self.ymin,
-                    self.ymax,
-                    self.yn)
-                )
-
-            f.write(
-                "{0:0.f} {1:0.f} {2:0.f}".format(
-                    self.zmin,
-                    self.zmax,
-                    OCV.CD["prbfeed"])
-                )
-
-            f.write("\n\n")
-
-        for j in range(self.yn):
-            y = self.ymin + self._ystep*j
-
-            for i in range(self.xn):
-                x = self.xmin + self._xstep*i
-
-                f.write(
-                    "{0:0.f} {1:0.f} {2:0.f}".format(
-                        x, y, self.matrix[j][i])
-                    )
-
-            f.write("\n")
-
-        f.close()
-
-        self.saved = True
-
-    def saveAsSTL(self, filename=None):
-        """Save level information as STL file"""
-
-        if filename is not None:
-            self.filename = filename
-
-        with open(self.filename, 'wb') as fp:
-            writer = Binary_STL_Writer(fp)
-
-            for j in range(self.yn - 1):
-                y1 = self.ymin + self._ystep*j
-                y2 = self.ymin + self._ystep*(j+1)
-                for i in range(self.xn - 1):
-                    x1 = self.xmin + self._xstep*i
-                    x2 = self.xmin + self._xstep*(i+1)
-                    v1 = [x1, y1, self.matrix[j][i]]
-                    v2 = [x2, y1, self.matrix[j][i+1]]
-                    v3 = [x2, y2, self.matrix[j+1][i+1]]
-                    v4 = [x1, y2, self.matrix[j+1][i]]
-                    writer.add_face([v1, v2, v3, v4])
-            writer.close()
-
-    def xstep(self):
-        """Return X step"""
-        self._xstep = (self.xmax-self.xmin)/float(self.xn-1)
-        return self._xstep
-
-    def ystep(self):
-        """Return Y step"""
-        self._ystep = (self.ymax-self.ymin)/float(self.yn-1)
-        return self._ystep
-
-    def scanMargins(self):
-        """Return the code needed to scan margins for autoleveling"""
-        lines = []
-
-        lines.append("G0 {0:0.f} {1:0.f}".format(self.xmin, self.ymin))
-        lines.append("G0 {0:0.f} {1:0.f}".format(self.xmin, self.ymax))
-        lines.append("G0 {0:0.f} {1:0.f}".format(self.xmax, self.ymax))
-        lines.append("G0 {0:0.f} {1:0.f}".format(self.xmax, self.ymin))
-        lines.append("G0 {0:0.f} {1:0.f}".format(self.xmin, self.ymin))
-
-        return lines
-
-    def scan(self):
-        """Return the code needed to scan for autoleveling"""
-        self.clear()
-        self.start = True
-        self.makeMatrix()
-        x = self.xmin
-        xstep = self._xstep
-        lines = [
-            "G0 Z{0:0.f}".format(OCV.CD["safe"]),
-            "G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin)
-            ]
-
-        for j in range(self.yn):
-            y = self.ymin + self._ystep*j
-            for i in range(self.xn):
-                lines.append("G0 Z{0:0.f}".format(self.zmax))
-                lines.append("G0 X{0:0.f} Y{1:0.f}".format(x, y))
-                lines.append("%wait")  # added for smoothie
-
-                lines.append(
-                    "{0}Z{1:0.f} F{2:0.f}".format(
-                        OCV.CD["prbcmd"],
-                        self.zmin,
-                        OCV.CD["prbfeed"])
-                    )
-
-                lines.append("%wait")  # added for smoothie
-                x += xstep
-            x -= xstep
-            xstep = -xstep
-        lines.append("G0 Z{0:0.f}".format(self.zmax))
-        lines.append("G0 X{0:0.f} Y{1:0.f}".format(self.xmin, self.ymin))
-        return lines
-
-    def add(self, x, y, z):
-        """Add a probed point to the list and the 3D matrix"""
-        if not self.start:
-            return
-
-        i = round((x-self.xmin) / self._xstep)
-
-        if i < 0.0 or i > self.xn:
-            return
-
-        j = round((y-self.ymin) / self._ystep)
-
-        if j < 0.0 or j > self.yn:
-            return
-
-        rem = abs(x - (i*self._xstep + self.xmin))
-
-        if rem > self._xstep/10.0:
-            return
-
-        rem = abs(y - (j*self._ystep + self.ymin))
-
-        if rem > self._ystep/10.0:
-            return
-
-        try:
-            self.matrix[int(j)][int(i)] = z
-            self.points.append([x, y, z])
-        except IndexError:
-            pass
-
-        if len(self.points) >= self.xn*self.yn:
-            self.start = False
-
-    def setZero(self, x, y):
-        """Make z-level relative to the location of (x,y,0)"""
-        del self.points[:]
-
-        if self.isEmpty():
-            self.zeroed = False
-            return
-
-        zero = self.interpolate(x, y)
-        self.xstep()
-        self.ystep()
-
-        for j, row in enumerate(self.matrix):
-            y = self.ymin + self._ystep*j
-
-            for i in range(len(row)):
-                x = self.xmin + self._xstep*i
-                row[i] -= zero
-                self.points.append([x, y, row[i]])
-
-        self.zeroed = True
-
-    def interpolate(self, x, y):
-        ix = (x-self.xmin) / self._xstep
-        jy = (y-self.ymin) / self._ystep
-        i = int(math.floor(ix))
-        j = int(math.floor(jy))
-
-        if i < 0:
-            i = 0
-        elif i >= self.xn-1:
-            i = self.xn-2
-
-        if j < 0:
-            j = 0
-        elif j >= self.yn-1:
-            j = self.yn-2
-
-        a = ix - i
-        b = jy - j
-        a1 = 1.0 - a
-        b1 = 1.0 - b
-
-        return a1 * b1 * self.matrix[j][i] \
-               + a1 * b  * self.matrix[j+1][i] \
-               + a * b1 * self.matrix[j][i+1] \
-               + a * b  * self.matrix[j+1][i+1]
-
-    def splitLine(self, x1, y1, z1, x2, y2, z2):
-        """
-        Split line into multiple segments correcting for Z if needed
-        return only end points
-        """
-        dx = x2-x1
-        dy = y2-y1
-        dz = z2-z1
-
-        if abs(dx) < 1e-10:
-            dx = 0.0
-
-        if abs(dy) < 1e-10:
-            dy = 0.0
-
-        if abs(dz) < 1e-10:
-            dz = 0.0
-
-        if dx == 0.0 and dy == 0.0:
-            return [(x2, y2, z2+self.interpolate(x2, y2))]
-
-        # Length along projection on X-Y plane
-        rxy = math.sqrt(dx*dx + dy*dy)
-        dx /= rxy  # direction cosines along XY plane
-        dy /= rxy
-        dz /= rxy  # add correction for the slope in Z, versus the travel in XY
-
-        i = int(math.floor((x1-self.xmin) / self._xstep))
-        j = int(math.floor((y1-self.ymin) / self._ystep))
-
-        if dx > 1e-10:
-            # distance to next cell
-            tx = (float(i+1)*self._xstep + self.xmin - x1) / dx
-            tdx = self._xstep / dx
-        elif dx < -1e-10:
-            # distance to next cell
-            tx = (float(i)*self._xstep + self.xmin - x1) / dx
-            tdx = -self._xstep / dx
-        else:
-            tx = 1e10
-            tdx = 0.0
-
-        if dy > 1e-10:
-            # distance to next cell
-            ty = (float(j+1)*self._ystep + self.ymin - y1) / dy
-            tdy = self._ystep / dy
-        elif dy < -1e-10:
-            # distance to next cell
-            ty = (float(j)*self._ystep + self.ymin - y1) / dy
-            tdy = -self._ystep / dy
-        else:
-            ty = 1e10
-            tdy = 0.0
-
-        segments = []
-        rxy *= 0.999999999  # just reduce a bit to avoid precision errors
-        while tx < rxy or ty < rxy:
-            if tx == ty:
-                t = tx
-                tx += tdx
-                ty += tdy
-            elif tx < ty:
-                t = tx
-                tx += tdx
-            else:
-                t = ty
-                ty += tdy
-            x = x1 + t*dx
-            y = y1 + t*dy
-            z = z1 + t*dz
-            segments.append((x, y, z+self.interpolate(x, y)))
-
-        segments.append((x2, y2, z2+self.interpolate(x2, y2)))
-        return segments
-
-
-class Orient:
+class Orient(object):
     """
     contains a list of machine points vs position in the gcode
     calculates the transformation matrix (rotation + translation) needed
@@ -610,8 +208,8 @@ class Orient:
         # The solution of the overdetermined system A X = B
         try:
             c, s, self.xo, self.yo = bmath.solveOverDetermined(
-                    bmath.Matrix(A),
-                    bmath.Matrix(B))
+                bmath.Matrix(A),
+                bmath.Matrix(B))
         except Exception:
             raise Exception("Unable to solve system")
 
@@ -627,7 +225,7 @@ class Orient:
         # yo /= r
         self.phi = math.atan2(s, c)
 
-        if abs(self.phi) < TOLERANCE:
+        if abs(self.phi) < OCV.TOLERANCE:
             self.phi = 0.0  # rotation
 
         self.valid = True
@@ -834,12 +432,12 @@ class CNC(object):
 
         section = "Error"
         if OCV.drillPolicy == 1:
-            ERROR_HANDLING["G98"] = 1
-            ERROR_HANDLING["G99"] = 1
+            OCV.ERROR_HANDLING["G98"] = 1
+            OCV.ERROR_HANDLING["G99"] = 1
 
         for cmd, value in config.items(section):
             try:
-                ERROR_HANDLING[cmd.upper()] = int(value)
+                OCV.ERROR_HANDLING[cmd.upper()] = int(value)
             except Exception:
                 pass
 
@@ -863,7 +461,6 @@ class CNC(object):
         else:
             self.z = self.zval = z
 
-        self.ival = self.jval = self.kval = 0.0
         self.uval = self.vval = self.wval = 0.0
         self.dx = self.dy = self.dz = 0.0
         self.di = self.dj = self.dk = 0.0
@@ -880,7 +477,7 @@ class CNC(object):
         self.arcabsolute = False  # G90.1/G91.1 absolute/relative arc
         self.retractz = True  # G98/G99     retract to Z or R
         self.gcode = None
-        self.plane = XY
+        self.plane = OCV.XY
         self.feed = 0  # Actual gcode feed rate (not to confuse with cutfeed
         self.totalLength = 0.0
         self.totalTime = 0.0
@@ -921,7 +518,7 @@ class CNC(object):
         return "{0}{2:0.{1}f}".format(c, digits, r_val)
 
     @staticmethod
-    def gcode(g, pairs):
+    def gcode_string(g, pairs):
         s = "G{0}".format(g)
         for c, v in pairs:
             s += " {0}{1:0.{2}f}".format(c, round(v, OCV.digits), OCV.digits)
@@ -963,11 +560,11 @@ class CNC(object):
         pairs = zip("XYZ", v)
         if feed is not None:
             pairs.append(("F", feed))
-        return CNC.gcode(g, pairs)
+        return CNC.gcode_string(g, pairs)
 
     @staticmethod
     def garcv(g, v, ijk):
-        return CNC.gcode(g, zip("XYZ", v) + zip("IJ", ijk[:2]))
+        return CNC.gcode_string(g, zip("XYZ", v) + zip("IJ", ijk[:2]))
 
     @staticmethod
     def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
@@ -1034,15 +631,15 @@ class CNC(object):
             return None
 
         # remove comments
-        line = PARENPAT.sub("", line)
-        line = SEMIPAT.sub("", line)
+        line = OCV.PARENPAT.sub("", line)
+        line = OCV.SEMIPAT.sub("", line)
 
         # process command
         # strip all spaces
         line = line.replace(" ", "")
 
         # Insert space before each command
-        line = CMDPAT.sub(r" \1", line).lstrip()
+        line = OCV.CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
     @staticmethod
@@ -1068,7 +665,7 @@ class CNC(object):
         # execute literally the line after the first character
         if line[0] == '%':
             # special command
-            pat = AUXPAT.match(line.strip())
+            pat = OCV.AUXPAT.match(line.strip())
 
             if pat:
                 cmd = pat.group(1)
@@ -1078,15 +675,15 @@ class CNC(object):
                 args = None
 
             if cmd == "%wait":
-                return (WAIT,)
+                return (OCV.WAIT,)
             elif cmd == "%msg":
 
                 if not args:
                     args = None
 
-                return (MSG, args)
+                return (OCV.MSG, args)
             elif cmd == "%update":
-                return (UPDATE, args)
+                return (OCV.UPDATE, args)
             elif line.startswith("%if running") and not OCV.CD["running"]:
                 # ignore if running lines when not running
                 return None
@@ -1223,7 +820,7 @@ class CNC(object):
         if line is None:
             return None
         # Insert space before each command
-        line = CMDPAT.sub(r" \1", line).lstrip()
+        line = OCV.CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
     def motionStart(self, cmds):
@@ -1269,13 +866,13 @@ class CNC(object):
                 if gcode in (4, 10, 53):
                     pass  # do nothing but don't record to motion
                 elif gcode == 17:
-                    self.plane = XY
+                    self.plane = OCV.XY
 
                 elif gcode == 18:
-                    self.plane = XZ
+                    self.plane = OCV.XZ
 
                 elif gcode == 19:
-                    self.plane = YZ
+                    self.plane = OCV.YZ
 
                 elif gcode == 20:  # Switch to inches
                     if OCV.inch:
@@ -1368,12 +965,12 @@ class CNC(object):
         """Return center x,y,z,r for arc motions 2,3 and set self.rval"""
 
         if self.rval > 0.0:
-            if self.plane == XY:
+            if self.plane == OCV.XY:
                 x = self.x
                 y = self.y
                 xv = self.xval
                 yv = self.yval
-            elif self.plane == XZ:
+            elif self.plane == OCV.XZ:
                 x = self.x
                 y = self.z
                 xv = self.xval
@@ -1410,9 +1007,9 @@ class CNC(object):
             zc = self.z + self.kval
             self.rval = math.sqrt(self.ival**2 + self.jval**2 + self.kval**2)
 
-            if self.plane == XY:
+            if self.plane == OCV.XY:
                 return xc, yc
-            elif self.plane == XZ:
+            elif self.plane == OCV.XZ:
                 return xc, zc
             else:
                 return yc, zc
@@ -1442,14 +1039,14 @@ class CNC(object):
             uc, vc = self.motionCenter()
 
             gcode = self.gcode
-            if self.plane == XY:
+            if self.plane == OCV.XY:
                 u0 = self.x
                 v0 = self.y
                 w0 = self.z
                 u1 = self.xval
                 v1 = self.yval
                 w1 = self.zval
-            elif self.plane == XZ:
+            elif self.plane == OCV.XZ:
                 u0 = self.x
                 v0 = self.z
                 w0 = self.y
@@ -1487,9 +1084,9 @@ class CNC(object):
                     v = vc + self.rval*math.sin(phi)
                     w = w0 + (phi-phi0)*ws
                     phi -= df
-                    if self.plane == XY:
+                    if self.plane == OCV.XY:
                         xyz.append((u, v, w))
-                    elif self.plane == XZ:
+                    elif self.plane == OCV.XZ:
                         xyz.append((u, w, v))
                     else:
                         xyz.append((w, u, v))
@@ -1506,9 +1103,9 @@ class CNC(object):
                     w = w0 + (phi-phi0)*ws
                     phi += df
 
-                    if self.plane == XY:
+                    if self.plane == OCV.XY:
                         xyz.append((u, v, w))
-                    elif self.plane == XZ:
+                    elif self.plane == OCV.XZ:
                         xyz.append((u, w, v))
                     else:
                         xyz.append((w, u, v))
@@ -1543,8 +1140,8 @@ class CNC(object):
                 clearz = self.z + self.rval
                 drill = clearz + self.dz
             """
-            print "clearz=",clearz
-            print "drill=",drill
+            print("clearz=", clearz)
+            print("drill=",drill)
             """
             x, y, z = self.x, self.y, self.z
             xyz.append((x, y, z))
@@ -1714,9 +1311,9 @@ class CNC(object):
                 if c.upper() in ("F", "X", "Y", "Z", "I", "J", "K", "R", "P"):
                     cmd = CNC.fmt(c, value)
                 else:
-                    opt = ERROR_HANDLING.get(cmd.upper(), 0)
+                    opt = OCV.ERROR_HANDLING.get(cmd.upper(), 0)
 
-                    if opt == SKIP:
+                    if opt == OCV.SKIP:
                         cmd = None
 
                 if cmd is not None:
@@ -1750,10 +1347,9 @@ class CNC(object):
 
         if OCV.comment:
             lines.append(
-                "%msg Tool change T{0:2d} (1)".format(
+                "%msg Tool change T{0:2d} {1}".format(
                     self.tool,
-                    OCV.comment)
-                )
+                    OCV.comment))
         else:
             lines.append(
                 "%msg Tool change T{0:2d}".format(self.tool))
@@ -1915,1844 +1511,3 @@ class CNC(object):
         print "-"*50
         """
         return lines
-
-
-class Block(list):
-    """
-    Block of g-code commands. A gcode file is represented as a list of blocks
-     - Commands are grouped as (non motion commands Mxxx)
-     - Basic shape from the first rapid move command to the last rapid z raise
-       above the working surface
-    -
-     Inherits from list and contains:
-        - a list list of gcode lines
-        - (imported shape)
-    """
-
-    def __init__(self, name=None):
-        # Copy constructor
-        if isinstance(name, Block):
-            self.copy(name)
-            return
-        self._name = name
-        self.enable = True      # Enabled/Visible in drawing
-        self.expand = False     # Expand in editor
-        self.color = None       # Custom color for path
-        self._path = []         # canvas drawing paths
-        # (entry point first non rapid motion)
-        self.sx = self.sy = self.sz = 0    # start  coordinates
-
-        self.ex = self.ey = self.ez = 0    # ending coordinates
-        self.resetPath()
-
-    def copy(self, src):
-        self._name = src._name
-        self.enable = src.enable
-        self.expand = src.expand
-        self.color = src.color
-        self[:] = src[:]
-        self._path = []
-        self.sx = src.sx
-        self.sy = src.sy
-        self.sz = src.sz
-        self.ex = src.ex
-        self.ey = src.ey
-        self.ez = src.ez
-
-    def name(self):
-        return self._name is None and "block" or self._name
-
-    def nameNop(self):
-        """@return name without the operation"""
-        name = self.name()
-        pat = OPPAT.match(name)
-        if pat is None:
-            return name
-        else:
-            return pat.group(1).strip()
-
-    def operationTest(self, op, name=None):
-        """Tests if block contains operation type"""
-        if name is None:
-            name = self.name()
-
-        pat = OPPAT.match(name)
-        if pat is not None:
-            ops = pat.group(2)
-            ops = re.split('\W+', ops)
-
-            if op in ops:
-                return True
-        return False
-
-    def operationGet(self, op, name=None):
-        """Get block operation value"""
-        if name is None:
-            name = self.name()
-
-        pat = OPPAT.match(name)
-        if pat is not None:
-            ops = pat.group(2)
-            ops = re.split(',', ops)
-            for opp in ops:
-                t = re.split(':', opp)
-
-                if t[0] == op:
-                    return t[1]
-        return None
-
-    def operationSide(self, name=None):
-        """
-        Tests if block contains operation on
-        inside of the part (-1), outside (1), or can't decide (0)
-        """
-        # if self.operationTest('pocket', name): return -1
-
-        if self.operationTest('in', name) and not self.operationTest('out', name):
-            return -1
-
-        if self.operationTest('out', name) and not self.operationTest('in', name):
-            return 1
-
-        return 0
-
-    @staticmethod
-    def operationName(name, operation, remove=None):
-        """@return the new name with an operation (static)"""
-        pat = OPPAT.match(name)
-        if pat is None:
-            return "{0} [{1}]".format(name, operation)
-        else:
-            name = pat.group(1).strip()
-            ops = pat.group(2).split(',')
-            if ":" in operation:
-                oid, opt = operation.split(":")
-            else:
-                oid = operation
-                opt = None
-
-            found = False
-            for i, o in enumerate(ops):
-                if ":" in o:
-                    o, c = o.split(":")
-                    try:
-                        c = int(c)
-                    except Exception:
-                        c = 1
-                else:
-                    c = 1
-
-                if remove and o in remove:
-                    ops[i] = ""
-
-                if not found and o == oid:
-                    if opt is not None or c is None:
-                        ops[i] = operation
-                    else:
-                        ops[i] = "{0}:{1}".format(oid, c+1)
-                    found = True
-
-            # remove all empty
-            ops = filter(lambda x: x != "", ops)
-
-            if not found:
-                ops.append(operation)
-
-            return "{0} [{1}]".format(name, ','.join(ops))
-
-    def addOperation(self, operation, remove=None):
-        """Add a new operation to the block's name"""
-        self._name = Block.operationName(self.name(), operation, remove)
-
-    def header(self):
-        e = self.expand and Unicode.BLACK_DOWN_POINTING_TRIANGLE \
-            or Unicode.BLACK_RIGHT_POINTING_TRIANGLE
-
-        v = self.enable and Unicode.BALLOT_BOX_WITH_X \
-            or Unicode.BALLOT_BOX
-
-        try:
-            # return "%s %s %s - [%d]"%(e, v, self.name(), len(self))
-            return u"{0} {1} {2} - [{3}]".format(
-                e, v, self.name(), len(self))
-        except UnicodeDecodeError:
-            return u"{0} {1} {2} - [{3}]".format(
-                e, v, self.name().decode("ascii", "replace"), len(self))
-        except UnicodeEncodeError:
-            print(e, v, self.name(), len(self))
-
-    def write_header(self):
-        header = ''
-        header += "(Block-name: {0})\n".format(self.name())
-        header += "(Block-expand: {0:d})\n".format(int(self.expand))
-        header += "(Block-enable: {0:d})\n".format(int(self.enable))
-        if self.color:
-            header += "(Block-color: {0})\n".format(self.color)
-        return header
-
-    def write(self, f):
-        f.write(self.write_header())
-        for line in self:
-
-            if self.enable:
-                f.write("{0}\n".format(line))
-            else:
-                f.write("(Block-X: {0})\n".format(
-                    line.replace('(', '[').replace(')', ']')))
-
-    def dump(self):
-        """Return a dump object for pickler"""
-        return self.name(), self.enable, self.expand, self.color, self
-
-    @staticmethod
-    def load(obj):
-        """Create a block from a dump object from unpickler"""
-        name, enable, expand, color, code = obj
-        block = Block(name)
-        block.enable = enable
-        block.expand = expand
-        block.color = color
-        block.extend(code)
-        return block
-
-    def append(self, line):
-        if line.startswith("(Block-"):
-            pat = BLOCKPAT.match(line)
-            if pat:
-                name, value = pat.groups()
-                value = value.strip()
-
-                if name == "name":
-                    self._name = value
-                    return
-                elif name == "expand":
-                    self.expand = bool(int(value))
-                    return
-                elif name == "enable":
-                    self.enable = bool(int(value))
-                    return
-                elif name == "tab":
-                    # Handled elsewhere
-                    return
-                elif name == "color":
-                    self.color = value
-                    return
-                elif name == "X":  # uncomment
-                    list.append(
-                        self,
-                        value.replace('[', '(').replace(']', ')'))
-                    return
-
-        if self._name is None and ("id:" in line) and ("End" not in line):
-            pat = IDPAT.match(line)
-
-            if pat:
-                self._name = pat.group(1)
-
-        list.append(self, line)
-
-    def resetPath(self):
-        del self._path[:]
-        self.xmin = self.ymin = self.zmin = 1000000.0
-        self.xmax = self.ymax = self.zmax = -1000000.0
-        self.length = 0.0    # cut length
-        self.rapid = 0.0     # rapid length
-        self.time = 0.0
-
-    def hasPath(self):
-        return bool(self._path)
-
-    def addPath(self, p):
-        self._path.append(p)
-
-    def path(self, item):
-        try:
-            return self._path[item]
-        except Exception:
-            return None
-
-    def startPath(self, x, y, z):
-        self.sx = x
-        self.sy = y
-        self.sz = z
-
-    def endPath(self, x, y, z):
-        self.ex = x
-        self.ey = y
-        self.ez = z
-
-    def pathMargins(self, xyz):
-        self.xmin = min(self.xmin, min([i[0] for i in xyz]))
-        self.ymin = min(self.ymin, min([i[1] for i in xyz]))
-        self.zmin = min(self.zmin, min([i[2] for i in xyz]))
-        self.xmax = max(self.xmax, max([i[0] for i in xyz]))
-        self.ymax = max(self.ymax, max([i[1] for i in xyz]))
-        self.zmax = max(self.zmax, max([i[2] for i in xyz]))
-
-
-class GCode(object):
-    """Gcode file"""
-    LOOP_MERGE = False
-
-    def __init__(self):
-        self.cnc = CNC()
-        self.header = ""
-        self.footer = ""
-        self.undoredo = undo.UndoRedo()
-        self.probe = Probe()
-        self.orient = Orient()
-        self.vars = {}  # local variables
-        self.init()
-
-    def init(self):
-        self.filename = ""
-        self.blocks = []  # list of blocks
-        self.gcodelines = ["",]  # Add a starting 0 pos to better align index
-        self.vars.clear()
-        self.undoredo.reset()
-        # self.probe.init()
-
-        self._lastModified = 0
-        self._modified = False
-
-    def calculateEnableMargins(self):
-        """Recalculate enabled path margins"""
-        self.cnc.resetEnableMargins()
-        for block in self.blocks:
-            if block.enable:
-                OCV.CD["xmin"] = min(OCV.CD["xmin"], block.xmin)
-                OCV.CD["ymin"] = min(OCV.CD["ymin"], block.ymin)
-                OCV.CD["zmin"] = min(OCV.CD["zmin"], block.zmin)
-                OCV.CD["xmax"] = max(OCV.CD["xmax"], block.xmax)
-                OCV.CD["ymax"] = max(OCV.CD["ymax"], block.ymax)
-                OCV.CD["zmax"] = max(OCV.CD["zmax"], block.zmax)
-
-    def isModified(self):
-        return self._modified
-
-    def resetModified(self):
-        self._modified = False
-
-    def __getitem__(self, item):
-        return self.blocks[item]
-
-    def __setitem__(self, item, value):
-        self.blocks[item] = value
-
-    def evaluate(self, line, app=None):
-        """Evaluate code expressions if any and return line"""
-        if isinstance(line, int):
-            return None
-
-        elif isinstance(line, list):
-            for i, expr in enumerate(line):
-
-                if isinstance(expr, types.CodeType):
-                    result = eval(expr, OCV.CD, self.vars)
-
-                    if isinstance(result, float):
-                        line[i] = str(round(result, OCV.digits))
-                    else:
-                        line[i] = str(result)
-            return "".join(line)
-
-        elif isinstance(line, types.CodeType):
-            # import traceback
-            # traceback.print_stack()
-            v = self.vars
-            v['os'] = os
-            v['app'] = app
-            return eval(line, OCV.CD, self.vars)
-
-        else:
-            return line
-
-    def _addLine(self, line):
-        """add new line to list create block if necessary"""
-        if line.startswith("(Block-name:"):
-            self._blocksExist = True
-            pat = BLOCKPAT.match(line)
-            if pat:
-                value = pat.group(2).strip()
-                if not self.blocks or len(self.blocks[-1]):
-                    self.blocks.append(Block(value))
-                else:
-                    self.blocks[-1]._name = value
-                return
-
-        """
-        # FIXME: Code to import legacy tabs
-        # can be probably removed in year 2020 or so:
-        if line.startswith("(Block-tab:"):
-            pat = BLOCKPAT.match(line)
-            if pat:
-                value = pat.group(2).strip()
-                items = map(float, value.split())
-                tablock = Block(
-                    "legacy [tab,island,minz:{0:0.f}]".format(items[4]))
-                tablock.color = "orange"
-                tablock.extend(self.createTab(*items))
-                self.insBlocks(-1, [tablock], "Legacy tab")
-                print("WARNING: Converted legacy tabs loaded from file to new g-code island tabs: %s"%(tablock._name))
-        """
-
-        if not self.blocks:
-            self.blocks.append(Block("Header"))
-
-        cmds = CNC.parseLine(line)
-        # print("_addLine ", line, cmds)
-        if cmds is None:
-            self.blocks[-1].append(line)
-            return
-
-        self.cnc.motionStart(cmds)
-
-        # Add line to the list for display
-        self.gcodelines.append(line)
-        # print("_addLine ", len(self.gcodelines), line)
-
-        # rapid move up = end of block
-        if self._blocksExist:
-            self.blocks[-1].append(line)
-        elif self.cnc.gcode == 0 and self.cnc.dz > 0.0:
-            self.blocks[-1].append(line)
-            self.blocks.append(Block())
-        elif self.cnc.gcode == 0 and len(self.blocks) == 1:
-            self.blocks.append(Block())
-            self.blocks[-1].append(line)
-        else:
-            self.blocks[-1].append(line)
-
-        self.cnc.motionEnd()
-
-    def load(self, filename=None):
-        """Load a file into editor"""
-        if filename is None:
-            filename = self.filename
-
-        self.init()
-        self.filename = filename
-
-        try:
-            f = open(self.filename, "r")
-        except Exception:
-            return False
-
-        self._lastModified = os.stat(self.filename).st_mtime
-        self.cnc.initPath()
-        self.cnc.resetAllMargins()
-        self._blocksExist = False
-        for line in f:
-            self._addLine(line[:-1].replace("\x0d", ""))
-        self._trim()
-        f.close()
-        return True
-
-    def save(self, filename=None):
-        """Save to a file"""
-        if filename is not None:
-            self.filename = filename
-
-        try:
-            f = open(self.filename, "w")
-        except Exception:
-            return False
-
-        for block in self.blocks:
-            block.write(f)
-        f.close()
-        self._lastModified = os.stat(self.filename).st_mtime
-        self._modified = False
-        return True
-
-    def saveTXT(self, filename):
-        """
-        Save in TXT format
-        Enabled Blocks only
-        Cleaned from OKKCNC metadata and comments
-        Uppercase
-        """
-        txt = open(filename, 'w')
-        for block in self.blocks:
-            if block.enable:
-                for line in block:
-                    cmds = CNC.parseLine(line)
-
-                    if cmds is None:
-                        continue
-
-                txt.write("{0}\n".format(line.upper()))
-        txt.close()
-        return True
-
-    def addBlockFromString(self, name, text):
-
-        if not text:
-            return
-
-        block = Block(name)
-        block.extend(text.splitlines())
-        self.blocks.append(block)
-
-    def headerFooter(self):
-        """Check if Block is empty:
-             If Empty insert a header and a footer
-            """
-        if not self.blocks:
-            currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
-            curr_header = "(Created By OKKCNC version {0}) \n".format(
-                OCV._version)
-            curr_header += "(Date: {0})\n".format(currDate)
-            curr_header += self.header
-
-            self.addBlockFromString("Header", curr_header)
-            self.addBlockFromString("Footer", self.footer)
-            return True
-        return False
-
-# CHECK if it is a remnant of SVG or DXF imports
-    def getMargins(self):
-        """get document margins"""
-        # Get bounding box of document
-        min_x, min_y, max_x, max_y = 0, 0, 0, 0
-        for idx, block in enumerate(self.blocks):
-            paths = self.toPath(idx)
-
-            for path in paths:
-                min_x2, min_y2, max_x2, max_y2 = path.bbox()
-                min_x = min(min_x, min_x2)
-                min_y = min(min_y, min_y2)
-                max_x = max(max_x, max_x2)
-                max_y = max(max_y, max_y2)
-
-        return min_x, min_y, max_x, max_y
-
-    def importEntityPoints(self, pos, entities, name, enable=True, color=None):
-        """Import POINTS from entities"""
-        undoinfo = []
-        i = 0
-
-        while i < len(entities):
-            if entities[i].type != "POINT":
-                i += 1
-                continue
-
-            block = Block("{0} [P]".format(name))
-            block.enable = enable
-
-            block.color = entities[i].color()
-            if block.color is None:
-                block.color = color
-
-            x, y = entities[i].start()
-            block.append("G0 {0} {1}}".format(
-                self.fmt("X", x, 7),
-                self.fmt("Y", y, 7)))
-            block.append(CNC.zenter(self.cnc["surface"]))
-            block.append(CNC.zsafe())
-            undoinfo.append(self.addBlockUndo(pos, block))
-
-            if pos is not None:
-                pos += 1
-
-            del entities[i]
-
-        return undoinfo
-
-    def toPath(self, bid):
-        """convert a block to path"""
-        block = self.blocks[bid]
-        paths = []
-        path = Path(block.name())
-        self.initPath(bid)
-        start = bmath.Vector(self.cnc.x, self.cnc.y)
-
-        # get only first path that enters the surface
-        # ignore the deeper ones
-        passno = 0
-        for line in block:
-            # flatten helical paths
-            line = re.sub(r"\s?z-?[0-9\.]+", "", line)
-
-            # break after first depth pass
-            if line == "( ---------- cut-here ---------- )":
-                passno = 0
-                if path:
-                    paths.append(path)
-                    path = Path(block.name())
-
-            if line[:5] == "(pass":
-                passno += 1
-
-            if passno > 1:
-                continue
-
-            cmds = CNC.parseLine(line)
-
-            if cmds is None:
-                continue
-
-            self.cnc.motionStart(cmds)
-            end = bmath.Vector(self.cnc.xval, self.cnc.yval)
-            if self.cnc.gcode == 0:  # rapid move (new block)
-                if path:
-                    paths.append(path)
-                    path = Path(block.name())
-            elif self.cnc.gcode == 1:  # line
-                if self.cnc.dx != 0.0 or self.cnc.dy != 0.0:
-                    path.append(Segment(1, start, end))
-            elif self.cnc.gcode in (2, 3):  # arc
-                xc, yc = self.cnc.motionCenter()
-                center = bmath.Vector(xc, yc)
-                path.append(Segment(self.cnc.gcode, start, end, center))
-            self.cnc.motionEnd()
-            start = end
-
-        if path:
-            paths.append(path)
-
-        return paths
-
-    def fromPath(self, path, block=None, z=None, retract=True, entry=False,
-                 exit=True, zstart=None, ramp=None, comments=True,
-                 exitpoint=None, truncate=None):
-        """Create a block from Path
-        @param z    I       ending depth
-        @param zstart    I       starting depth
-        """
-
-        # Recursion for multiple paths
-        if not isinstance(path, Path):
-            block = Block("new")
-            for p in path:
-                block.extend(
-                    self.fromPath(
-                        p, None, z, retract, entry, exit,
-                        zstart, ramp, comments, exitpoint, truncate))
-
-                block.append("( ---------- cut-here ---------- )")
-            del block[-1]  # remove trailing cut-here
-            return block
-
-        if z is None:
-            z = self.cnc["surface"]
-
-        if zstart is None:
-            zstart = z
-
-        # Calculate helix step
-        zstep = abs(z-zstart)
-
-        # Preprocess ramp
-        if ramp is None:
-            ramp = 0
-
-        if ramp == 0:
-            ramp = path.length()  # full helix (default)
-
-        ramp = min(ramp, path.length())  # Never ramp longer than single pass!
-
-        # Calculate helical feedrate
-        helixfeed = self.cnc["cutfeed"]
-
-        if zstep > 0:
-            # Compensate helix feed
-            # so we never plunge too fast on short/steep paths
-            # FIXME: Add UI to disable this feature???
-            # Not sure if that's needed.
-            rampratio = zstep/min(path.length(), ramp)
-            helixfeed2 = round(self.cnc["cutfeedz"] / rampratio)
-            helixfeed = min(self.cnc["cutfeed"], helixfeed2)
-
-        if block is None:
-            if isinstance(path, Path):
-                block = Block(path.name)
-            else:
-                block = Block(path[0].name)
-
-        # Generate g-code for single path segment
-        def addSegment(segment, z=None, cm=""):
-            x, y = segment.B
-
-            # Generate LINE
-            if segment.type == Segment.LINE:
-                x, y = segment.B
-                # rounding problem from #903 was manifesting here.
-                # Had to lower the decimal precision to OCV.digits
-                if z is None:
-                    block.append("G1 {0} {1}".format(
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7)) + cm)
-                else:
-                    block.append("G1 {0} {1} {2}".format(
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("Z", z, 7)) + cm)
-
-            # Generate ARCS
-            elif segment.type in (Segment.CW, Segment.CCW):
-                ij = segment.C - segment.A
-
-                if abs(ij[0]) < 1e-5:
-                    ij[0] = 0.
-
-                if abs(ij[1]) < 1e-5:
-                    ij[1] = 0.
-
-                if z is None:
-                    block.append("G{0:d} {1} {2} {3} {4}".format(
-                        segment.type,
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("I", ij[0], 7),
-                        self.fmt("J", ij[1], 7)) + cm)
-                else:
-                    block.append("G{0:d} {1} {2} {3} {4} {5}".format(
-                        segment.type,
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("I", ij[0], 7),
-                        self.fmt("J", ij[1], 7),
-                        self.fmt("Z", z, 7)) + cm)
-
-    def syncFileTime(self):
-        """sync file timestamp"""
-        try:
-            self._lastModified = os.stat(self.filename).st_mtime
-        except Exception:
-            return False
-
-    def checkFile(self):
-        """Check if a new version exists"""
-        try:
-            return os.stat(self.filename).st_mtime > self._lastModified
-        except Exception:
-            return False
-
-    def fmt(self, c, v, d=None):
-        return self.cnc.fmt(c, v, d)
-
-    def _trim(self):
-        if not self.blocks:
-            return
-
-        # Delete last block if empty
-        last = self.blocks[-1]
-
-        if len(last) == 1 and len(last[0]) == 0:
-            del last[0]
-
-        if len(self.blocks[-1]) == 0:
-            self.blocks.pop()
-
-    def undo(self):
-        """Undo operation"""
-        # print ">u>",self.undoredo.undoText()
-        self.undoredo.undo()
-
-    def redo(self):
-        """Redo operation"""
-        # print ">r>",self.undoredo.redoText()
-        self.undoredo.redo()
-
-    def addUndo(self, undoinfo, msg=None):
-
-        if not undoinfo:
-            return
-
-        self.undoredo.add(undoinfo, msg)
-        self._modified = True
-
-    def canUndo(self):
-        return self.undoredo.canUndo()
-
-    def canRedo(self):
-        return self.undoredo.canRedo()
-
-    def setLinesUndo(self, lines):
-        """Change all lines in editor"""
-        undoinfo = (self.setLinesUndo, list(self.lines()))
-        # Delete all blocks and create new ones
-        del self.blocks[:]
-        self.cnc.initPath()
-        self._blocksExist = False
-
-        for line in lines:
-            self._addLine(line)
-
-        self._trim()
-        return undoinfo
-
-    def setAllBlocksUndo(self, blocks=[]):
-        undoinfo = [self.setAllBlocksUndo, self.blocks]
-        self.blocks = blocks
-        return undoinfo
-
-    def setLineUndo(self, bid, lid, line):
-        """Change a single line in a block"""
-        undoinfo = (self.setLineUndo, bid, lid, self.blocks[bid][lid])
-        self.blocks[bid][lid] = line
-        return undoinfo
-
-    def insLineUndo(self, bid, lid, line):
-        """Insert a new line into block"""
-        undoinfo = (self.delLineUndo, bid, lid)
-        block = self.blocks[bid]
-
-        if lid >= len(block):
-            block.append(line)
-        else:
-            block.insert(lid, line)
-
-        return undoinfo
-
-    def cloneLineUndo(self, bid, lid):
-        """Clone line inside a block"""
-        return self.insLineUndo(bid, lid, self.blocks[bid][lid])
-
-    def delLineUndo(self, bid, lid):
-        """Delete line from block"""
-        block = self.blocks[bid]
-        undoinfo = (self.insLineUndo, bid, lid, block[lid])
-        del block[lid]
-        return undoinfo
-
-    def addBlockUndo(self, bid, block):
-        """Add a block"""
-
-        if bid is None:
-            bid = len(self.blocks)
-
-        if bid >= len(self.blocks):
-            undoinfo = (self.delBlockUndo, len(self.blocks))
-            self.blocks.append(block)
-        else:
-            undoinfo = (self.delBlockUndo, bid)
-            self.blocks.insert(bid, block)
-        return undoinfo
-
-    def cloneBlockUndo(self, bid, pos=None):
-        """Clone a block"""
-
-        if pos is None:
-            pos = bid
-
-        return self.addBlockUndo(pos, Block(self.blocks[bid]))
-
-    def delBlockUndo(self, bid):
-        """Delete a whole block"""
-        # seems to be a remnant of old code
-#        lines = [x for x in self.blocks[bid]]
-        block = self.blocks.pop(bid)
-        undoinfo = (self.addBlockUndo, bid, block)
-        return undoinfo
-
-    def insBlocksUndo(self, bid, blocks):
-        """Insert a list of other blocks from another gcode file probably"""
-        if bid is None or bid >= len(self.blocks):
-            bid = len(self.blocks)
-        undoinfo = ("Insert blocks", self.delBlocksUndo, bid, bid+len(blocks))
-        self.blocks[bid:bid] = blocks
-        return undoinfo
-
-    def delBlocksUndo(self, from_, to_):
-        """Delete a range of blocks"""
-        blocks = self.blocks[from_:to_]
-        undoinfo = ("Delete blocks", self.insBlocksUndo, from_, blocks)
-        del self.blocks[from_:to_]
-        return undoinfo
-
-    def insBlocks(self, bid, blocks, msg=""):
-        """Insert blocks and push the undo info"""
-        if self.headerFooter():    # just in case
-            bid = 1
-        self.addUndo(self.insBlocksUndo(bid, blocks), msg)
-
-    def setBlockExpandUndo(self, bid, expand):
-        """Set block expand"""
-        undoinfo = (self.setBlockExpandUndo, bid, self.blocks[bid].expand)
-        self.blocks[bid].expand = expand
-        return undoinfo
-
-    def setBlockEnableUndo(self, bid, enable):
-        """Set block state"""
-        undoinfo = (self.setBlockEnableUndo, bid, self.blocks[bid].enable)
-        self.blocks[bid].enable = enable
-        return undoinfo
-
-    def setBlockColorUndo(self, bid, color):
-        """Set block color"""
-        undoinfo = (self.setBlockColorUndo, bid, self.blocks[bid].color)
-        self.blocks[bid].color = color
-        return undoinfo
-
-    def swapBlockUndo(self, a, b):
-        """Swap two blocks"""
-        undoinfo = (self.swapBlockUndo, a, b)
-        tmp = self.blocks[a]
-        self.blocks[a] = self.blocks[b]
-        self.blocks[b] = tmp
-        return undoinfo
-
-    def moveBlockUndo(self, src, dst):
-        """Move block from location src to location dst"""
-
-        if src == dst:
-            return None
-
-        undoinfo = (self.moveBlockUndo, dst, src)
-
-        if dst > src:
-            self.blocks.insert(dst-1, self.blocks.pop(src))
-        else:
-            self.blocks.insert(dst, self.blocks.pop(src))
-
-        return undoinfo
-
-    def invertBlocksUndo(self, blocks):
-        """Invert selected blocks"""
-        undoinfo = []
-        first = 0
-        last = len(blocks) - 1
-        while first < last:
-            undoinfo.append(self.swapBlockUndo(blocks[first], blocks[last]))
-            first += 1
-            last = 1
-        return undoinfo
-
-    def orderUpBlockUndo(self, bid):
-        """Move block upwards"""
-        if bid == 0:
-            return None
-        undoinfo = (self.orderDownBlockUndo, bid - 1)
-        # swap with the block above
-        before = self.blocks[bid-1]
-        self.blocks[bid-1] = self.blocks[bid]
-        self.blocks[bid] = before
-        return undoinfo
-
-    def orderDownBlockUndo(self, bid):
-        """Move block downwards"""
-        if bid >= len(self.blocks) - 1:
-            return None
-        undoinfo = (self.orderUpBlockUndo, bid+1)
-        # swap with the block below
-        after = self[bid+1]
-        self[bid+1] = self[bid]
-        self[bid] = after
-        return undoinfo
-
-    def insBlockLinesUndo(self, bid, lines):
-        """Insert block lines"""
-        undoinfo = (self.delBlockLinesUndo, bid)
-        block = Block()
-        for line in lines:
-            block.append(line)
-        self.blocks.insert(bid, block)
-        return undoinfo
-
-    def delBlockLinesUndo(self, bid):
-        """Delete a whole block lines"""
-        lines = [x for x in self.blocks[bid]]
-        undoinfo = (self.insBlockLinesUndo, bid, lines)
-        del self.blocks[bid]
-        return undoinfo
-
-    def setBlockNameUndo(self, bid, name):
-        """Set Block name"""
-        undoinfo = (self.setBlockNameUndo, bid, self.blocks[bid]._name)
-        self.blocks[bid]._name = name
-        return undoinfo
-
-    def addBlockOperationUndo(self, bid, operation, remove=None):
-        """Add an operation code in the name as [drill, cut, in/out...]"""
-        undoinfo = (self.setBlockNameUndo, bid, self.blocks[bid]._name)
-        self.blocks[bid].addOperation(operation, remove)
-        return undoinfo
-
-    def setBlockLinesUndo(self, bid, lines):
-        """Replace the lines of a block"""
-        block = self.blocks[bid]
-        undoinfo = (self.setBlockLinesUndo, bid, block[:])
-        del block[:]
-        block.extend(lines)
-        return undoinfo
-
-    def orderUpLineUndo(self, bid, lid):
-        """Move line upwards"""
-        if lid == 0:
-            return None
-
-        block = self.blocks[bid]
-        undoinfo = (self.orderDownLineUndo, bid, lid-1)
-        block.insert(lid-1, block.pop(lid))
-        return undoinfo
-
-    def orderDownLineUndo(self, bid, lid):
-        """Move line downwards"""
-        block = self.blocks[bid]
-
-        if lid >= len(block) - 1:
-            return None
-
-        undoinfo = (self.orderUpLineUndo, bid, lid+1)
-        block.insert(lid+1, block.pop(lid))
-        return undoinfo
-
-    def autolevelBlock(self, block):
-        """Expand block with autolevel information"""
-        new = []
-        autolevel = not self.probe.isEmpty()
-        for line in block:
-            # newcmd = [] # seems to be not used
-            cmds = CNC.compileLine(line)
-            if cmds is None:
-                new.append(line)
-                continue
-            elif isinstance(cmds, str):
-                cmds = CNC.breakLine(cmds)
-            else:
-                new.append(line)
-                continue
-
-            self.cnc.motionStart(cmds)
-
-            if autolevel and self.cnc.gcode in (0, 1, 2, 3) and\
-                  self.cnc.mval == 0:
-
-                xyz = self.cnc.motionPath()
-
-                if not xyz:
-                    # while auto-levelling, do not ignore non-movement
-                    # commands, just append the line as-is
-                    new.append(line)
-                else:
-                    extra = ""
-                    for c in cmds:
-                        if c[0].upper() not in (
-                              'G', 'X', 'Y', 'Z',
-                              'I', 'J', 'K', 'R'):
-
-                            extra += c
-
-                    x1, y1, z1 = xyz[0]
-
-                    if self.cnc.gcode == 0:
-                        g = 0
-                    else:
-                        g = 1
-
-                    for x2, y2, z2 in xyz[1:]:
-                        for x, y, z in self.probe.splitLine(
-                                x1, y1, z1, x2, y2, z2):
-
-                            new.append("G{0:d} {1} {2} {3} {4}".format(
-                                g,
-                                self.fmt('X', x/self.cnc.unit),
-                                self.fmt('Y', y/self.cnc.unit),
-                                self.fmt('Z', z/self.cnc.unit),
-                                extra))
-
-                            extra = ""
-                        x1, y1, z1 = x2, y2, z2
-                self.cnc.motionEnd()
-            else:
-                self.cnc.motionEnd()
-                new.append(line)
-        return new
-
-    def autolevel(self, items):
-        """Execute autolevel on selected blocks"""
-        undoinfo = []
-        operation = "autolevel"
-        for bid in items:
-            block = self.blocks[bid]
-
-            if block.name() in ("Header", "Footer"):
-                continue
-
-            if not block.enable:
-                continue
-
-            lines = self.autolevelBlock(block)
-            undoinfo.append(self.addBlockOperationUndo(bid, operation))
-            undoinfo.append(self.setBlockLinesUndo(bid, lines))
-
-        if undoinfo:
-            self.addUndo(undoinfo)
-
-#    def correctBlocks(self):
-#        """Merge or split blocks depending on motion
-#           Each block should start with a rapid move and end with a rapid move
-#        """
-#        # Working in place tricky
-#        bid = 0    # block index
-#        while bid < len(self.blocks):
-#            block = self.blocks[bid]
-#            li = 0    # line index
-#            prefix = True
-#            suffix = False
-#            lastg0 = None
-#            while li < len(block):
-#                line = block[li]
-#                cmds = CNC.parseLine(line)
-#                if cmds is None:
-#                    li += 1
-#                    continue
-#
-#                self.cnc.motionStart(cmds)
-#
-#                # move
-#                if self.gcode in (1,2,3):
-#                    if prefix is None: prefix = li-1
-#
-#                # rapid movement
-#                elif self.gcode == 0:
-#                    lastg0 = li
-#                    if prefix is not None: suffix = li
-#
-#                    # moving up = end of block
-#                    if self.cnc.dz > 0.0:
-#                        if suffix:
-#                            # Move all subsequent lines to a new block
-#                            #self.blocks.append(Block())
-#                            pass
-#                self.cnc.motionEnd()
-
-    #----------------------------------------------------------------------
-    # Start a new iterator
-    #----------------------------------------------------------------------
-#    def __iter__(self):
-#        self._iter = 0    #self._iter_start
-#        self._iter_block = self.blocks[self._iter]
-#        self._iter_block_i = 0
-#        self._iter_end   = len(self.blocks)
-#        return self
-#
-#    #----------------------------------------------------------------------
-#    # Next iterator item
-#    #----------------------------------------------------------------------
-#    def next(self):
-#        if self._iter >= self._iter_end: raise StopIteration()
-#
-#        while self._iter_block_i >= len(self._iter_block):
-#            self._iter += 1
-#            if self._iter >= self._iter_end: raise StopIteration()
-#            self._iter_block = self.blocks[self._iter]
-#            self._iter_block_i = 0
-#
-#        item = self._iter_block[self._iter_block_i]
-#        self._iter_block_i += 1
-#        return item
-
-    def __repr__(self):
-        """Return string representation of whole file"""
-        return "\n".join(list(self.lines()))
-
-    def iterate(self, items):
-        """Iterate over the items"""
-        for bid, lid in items:
-            if lid is None:
-                block = self.blocks[bid]
-                for i in range(len(block)):
-                    yield bid, i
-            else:
-                yield bid, lid
-
-    def lines(self):
-        """Iterate over all lines"""
-        for block in self.blocks:
-            for line in block:
-                yield line
-
-    def initPath(self, bid=0):
-        """initialize cnc path based on block bid"""
-        if bid == 0:
-            self.cnc.initPath()
-        else:
-            # Use the ending point of the previous block
-            # since the starting (sxyz is after the rapid motion)
-            block = self.blocks[bid-1]
-            self.cnc.initPath(block.ex, block.ey, block.ez)
-
-    def orderUp(self, items):
-        """Move blocks/lines up"""
-        sel = []  # new selection
-        undoinfo = []
-        for bid, lid in items:
-            if isinstance(lid, int):
-                undoinfo.append(self.orderUpLineUndo(bid, lid))
-                sel.append((bid, lid - 1))
-            elif lid is None:
-                undoinfo.append(self.orderUpBlockUndo(bid))
-                if bid == 0:
-                    return items
-                else:
-                    sel.append((bid - 1, None))
-        self.addUndo(undoinfo, "Move Up")
-        return sel
-
-    def orderDown(self, items):
-        """Move blocks/lines down"""
-        sel = []    # new selection
-        undoinfo = []
-        for bid, lid in reversed(items):
-            if isinstance(lid, int):
-                undoinfo.append(self.orderDownLineUndo(bid, lid))
-                sel.append((bid, lid + 1))
-            elif lid is None:
-                undoinfo.append(self.orderDownBlockUndo(bid))
-                if bid >= len(self.blocks) - 1:
-                    return items
-                else:
-                    sel.append((bid + 1, None))
-        self.addUndo(undoinfo, "Move Down")
-        sel.reverse()
-        return sel
-
-    def close(self, items):
-        """Close paths by joining end with start with a line segment"""
-        undoinfo = []
-        for bid in items:
-            block = self.blocks[bid]
-
-            if block.name() in ("Header", "Footer"):
-                continue
-
-            undoinfo.append(self.insLineUndo(
-                    bid, MAXINT,
-                    self.cnc.gline(block.sx, block.sy)))
-        self.addUndo(undoinfo)
-
-    def reverse(self, items):
-        """Reverse direction of cut"""
-        undoinfo = []
-        remove = ["cut", "climb", "conventional", "cw", "ccw", "reverse"]
-        for bid in items:
-            operation = "reverse"
-
-            if self.blocks[bid].name() in ("Header", "Footer"):
-                continue
-
-            newpath = Path(self.blocks[bid].name())
-
-            """
-            Not sure if this is good idea...
-            Might get confusing if something goes wrong,
-            but seems to work fine
-            """
-            if self.blocks[bid].operationTest('conventional'):
-                operation += ",climb"
-
-            if self.blocks[bid].operationTest('climb'):
-                operation += ",conventional"
-
-            if self.blocks[bid].operationTest('cw'):
-                operation += ",ccw"
-
-            if self.blocks[bid].operationTest('ccw'):
-                operation += ",cw"
-
-            for path in self.toPath(bid):
-                path.invert()
-                newpath.extend(path)
-
-            if newpath:
-                block = self.fromPath(newpath)
-                undoinfo.append(self.addBlockOperationUndo(
-                    bid, operation, remove))
-                undoinfo.append(self.setBlockLinesUndo(bid, block))
-
-        self.addUndo(undoinfo)
-
-    #-CHECK IF NEEDED
-    def cutDirection(self, items, direction=-1):
-        """
-            Change cut direction
-             1 > CW
-            -1 > CCW
-             2 > Conventional =
-                 CW for inside profiles and pockets,
-                 CCW for outside profiles
-             -2 > Climb =
-                 CCW for inside profiles and pockets,
-                 CW for outside profiles
-        """
-
-        undoinfo = []
-        msg = None
-
-        remove = ["cut", "reverse", "climb", "conventional", "cw", "ccw"]
-
-        for bid in items:
-            if self.blocks[bid].name() in ("Header", "Footer"):
-                continue
-
-            opdir = direction
-            operation = ""
-
-            # Decide conventional/climb/error:
-            side = self.blocks[bid].operationSide()
-
-            if abs(direction) > 1 and side == 0:
-                msg = "Conventional/Climb feature only works for paths"
-                msg += " with 'in/out/pocket' tags!\n"
-                msg += "Some of the selected paths were not tagged (or"
-                msg += " are both in+out). You can still use CW/CCW for them."
-                continue
-
-            if direction == 2:
-                operation = "conventional,"
-                if side == -1:
-                    opdir = 1  # inside CW
-
-                if side == 1:
-                    opdir = -1  # outside CCW
-            elif direction == -2:
-                operation = "climb,"
-
-                if side == -1:
-                    opdir = -1  # inside CCW
-
-                if side == 1:
-                    opdir = 1  # outside CW
-
-            # Decide CW/CCW tag
-            if opdir == 1:
-                operation += "cw"
-            elif opdir == -1:
-                operation += "ccw"
-
-            # Process paths
-            for path in self.toPath(bid):
-                if not path.directionSet(opdir):
-                    msg = "Error determining direction of path!"
-                if path:
-                    block = self.fromPath(path)
-
-                    undoinfo.append(self.addBlockOperationUndo(
-                        bid, operation,remove))
-
-                    undoinfo.append(self.setBlockLinesUndo(bid, block))
-        self.addUndo(undoinfo)
-
-        return msg
-
-    #-CHECK IF NEEDED
-    def island(self, items, island=None):
-        """Toggle or set island tag on block"""
-
-        undoinfo = []
-        remove = ["island"]
-        for bid in items:
-            isl = island
-
-            if self.blocks[bid].name() in ("Header", "Footer"): continue
-
-            if isl is None: isl = not self.blocks[bid].operationTest('island')
-            if isl:
-                tag = 'island'
-                self.blocks[bid].color = '#ff0000'
-            else:
-                tag = ''
-                self.blocks[bid].color = None
-
-            undoinfo.append(self.addBlockOperationUndo(bid, tag, remove))
-            # undoinfo.append(self.setBlockLinesUndo(bid, block))
-
-        self.addUndo(undoinfo)
-
-    def info(self, bid):
-        """Return information for a block
-           return XXX
-        """
-        # block = self.blocks[bid] # seems to be unused
-        paths = self.toPath(bid)
-        if not paths:
-            return None, 1
-        if len(paths) > 1:
-            closed = paths[0].isClosed()
-            return len(paths), paths[0]._direction(closed)
-        else:
-            closed = paths[0].isClosed()
-            return int(closed), paths[0]._direction(closed)
-
-    def modify(self, items, func, tabFunc, *args):
-        """Modify the lines according to the supplied function and arguments"""
-        undoinfo = []
-        old = {}  # Motion commands: Last value
-        new = {}  # Motion commands: New value
-        relative = False
-
-        for bid, lid in self.iterate(items):
-            block = self.blocks[bid]
-
-            if isinstance(lid, int):
-                cmds = CNC.parseLine(block[lid])
-
-                if cmds is None:
-                    continue
-
-                self.cnc.motionStart(cmds)
-
-                # Collect all values
-                new.clear()
-                for cmd in cmds:
-
-                    if cmd.upper() == 'G91':
-                        relative = True
-                    if cmd.upper() == 'G90':
-                        relative = False
-
-                    c = cmd[0].upper()
-                    # record only coordinates commands
-                    if c not in "XYZIJKR":
-                        continue
-
-                    try:
-                        new[c] = old[c] = float(cmd[1:])*self.cnc.unit
-                    except Exception:
-                        new[c] = old[c] = 0.0
-
-                # Modify values with func
-                if func(new, old, relative, *args):
-                    # Reconstruct new line
-                    newcmd = []
-                    present = ""
-                    for cmd in cmds:
-                        c = cmd[0].upper()
-                        if c in "XYZIJKR":
-                            # Coordinates
-                            newcmd.append(self.fmt(c, new[c]/self.cnc.unit))
-                        elif c == "G" and int(cmd[1:]) in (0, 1, 2, 3):
-                            # Motion
-                            newcmd.append("G{0}".format(self.cnc.gcode))
-                        else:
-                            # the rest leave unchanged
-                            newcmd.append(cmd)
-                        present += c
-                    # Append motion commands if not exist and changed
-                    check = "XYZ"
-
-                    if 'I' in new or 'J' in new or 'K' in new:
-                        check += "IJK"
-
-                    for c in check:
-                        try:
-                            if c not in present and new.get(c) != old.get(c):
-                                newcmd.append(
-                                    self.fmt(c, new[c]/self.cnc.unit))
-                        except Exception:
-                            pass
-
-                    undoinfo.append(
-                            self.setLineUndo(bid, lid, " ".join(newcmd)))
-
-                self.cnc.motionEnd()
-                # reset arc offsets
-
-                for i in "IJK":
-                    if i in old:
-                        old[i] = 0.0
-
-        # FIXME I should add it later, check all functions using it
-        self.addUndo(undoinfo)
-
-    def moveFunc(self, new, old, relative, dx, dy, dz):
-        """Move position by dx,dy,dz"""
-        if relative:
-            return False
-
-        changed = False
-
-        if 'X' in new:
-            changed = True
-            new['X'] += dx
-
-        if 'Y' in new:
-            changed = True
-            new['Y'] += dy
-
-        if 'Z' in new:
-            changed = True
-            new['Z'] += dz
-
-        return changed
-
-    def orderLines(self, items, direction):
-        """Order Lines"""
-        if direction == "UP":
-            self.orderUp(items)
-        elif direction == "DOWN":
-            self.orderDown(items)
-        else:
-            pass
-
-    def moveLines(self, items, dx, dy, dz=0.0):
-        """Move position by dx,dy,dz"""
-        return self.modify(items, self.moveFunc, None, dx, dy, dz)
-
-    def rotateFunc(self, new, old, relative, c, s, x0, y0):
-        """Rotate position by
-           c(osine), s(ine) of an angle around center (x0,y0)
-        """
-
-        if 'X' not in new and 'Y' not in new:
-            return False
-
-        x = getValue('X', new, old)
-
-        y = getValue('Y', new, old)
-
-        new['X'] = c*(x-x0) - s*(y-y0) + x0
-
-        new['Y'] = s*(x-x0) + c*(y-y0) + y0
-
-        if 'I' in new or 'J' in new:
-            i = getValue('I', new, old)
-            j = getValue('J', new, old)
-
-            if self.cnc.plane in (XY, XZ):
-                new['I'] = c*i - s*j
-
-            if self.cnc.plane in (XY, YZ):
-                new['J'] = s*i + c*j
-
-        return True
-
-    def transformFunc(self, new, old, relative, c, s, xo, yo):
-        """Transform (rototranslate) position with the following function:
-           xn = c*x - s*y + xo
-           yn = s*x + c*y + yo
-           it is like the rotate but the rotation center is not defined
-           """
-
-        if 'X' not in new and 'Y' not in new:
-            return False
-
-        x = getValue('X', new, old)
-        y = getValue('Y', new, old)
-        new['X'] = c*x - s*y + xo
-        new['Y'] = s*x + c*y + yo
-
-        if 'I' in new or 'J' in new:
-            i = getValue('I', new, old)
-            j = getValue('J', new, old)
-            new['I'] = c*i - s*j
-            new['J'] = s*i + c*j
-        return True
-
-    def rotateLines(self, items, ang, x0=0.0, y0=0.0):
-        """Rotate items around optional center (on XY plane)
-           ang in degrees (counter-clockwise)
-           """
-
-        a = math.radians(ang)
-        c = math.cos(a)
-        s = math.sin(a)
-
-        if ang in (0.0, 90.0, 180.0, 270.0, -90.0, -180.0, -270.0):
-            # round numbers to avoid nasty extra digits
-            c = round(c)
-            s = round(s)
-        return self.modify(items, self.rotateFunc, None, c, s, x0, y0)
-
-    def orientLines(self, items):
-        """Use the orientation information to orient selected code"""
-
-        if not self.orient.valid:
-            return "ERROR: Orientation information is not valid"
-
-        c = math.cos(self.orient.phi)
-        s = math.sin(self.orient.phi)
-
-        return self.modify(
-                items,
-                self.transformFunc,
-                None,
-                c, s,
-                self.orient.xo, self.orient.yo)
-
-    def mirrorHFunc(self, new, old, relative, *kw):
-        """Mirror Horizontal"""
-        changed = False
-        for axis in 'XI':
-            if axis in new:
-                new[axis] = -new[axis]
-                changed = True
-        if self.cnc.gcode in (2, 3):    # Change  2<->3
-            self.cnc.gcode = 5 - self.cnc.gcode
-            changed = True
-        return changed
-
-    def mirrorVFunc(self, new, old, relative, *kw):
-        """Mirror Vertical"""
-        changed = False
-        for axis in 'YJ':
-            if axis in new:
-                new[axis] = -new[axis]
-                changed = True
-        if self.cnc.gcode in (2, 3):    # Change  2<->3
-            self.cnc.gcode = 5 - self.cnc.gcode
-            changed = True
-        return changed
-
-    def mirrorHLines(self, items):
-        """Mirror horizontally"""
-        return self.modify(items, self.mirrorHFunc, None)
-
-    def mirrorVLines(self, items):
-        """"Mirror vertically"""
-        return self.modify(items, self.mirrorVFunc, None)
-
-    def roundFunc(self, new, old, relative):
-        """Round all digits with accuracy"""
-        for name, value in new.items():
-            new[name] = round(value, OCV.digits)
-        return bool(new)
-
-    def roundLines(self, items, acc=None):
-        """Round line by the amount of digits"""
-        if acc is not None:
-            OCV.digits = acc
-
-        return self.modify(items, self.roundFunc, None)
-
-    def removeNlines(self, items):
-        """Remove the line number for lines"""
-        pass
-
-    def optimize(self, items):
-        """Re-arrange using genetic algorithms a set of blocks to minimize
-           rapid movements.
-        """
-        n = len(items)
-
-        matrix = []
-        for i in range(n):
-            matrix.append([0.0] * n)
-
-        # Find distances between blocks (end to start)
-        for i in range(n):
-            block = self.blocks[items[i]]
-            x1 = block.ex
-            y1 = block.ey
-            for j in range(n):
-                if i == j:
-                    continue
-                block = self.blocks[items[j]]
-                x2 = block.sx
-                y2 = block.sy
-                dx = x1-x2
-                dy = y1-y2
-                # Compensate for machines,
-                # which have different speed of X and Y:
-                dx /= OCV.feedmax_x
-                dy /= OCV.feedmax_y
-                matrix[i][j] = math.sqrt(dx*dx + dy*dy)
-#         from pprint import pprint
-#         pprint(matrix)
-
-        best = [0]
-        unvisited = range(1, n)
-        while unvisited:
-            last = best[-1]
-            row = matrix[last]
-            # from all the unvisited places search the closest one
-            mindist = 1e30
-
-            for i, u in enumerate(unvisited):
-                d = row[u]
-
-                if d < mindist:
-                    mindist = d
-                    si = i
-
-            best.append(unvisited.pop(si))
-        # print "best=",best
-
-        undoinfo = []
-        for i in range(len(best)):
-            b = best[i]
-
-            if i == b:
-                continue
-
-            ptr = best.index(i)
-            # swap i,b in items
-            undoinfo.append(self.swapBlockUndo(items[i], items[b]))
-            # swap i,ptr in best
-            best[i], best[ptr] = best[ptr], best[i]
-        self.addUndo(undoinfo, "Optimize")
-
-    def comp_level(self, queue, stopFunc=None):
-        """Use probe information to modify the g-code to autolevel"""
-        # lines = [self.cnc.startup]
-        paths = []
-
-        def add(line, path):
-            if line is not None:
-                if isinstance(line, str) or isinstance(line, unicode):
-                    queue.put(line + "\n")
-                else:
-                    queue.put(line)
-
-            paths.append(path)
-
-        autolevel = not self.probe.isEmpty()
-
-        self.initPath()
-
-        for line in CNC.compile_pgm(OCV.startup.splitlines()):
-            add(line, None)
-
-        every = 1
-        for i, block in enumerate(self.blocks):
-
-            if not block.enable:
-                continue
-
-            for j, line in enumerate(block):
-                every -= 1
-                if every <= 0:
-                    if stopFunc is not None and stopFunc():
-                        return None
-                    every = 50
-
-                newcmd = []
-                cmds = CNC.compileLine(line)
-                if cmds is None:
-                    continue
-                elif isinstance(cmds, str) or isinstance(cmds, unicode):
-                    cmds = CNC.breakLine(cmds)
-                else:
-                    # either CodeType or tuple, list[] append at it as is
-                    if isinstance(cmds, types.CodeType) or\
-                          isinstance(cmds, int):
-                        add(cmds, None)
-                    else:
-                        add(cmds, (i, j))
-                    continue
-
-                skip = False
-                expand = None
-                self.cnc.motionStart(cmds)
-
-                # FIXME append feed on cut commands.
-                # It will be obsolete in grbl v1.0
-                if OCV.appendFeed and self.cnc.gcode in (1, 2, 3):
-                    # Check is not existing in cmds
-                    for c in cmds:
-                        if c[0] in ('f', 'F'):
-                            break
-                    else:
-                        cmds.append(self.fmt(
-                                'F',
-                                self.cnc.feed / self.cnc.unit))
-
-                if autolevel and self.cnc.gcode in (0, 1, 2, 3) and \
-                      self.cnc.mval == 0:
-                    xyz = self.cnc.motionPath()
-
-                    if not xyz:
-                        # while auto-levelling, do not ignore non-movement
-                        # commands, just append the line as-is
-                        add(line, None)
-                    else:
-                        extra = ""
-                        for c in cmds:
-                            if c[0].upper() not in (
-                                'G','X','Y','Z','I','J','K','R'):
-                                extra += c
-                        x1, y1, z1 = xyz[0]
-                        if self.cnc.gcode == 0:
-                            g = 0
-                        else:
-                            g = 1
-                        for x2, y2, z2 in xyz[1:]:
-                            for x, y, z in self.probe.splitLine(
-                                    x1, y1, z1, x2, y2, z2):
-                                add("G{0:d} {1} {2} {3} {4}".format(
-                                    g,
-                                    self.fmt('X', x/self.cnc.unit),
-                                    self.fmt('Y', y/self.cnc.unit),
-                                    self.fmt('Z', z/self.cnc.unit),
-                                    extra),
-                                    (i, j))
-
-                                extra = ""
-
-                            x1, y1, z1 = x2,y2,z2
-                    self.cnc.motionEnd()
-                    continue
-                else:
-                    # FIXME expansion policy here variable needed
-                    # Canned cycles
-                    if OCV.drillPolicy == 1 and \
-                       self.cnc.gcode in (81, 82, 83, 85, 86, 89):
-                        expand = self.cnc.macroGroupG8X()
-                    # Tool change
-                    elif self.cnc.mval == 6:
-                        if OCV.toolPolicy == 0:
-                            # send to grbl
-                            pass
-                        elif OCV.toolPolicy == 1:
-                            # skip whole line
-                            skip = True
-                        elif OCV.toolPolicy >= 2:
-                            expand = CNC.compile_pgm(self.cnc.toolChange())
-                    self.cnc.motionEnd()
-
-                if expand is not None:
-                    for line in expand:
-                        add(line, None)
-                    expand = None
-                    continue
-                elif skip:
-                    skip = False
-                    continue
-
-                for cmd in cmds:
-                    c = cmd[0]
-                    try:
-                        value = float(cmd[1:])
-                    except Exception:
-                        value = 0.0
-
-                    if c.upper() in (
-                            "F", "X", "Y", "Z",
-                            "I", "J", "K", "R", "P"):
-
-                        cmd = self.fmt(c, value)
-                    else:
-                        opt = ERROR_HANDLING.get(cmd.upper(), 0)
-
-                        if opt == SKIP:
-                            cmd = None
-
-                    if cmd is not None:
-                        newcmd.append(cmd)
-
-                add("".join(newcmd), (i, j))
-
-        return paths
-
-#if __name__=="__main__":
-#    orient = Orient()
-#    orient.add(  0,  0, 100, 50)
-#    orient.add( 50, 10, 150, 60)
-#    orient.add(100, 20, 200, 70)
-#    phi,xo,yo = orient.solve()
-#    print phi,degrees(phi),xo,yo
-#
-#    orient.clear()
-#    orient.add(  0,  0, -50, 100)
-#    orient.add( 50, 10, -60, 150)
-#    orient.add(100, 20, -70, 200)
-#    phi,xo,yo = orient.solve()
-#    print phi,degrees(phi),xo,yo
-#
-#    import pdb; pdb.set_trace()
-#    #print Block.operationName("door","in")
-#    print Block.operationName("door [in:2,cut:0.1]","cut:0.5")
-#    print Block.operationName("door [in:2,cut:0.1]","in")

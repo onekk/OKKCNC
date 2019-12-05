@@ -168,13 +168,13 @@ def main_interface(self):
     # then add their properties (in separate loop)
     errors = []
     for name, page in self.pages.items():
-        for n in Utils.getStr(Utils.__prg__, "{0}.ribbon".format(page.name)).split():
+        for n in Utils.getStr(OCV.PRGNAME, "{0}.ribbon".format(page.name)).split():
             try:
                 page.addRibbonGroup(n)
             except KeyError:
                 errors.append(n)
 
-        for n in Utils.getStr(Utils.__prg__, "{0}.page".format(page.name)).split():
+        for n in Utils.getStr(OCV.PRGNAME, "{0}.page".format(page.name)).split():
             last = n[-1]
             try:
                 if last == "*":

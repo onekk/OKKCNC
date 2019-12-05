@@ -30,13 +30,11 @@ except ImportError:
     import tkinter.font as tkFont
 
 import OCV
-from CNC import Block, CNC
+from CNC import CNC
+import Block
 import tkExtra
 import re
 #import tkDialogs
-
-MAXINT    = 1000000000    # python3 doesn't have maxint
-
 
 #==============================================================================
 # CNC Listbox
@@ -197,20 +195,21 @@ class CNCListbox(Listbox):
                     self._bid += 1
                     if self._bid > len(self.gcode.blocks):
                         self._bid = len(self.gcode.blocks)
-                    self._lid = MAXINT
+                    self._lid = OCV.MAXINT
                     block = Block()
                     undoinfo.append(self.gcode.addBlockUndo(self._bid,block))
                     selitems.append((self._bid, None))
                 else:
                     block = self.gcode.blocks[self._bid]
 
-                if self._lid == MAXINT:
+                if self._lid == OCV.MAXINT:
                     self._lid = len(block)
                     selitems.append((self._bid, len(block)))
                 else:
                     self._lid += 1
                     selitems.append((self._bid, self._lid))
-                undoinfo.append(self.gcode.insLineUndo(self._bid, self._lid, line))
+                undoinfo.append(self.gcode.insLineUndo(
+                    self._bid, self._lid, line))
 
         try:
             # try to unpickle it
@@ -218,10 +217,11 @@ class CNCListbox(Listbox):
             try:
                 while True:
                     obj = unpickler.load()
-                    if isinstance(obj,tuple):
+                    if isinstance(obj, tuple):
                         block = Block.load(obj)
                         self._bid += 1
-                        undoinfo.append(self.gcode.addBlockUndo(self._bid, block))
+                        undoinfo.append(self.gcode.addBlockUndo(
+                            self._bid, block))
                         selitems.append((self._bid,None))
                         self._lid = None
                     else:

@@ -38,7 +38,7 @@ try:
     # Resampling image based on PIL library and converting to RGB.
     # options possible: NEAREST, BILINEAR, BICUBIC, ANTIALIAS
     RESAMPLE = Image.NEAREST    # resize type
-    #RESAMPLE = Image.BILINEAR    # resize type
+    # RESAMPLE = Image.BILINEAR    # resize type
 except:
     HAS_NUMPY = None
     RESAMPLE = None
@@ -55,9 +55,9 @@ VIEWS = ["X-Y", "X-Z", "Y-Z", "ISO1", "ISO2", "ISO3"]
 
 INSERT_WIDTH2 = 3
 GANTRY_R = 4
-GANTRY_X = GANTRY_R*2 # 10
-GANTRY_Y = GANTRY_R # 5
-GANTRY_H = GANTRY_R*5 # 20
+GANTRY_X = GANTRY_R*2  # 10
+GANTRY_Y = GANTRY_R  # 5
+GANTRY_H = GANTRY_R*5  # 20
 
 SELECTION_TAGS = ("sel", "sel2", "sel3", "sel4")
 
@@ -89,35 +89,39 @@ S60 = math.sin(math.radians(60))
 C60 = math.cos(math.radians(60))
 
 DEF_CURSOR = ""
+
 MOUSE_CURSOR = {
-    ACTION_SELECT : DEF_CURSOR,
-    ACTION_SELECT_AREA : "right_ptr",
+    ACTION_SELECT: DEF_CURSOR,
+    ACTION_SELECT_AREA: "right_ptr",
 
-    ACTION_PAN : "fleur",
-    ACTION_ORIGIN : "cross",
-    #ACTION_ORBIT : "exchange",
-    #ACTION_ZOOM_IN : "sizing",
-    #ACTION_ZOOM_OUT : "sizing",
-    #ACTION_ZOOM_ON : "sizing",
+    ACTION_PAN: "fleur",
+    ACTION_ORIGIN: "cross",
+    # ACTION_ORBIT: "exchange",
+    # ACTION_ZOOM_IN: "sizing",
+    # ACTION_ZOOM_OUT: "sizing",
+    # ACTION_ZOOM_ON: "sizing",
 
-    #ACTION_VIEW_CENTER : "cross",
-    #ACTION_VIEW_MOVE : "fleur",
-    #ACTION_VIEW_ROTATE : "exchange",
+    # ACTION_VIEW_CENTER: "cross",
+    # ACTION_VIEW_MOVE: "fleur",
+    # ACTION_VIEW_ROTATE: "exchange",
 
-    ACTION_MOVE : "hand1",
-    ACTION_ROTATE : "exchange",
-    #ACTION_GANTRY : "target", # no  proper cursor
-    ACTION_GANTRY : "crosshair",
-    ACTION_WPOS : "diamond_cross",
+    ACTION_MOVE: "hand1",
+    ACTION_ROTATE: "exchange",
+    # ACTION_GANTRY: "target", # no  proper cursor
+    ACTION_GANTRY: "crosshair",
+    ACTION_WPOS: "diamond_cross",
 
-    ACTION_RULER : "tcross",
-    ACTION_ADDORIENT : "tcross",
+    ACTION_RULER: "tcross",
+    ACTION_ADDORIENT: "tcross",
 
-    #ACTION_EDIT : "pencil",
+    # ACTION_EDIT: "pencil",
 }
 
+
 def mouseCursor(action):
+    """Return MOUSE_CURSOR"""
     return MOUSE_CURSOR.get(action, DEF_CURSOR)
+
 
 class AlarmException(Exception):
     """Raise an alarm exception"""
@@ -163,18 +167,18 @@ class CNCCanvas(Tk.Canvas, object):
         self.bind('<Control-Key-Down>', self.panDown)
 
         self.bind('<Escape>', self.actionCancel)
-        #        self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
-        #        self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
-        #        self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
-        #        self.bind('<Key-f>', self.fit2Screen)
-        #        self.bind('<Key-g>', self.setActionGantry)
-        #        self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
-        #        self.bind('<Key-m>', self.setActionMove)
-        #        self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
-        #        self.bind('<Key-o>', self.setActionOrigin)
-        #        self.bind('<Key-r>', self.setActionRuler)
-        #        self.bind('<Key-s>', self.setActionSelect)
-        #        self.bind('<Key-x>', self.setActionPan)
+        # self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
+        # self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
+        # self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
+        # self.bind('<Key-f>', self.fit2Screen)
+        # self.bind('<Key-g>', self.setActionGantry)
+        # self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
+        # self.bind('<Key-m>', self.setActionMove)
+        # self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
+        # self.bind('<Key-o>', self.setActionOrigin)
+        # self.bind('<Key-r>', self.setActionRuler)
+        # self.bind('<Key-s>', self.setActionSelect)
+        # self.bind('<Key-x>', self.setActionPan)
         self.bind('<Key>', self.handleKey)
 
         self.bind('<Control-Key-S>', self.cameraSave)
@@ -183,13 +187,13 @@ class CNCCanvas(Tk.Canvas, object):
         self.bind('<Control-Key-equal>', self.menuZoomIn)
         self.bind('<Control-Key-minus>', self.menuZoomOut)
 
-        #        self.bind('<Control-Key-x>', self.cut)
-        #        self.bind('<Control-Key-c>', self.copy)
-        #        self.bind('<Control-Key-v>', self.paste)
+        # self.bind('<Control-Key-x>', self.cut)
+        # self.bind('<Control-Key-c>', self.copy)
+        # self.bind('<Control-Key-v>', self.paste)
 
-        #        self.bind('<Key-space>', self.commandFocus)
-        #        self.bind('<Control-Key-space>', self.commandFocus)
-        #        self.bind('<Control-Key-a>', self.selectAll)
+        # self.bind('<Key-space>', self.commandFocus)
+        # self.bind('<Control-Key-space>', self.commandFocus)
+        # self.bind('<Control-Key-a>', self.selectAll)
 
         self.x0 = 0.0
         self.y0 = 0.0
@@ -229,7 +233,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.cameraR = 1.5875  # circle radius in units (mm/inched)
         self.cameraDx = 0  # camera shift vs gantry
         self.cameraDy = 0
-        self.cameraZ = None  # if None it will not make any Z movement for the camera
+        # if None it will not make any Z movement for the camera
+        self.cameraZ = None
         self.cameraSwitch = False  # Look at spindle(False) or camera(True)
         self._cameraAfter = None  # Camera anchor location "" for gantry
         self._cameraMaxWidth = 640  # on zoom over this size crop the image
@@ -246,45 +251,42 @@ class CNCCanvas(Tk.Canvas, object):
         self.draw_probe = True
         self.draw_workarea = True
         self.draw_paths = True
-        self.draw_rapid = True # draw rapid motions
-        self._wx = self._wy = self._wz = 0.0 # work position
-        self._dx = self._dy = self._dz = 0.0 # work-machine position
+        self.draw_rapid = True  # draw rapid motions
+        self._wx = self._wy = self._wz = 0.0  # work position
+        self._dx = self._dy = self._dz = 0.0  # work-machine position
 
-        self._vx0 = self._vy0 = self._vz0 = 0 # vector move coordinates
-        self._vx1 = self._vy1 = self._vz1 = 0 # vector move coordinates
+        self._vx0 = self._vy0 = self._vz0 = 0  # vector move coordinates
+        self._vx1 = self._vy1 = self._vz1 = 0  # vector move coordinates
 
         self._orientSelected = None
         self.tooltips = []
 
-        #self.config(xscrollincrement=1, yscrollincrement=1)
+        # self.config(xscrollincrement=1, yscrollincrement=1)
         self.reset()
         self.initPosition()
 
-
     def antialias_args(self, args, winc=0.5, cw=2):
-        """
-            Calculate arguments for antialiasing
-        """
+        """Calculate arguments for antialiasing"""
 
         nargs = {}
 
-        #set defaults
+        # set defaults
         nargs['width'] = 1
         nargs['fill'] = "#000"
 
-        #get original args
+        # get original args
         for arg in args:
             nargs[arg] = args[arg]
         if nargs['width'] == 0:
             nargs['width'] = 1
 
-        #calculate width
+        # calculate width
         nargs['width'] += winc
 
-        #calculate color
+        # calculate color
         cbg = self.winfo_rgb(self.cget("bg"))
         cfg = list(self.winfo_rgb(nargs['fill']))
-        #print cbg, cfg
+        # print cbg, cfg
         cfg[0] = (cfg[0] + cbg[0]*cw)/(cw+1)
         cfg[1] = (cfg[1] + cbg[1]*cw)/(cw+1)
         cfg[2] = (cfg[2] + cbg[2]*cw)/(cw+1)
@@ -295,22 +297,19 @@ class CNCCanvas(Tk.Canvas, object):
 
         return nargs
 
-    #Override alias method if antialiasing enabled:
+    # Override alias method if antialiasing enabled:
     if ANTIALIAS_CHEAP:
         def create_line(self, *args, **kwargs):
             nkwargs = self.antialias_args(kwargs)
             super(CNCCanvas, self).create_line(*args, **nkwargs)
             return super(CNCCanvas, self).create_line(*args, **kwargs)
 
-
     def reset(self):
         self.zoom = 1.0
-
 
     def status(self, msg):
         """Set status message"""
         self.event_generate("<<Status>>", data=msg)
-
 
     def setMouseStatus(self, event):
         data = "{0:.4f} {1:.4f} {2:.4f}".format(
@@ -318,11 +317,11 @@ class CNCCanvas(Tk.Canvas, object):
 
         self.event_generate("<<Coords>>", data=data)
 
-
     def _updateScrollBars(self):
         """Update scroll region for new size"""
         bb = self.bbox('all')
-        if bb is None: return
+        if bb is None:
+            return
         x1, y1, x2, y2 = bb
         dx = x2-x1
         dy = y2-y1
@@ -330,9 +329,8 @@ class CNCCanvas(Tk.Canvas, object):
         # so when we zoom in/out we don't touch the borders
         self.configure(scrollregion=(x1-dx, y1-dy, x2+dx, y2+dy))
 
-
     def handleKey(self, event):
-        #ctrl = event.state & CONTROL_MASK
+        # ctrl = event.state & CONTROL_MASK
         if event.char == "a":
             self.event_generate("<<SelectAll>>")
         elif event.char == "A":
@@ -362,67 +360,56 @@ class CNCCanvas(Tk.Canvas, object):
         elif event.char == "Z":
             self.menuZoomOut()
 
-
     def setAction(self, action):
         self.action = action
         self.actionVar.set(action)
         self._mouseAction = None
         self.config(cursor=mouseCursor(self.action), background="White")
 
-
     def actionCancel(self, event=None):
         if self.action != ACTION_SELECT or \
-           (self._mouseAction != ACTION_SELECT and self._mouseAction is not None):
+               (self._mouseAction != ACTION_SELECT and
+                self._mouseAction is not None):
             self.setAction(ACTION_SELECT)
             return "break"
-        #self.draw()
-
+        # self.draw()
 
     def setActionSelect(self, event=None):
         self.setAction(ACTION_SELECT)
         self.status(_("Select objects with mouse"))
 
-
     def setActionPan(self, event=None):
         self.setAction(ACTION_PAN)
         self.status(_("Pan viewport"))
-
 
     def setActionOrigin(self, event=None):
         self.setAction(ACTION_ORIGIN)
         self.status(_("Click to set the origin (zero)"))
 
-
     def setActionMove(self, event=None):
         self.setAction(ACTION_MOVE)
         self.status(_("Move graphically objects"))
-
 
     def setActionGantry(self, event=None):
         self.setAction(ACTION_GANTRY)
         self.config(background="seashell")
         self.status(_("Move CNC gantry to mouse location"))
 
-
     def setActionWPOS(self, event=None):
         self.setAction(ACTION_WPOS)
         self.config(background="ivory")
         self.status(_("Set mouse location as current machine position (X/Y only)"))
 
-
     def setActionRuler(self, event=None):
         self.setAction(ACTION_RULER)
         self.status(_("Drag a ruler to measure distances"))
-
 
     def setActionAddMarker(self, event=None):
         self.setAction(ACTION_ADDORIENT)
         self.status(_("Add an orientation marker"))
 
-
-    # Convert canvas cx,cy coordinates to machine space
-
     def canvas2Machine(self, cx, cy):
+        """Convert canvas cx,cy coordinates to machine space"""
         u = cx / self.zoom
         v = cy / self.zoom
 
@@ -444,14 +431,12 @@ class CNCCanvas(Tk.Canvas, object):
         elif self.view == VIEW_ISO3:
             return -0.5*(u/S60+v/C60), -0.5*(u/S60-v/C60), None
 
-    # Image (pixel) coordinates to machine
-
     def image2Machine(self, x, y):
+        """Image (pixel) coordinates to machine"""
         return self.canvas2Machine(self.canvasx(x), self.canvasy(y))
 
-    # Move gantry to mouse location
-
     def actionGantry(self, x, y):
+        """Move gantry to mouse location"""
         u, v, w = self.image2Machine(x, y)
         OCV.mcontrol.goto(u, v, w)
         self.setAction(ACTION_SELECT)
@@ -467,15 +452,16 @@ class CNCCanvas(Tk.Canvas, object):
         """Add an orientation marker at mouse location"""
         cx, cy = self.snapPoint(self.canvasx(x), self.canvasy(y))
         u, v, w = self.canvas2Machine(cx, cy)
+
         if u is None or v is None:
             self.status(_("ERROR: Cannot set X-Y marker  with the current view"))
             return
+
         self._orientSelected = len(self.gcode.orient)
         self.gcode.orient.add(OCV.CD["wx"], OCV.CD["wy"], u, v)
         self.event_generate("<<OrientSelect>>", data=self._orientSelected)
-        #self.drawOrient()
+        # self.drawOrient()
         self.setAction(ACTION_SELECT)
-
 
     def click(self, event):
         """Find item selected"""
@@ -488,9 +474,10 @@ class CNCCanvas(Tk.Canvas, object):
             return
 
         elif self.action == ACTION_SELECT:
-            #if event.state & CONTROLSHIFT_MASK == CONTROLSHIFT_MASK:
-            #self._mouseAction = ACTION_SELECT
-            #else:
+
+            # if event.state & CONTROLSHIFT_MASK == CONTROLSHIFT_MASK:
+            #     self._mouseAction = ACTION_SELECT
+            #     else:
             self._mouseAction = ACTION_SELECT_SINGLE
 
         elif self.action in (ACTION_MOVE, ACTION_RULER):
@@ -499,19 +486,24 @@ class CNCCanvas(Tk.Canvas, object):
             if self.action == ACTION_RULER and self._vector is not None:
                 # Check if we hit the existing ruler
                 coords = self.coords(self._vector)
-                if abs(coords[0]-i) <= CLOSE_DISTANCE and abs(coords[1]-j <= CLOSE_DISTANCE):
+                if (abs(coords[0]-i) <= CLOSE_DISTANCE and
+                        abs(coords[1]-j <= CLOSE_DISTANCE)):
                     # swap coordinates
                     coords[0], coords[2] = coords[2], coords[0]
                     coords[1], coords[3] = coords[3], coords[1]
                     self.coords(self._vector, *coords)
-                    self._vx0, self._vy0, self._vz0 = self.canvas2xyz(coords[0], coords[1])
+                    self._vx0, self._vy0, self._vz0 = self.canvas2xyz(
+                        coords[0], coords[1])
                     self._mouseAction = self.action
                     return
-                elif abs(coords[2]-i) <= CLOSE_DISTANCE and abs(coords[3]-j <= CLOSE_DISTANCE):
+                elif (abs(coords[2]-i) <= CLOSE_DISTANCE and
+                      abs(coords[3]-j <= CLOSE_DISTANCE)):
                     self._mouseAction = self.action
                     return
 
-            if self._vector: self.delete(self._vector)
+            if self._vector:
+                self.delete(self._vector)
+
             if self.action == ACTION_MOVE:
                 # Check if we clicked on a selected item
                 try:
@@ -521,7 +513,7 @@ class CNCCanvas(Tk.Canvas, object):
 
                         tags = self.gettags(item)
 
-                        if "sel"  in tags or "sel2" in tags or \
+                        if "sel" in tags or "sel2" in tags or \
                            "sel3" in tags or "sel4" in tags:
 
                             break
@@ -538,7 +530,8 @@ class CNCCanvas(Tk.Canvas, object):
             else:
                 fill = OCV.RULER_COLOR
                 arrow = Tk.BOTH
-            self._vector = self.create_line((i, j, i, j), fill=fill, arrow=arrow)
+            self._vector = self.create_line(
+                (i, j, i, j), fill=fill, arrow=arrow)
             self._vx0, self._vy0, self._vz0 = self.canvas2xyz(i, j)
             self._mouseAction = self.action
 
@@ -568,11 +561,8 @@ class CNCCanvas(Tk.Canvas, object):
         elif self.action == ACTION_PAN:
             self.pan(event)
 
-
     def buttonMotion(self, event):
-        """
-            Canvas motion button 1
-        """
+        """Canvas motion button 1"""
         if self._mouseAction == ACTION_SELECT_AREA:
             self.coords(
                 self._select,
@@ -626,24 +616,22 @@ class CNCCanvas(Tk.Canvas, object):
 
         self.setMouseStatus(event)
 
-
-    # Canvas release button1. Select area
-
     def release(self, event):
+        """Canvas release button1. Select area"""
         if self._mouseAction in (
                 ACTION_SELECT_SINGLE,
                 ACTION_SELECT_DOUBLE,
                 ACTION_SELECT_AREA):
 
             if self._mouseAction == ACTION_SELECT_AREA:
-                #if event.state & SHIFT_MASK == 0:
-                if self._x < event.x:    # From left->right enclosed
+                # if event.state & SHIFT_MASK == 0:
+                if self._x < event.x:  # From left->right enclosed
                     closest = self.find_enclosed(
                         self.canvasx(self._x),
                         self.canvasy(self._y),
                         self.canvasx(event.x),
                         self.canvasy(event.y))
-                else:            # From right->left overlapping
+                else:  # From right->left overlapping
                     closest = self.find_overlapping(
                         self.canvasx(self._x),
                         self.canvasy(self._y),
@@ -660,7 +648,8 @@ class CNCCanvas(Tk.Canvas, object):
                     except:
                         pass
 
-            elif self._mouseAction in (ACTION_SELECT_SINGLE, ACTION_SELECT_DOUBLE):
+            elif self._mouseAction in (
+                    ACTION_SELECT_SINGLE, ACTION_SELECT_DOUBLE):
                 closest = self.find_closest(
                     self.canvasx(event.x),
                     self.canvasy(event.y),
@@ -671,13 +660,13 @@ class CNCCanvas(Tk.Canvas, object):
                 for i in closest:
                     try:
                         items.append(self._items[i])
-                        #i = None
+                        # i = None
                     except KeyError:
                         tags = self.gettags(i)
                         if "Orient" in tags:
                             self.selectMarker(i)
                             return
-                        #i = self.find_below(i)
+                        # i = self.find_below(i)
                         pass
 
             if not items:
@@ -711,8 +700,8 @@ class CNCCanvas(Tk.Canvas, object):
     def motion(self, event):
         self.setMouseStatus(event)
 
-    # Testing routine
     def _test(self, event):
+        """Testing routine"""
         i = self.canvasx(event.x)
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
@@ -727,9 +716,7 @@ class CNCCanvas(Tk.Canvas, object):
 #                print path.isInside(P)
 
     def snapPoint(self, cx, cy):
-        """
-            Snap to the closest point if any
-        """
+        """Snap to the closest point if any"""
         xs, ys = None, None
 
         if OCV.inch:
@@ -770,13 +757,11 @@ class CNCCanvas(Tk.Canvas, object):
         else:
             return cx, cy
 
-
     def getMargins(self):
-        """
-            Get margins of selected items
-        """
+        """Get margins of selected items"""
         bbox = self.bbox("sel")
-        if not bbox: return None
+        if not bbox:
+            return None
         x1, y1, x2, y2 = bbox
         dx = (x2-x1-1)/self.zoom
         dy = (y2-y1-1)/self.zoom
@@ -784,12 +769,14 @@ class CNCCanvas(Tk.Canvas, object):
 
     def xview(self, *args):
         ret = Tk.Canvas.xview(self, *args)
-        if args: self.cameraPosition()
+        if args:
+            self.cameraPosition()
         return ret
 
     def yview(self, *args):
         ret = Tk.Canvas.yview(self, *args)
-        if args: self.cameraPosition()
+        if args:
+            self.cameraPosition()
         return ret
 
     def configureEvent(self, event):
@@ -847,6 +834,14 @@ class CNCCanvas(Tk.Canvas, object):
 
         c_zoom *= zoom
 
+        # limits the zoom factor as problems could arise if zoom is:
+        # too high 300000 is giving error
+        # too low led to division by zero or NaN
+        if c_zoom > 30000:
+            c_zoom = 30000
+        elif c_zoom < 0.1:
+            c_zoom = 0.1
+
         self.zoom = Utils.q_round(c_zoom, 4, 0.005)
 
         x0 = self.canvasx(0)
@@ -890,14 +885,15 @@ class CNCCanvas(Tk.Canvas, object):
 
     def selBbox(self):
         """Return selected objects bounding box"""
-
         x1 = None
         for tag in ("sel", "sel2", "sel3", "sel4"):
             bb = self.bbox(tag)
+
             if bb is None:
                 continue
             elif x1 is None:
                 x1, y1, x2, y2 = bb
+                print("TAG {0}, bb{1}".format(tag, bb))
             else:
                 x1 = min(x1, bb[0])
                 y1 = min(y1, bb[1])
@@ -906,6 +902,7 @@ class CNCCanvas(Tk.Canvas, object):
 
         if x1 is None:
             return self.bbox('all')
+
         return x1, y1, x2, y2
 
     def fit2Screen(self, event=None):
@@ -963,9 +960,14 @@ class CNCCanvas(Tk.Canvas, object):
         midx = float((xm-sx1) / (sx2-sx1))
         midy = float((ym-sy1) / (sy2-sy1))
 
+        print("xm {0} ym{1} sx1{2} sy1{3} sx2{4} sy2{5}".format(
+            xm, ym, sx1, sy1, sx2, sy2))
+
         a, b = self.xview()
         d = (b-a)/2.0
-        self.xview_moveto(midx-d)
+        print(a, b, d)
+
+        self.xview_moveto(midx - d)
 
         a, b = self.yview()
         d = (b-a)/2.0

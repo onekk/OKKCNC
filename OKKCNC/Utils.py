@@ -51,7 +51,6 @@ except:
 
 import OCV
 
-__prg__ = "OKKCNC"
 prgpath = os.path.abspath(os.path.dirname(__file__))
 
 if getattr(sys, 'frozen', False):
@@ -59,9 +58,9 @@ if getattr(sys, 'frozen', False):
     print("Running as pyinstaller bundle!", sys.argv[0])
     prgpath = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-iniSystem = os.path.join(prgpath, "{0}.ini".format(__prg__))
-iniUser = os.path.expanduser("~/.{0}".format(__prg__))
-hisFile = os.path.expanduser("~/.{0}.history".format(__prg__))
+iniSystem = os.path.join(prgpath, "{0}.ini".format(OCV.PRGNAME))
+iniUser = os.path.expanduser("~/.{0}".format(OCV.PRGNAME))
+hisFile = os.path.expanduser("~/.{0}.history".format(OCV.PRGNAME))
 
 # dirty way of substituting the "_" on the builtin namespace
 # __builtin__.__dict__["_"] = gettext.translation(
@@ -165,7 +164,7 @@ def loadConfiguration(systemOnly=False):
         config.read([iniSystem, iniUser])
         _errorReport = getInt("Connection", "errorreport", 1)
 
-        language = getStr(__prg__, "language")
+        language = getStr(OCV.PRGNAME, "language")
         if language:
             # replace language
             __builtin__._ = gettext.translation(
@@ -565,10 +564,12 @@ def comports(include_links=True):
                 pass
     return comports
 
+
 def q_round(x, prec=2, base=.05):
     """round a number specifing the decimal digits
     and a quantization factor"""
     return round(base * round(float(x)/base), prec)
+
 
 def addException():
     global errors

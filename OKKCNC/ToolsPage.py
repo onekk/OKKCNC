@@ -925,7 +925,7 @@ class Tools:
     # Load from config file
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.active.set(Utils.getStr(Utils.__prg__, "tool", "CNC"))
+        self.active.set(Utils.getStr(OCV.PRGNAME, "tool", "CNC"))
         for tool in self.tools.values():
             tool.load()
 
@@ -933,7 +933,7 @@ class Tools:
     # Save to config file
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setStr(Utils.__prg__, "tool", self.active.get())
+        Utils.setStr(OCV.PRGNAME, "tool", self.active.get())
         for tool in self.tools.values():
             tool.save()
 
@@ -1185,12 +1185,10 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #        tkExtra.Balloon.set(b, _("Events configuration"))
 #        self.addWidget(b)
 
-    #----------------------------------------------------------------------
     def fillLanguage(self):
         self.language.set(Utils.LANGUAGES.get(Utils.language,""))
         self.language.fill(list(sorted(Utils.LANGUAGES.values())))
 
-    #----------------------------------------------------------------------
     def languageChange(self):
         lang = self.language.get()
         # find translation
@@ -1198,13 +1196,12 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             if b == lang:
                 if Utils.language == a: return
                 Utils.language = a
-                Utils.setStr(Utils.__prg__,  "language", Utils.language)
+                Utils.setStr(OCV.PRGNAME,  "language", Utils.language)
                 tkMessageBox.showinfo(_("Language change"),
                     _("Please restart the program."),
                     parent=self.winfo_toplevel())
                 return
 
-    #----------------------------------------------------------------------
     def createMenu(self):
         menu = Menu(self, tearoff=0)
         menu.add_radiobutton(
@@ -1219,10 +1216,8 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         return menu
 
 
-#==============================================================================
-# Tools Frame
-#==============================================================================
 class ToolsFrame(CNCRibbon.PageFrame):
+    """Tools Frame"""
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "CAM", app)
         self.tools = OCV.APP.tools

@@ -41,7 +41,8 @@ except ImportError:
     from queue import Queue, Empty
 
 import OCV
-from CNC import WAIT, MSG, UPDATE, CNC, GCode
+from CNC import CNC
+import GCode
 import Utils
 import Pendant
 
@@ -101,7 +102,7 @@ class Sender(object):
         self.controllerSet("GRBL1")
 
         CNC.loadConfig(Utils.config)
-        self.gcode = GCode()
+        self.gcode = GCode.GCode()
         self.cnc = self.gcode.cnc
 
         self.log = Queue()  # Log queue returned from GRBL
@@ -708,18 +709,18 @@ class Sender(object):
                     if isinstance(tosend, tuple):
                         # print "gcount tuple=",self._gcount
                         # wait to empty the grbl buffer and status is Idle
-                        if tosend[0] == WAIT:
+                        if tosend[0] == OCV.WAIT:
                             # Don't count WAIT until we are idle!
                             self.sio_wait = True
 #                            print "+++ WAIT ON"
 #                            print "gcount=",self._gcount, self._runLines
-                        elif tosend[0] == MSG:
+                        elif tosend[0] == OCV.MSG:
                             # Count executed commands as well
                             self._gcount += 1
                             if tosend[1] is not None:
                                 # show our message on machine status
                                 self._msg = tosend[1]
-                        elif tosend[0] == UPDATE:
+                        elif tosend[0] == OCV.UPDATE:
                             # Count executed commands as well
                             self._gcount += 1
                             self._update = tosend[1]

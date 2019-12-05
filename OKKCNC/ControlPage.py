@@ -36,9 +36,7 @@ import tkExtra
 import Unicode
 import Utils
 
-#from CNC import Block
 
-OCV.FONT = ("Sans", "-10")
 
 _LOWSTEP = 0.0001
 _HIGHSTEP = 1000.0
@@ -46,7 +44,6 @@ _HIGHZSTEP = 10.0
 _NOZSTEP = 'XY'
 
 OVERRIDES = ["Feed", "Rapid", "Spindle"]
-
 
 
 #===============================================================================

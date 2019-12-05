@@ -14,8 +14,8 @@ except:
     import tkinter.messagebox as tkMessageBox
 
 import OCV
-# import CNC
-from CNC import Block, CNC
+import Block
+from CNC import CNC
 
 
 def rect_path(x_0, y_0, r_w, r_h):
@@ -110,7 +110,7 @@ def line(self, app, end_depth, mem_0, mem_1):
             curr_depth = end_depth
 
         block.append(CNC.zenter(curr_depth))
-        block.append(CNC.gcode(1, [("F", OCV.CD["cutfeed"])]))
+        block.append(CNC.gcode_string(1, [("F", OCV.CD["cutfeed"])]))
 
         block.append(CNC.gline(x_end, y_end))
 
@@ -275,7 +275,7 @@ def pocket(self, app, end_depth, mem_0, mem_1):
             curr_depth = end_depth
 
         block.append(CNC.zenter(curr_depth))
-        block.append(CNC.gcode(1, [("F", OCV.CD["cutfeed"])]))
+        block.append(CNC.gcode_string(1, [("F", OCV.CD["cutfeed"])]))
 
         # Pocketing
         for x_l, y_l in zip(x_p, y_p):

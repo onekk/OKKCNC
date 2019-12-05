@@ -26,7 +26,8 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
 
 import OCV
-from CNC import CNC, Block
+from CNC import CNC
+import Block
 import Utils
 import Camera
 import Ribbon

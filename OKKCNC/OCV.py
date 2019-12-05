@@ -10,6 +10,7 @@ almost in every module as it provide an "elegant" way to provide
     https://github.com/onekk/OKKCNC
 
 """
+import re
 
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
@@ -21,6 +22,8 @@ COM_DEBUG = True
 
 HAS_SERIAL = None
 IS_PY3 = False
+
+FONT = ("Sans", "-10")
 EXE_FONT = ("Helvetica", 12, "bold")
 RIBBON_TABFONT = ("Sans", "-14", "bold")
 RIBBON_FONT = ("Sans", "-11")
@@ -57,6 +60,34 @@ PLANE = {
 across the program, mainly:
     OCV.APP >
 """
+TOLERANCE = 1e-7
+# python3 doesn't have maxint it has sys.maxsize
+# but i think setting a mximun value here is enough
+MAXINT = 1000000000
+
+IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
+PARENPAT = re.compile(r"(\(.*?\))")
+SEMIPAT = re.compile(r"(;.*)")
+OPPAT = re.compile(r"(.*)\[(.*)\]")
+CMDPAT = re.compile(r"([A-Za-z]+)")
+BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
+AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
+
+STOP = 0
+SKIP = 1
+ASK = 2
+MSG = 3
+WAIT = 4
+UPDATE = 5
+
+XY = 0
+XZ = 1
+YZ = 2
+
+CW = 2
+CCW = 3
+
+ERROR_HANDLING = {}
 
 root = None
 APP = None
@@ -64,9 +95,11 @@ canvas = None
 mcontrol = None
 RUN_GROUP = None
 
+PRGNAME = "OKKCNC"
+
 """version and date"""
 _version = "0.2.0-dev"
-DXF_date = "26 Dec 2019"
+_date = "26 Dec 2019"
 
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
 _sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
