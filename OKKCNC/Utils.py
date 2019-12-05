@@ -565,6 +565,10 @@ def comports(include_links=True):
                 pass
     return comports
 
+def q_round(x, prec=2, base=.05):
+    """round a number specifing the decimal digits
+    and a quantization factor"""
+    return round(base * round(float(x)/base), prec)
 
 def addException():
     global errors

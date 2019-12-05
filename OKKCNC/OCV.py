@@ -15,6 +15,7 @@ author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
 DEBUG = False
+GRAP_DEBUG = True
 INT_DEBUG = False
 COM_DEBUG = True
 
