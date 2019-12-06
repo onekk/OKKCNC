@@ -920,7 +920,7 @@ class Service(object):
         for i in range(0, OCV.WK_bank_max + 1):
             OCV.WK_bank_show.append(0)
 
-        for name, value in Utils.config.items("Memory"):
+        for name, value in OCV.config.items("Memory"):
             content = value.split(",")
             #print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(name, *content ))
             OCV.WK_mems[name] = [

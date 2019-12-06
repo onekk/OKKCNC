@@ -97,17 +97,14 @@ LANGUAGES = {
 
 icons = {}
 images = {}
-config = ConfigParser.ConfigParser()
+OCV.config = ConfigParser.ConfigParser()
 # This is here to debug the fact that config is sometimes instantiated twice
-print("new-config", __name__, config)
+print("new-config", __name__, OCV.config)
 language = ""
 
 _errorReport = True
 errors = []
 _maxRecent = 10
-
-# FIXME: create single instance of this and pass it to all parts of application
-
 
 class Config(object):
     """New class to provide config for everyone"""
@@ -157,18 +154,18 @@ def delIcons():
 
 def loadConfiguration(systemOnly=False):
     """Load configuration"""
-    global config, _errorReport, language
+    global _errorReport, language
     if systemOnly:
-        config.read(iniSystem)
+        OCV.config.read(iniSystem)
     else:
-        config.read([iniSystem, iniUser])
+        OCV.config.read([iniSystem, iniUser])
         _errorReport = getInt("Connection", "errorreport", 1)
 
         language = getStr(OCV.PRGNAME, "language")
         if language:
             # replace language
             __builtin__._ = gettext.translation(
-                'OKKCNC',
+                OCV.PRGNAME,
                 os.path.join(prgpath, 'locale'),
                 fallback=True,
                 languages=[language]).gettext
@@ -176,85 +173,76 @@ def loadConfiguration(systemOnly=False):
 
 def saveConfiguration():
     """Save configuration file"""
-    global config
     cleanConfiguration()
     f = open(iniUser, "w")
-    config.write(f)
+    OCV.config.write(f)
     f.close()
     delIcons()
 
 
 def cleanConfiguration():
     """Remove items that are the same as in the default ini"""
-    global config
-    newconfig = config    # Remember config
-    config = ConfigParser.ConfigParser()
+    newconfig = OCV.config    # Remember config
+    OCV.config = ConfigParser.ConfigParser()
 
     loadConfiguration(True)
 
     # Compare items
-    for section in config.sections():
-        for item, value in config.items(section):
+    for section in OCV.config.sections():
+        for item, value in OCV.config.items(section):
             try:
                 new = newconfig.get(section, item)
                 if value == new:
                     newconfig.remove_option(section, item)
             except ConfigParser.NoOptionError:
                 pass
-    config = newconfig
+    OCV.config = newconfig
 
 
 def addSection(section):
     """add section if it doesn't exist"""
-    global config
-    if not config.has_section(section):
-        config.add_section(section)
+    if not OCV.config.has_section(section):
+        OCV.config.add_section(section)
 
 
 def getStr(section, name, default=""):
-    global config
     try:
-        return config.get(section, name)
+        return OCV.config.get(section, name)
     except Exception:
         return default
 
 
 def getUtf(section, name, default=""):
-    global config
     try:
-        return config.get(section, name)
+        return OCV.config.get(section, name)
     except Exception:
         return default
 
 
 def getInt(section, name, default=0):
-    global config
     try:
-        return int(config.get(section, name))
+        return int(OCV.config.get(section, name))
     except Exception:
         return default
 
 
 def getFloat(section, name, default=0.0):
-    global config
     try:
-        return float(config.get(section, name))
+        return float(OCV.config.get(section, name))
     except Exception:
         return default
 
 
 def getBool(section, name, default=False):
-    global config
     try:
-        return bool(int(config.get(section, name)))
+        return bool(int(OCV.config.get(section, name)))
     except Exception:
         return default
 
 
 def removeValue(section, name):
-    global config
-    if config.has_option(section, name):
-        config.remove_option(section, name)
+    if OCV.config.has_option(section, name):
+        OCV.config.remove_option(section, name)
 
 
 def SetSteps():
@@ -443,9 +431,8 @@ def fontString(font):
 
 def getFont(name, default=None):
     """Get font from configuration"""
-
     try:
-        value = config.get(OCV.FONT_SECTION, name)
+        value = OCV.config.get(OCV.FONT_SECTION, name)
     except:
         value = None
 
@@ -471,33 +458,30 @@ def setFont(name, font):
         return
 
     if isinstance(font, str):
-        config.set(OCV.FONT_SECTION, name, font)
+        OCV.config.set(OCV.FONT_SECTION, name, font)
     elif isinstance(font, tuple):
-        config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
+        OCV.config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
     else:
-        config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
+        OCV.config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
             font.cget("family"),
             font.cget("size"),
             font.cget("weight")))
 
 
 def setBool(section, name, value):
-    global config
-    config.set(section, name, str(int(value)))
+    OCV.config.set(section, name, str(int(value)))
 
 
 def setStr(section, name, value):
-    global config
-    config.set(section, name, str(value))
+    OCV.config.set(section, name, str(value))
 
 
 def setUtf(section, name, value):
-    global config
     try:
         s = str(value)
     except:
         s = str(value)
-    config.set(section, name, s)
+    OCV.config.set(section, name, s)
 
 
 setInt = setStr
@@ -525,13 +509,13 @@ def addRecent(filename):
 
     # Shift everything by one
     for i in range(last, -1, -1):
-        config.set("File", "recent.{0}".format(i + 1), getRecent(i))
-    config.set("File", "recent.0", sfn)
+        OCV.config.set("File", "recent.{0}".format(i + 1), getRecent(i))
+    OCV.config.set("File", "recent.0", sfn)
 
 
 def getRecent(recent):
     try:
-        return config.get("File", "recent.{0}".format(recent))
+        return OCV.config.get("File", "recent.{0}".format(recent))
     except ConfigParser.NoOptionError:
         return None
 
@@ -653,25 +637,25 @@ class UserButton(Ribbon.LabelButton):
 
     def name(self):
         try:
-            return config.get("Buttons", "name.{0}".format(self.button))
+            return OCV.config.get("Buttons", "name.{0}".format(self.button))
         except:
             return str(self.button)
 
     def icon(self):
         try:
-            return config.get("Buttons", "icon.{0}".format(self.button))
+            return OCV.config.get("Buttons", "icon.{0}".format(self.button))
         except:
             return None
 
     def tooltip(self):
         try:
-            return config.get("Buttons", "tooltip.{0}".format(self.button))
+            return OCV.config.get("Buttons", "tooltip.{0}".format(self.button))
         except:
             return ""
 
     def command(self):
         try:
-            return config.get("Buttons", "command.{0}".format(self.button))
+            return OCV.config.get("Buttons", "command.{0}".format(self.button))
         except:
             return ""
 
@@ -798,18 +782,22 @@ class UserButtonDialog(Tk.Toplevel):
 
     def ok(self, event=None):
         n = self.button.button
-        config.set("Buttons", "name.{0}".format(n), self.name.get().strip())
+        OCV.config.set(
+            "Buttons",
+            "name.{0}".format(n),
+            self.name.get().strip())
+
         icon = self.iconCombo.get()
 
         if icon == UserButtonDialog.NONE:
             icon = ""
 
-        config.set("Buttons", "icon.{0}".format(n), icon)
-        config.set(
+        OCV.config.set("Buttons", "icon.{0}".format(n), icon)
+        OCV.config.set(
             "Buttons", "tooltip.{0}".format(n),
             self.tooltip.get().strip())
 
-        config.set(
+        OCV.config.set(
             "Buttons", "command.{0}".format(n),
             self.command.get("1.0", Tk.END).strip())
 

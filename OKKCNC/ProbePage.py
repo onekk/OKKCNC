@@ -1577,30 +1577,30 @@ class CameraFrame(CNCRibbon.PageFrame):
 #        return
 #        OCV.APP.canvasFrame.canvas.cameraMakeTemplate(30)
 #
-#        OCV.APP.control.moveXup()
+#        OCV.APP.control.jog_x_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
 #        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # right
 #
-#        OCV.APP.control.moveXdown()
-#        OCV.APP.control.moveXdown()
+#        OCV.APP.control.jog_x_down()
+#        OCV.APP.control.jog_x_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
 #        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # left
 #
-#        OCV.APP.control.moveXup()
-#        OCV.APP.control.moveYup()
+#        OCV.APP.control.jog_x_up()
+#        OCV.APP.control.jog_y_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
 #        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # top
 #
-#        OCV.APP.control.moveYdown()
-#        OCV.APP.control.moveYdown()
+#        OCV.APP.control.jog_y_down()
+#        OCV.APP.control.jog_y_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
 #        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # down
 #
-#        OCV.APP.control.moveYup()
+#        OCV.APP.control.jog_y_up()
 
     #-----------------------------------------------------------------------
     # Move camera to spindle location and change coordinates to relative

@@ -245,7 +245,7 @@ class GCode(object):
         if not self.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
             curr_header = "(Created By OKKCNC version {0}) \n".format(
-                OCV._version)
+                OCV.PG_VER)
             curr_header += "(Date: {0})\n".format(currDate)
             curr_header += self.header
 

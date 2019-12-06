@@ -10,10 +10,20 @@ almost in every module as it provide an "elegant" way to provide
     https://github.com/onekk/OKKCNC
 
 """
+
+from __future__ import absolute_import
+from __future__ import print_function
+
 import re
 
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
+
+PRGNAME = "OKKCNC"
+
+"""version and date"""
+PG_VER = "0.2.0-dev"
+PG_DATE = "26 Dec 2019"
 
 DEBUG = False
 GRAP_DEBUG = True
@@ -95,11 +105,7 @@ canvas = None
 mcontrol = None
 RUN_GROUP = None
 
-PRGNAME = "OKKCNC"
 
-"""version and date"""
-_version = "0.2.0-dev"
-_date = "26 Dec 2019"
 
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
 _sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
@@ -118,6 +124,7 @@ appendFeed = False  # append feed on every G1/G2/G3 commands to be used
 
 # C #
 comment = ""  # last parsed comment
+config = None
 c_state = ""  # controller state to determine the state
 
 # D #
@@ -183,8 +190,7 @@ zstep3 = 0.0
 zstep4 = 0.0
 
 # W #
-wcsvar = 0
-
+wcsvar = object
 
 WK_active_mems = []
 """

@@ -101,7 +101,7 @@ class Sender(object):
         self.controllerLoad()
         self.controllerSet("GRBL1")
 
-        CNC.loadConfig(Utils.config)
+        CNC.loadConfig(OCV.config)
         self.gcode = GCode.GCode()
         self.cnc = self.gcode.cnc
 

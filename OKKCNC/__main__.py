@@ -121,7 +121,7 @@ class Application(Tk.Toplevel, Sender):
             self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
         else:
             self.iconbitmap("@{0}/OKKCNC.xbm".format(Utils.prgpath))
-        self.title("{0} {1}".format(OCV.PRGNAME, OCV._version))
+        self.title("{0} {1}".format(OCV.PRGNAME, OCV.PG_VER))
         self.widgets = []
 
         # Global variables
@@ -229,8 +229,8 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<SelectInvert>>', self.selectInvert)
         self.bind('<<SelectLayer>>', self.selectLayer)
 
-        self.bind('<<ZmoveUp>>', self.control.moveZup)
-        self.bind('<<ZmoveDown>>', self.control.moveZdown)
+        self.bind('<<ZmoveUp>>', self.control.jog_z_up)
+        self.bind('<<ZmoveDown>>', self.control.jog_z_down)
 
         self.bind("<<ERR_HELP>>", self.show_error_panel)
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
@@ -327,62 +327,62 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<ToolClone>>', tools.clone)
         self.bind('<<ToolRename>>', tools.rename)
 
-        self.bind('<Prior>', self.control.moveZup)
-        self.bind('<Next>', self.control.moveZdown)
+        self.bind('<Prior>', self.control.jog_z_up)
+        self.bind('<Next>', self.control.jog_z_down)
 
         if self._swapKeyboard == 1:
-            self.bind('<Right>', self.control.moveYup)
-            self.bind('<Left>', self.control.moveYdown)
-            self.bind('<Up>', self.control.moveXdown)
-            self.bind('<Down>', self.control.moveXup)
+            self.bind('<Right>', self.control.jog_y_up)
+            self.bind('<Left>', self.control.jog_y_down)
+            self.bind('<Up>', self.control.jog_x_down)
+            self.bind('<Down>', self.control.jog_x_up)
         elif self._swapKeyboard == -1:
-            self.bind('<Right>', self.control.moveYdown)
-            self.bind('<Left>', self.control.moveYup)
-            self.bind('<Up>', self.control.moveXup)
-            self.bind('<Down>', self.control.moveXdown)
+            self.bind('<Right>', self.control.jog_y_down)
+            self.bind('<Left>', self.control.jog_y_up)
+            self.bind('<Up>', self.control.jog_x_up)
+            self.bind('<Down>', self.control.jog_x_down)
         else:
-            self.bind('<Right>', self.control.moveXup)
-            self.bind('<Left>', self.control.moveXdown)
-            self.bind('<Up>', self.control.moveYup)
-            self.bind('<Down>', self.control.moveYdown)
+            self.bind('<Right>', self.control.jog_x_up)
+            self.bind('<Left>', self.control.jog_x_down)
+            self.bind('<Up>', self.control.jog_y_up)
+            self.bind('<Down>', self.control.jog_y_down)
 
         try:
-            self.bind('<KP_Prior>', self.control.moveZup)
-            self.bind('<KP_Next>', self.control.moveZdown)
+            self.bind('<KP_Prior>', self.control.jog_z_up)
+            self.bind('<KP_Next>', self.control.jog_z_down)
 
             if self._swapKeyboard == 1:
-                self.bind('<KP_Right>', self.control.moveYup)
-                self.bind('<KP_Left>', self.control.moveYdown)
-                self.bind('<KP_Up>', self.control.moveXdown)
-                self.bind('<KP_Down>', self.control.moveXup)
+                self.bind('<KP_Right>', self.control.jog_y_up)
+                self.bind('<KP_Left>', self.control.jog_y_down)
+                self.bind('<KP_Up>', self.control.jog_x_down)
+                self.bind('<KP_Down>', self.control.jog_x_up)
             elif self._swapKeyboard == -1:
-                self.bind('<KP_Right>', self.control.moveYdown)
-                self.bind('<KP_Left>', self.control.moveYup)
-                self.bind('<KP_Up>', self.control.moveXup)
-                self.bind('<KP_Down>', self.control.moveXdown)
+                self.bind('<KP_Right>', self.control.jog_y_down)
+                self.bind('<KP_Left>', self.control.jog_y_up)
+                self.bind('<KP_Up>', self.control.jog_x_up)
+                self.bind('<KP_Down>', self.control.jog_x_down)
             else:
-                self.bind('<KP_Right>', self.control.moveXup)
-                self.bind('<KP_Left>', self.control.moveXdown)
-                self.bind('<KP_Up>', self.control.moveYup)
-                self.bind('<KP_Down>', self.control.moveYdown)
+                self.bind('<KP_Right>', self.control.jog_x_up)
+                self.bind('<KP_Left>', self.control.jog_x_down)
+                self.bind('<KP_Up>', self.control.jog_y_up)
+                self.bind('<KP_Down>', self.control.jog_y_down)
         except Tk.TclError:
             pass
 
-        self.bind('<Key-plus>', self.control.incStep)
-        self.bind('<Key-equal>', self.control.incStep)
-        self.bind('<KP_Add>', self.control.incStep)
-        self.bind('<Key-minus>', self.control.decStep)
-        self.bind('<Key-underscore>', self.control.decStep)
-        self.bind('<KP_Subtract>', self.control.decStep)
+        self.bind('<Key-plus>', self.control.inc_xy_step)
+        self.bind('<Key-equal>', self.control.inc_xy_step)
+        self.bind('<KP_Add>', self.control.inc_xy_step)
+        self.bind('<Key-minus>', self.control.dec_xy_step)
+        self.bind('<Key-underscore>', self.control.dec_xy_step)
+        self.bind('<KP_Subtract>', self.control.dec_xy_step)
 
-        self.bind('<Key-asterisk>', self.control.mulStep)
-        self.bind('<KP_Multiply>', self.control.mulStep)
-        self.bind('<Key-slash>', self.control.divStep)
-        self.bind('<KP_Divide>', self.control.divStep)
+        self.bind('<Key-asterisk>', self.control.mul_step)
+        self.bind('<KP_Multiply>', self.control.mul_step)
+        self.bind('<Key-slash>', self.control.div_step)
+        self.bind('<KP_Divide>', self.control.div_step)
 
-        self.bind('<Key-1>', self.control.setStep1)
-        self.bind('<Key-2>', self.control.setStep2)
-        self.bind('<Key-3>', self.control.setStep3)
+        self.bind('<Key-1>', self.control.apply_pres_xy_step1)
+        self.bind('<Key-2>', self.control.apply_pres_xy_step2)
+        self.bind('<Key-3>', self.control.apply_pres_xy_step3)
 
         self.bind('<Key-exclam>', OCV.mcontrol.feedHold(None))
         self.bind('<Key-asciitilde>', self.resume)
@@ -543,11 +543,11 @@ class Application(Tk.Toplevel, Sender):
     def checkUpdates(self):
         """Check for updates"""
         # Find OKKCNC version
-        # Updates.CheckUpdateDialog(self, OCV._version)
+        # Updates.CheckUpdateDialog(self, OCV.PG_VER)
         pass
 
     def loadShortcuts(self):
-        for name, value in Utils.config.items("Shortcut"):
+        for name, value in OCV.config.items("Shortcut"):
             # Convert to uppercase
             key = name.title()
             self.unbind("<{0}>".format(key))    # unbind any possible old value
@@ -715,7 +715,7 @@ class Application(Tk.Toplevel, Sender):
     def about(self, event=None, timer=None):
         toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About {0} v{1}").format(OCV.PRGNAME, OCV._version))
+        toplevel.title(_("About {0} v{1}").format(OCV.PRGNAME, OCV.PG_VER))
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
@@ -923,7 +923,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=OCV._version,
+            text=OCV.PG_VER,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -945,7 +945,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=OCV._date,
+            text=OCV.PG_DATE,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -1792,7 +1792,7 @@ class Application(Tk.Toplevel, Sender):
         # STEP [s]: set motion step size to s
         elif cmd == "STEP":
             try:
-                self.control.setStep(float(line[1]))
+                self.control.set_step_view(float(line[1]))
             except:
                 pass
 
@@ -2067,7 +2067,7 @@ class Application(Tk.Toplevel, Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title("{0}{1}".format(OCV.PRGNAME, OCV._version))
+        self.title("{0}{1}".format(OCV.PRGNAME, OCV.PG_VER))
 
     def loadDialog(self, event=None):
         """load dialog"""
@@ -2179,7 +2179,7 @@ class Application(Tk.Toplevel, Sender):
         else:
             self.setStatus(_("'{0}' loaded").format(filename))
 
-        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV._version, self.gcode.filename))
+        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
 
 
     def save(self, filename):
@@ -2187,7 +2187,7 @@ class Application(Tk.Toplevel, Sender):
 
         self.setStatus(_("'{0}' saved").decode("utf8").format(filename))
 
-        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV._version, self.gcode.filename))
+        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
 
 
     def saveAll(self, event=None):
@@ -2644,14 +2644,16 @@ class Application(Tk.Toplevel, Sender):
 
     @staticmethod
     def get(self, section, item):
-        return Utils.config.get(section, item)
+        return OCV.config.get(section, item)
 
     @staticmethod
     def set(self, section, item, value):
-        return Utils.config.set(section, item, value)
+        return OCV.config.set(section, item, value)
+
 
 def usage(rc):
-    sys.stdout.write("{0} V{1} [{2}]\n".format(OCV.PRGNAME, OCV._version, OCV._date))
+    sys.stdout.write(
+        "{0} V{1} [{2}]\n".format(OCV.PRGNAME, OCV.PG_VER, OCV.PG_DATE))
     sys.stdout.write("{0} <{1}>\n\n".format(OCV.author, OCV.email))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
@@ -2666,12 +2668,14 @@ def usage(rc):
     sys.stdout.write("\t-p # | --pendant #\tOpen pendant to specified port\n")
     sys.stdout.write("\t-P\t\t\tDo not start pendant\n")
     sys.stdout.write("\t-r | --recent\t\tLoad the most recent file opened\n")
-    sys.stdout.write("\t-R #\t\t\tLoad the recent file matching the argument\n")
+    sys.stdout.write(
+        "\t-R #\t\t\tLoad the recent file matching the argument\n")
     sys.stdout.write("\t-s # | --serial #\tOpen serial port specified\n")
     sys.stdout.write("\t-S\t\t\tDo not open serial port\n")
     sys.stdout.write("\t--run\t\t\tDirectly run the file once loaded\n")
     sys.stdout.write("\n")
     sys.exit(rc)
+
 
 def main(args=None):
 

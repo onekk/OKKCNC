@@ -354,19 +354,18 @@ class _Base:
     #class _Config:
     # ----------------------------------------------------------------------
     # Load from a configuration file
-    # ----------------------------------------------------------------------
     def load(self):
         # Load lists
         lists = []
         for var in self.variables:
             n, t, d, l = var[:4]
-            if t=="list":
+            if t == "list":
                 lists.append(n)
         if lists:
             for p in lists:
                 self.listdb[p] = []
                 for i in range(1000):
-                    key = "_%s.%d"%(p, i)
+                    key = "_{0}.{1}".format(p, i)
                     value = Utils.getStr(self.name, key).strip()
                     if value:
                         self.listdb[p].append(value)
@@ -375,7 +374,7 @@ class _Base:
 
         # Check if there is a current
         try:
-            self.current = int(Utils.config.get(self.name, "current"))
+            self.current = int(OCV.config.get(self.name, "current"))
         except:
             self.current = None
 
@@ -383,11 +382,12 @@ class _Base:
         if self.current is not None:
             self.n = self._get("n", "int", 0)
             for i in range(self.n):
-                key = "name.%d"%(i)
+                key = "name.{0}".format(i)
                 self.values[key] = Utils.getStr(self.name, key)
+
                 for var in self.variables:
                     n, t, d, l = var[:4]
-                    key = "%s.%d"%(n,i)
+                    key = "{0}.{1}".format(n, i)
                     self.values[key] = self._get(key, t, d)
         else:
             for var in self.variables:
@@ -395,17 +395,15 @@ class _Base:
                 self.values[n] = self._get(n, t, d)
         self.update()
 
-    # ----------------------------------------------------------------------
-    # Save to a configuration file
-    # ----------------------------------------------------------------------
     def save(self):
+        """Save to a configuration file"""
         # if section do not exist add it
         Utils.addSection(self.name)
 
         if self.listdb:
-            for name,lst in self.listdb.items():
-                for i,value in enumerate(lst):
-                    Utils.setStr(self.name, "_%s.%d"%(name,i), value)
+            for name, lst in self.listdb.items():
+                for i, value in enumerate(lst):
+                    Utils.setStr(self.name, "_{0}.{1}".format(name, i), value)
 
         # Save values
         if self.current is not None:
@@ -526,80 +524,75 @@ class Ini(_Base):
         self.name = name
 
         # detect variables from ini file
-        for name,value in Utils.config.items(self.name):
-            if name in ignore: continue
+        for name, value in OCV.config.items(self.name):
+            if name in ignore:
+                continue
             self.variables.append((name, vartype, value, name))
 
 
-#------------------------------------------------------------------------------
 class Font(Ini):
     def __init__(self, master):
         Ini.__init__(self, master, "Font", "str")
 
 
-#------------------------------------------------------------------------------
 class Color(Ini):
     def __init__(self, master):
         Ini.__init__(self, master, "Color", "color")
 
 
-#------------------------------------------------------------------------------
 class Events(Ini):
     def __init__(self, master):
         Ini.__init__(self, master, "Events", "str")
 
 
-#------------------------------------------------------------------------------
 class Shortcut(_Base):
     def __init__(self, master):
         _Base.__init__(self, master, "Shortcut")
         self.variables = [
-            ("F1",        "str",    "help"    , _("F1")),
-            ("F2",        "str",    "edit"    , _("F2")),
-            ("F3",        "str",    "XY"    , _("F3")),
-            ("F4",        "str",    "ISO1"    , _("F4")),
-            ("F5",        "str",    "ISO2"    , _("F5")),
-            ("F6",        "str",    "ISO3"    , _("F6")),
-            ("F7",        "str",    ""    , _("F7")),
-            ("F8",        "str",    ""    , _("F8")),
-            ("F9",        "str",    ""    , _("F9")),
-            ("F10",        "str",    ""    , _("F10")),
-            ("F11",        "str",    ""    , _("F11")),
-            ("F12",        "str",    ""    , _("F12")),
-            ("Shift-F1",    "str",    ""    , _("Shift-") + _("F1")),
-            ("Shift-F2",    "str",    ""    , _("Shift-") + _("F2")),
-            ("Shift-F3",    "str",    ""    , _("Shift-") + _("F3")),
-            ("Shift-F4",    "str",    ""    , _("Shift-") + _("F4")),
-            ("Shift-F5",    "str",    ""    , _("Shift-") + _("F5")),
-            ("Shift-F6",    "str",    ""    , _("Shift-") + _("F6")),
-            ("Shift-F7",    "str",    ""    , _("Shift-") + _("F7")),
-            ("Shift-F8",    "str",    ""    , _("Shift-") + _("F8")),
-            ("Shift-F9",    "str",    ""    , _("Shift-") + _("F9")),
-            ("Shift-F10",    "str",    ""    , _("Shift-") + _("F10")),
-            ("Shift-F11",    "str",    ""    , _("Shift-") + _("F11")),
-            ("Shift-F12",    "str",    ""    , _("Shift-") + _("F12")),
-            ("Control-F1",    "str",    ""    , _("Control-") + _("F1")),
-            ("Control-F2",    "str",    ""    , _("Control-") + _("F2")),
-            ("Control-F3",    "str",    ""    , _("Control-") + _("F3")),
-            ("Control-F4",    "str",    ""    , _("Control-") + _("F4")),
-            ("Control-F5",    "str",    ""    , _("Control-") + _("F5")),
-            ("Control-F6",    "str",    ""    , _("Control-") + _("F6")),
-            ("Control-F7",    "str",    ""    , _("Control-") + _("F7")),
-            ("Control-F8",    "str",    ""    , _("Control-") + _("F8")),
-            ("Control-F9",    "str",    ""    , _("Control-") + _("F9")),
-            ("Control-F10",    "str",    ""    , _("Control-") + _("F10")),
-            ("Control-F11",    "str",    ""    , _("Control-") + _("F11")),
-            ("Control-F12",    "str",    ""    , _("Control-") + _("F12"))
+            ("F1", "str", "help", _("F1")),
+            ("F2", "str", "edit", _("F2")),
+            ("F3", "str", "XY", _("F3")),
+            ("F4", "str", "ISO1", _("F4")),
+            ("F5", "str", "ISO2" , _("F5")),
+            ("F6", "str", "ISO3", _("F6")),
+            ("F7", "str", "", _("F7")),
+            ("F8", "str", "", _("F8")),
+            ("F9", "str", "", _("F9")),
+            ("F10", "str", "", _("F10")),
+            ("F11", "str", "", _("F11")),
+            ("F12", "str", "", _("F12")),
+            ("Shift-F1", "str", "", _("Shift-") + _("F1")),
+            ("Shift-F2", "str", "", _("Shift-") + _("F2")),
+            ("Shift-F3", "str", "", _("Shift-") + _("F3")),
+            ("Shift-F4", "str", "", _("Shift-") + _("F4")),
+            ("Shift-F5", "str", "", _("Shift-") + _("F5")),
+            ("Shift-F6", "str", "", _("Shift-") + _("F6")),
+            ("Shift-F7", "str", "", _("Shift-") + _("F7")),
+            ("Shift-F8", "str", "", _("Shift-") + _("F8")),
+            ("Shift-F9", "str", "", _("Shift-") + _("F9")),
+            ("Shift-F10", "str", "", _("Shift-") + _("F10")),
+            ("Shift-F11", "str", "", _("Shift-") + _("F11")),
+            ("Shift-F12", "str", "", _("Shift-") + _("F12")),
+            ("Control-F1", "str", "", _("Control-") + _("F1")),
+            ("Control-F2", "str", "", _("Control-") + _("F2")),
+            ("Control-F3", "str", "", _("Control-") + _("F3")),
+            ("Control-F4", "str", "", _("Control-") + _("F4")),
+            ("Control-F5", "str", "", _("Control-") + _("F5")),
+            ("Control-F6", "str", "", _("Control-") + _("F6")),
+            ("Control-F7", "str", "", _("Control-") + _("F7")),
+            ("Control-F8", "str", "", _("Control-") + _("F8")),
+            ("Control-F9", "str", "", _("Control-") + _("F9")),
+            ("Control-F10", "str", "", _("Control-") + _("F10")),
+            ("Control-F11", "str", "", _("Control-") + _("F11")),
+            ("Control-F12", "str", "", _("Control-") + _("F12"))
         ]
         self.buttons.append("exe")
 
-    #----------------------------------------------------------------------
     def execute(self, app):
         self.save()
         OCV.APP.loadShortcuts()
 
 
-#------------------------------------------------------------------------------
 class Camera(_Base):
     def __init__(self, master):
         _Base.__init__(self, master, "Camera")
