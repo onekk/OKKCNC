@@ -19,32 +19,32 @@ import OCV
 from _GenericGRBL import ERROR_CODES
 
 
-def setX0():
+def set_x0():
     OCV.mcontrol.wcs_set("0", None, None)
     RefreshMemories()
 
 
-def setY0():
+def set_y0():
     OCV.mcontrol.wcs_set(None, "0", None)
     RefreshMemories()
 
 
-def setZ0():
+def set_z0():
     OCV.mcontrol.wcs_set(None, None, "0")
     RefreshMemories()
 
 
-def setXY0():
+def set_xy0():
     OCV.mcontrol.wcs_set("0", "0", None)
     RefreshMemories()
 
 
-def setXYZ0():
+def set_xyz0():
     OCV.mcontrol.wcs_set("0", "0", "0")
     RefreshMemories()
 
 
-def workFocus():
+def work_focus():
     """Do not give the focus while we are running"""
     if OCV.s_running:
         OCV.APP.focus_set()

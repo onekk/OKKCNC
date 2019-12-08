@@ -445,7 +445,7 @@ class Application(Tk.Toplevel, Sender):
         OCV.WK_active_mems[OCV.WK_mem] = 1
 
     def saveMems(self, event=None):
-        Interface.Service.saveMemory()
+        Interface.Service.save_memories()
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
@@ -633,7 +633,7 @@ class Application(Tk.Toplevel, Sender):
         self.tools.loadConfig()
         Sender.loadConfig(self)
         self.loadShortcuts()
-        Interface.Service.loadMemory()
+        Interface.Service.load_memories()
 
     def saveConfig(self):
         # Program
@@ -653,7 +653,7 @@ class Application(Tk.Toplevel, Sender):
         Sender.saveConfig(self)
         self.tools.saveConfig()
         self.canvasFrame.saveConfig()
-        Interface.Service.saveMemory()
+        Interface.Service.save_memories()
 
     def loadHistory(self):
         try:
@@ -2291,7 +2291,7 @@ class Application(Tk.Toplevel, Sender):
     def close(self):
         Sender.close(self)
         try:
-            self.dro.updateState()
+            self.dro.update_state()
         except Tk.TclError:
             pass
 
@@ -2556,8 +2556,8 @@ class Application(Tk.Toplevel, Sender):
                 else:
                     OCV.CD["color"] = STATECOLORDEF
             OCV.s_pause = ("Hold" in OCV.c_state)
-            self.dro.updateState()
-            self.dro.updateCoords()
+            self.dro.update_state()
+            self.dro.update_coords()
             self.canvasFrame.canvas.gantry(
                 OCV.CD["wx"],
                 OCV.CD["wy"],

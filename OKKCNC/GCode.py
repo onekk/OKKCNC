@@ -30,7 +30,7 @@ import Probe
 import bmath
 import undo
 
-from CNC import CNC, Orient, getValue
+from CNC import CNC, Orient, get_dict_value
 from bpath import eq, Path, Segment
 
 
@@ -1244,17 +1244,17 @@ class GCode(object):
         if 'X' not in new and 'Y' not in new:
             return False
 
-        x = getValue('X', new, old)
+        x = get_dict_value('X', new, old)
 
-        y = getValue('Y', new, old)
+        y = get_dict_value('Y', new, old)
 
         new['X'] = c*(x-x0) - s*(y-y0) + x0
 
         new['Y'] = s*(x-x0) + c*(y-y0) + y0
 
         if 'I' in new or 'J' in new:
-            i = getValue('I', new, old)
-            j = getValue('J', new, old)
+            i = get_dict_value('I', new, old)
+            j = get_dict_value('J', new, old)
 
             if self.cnc.plane in (OCV.XY, OCV.XZ):
                 new['I'] = c*i - s*j
@@ -1274,14 +1274,14 @@ class GCode(object):
         if 'X' not in new and 'Y' not in new:
             return False
 
-        x = getValue('X', new, old)
-        y = getValue('Y', new, old)
+        x = get_dict_value('X', new, old)
+        y = get_dict_value('Y', new, old)
         new['X'] = c*x - s*y + xo
         new['Y'] = s*x + c*y + yo
 
         if 'I' in new or 'J' in new:
-            i = getValue('I', new, old)
-            j = getValue('J', new, old)
+            i = get_dict_value('I', new, old)
+            j = get_dict_value('J', new, old)
             new['I'] = c*i - s*j
             new['J'] = s*i + c*j
         return True

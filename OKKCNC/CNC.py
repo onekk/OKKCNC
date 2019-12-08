@@ -83,7 +83,7 @@ MODAL_MODES = {
 }
 
 
-def getValue(name, new, old, default=0.0):
+def get_dict_value(name, new, old, default=0.0):
     """Return a value combined from two dictionaries new/old"""
 
     try:
@@ -518,34 +518,39 @@ class CNC(object):
         return "{0}{2:0.{1}f}".format(c, digits, r_val)
 
     @staticmethod
-    def gcode_string(g, pairs):
-        s = "G{0}".format(g)
-        for c, v in pairs:
-            s += " {0}{1:0.{2}f}".format(c, round(v, OCV.digits), OCV.digits)
-        return s
+    def gcode_string(g_num, pairs):
+        ret_s = "G{0}".format(g_num)
+        for wrd, val in pairs:
+            ret_s += " {0}{1:0.{2}f}".format(
+                wrd,
+                round(val, OCV.digits),
+                OCV.digits)
+        return ret_s
 
     @staticmethod
-    def _gcode(g, **args):
-        s = "G{0}".format(g)
-        for n, v in args.items():
-            s += ' ' + CNC.fmt(n, v)
-        return s
+    def _gcode(g_num, **args):
+        ret_s = "G{0}".format(g_num)
+        for num, val in args.items():
+            ret_s += ' ' + CNC.fmt(num, val)
+        return ret_s
 
     @staticmethod
-    def _goto(g, x=None, y=None, z=None, **args):
-        s = "G{0}".format(g)
-        if x is not None:
-            s += ' ' + CNC.fmt('X', x)
+    def _goto(g_num, x_val=None, y_val=None, z_val=None, **args):
+        ret_s = "G{0}".format(g_num)
 
-        if y is not None:
-            s += ' ' + CNC.fmt('Y', y)
+        if x_val is not None:
+            ret_s += ' ' + CNC.fmt('X', x_val)
 
-        if z is not None:
-            s += ' ' + CNC.fmt('Z', z)
+        if y_val is not None:
+            ret_s += ' ' + CNC.fmt('Y', y_val)
 
-        for n, v in args.items():
-            s += ' ' + CNC.fmt(n, v)
-        return s
+        if z_val is not None:
+            ret_s += ' ' + CNC.fmt('Z', z_val)
+
+        for num, val in args.items():
+            ret_s += ' ' + CNC.fmt(num, val)
+
+        return ret_s
 
     @staticmethod
     def grapid(x=None, y=None, z=None, **args):

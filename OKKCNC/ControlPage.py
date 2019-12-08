@@ -33,14 +33,23 @@ import tkExtra
 import Unicode
 import Utils
 
-
 _LOWSTEP = 0.0001
 _HIGHSTEP = 1000.0
 _HIGHZSTEP = 10.0
 _NOZSTEP = 'XY'
 
+
 class ControlFrame(CNCRibbon.PageLabelFrame):
-    """ControlFrame"""
+    """ControlFrame
+    --
+    Some possible evolution:
+        a) no combobox for step, but a two button or pair to the wheel scroll
+            to increase and decrease steps using the list saved in config
+        b) automatically add the step = 1/2 tool width
+        c) smaller interface to compensate for the enlarged statusframe
+        d) more CAM buttons?
+    """
+
     z_step_font = ('Helvetica', 7, 'bold')
 
     def __init__(self, master, app):
@@ -182,7 +191,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self, text="-",
-            command=self.dec_xy_stepF,
+            command=self.dec_xy_step_fine,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=8, sticky=Tk.EW)
@@ -191,7 +200,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self, text="+",
-            command=self.inc_xy_stepF,
+            command=self.inc_xy_step_fine,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=9, sticky=Tk.EW)
@@ -733,7 +742,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             step = float(step)
             if step <= 0.0:
                 step = 1.0
-        except:
+        except Exception:
             step = 1.0
 
         power = math.pow(10.0, math.floor(math.log10(step)))
@@ -755,7 +764,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.set_step_view(tg_step, None)
 
-    def inc_xy_stepF(self, event=None):
+    def inc_xy_step_fine(self, event=None):
         """increment XY step using fine step"""
         if event is not None and not self.acceptKey():
             return
@@ -786,7 +795,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.set_step_view(tg_step, None)
 
-    def dec_xy_stepF(self, event=None):
+    def dec_xy_step_fine(self, event=None):
         """decrement XY step using fine step"""
         if event is not None and not self.acceptKey():
             return
@@ -837,49 +846,49 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.set_step_view(tg_step, None)
 
     def apply_pres_z_step1(self, event=None):
-        """apply preselected  Z step 1"""
+        """apply preselected Z step 1"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep1)
 
     def apply_pres_z_step2(self, event=None):
-        """apply preselected  Z step 2"""
+        """apply preselected Z step 2"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep2)
 
     def apply_pres_z_step3(self, event=None):
-        """apply preselected  Z step 3"""
+        """apply preselected Z step 3"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep3)
 
     def apply_pres_z_step4(self, event=None):
-        """apply preselected  Z step 4"""
+        """apply preselected Z step 4"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep4)
 
     def apply_pres_xy_step1(self, event=None):
-        """apply preselected  XY step 1"""
+        """apply preselected XY step 1"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(OCV.step1, float(self.zstep.get()))
 
     def apply_pres_xy_step2(self, event=None):
-        """apply preselected  XY step 2"""
+        """apply preselected XY step 2"""
         if event is not None and not self.acceptKey():
             return
 
         self.set_step_view(OCV.step2, float(self.zstep.get()))
 
     def apply_pres_xy_step3(self, event=None):
-        """apply preselected  XY step 3"""
+        """apply preselected XY step 3"""
         if event is not None and not self.acceptKey():
             return
 
