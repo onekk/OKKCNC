@@ -2181,27 +2181,28 @@ class Application(Tk.Toplevel, Sender):
 
         self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
 
-
     def save(self, filename):
+        """save file"""
         Sender.save(self, filename)
 
         self.setStatus(_("'{0}' saved").decode("utf8").format(filename))
 
         self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
 
-
     def saveAll(self, event=None):
+        """save all open file"""
         if self.gcode.filename:
             Sender.saveAll(self)
         else:
             self.saveDialog()
         return "break"
 
-
     def reload(self, event=None):
+        """reload the gcode file in editor"""
         self.load(self.gcode.filename)
 
     def importFile(self, filename=None):
+        """import a file in OKKCNC"""
         if filename is None:
             filename = bFileDialog.askopenfilename(
                 master=self,
@@ -2229,6 +2230,7 @@ class Application(Tk.Toplevel, Sender):
             self.canvasFrame.canvas.fit2Screen()
 
     def focus_in(self, event):
+        """manage focus in..."""
         if self._inFocus:
             return
         # FocusIn is generated for all sub-windows, handle only the main window
@@ -2251,8 +2253,8 @@ class Application(Tk.Toplevel, Sender):
         self._inFocus = False
         self.gcode.syncFileTime()
 
-
     def openClose(self, event=None):
+        """Open/Close action called by button"""
         serialPage = Page.frames["Serial"]
         print("OpenClose Reached")
         if OCV.serial_open is True:
@@ -2274,8 +2276,8 @@ class Application(Tk.Toplevel, Sender):
                     activebackground="LightGreen")
                 self.enable()
 
-
     def open(self, device, baudrate):
+        """open serial device"""
         try:
             return Sender.open(self, device, baudrate)
         except:
@@ -2287,18 +2289,16 @@ class Application(Tk.Toplevel, Sender):
                 parent=self)
         return False
 
-
     def close(self):
+        """close Sender"""
         Sender.close(self)
         try:
             self.dro.update_state()
         except Tk.TclError:
             pass
 
-
     def checkStop(self):
-        """
-        An entry function should be called periodically during compiling
+        """An entry function should be called periodically during compiling
         to check if the Pause or Stop buttons are pressed
         @return true if the compile has to abort
         """
@@ -2340,14 +2340,16 @@ class Application(Tk.Toplevel, Sender):
         # the buffer of the machine should be empty?
         self.initRun()
         self.canvasFrame.canvas.clearSelection()
-        self._runLines = sys.maxsize    # temporary WARNING this value is used
-                        # by Sender._serialIO to check if we
-                        # are still sending or we finished
-        self._gcount = 0 # count executed lines
-        self._selectI = 0 # last selection pointer in items
-        self._paths = None # temporary
-        OCV.CD["running"] = True # enable running status
-        OCV.CD["_OvChanged"] = True # force a feed change if any
+        # temporary WARNING this value is used
+        # by Sender._serialIO to check if we
+        # are still sending or we finished
+        self._runLines = sys.maxsize
+        self._gcount = 0  # count executed lines
+        self._selectI = 0  # last selection pointer in items
+        self._paths = None  # temporary
+        OCV.CD["running"] = True  # enable running status
+        OCV.CD["_OvChanged"] = True  # force a feed change if any
+
         if self._onStart:
             try:
                 os.system(self._onStart)
@@ -2355,7 +2357,7 @@ class Application(Tk.Toplevel, Sender):
                 pass
 
         if lines is None:
-            #if not self.gcode.probe.isEmpty() and not self.gcode.probe.zeroed:
+            # if not self.gcode.probe.isEmpty() and not self.gcode.probe.zeroed:
             #    tkMessageBox.showerror(_("Probe is not zeroed"),
             #        _("Please ZERO any location of the probe before starting a run"),
             #        parent=self)
@@ -2408,6 +2410,7 @@ class Application(Tk.Toplevel, Sender):
                         self.queue.put(line)
                     n += 1
             self._runLines = n  # set it at the end to be sure that all lines are queued
+
         self.queue.put((OCV.WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
@@ -2420,32 +2423,30 @@ class Application(Tk.Toplevel, Sender):
         self.bufferbar.setText("")
 
     def startPendant(self, showInfo=True):
-        """
-        Start the web pendant
-        """
+        """Start the web pendant"""
 
         started = Pendant.start(self)
         if showInfo:
-            hostName = "http://{0}:{1:d}".format(socket.gethostname(), Pendant.port)
+            hostName = "http://{0}:{1:d}".format(
+                socket.gethostname(), Pendant.port)
+
             if started:
                 tkMessageBox.showinfo(
                     _("Pendant"),
                     _("Pendant started:\n")+hostName,
                     parent=self)
             else:
-                dr = tkMessageBox.askquestion(
+                ret_val = tkMessageBox.askquestion(
                     _("Pendant"),
                     _("Pendant already started:\n") \
                     + hostName + \
                     _("\nWould you like open it locally?"),
                     parent=self)
-                if dr == "yes":
+                if ret_val == "yes":
                     webbrowser.open(hostName, new=2)
 
     def stopPendant(self):
-        """
-        Stop the web pendant
-        """
+        """Stop the web pendant"""
         if Pendant.stop():
             tkMessageBox.showinfo(
                 _("Pendant"),
@@ -2453,9 +2454,7 @@ class Application(Tk.Toplevel, Sender):
                 parent=self)
 
     def _monitorSerial(self):
-        """
-        Inner loop to catch any generic exception
-        """
+        """Inner loop to catch any generic exception """
 
         # Check serial output
         t = time.time()
@@ -2631,27 +2630,29 @@ class Application(Tk.Toplevel, Sender):
                 self.runEnded()
 
     def monitorSerial(self):
-        """
-        "thread" timed function looking for messages in the serial thread
+        """'thread' timed function looking for messages in the serial thread
         and reporting back in the terminal
         """
         try:
             self._monitorSerial()
         except:
-            typ, val, tb = sys.exc_info()
-            traceback.print_exception(typ, val, tb)
+            typ, val, trace_back = sys.exc_info()
+            traceback.print_exception(typ, val, trace_back)
         self.after(MONITOR_AFTER, self.monitorSerial)
 
     @staticmethod
     def get(self, section, item):
+        """get section item in configuration file"""
         return OCV.config.get(section, item)
 
     @staticmethod
     def set(self, section, item, value):
+        """set section item in configuration file"""
         return OCV.config.set(section, item, value)
 
 
-def usage(rc):
+def usage(ret_code):
+    """Print on console the usage message"""
     sys.stdout.write(
         "{0} V{1} [{2}]\n".format(OCV.PRGNAME, OCV.PG_VER, OCV.PG_DATE))
     sys.stdout.write("{0} <{1}>\n\n".format(OCV.author, OCV.email))
@@ -2674,10 +2675,11 @@ def usage(rc):
     sys.stdout.write("\t-S\t\t\tDo not open serial port\n")
     sys.stdout.write("\t--run\t\t\tDirectly run the file once loaded\n")
     sys.stdout.write("\n")
-    sys.exit(rc)
+    sys.exit(ret_code)
 
 
 def main(args=None):
+    """main method"""
 
     OCV.root = Tk.Tk()
     OCV.root.withdraw()
@@ -2727,32 +2729,33 @@ def main(args=None):
             OCV.geometry = val
         elif opt in ("-r", "-R", "--recent", "-l", "--list"):
             if opt in ("-r", "--recent"):
-                r = 0
+                rec_file = 0
             elif opt in ("--list", "-l"):
-                r = -1
+                rec_file = -1
             else:
                 try:
-                    r = int(val)-1
+                    rec_file = int(val)-1
                 except:
                     # Scan in names
-                    for r in range(Utils._maxRecent):
-                        filename = Utils.getRecent(r)
+                    for rec_file in range(Utils._maxRecent):
+                        filename = Utils.getRecent(rec_file)
 
                         if filename is None:
                             break
 
-                        fn, ext = os.path.splitext(os.path.basename(filename))
-                        if fn == val:
+                        file_name, ext = os.path.splitext(
+                            os.path.basename(filename))
+                        if file_name == val:
                             break
                     else:
-                        r = 0
-            if r < 0:
+                        rec_file = 0
+            if rec_file < 0:
                 # display list of recent files
                 maxlen = 10
-                for i in range(Utils._maxRecent):
+                for idx in range(Utils._maxRecent):
 
                     try:
-                        filename = Utils.getRecent(i)
+                        filename = Utils.getRecent(idx)
                         # print ("Recent = ", i, maxlen, filename)
                     except:
                         continue
@@ -2767,18 +2770,19 @@ def main(args=None):
                     if filename is None:
                         break
 
-                    d = os.path.dirname(filename)
-                    fn = os.path.basename(filename)
+                    dir_name = os.path.dirname(filename)
+                    file_name = os.path.basename(filename)
                     sys.stdout.write(
-                        "  {0:2d}: {1:d} {3}{2}\n".format(i+1, maxlen, fn, d))
+                        "  {0:2d}: {1:d} {3}{2}\n".format(
+                                i + 1, maxlen, file_name, dir_name))
 
                 try:
                     sys.stdout.write("Select one: ")
-                    r = int(sys.stdin.readline())-1
+                    rec_file = int(sys.stdin.readline())-1
                 except:
                     pass
             try:
-                recent = Utils.getRecent(r)
+                recent = Utils.getRecent(rec_file)
             except:
                 pass
 
@@ -2843,8 +2847,8 @@ def main(args=None):
     if recent:
         args.append(recent)
 
-    for fn in args:
-        _application.load(fn)
+    for file_names in args:
+        _application.load(file_names)
 
     if OCV.HAS_SERIAL is False:
         tkMessageBox.showerror(
