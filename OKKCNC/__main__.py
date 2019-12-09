@@ -127,7 +127,7 @@ class Application(Tk.Toplevel, Sender):
         # Global variables
         self.tools = Tools(self.gcode)
         self.controller = None
-        self.loadConfig()
+        self.load_main_config()
 
         # many widget for main interface are definited in Interface.py
         Interface.main_interface(OCV.APP)
@@ -153,7 +153,7 @@ class Application(Tk.Toplevel, Sender):
         self.buffer = Page.frames["Terminal"].buffer
 
         # Left side
-        for name in Utils.getStr(OCV.PRGNAME, "ribbon").split():
+        for name in Utils.get_str(OCV.PRGNAME, "ribbon").split():
             last = name[-1]
             if last == '>':
                 name = name[:-1]
@@ -165,7 +165,7 @@ class Application(Tk.Toplevel, Sender):
         # Restore last page
         # Select "Probe:Probe" tab to show the dialogs!
         self.pages["Probe"].tabChange()
-        self.ribbon.changePage(Utils.getStr(OCV.PRGNAME, "page", "File"))
+        self.ribbon.changePage(Utils.get_str(OCV.PRGNAME, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
 
@@ -407,18 +407,18 @@ class Application(Tk.Toplevel, Sender):
         self.monitorSerial()
         self.canvasFrame.toggleDrawFlag()
 
-        self.paned.sash_place(0, Utils.getInt(OCV.PRGNAME, "sash", 340), 0)
+        self.paned.sash_place(0, Utils.get_int(OCV.PRGNAME, "sash", 340), 0)
 
         # Auto start pendant and serial
-        if Utils.getBool("Connection", "pendant"):
+        if Utils.get_bool("Connection", "pendant"):
             self.startPendant(False)
 
-        if _openserial and Utils.getBool("Connection", "openserial"):
+        if _openserial and Utils.get_bool("Connection", "openserial"):
             self.openClose()
 
         # Filedialog Load history
-        for i in range(Utils._maxRecent):
-            filename = Utils.getRecent(i)
+        for i in range(OCV.maxRecent):
+            filename = Utils.get_recent_file(i)
 
             if filename is None:
                 break
@@ -560,92 +560,92 @@ class Application(Tk.Toplevel, Sender):
         webbrowser.open(Utils.iniUser)
         # os.startfile(Utils.iniUser)
 
-    def loadConfig(self):
+    def load_main_config(self):
 
         if OCV.geometry is None:
             OCV.geometry = "{0:d}x{1:d}".format(
-                Utils.getInt(OCV.PRGNAME, "width", 900),
-                Utils.getInt(OCV.PRGNAME, "height", 650))
+                Utils.get_int(OCV.PRGNAME, "width", 900),
+                Utils.get_int(OCV.PRGNAME, "height", 650))
         try:
             self.geometry(OCV.geometry)
         except:
             pass
 
-        #restore windowsState
+        # restore windowsState
         try:
-            self.wm_state(Utils.getStr(OCV.PRGNAME, "windowstate", "normal"))
+            self.wm_state(Utils.get_str(OCV.PRGNAME, "windowstate", "normal"))
         except:
             pass
 
         # read Tk fonts to initialize them
-        font = Utils.getFont("TkDefaultFont")
-        font = Utils.getFont("TkFixedFont")
-        font = Utils.getFont("TkMenuFont")
-        font = Utils.getFont("TkTextFont")
+        font = Utils.get_font("TkDefaultFont")
+        font = Utils.get_font("TkFixedFont")
+        font = Utils.get_font("TkMenuFont")
+        font = Utils.get_font("TkTextFont")
 
         print("Font: >", font)
 
-        self._swapKeyboard = Utils.getInt("Control", "swap", 0)
+        self._swapKeyboard = Utils.get_int("Control", "swap", 0)
 
-        self._onStart = Utils.getStr("Events", "onstart", "")
-        self._onStop = Utils.getStr("Events", "onstop", "")
+        self._onStart = Utils.get_str("Events", "onstart", "")
+        self._onStop = Utils.get_str("Events", "onstop", "")
 
-        tkExtra.Balloon.font = Utils.getFont("balloon", tkExtra.Balloon.font)
+        tkExtra.Balloon.font = Utils.get_font("balloon", tkExtra.Balloon.font)
 
-        OCV.RIBBON_FONT = Utils.getFont("ribbon.label", OCV.RIBBON_FONT)
-        OCV.RIBBON_TABFONT = Utils.getFont("ribbon.tab", OCV.RIBBON_TABFONT)
+        OCV.RIBBON_FONT = Utils.get_font("ribbon.label", OCV.RIBBON_FONT)
+        OCV.RIBBON_TABFONT = Utils.get_font("ribbon.tab", OCV.RIBBON_TABFONT)
 
-        OCV.ACTIVE_COLOR = Utils.getStr("Color", "ribbon.active",
+        OCV.ACTIVE_COLOR = Utils.get_str("Color", "ribbon.active",
                                         OCV.ACTIVE_COLOR)
-        OCV.LABEL_SELECT_COLOR = Utils.getStr("Color", "ribbon.select",
+        OCV.LABEL_SELECT_COLOR = Utils.get_str("Color", "ribbon.select",
                                               OCV.LABEL_SELECT_COLOR)
-        OCV.INSERT_COLOR = Utils.getStr("Color", "canvas.insert",
+        OCV.INSERT_COLOR = Utils.get_str("Color", "canvas.insert",
                                         OCV.INSERT_COLOR)
-        OCV.GANTRY_COLOR = Utils.getStr("Color", "canvas.gantry",
+        OCV.GANTRY_COLOR = Utils.get_str("Color", "canvas.gantry",
                                         OCV.GANTRY_COLOR)
-        OCV.MARGIN_COLOR = Utils.getStr("Color", "canvas.margin",
+        OCV.MARGIN_COLOR = Utils.get_str("Color", "canvas.margin",
                                         OCV.MARGIN_COLOR)
-        OCV.GRID_COLOR = Utils.getStr("Color", "canvas.grid",
+        OCV.GRID_COLOR = Utils.get_str("Color", "canvas.grid",
                                       OCV.GRID_COLOR)
-        OCV.BOX_SELECT = Utils.getStr("Color", "canvas.selectbox",
+        OCV.BOX_SELECT = Utils.get_str("Color", "canvas.selectbox",
                                       OCV.BOX_SELECT)
-        OCV.ENABLE_COLOR = Utils.getStr("Color", "canvas.enable",
+        OCV.ENABLE_COLOR = Utils.get_str("Color", "canvas.enable",
                                         OCV.ENABLE_COLOR)
-        OCV.DISABLE_COLOR = Utils.getStr("Color", "canvas.disable",
+        OCV.DISABLE_COLOR = Utils.get_str("Color", "canvas.disable",
                                          OCV.DISABLE_COLOR)
-        OCV.SELECT_COLOR = Utils.getStr("Color", "canvas.select",
+        OCV.SELECT_COLOR = Utils.get_str("Color", "canvas.select",
                                         OCV.SELECT_COLOR)
-        OCV.SELECT2_COLOR = Utils.getStr("Color", "canvas.select2",
+        OCV.SELECT2_COLOR = Utils.get_str("Color", "canvas.select2",
                                          OCV.SELECT2_COLOR)
-        OCV.PROCESS_COLOR = Utils.getStr("Color", "canvas.process",
+        OCV.PROCESS_COLOR = Utils.get_str("Color", "canvas.process",
                                          OCV.PROCESS_COLOR)
-        OCV.MOVE_COLOR = Utils.getStr("Color", "canvas.move",
+        OCV.MOVE_COLOR = Utils.get_str("Color", "canvas.move",
                                       OCV.MOVE_COLOR)
-        OCV.RULER_COLOR = Utils.getStr("Color", "canvas.ruler",
+        OCV.RULER_COLOR = Utils.get_str("Color", "canvas.ruler",
                                        OCV.RULER_COLOR)
-        OCV.CAMERA_COLOR = Utils.getStr("Color", "canvas.camera",
+        OCV.CAMERA_COLOR = Utils.get_str("Color", "canvas.camera",
                                         OCV.CAMERA_COLOR)
-        OCV.PROBE_TEXT_COLOR = Utils.getStr("Color", "canvas.probetext",
+        OCV.PROBE_TEXT_COLOR = Utils.get_str("Color", "canvas.probetext",
                                             OCV.PROBE_TEXT_COLOR)
-        OCV.CANVAS_COLOR = Utils.getStr("Color", "canvas.background",
+        OCV.CANVAS_COLOR = Utils.get_str("Color", "canvas.background",
                                         OCV.CANVAS_COLOR)
 
         self.tools.loadConfig()
-        Sender.loadConfig(self)
+        Sender.load_sender_config(self)
         self.loadShortcuts()
         Interface.Service.load_memories()
 
     def saveConfig(self):
         # Program
-        Utils.setInt(OCV.PRGNAME, "width", str(self.winfo_width()))
-        Utils.setInt(OCV.PRGNAME, "height", str(self.winfo_height()))
-        # Utils.setInt(OCV.PRGNAME,  "x", str(self.winfo_rootx()))
-        # Utils.setInt(OCV.PRGNAME,  "y", str(self.winfo_rooty()))
-        Utils.setInt(OCV.PRGNAME, "sash", str(self.paned.sash_coord(0)[0]))
+        Utils.set_int(OCV.PRGNAME, "width", str(self.winfo_width()))
+        Utils.set_int(OCV.PRGNAME, "height", str(self.winfo_height()))
+        # Utils.set_int(OCV.PRGNAME,  "x", str(self.winfo_rootx()))
+        # Utils.set_int(OCV.PRGNAME,  "y", str(self.winfo_rooty()))
+        Utils.set_int(OCV.PRGNAME, "sash", str(self.paned.sash_coord(0)[0]))
 
         # save windowState
-        Utils.setStr(OCV.PRGNAME, "windowstate", str(self.wm_state()))
-        Utils.setStr(OCV.PRGNAME, "page",
+        Utils.set_str(OCV.PRGNAME, "windowstate", str(self.wm_state()))
+        Utils.set_str(OCV.PRGNAME, "page",
                      str(self.ribbon.getActivePage().name))
 
         # Connection
@@ -1846,14 +1846,14 @@ class Application(Tk.Toplevel, Sender):
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
-            n = Utils.getInt("Buttons", "n", 6)
+            n = Utils.get_int("Buttons", "n", 6)
             try:
                 idx = int(line[1])
             except:
                 try:
                     name = line[1].upper()
                     for i in range(n):
-                        if name == Utils.getStr(
+                        if name == Utils.get_str(
                                 "Buttons",
                                 "name. {0:d}".format(i), "").upper():
                             idx = i
@@ -1863,7 +1863,7 @@ class Application(Tk.Toplevel, Sender):
             if idx < 0 or idx >= n:
                 self.setStatus(_("Invalid user command {0}").format(line[1]))
                 return "break"
-            cmd = Utils.getStr("Buttons", "command. {0:d}".format(idx), "")
+            cmd = Utils.get_str("Buttons", "command. {0:d}".format(idx), "")
             for line in cmd.splitlines():
                 self.execute(line)
 
@@ -2078,8 +2078,8 @@ class Application(Tk.Toplevel, Sender):
             master=self,
             title=_("Open file"),
             initialfile=os.path.join(
-                Utils.getUtf("File", "dir"),
-                Utils.getUtf("File", "file")),
+                Utils.get_str("File", "dir"),
+                Utils.get_str("File", "file")),
             filetypes=FILETYPES)
 
         if filename:
@@ -2092,12 +2092,12 @@ class Application(Tk.Toplevel, Sender):
         if OCV.s_running:
             return
 
-        fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
+        fn, ext = os.path.splitext(Utils.get_str("File", "file"))
 
         filename = bFileDialog.asksaveasfilename(
             master=self,
             title=_("Save file"),
-            initialfile=os.path.join(Utils.getUtf("File", "dir"), fn+ext),
+            initialfile=os.path.join(Utils.get_str("File", "dir"), fn+ext),
             filetypes=FILETYPES)
 
         if filename:
@@ -2208,8 +2208,8 @@ class Application(Tk.Toplevel, Sender):
                 master=self,
                 title=_("Import Gcode file"),
                 initialfile=os.path.join(
-                    Utils.getUtf("File", "dir"),
-                    Utils.getUtf("File", "file")),
+                    Utils.get_str("File", "dir"),
+                    Utils.get_str("File", "file")),
                 filetypes=[
                     (_("G-Code"), ("*.ngc", "*.nc", "*.gcode")),
                     ("All", "*")])
@@ -2737,8 +2737,8 @@ def main(args=None):
                     rec_file = int(val)-1
                 except:
                     # Scan in names
-                    for rec_file in range(Utils._maxRecent):
-                        filename = Utils.getRecent(rec_file)
+                    for rec_file in range(OCV.maxRecent):
+                        filename = Utils.get_recent_file(rec_file)
 
                         if filename is None:
                             break
@@ -2752,10 +2752,10 @@ def main(args=None):
             if rec_file < 0:
                 # display list of recent files
                 maxlen = 10
-                for idx in range(Utils._maxRecent):
+                for idx in range(OCV.maxRecent):
 
                     try:
-                        filename = Utils.getRecent(idx)
+                        filename = Utils.get_recent_file(idx)
                         # print ("Recent = ", i, maxlen, filename)
                     except:
                         continue
@@ -2764,8 +2764,8 @@ def main(args=None):
                         maxlen = max(maxlen, len(os.path.basename(filename)))
 
                 sys.stdout.write("Recent files:\n")
-                for i in range(Utils._maxRecent):
-                    filename = Utils.getRecent(i)
+                for i in range(OCV.maxRecent):
+                    filename = Utils.get_recent_file(i)
 
                     if filename is None:
                         break
@@ -2774,7 +2774,7 @@ def main(args=None):
                     file_name = os.path.basename(filename)
                     sys.stdout.write(
                         "  {0:2d}: {1:d} {3}{2}\n".format(
-                                i + 1, maxlen, file_name, dir_name))
+                            i + 1, maxlen, file_name, dir_name))
 
                 try:
                     sys.stdout.write("Select one: ")
@@ -2782,7 +2782,7 @@ def main(args=None):
                 except:
                     pass
             try:
-                recent = Utils.getRecent(rec_file)
+                recent = Utils.get_recent_file(rec_file)
             except:
                 pass
 
@@ -2821,7 +2821,7 @@ def main(args=None):
                        "highlightBackground", "highlightColor",
                        "selectBackground", "selectForeground"):
 
-        color2 = Utils.getStr("Color", "global." + color_name.lower(), None)
+        color2 = Utils.get_str("Color", "global." + color_name.lower(), None)
         color_count += 1
 
         if (color2 is not None) and (color2.strip() != ""):

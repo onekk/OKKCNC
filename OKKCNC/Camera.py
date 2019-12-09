@@ -47,7 +47,7 @@ class Camera:
 	def __init__(self, prefix=""):
 		if cv is None: return
 		self.prefix  = prefix
-		self.idx     = Utils.getInt("Camera", prefix)
+		self.idx     = Utils.get_int("Camera", prefix)
 		self.props   = self._getCameraProperties(prefix)
 		self.camera  = None
 		self.image   = None
@@ -72,29 +72,29 @@ class Camera:
 		"""
 		try:
 			POSSIBLE_PROPERTIES = {
-				'height'     : (Utils.getInt, cv.CAP_PROP_FRAME_HEIGHT),
-				'width'      : (Utils.getInt, cv.CAP_PROP_FRAME_WIDTH),
-				'fps'        : (Utils.getInt, cv.CAP_PROP_FPS),
-				'codec'      : (Utils.getStr, cv.CAP_PROP_FOURCC),
-				'brightness' : (Utils.getInt, cv.CAP_PROP_BRIGHTNESS),
-				'contrast'   : (Utils.getInt, cv.CAP_PROP_CONTRAST),
-				'saturation' : (Utils.getInt, cv.CAP_PROP_SATURATION),
-				'hue'        : (Utils.getInt, cv.CAP_PROP_HUE),
-				'gain'       : (Utils.getInt, cv.CAP_PROP_GAIN),
-				'exposure'   : (Utils.getInt, cv.CAP_PROP_EXPOSURE),
+				'height'     : (Utils.get_int, cv.CAP_PROP_FRAME_HEIGHT),
+				'width'      : (Utils.get_int, cv.CAP_PROP_FRAME_WIDTH),
+				'fps'        : (Utils.get_int, cv.CAP_PROP_FPS),
+				'codec'      : (Utils.get_str, cv.CAP_PROP_FOURCC),
+				'brightness' : (Utils.get_int, cv.CAP_PROP_BRIGHTNESS),
+				'contrast'   : (Utils.get_int, cv.CAP_PROP_CONTRAST),
+				'saturation' : (Utils.get_int, cv.CAP_PROP_SATURATION),
+				'hue'        : (Utils.get_int, cv.CAP_PROP_HUE),
+				'gain'       : (Utils.get_int, cv.CAP_PROP_GAIN),
+				'exposure'   : (Utils.get_int, cv.CAP_PROP_EXPOSURE),
 			}
 		except AttributeError:
 			POSSIBLE_PROPERTIES = {
-				'height'     : (Utils.getInt, cv.cv.CV_CAP_PROP_FRAME_HEIGHT,),
-				'width'      : (Utils.getInt, cv.cv.CV_CAP_PROP_FRAME_WIDTH,),
-				'fps'        : (Utils.getInt, cv.cv.CV_CAP_PROP_FPS,),
-				'codec'      : (Utils.getStr, cv.cv.CV_CAP_PROP_FOURCC,),
-				'brightness' : (Utils.getInt, cv.cv.CV_CAP_PROP_BRIGHTNESS,),
-				'contrast'   : (Utils.getInt, cv.cv.CV_CAP_PROP_CONTRAST,),
-				'saturation' : (Utils.getInt, cv.cv.CV_CAP_PROP_SATURATION,),
-				'hue'        : (Utils.getInt, cv.cv.CV_CAP_PROP_HUE,),
-				'gain'       : (Utils.getInt, cv.cv.CV_CAP_PROP_GAIN,),
-				'exposure'   : (Utils.getInt, cv.cv.CV_CAP_PROP_EXPOSURE,),
+				'height'     : (Utils.get_int, cv.cv.CV_CAP_PROP_FRAME_HEIGHT,),
+				'width'      : (Utils.get_int, cv.cv.CV_CAP_PROP_FRAME_WIDTH,),
+				'fps'        : (Utils.get_int, cv.cv.CV_CAP_PROP_FPS,),
+				'codec'      : (Utils.get_str, cv.cv.CV_CAP_PROP_FOURCC,),
+				'brightness' : (Utils.get_int, cv.cv.CV_CAP_PROP_BRIGHTNESS,),
+				'contrast'   : (Utils.get_int, cv.cv.CV_CAP_PROP_CONTRAST,),
+				'saturation' : (Utils.get_int, cv.cv.CV_CAP_PROP_SATURATION,),
+				'hue'        : (Utils.get_int, cv.cv.CV_CAP_PROP_HUE,),
+				'gain'       : (Utils.get_int, cv.cv.CV_CAP_PROP_GAIN,),
+				'exposure'   : (Utils.get_int, cv.cv.CV_CAP_PROP_EXPOSURE,),
 			}
 
 		UNSPECIFIED = object()
@@ -143,14 +143,14 @@ class Camera:
 
 	#-----------------------------------------------------------------------
 	def set(self):
-		width = Utils.getInt("Camera", self.prefix+"_width",  0)
+		width = Utils.get_int("Camera", self.prefix+"_width",  0)
 		if width: self.camera.set(3, width)
-		height = Utils.getInt("Camera", self.prefix+"_height",  0)
+		height = Utils.get_int("Camera", self.prefix+"_height",  0)
 		if height: self.camera.set(4, height)
-		self.angle = Utils.getInt("Camera", self.prefix+"_angle")//90 % 4
-		self.rotation = Utils.getFloat("Camera", self.prefix+"_rotation")
-		self.xcenter = Utils.getFloat("Camera", self.prefix+"_xcenter")
-		self.ycenter = Utils.getFloat("Camera", self.prefix+"_ycenter")
+		self.angle = Utils.get_int("Camera", self.prefix+"_angle")//90 % 4
+		self.rotation = Utils.get_float("Camera", self.prefix+"_rotation")
+		self.xcenter = Utils.get_float("Camera", self.prefix+"_xcenter")
+		self.ycenter = Utils.get_float("Camera", self.prefix+"_ycenter")
 #		self.camera.set(38, 3) # CV_CAP_PROP_BUFFERSIZE
 
 	#-----------------------------------------------------------------------

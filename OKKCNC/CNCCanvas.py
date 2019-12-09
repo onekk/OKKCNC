@@ -2507,34 +2507,36 @@ class CanvasFrame(Tk.Frame):
     def addWidget(self, widget):
         OCV.APP.widgets.append(widget)
 
-
     def loadConfig(self):
 
-        self.draw_axes.set(bool(int(Utils.getBool("Canvas", "axes", True))))
-        self.draw_grid.set(bool(int(Utils.getBool("Canvas", "grid", True))))
-        self.draw_margin.set(bool(int(Utils.getBool("Canvas", "margin", True))))
-        #self.draw_probe.set(bool(int(Utils.getBool("Canvas", "probe",   False))))
-        self.draw_paths.set(bool(int(Utils.getBool("Canvas", "paths", True))))
-        self.draw_rapid.set(bool(int(Utils.getBool("Canvas", "rapid", True))))
-        self.draw_workarea.set(bool(int(Utils.getBool("Canvas", "workarea", True))))
-        #self.draw_camera.set(bool(int(Utils.getBool("Canvas", "camera",  False))))
+        self.draw_axes.set(bool(int(Utils.get_bool("Canvas", "axes", True))))
+        self.draw_grid.set(bool(int(Utils.get_bool("Canvas", "grid", True))))
+        self.draw_margin.set(bool(int(
+                Utils.get_bool("Canvas", "margin", True))))
+        # self.draw_probe.set(bool(int(
+        #       Utils.get_bool("Canvas", "probe",   False))))
+        self.draw_paths.set(bool(int(Utils.get_bool("Canvas", "paths", True))))
+        self.draw_rapid.set(bool(int(Utils.get_bool("Canvas", "rapid", True))))
+        self.draw_workarea.set(bool(int(
+                Utils.get_bool("Canvas", "workarea", True))))
+        # self.draw_camera.set(bool(int(
+        #        Utils.get_bool("Canvas", "camera",  False))))
 
-        self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
+        self.view.set(Utils.get_str("Canvas", "view", VIEWS[0]))
 
-        OCV.DRAW_TIME = Utils.getInt("Canvas", "drawtime", OCV.DRAW_TIME)
-
+        OCV.DRAW_TIME = Utils.get_int("Canvas", "drawtime", OCV.DRAW_TIME)
 
     def saveConfig(self):
-        Utils.setInt("Canvas", "drawtime", OCV.DRAW_TIME)
-        Utils.setStr("Canvas", "view", self.view.get())
-        Utils.setBool("Canvas", "axes", self.draw_axes.get())
-        Utils.setBool("Canvas", "grid", self.draw_grid.get())
-        Utils.setBool("Canvas", "margin", self.draw_margin.get())
-        Utils.setBool("Canvas", "probe", self.draw_probe.get())
-        Utils.setBool("Canvas", "paths", self.draw_paths.get())
-        Utils.setBool("Canvas", "rapid", self.draw_rapid.get())
-        Utils.setBool("Canvas", "workarea", self.draw_workarea.get())
-        #Utils.setBool("Canvas", "camera",  self.draw_camera.get())
+        Utils.set_int("Canvas", "drawtime", OCV.DRAW_TIME)
+        Utils.set_str("Canvas", "view", self.view.get())
+        Utils.set_bool("Canvas", "axes", self.draw_axes.get())
+        Utils.set_bool("Canvas", "grid", self.draw_grid.get())
+        Utils.set_bool("Canvas", "margin", self.draw_margin.get())
+        Utils.set_bool("Canvas", "probe", self.draw_probe.get())
+        Utils.set_bool("Canvas", "paths", self.draw_paths.get())
+        Utils.set_bool("Canvas", "rapid", self.draw_rapid.get())
+        Utils.set_bool("Canvas", "workarea", self.draw_workarea.get())
+        #Utils.set_bool("Canvas", "camera",  self.draw_camera.get())
 
 
     def redraw(self, event=None):

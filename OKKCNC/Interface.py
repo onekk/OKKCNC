@@ -125,6 +125,7 @@ def main_interface(self):
     # Command bar
     cmd_f = Tk.Frame(self.Lframe)
     cmd_f.pack(side=Tk.BOTTOM, fill=Tk.X)
+
     self.cmdlabel = Tk.Label(cmd_f, text=_("Command:"))
     self.cmdlabel.pack(side=Tk.LEFT)
 
@@ -172,14 +173,14 @@ def main_interface(self):
     # then add their properties (in separate loop)
     errors = []
     for name, page in self.pages.items():
-        for page_name in Utils.getStr(
+        for page_name in Utils.get_str(
                 OCV.PRGNAME, "{0}.ribbon".format(page.name)).split():
             try:
                 page.addRibbonGroup(page_name)
             except KeyError:
                 errors.append(page_name)
 
-        for page_name in Utils.getStr(
+        for page_name in Utils.get_str(
                 OCV.PRGNAME, "{0}.page".format(page.name)).split():
             last = page_name[-1]
             try:
@@ -211,14 +212,17 @@ class DROFrame(CNCRibbon.PageFrame):
 
         print("DROFrame self.app", self.app)
 
-        DROFrame.dro_status = Utils.getFont("dro.status", DROFrame.dro_status)
-        DROFrame.dro_wpos = Utils.getFont("dro.wpos", DROFrame.dro_wpos)
-        DROFrame.dro_mpos = Utils.getFont("dro.mpos", DROFrame.dro_mpos)
+        DROFrame.dro_status = Utils.get_font("dro.status", DROFrame.dro_status)
+        DROFrame.dro_wpos = Utils.get_font("dro.wpos", DROFrame.dro_wpos)
+        DROFrame.dro_mpos = Utils.get_font("dro.mpos", DROFrame.dro_mpos)
 
         row = 0
         col = 0
-        Tk.Label(self, text=_("Status:")).grid(row=row, column=col, sticky=Tk.E)
+        Tk.Label(
+            self, text=_("Status:")).grid(row=row, column=col, sticky=Tk.E)
+
         col += 1
+
         self.state = Tk.Button(
             self,
             text=Sender.NOT_CONNECTED,
@@ -227,7 +231,9 @@ class DROFrame(CNCRibbon.PageFrame):
             cursor="hand1",
             background=Sender.STATECOLOR[Sender.NOT_CONNECTED],
             activebackground="LightYellow")
+
         self.state.grid(row=row, column=col, columnspan=3, sticky=Tk.EW)
+
         tkExtra.Balloon.set(
             self.state,
             _("Show current state of the machine\n"
@@ -255,8 +261,8 @@ class DROFrame(CNCRibbon.PageFrame):
         self.xwork.bind('<Return>', self.set_x)
         self.xwork.bind('<KP_Enter>', self.set_x)
 
-        # ---
         col += 1
+
         self.ywork = Tk.Entry(
             self,
             font=DROFrame.dro_wpos,
@@ -270,8 +276,8 @@ class DROFrame(CNCRibbon.PageFrame):
         self.ywork.bind('<Return>', self.set_y)
         self.ywork.bind('<KP_Enter>', self.set_y)
 
-        # ---
         col += 1
+
         self.zwork = Tk.Entry(
             self, font=DROFrame.dro_wpos,
             background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
@@ -287,9 +293,11 @@ class DROFrame(CNCRibbon.PageFrame):
         # Machine
         row += 1
         col = 0
+
         Tk.Label(self, text=_("MPos:")).grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
+
         self.xmachine = Tk.Label(
             self,
             font=DROFrame.dro_mpos,
@@ -544,7 +552,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, "User", app)
         self.grid3rows()
 
-        b_num = Utils.getInt("Buttons", "n", 6)
+        b_num = Utils.get_int("Buttons", "n", 6)
 
         for idx in range(1, b_num):
             but = Utils.UserButton(
@@ -1059,6 +1067,6 @@ class Service(object):
                 mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
                     mem_data[4], mem_data[0], mem_data[1], mem_data[2],
                     mem_data[3])
-                Utils.setStr("Memory", mem_name, mem_value)
+                Utils.set_str("Memory", mem_name, mem_value)
             else:
-                Utils.removeValue("Memory", mem_name)
+                Utils.remove_config_item("Memory", mem_name)

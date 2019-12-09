@@ -112,7 +112,6 @@ class Config(object):
         """print on console the """
         print("Config class loaded in {0}".format(who))
 
-
 def loadIcons():
     global icons
     icons = {}
@@ -120,7 +119,7 @@ def loadIcons():
         name, ext = os.path.splitext(os.path.basename(img))
         try:
             icons[name] = Tk.PhotoImage(file=img)
-            if getBool("CNC", "doublesizeicon"):
+            if get_bool("CNC", "doublesizeicon"):
                 icons[name] = icons[name].zoom(2, 2)
         except Tk.TclError:
             pass
@@ -132,7 +131,7 @@ def loadIcons():
         name, ext = os.path.splitext(os.path.basename(img))
         try:
             images[name] = Tk.PhotoImage(file=img)
-            if getBool("CNC", "doublesizeicon"):
+            if get_bool("CNC", "doublesizeicon"):
                 images[name] = images[name].zoom(2, 2)
         except Tk.TclError:
             pass
@@ -159,9 +158,9 @@ def loadConfiguration(systemOnly=False):
         OCV.config.read(iniSystem)
     else:
         OCV.config.read([iniSystem, iniUser])
-        _errorReport = getInt("Connection", "errorreport", 1)
+        _errorReport = get_int("Connection", "errorreport", 1)
 
-        language = getStr(OCV.PRGNAME, "language")
+        language = get_str(OCV.PRGNAME, "language")
         if language:
             # replace language
             __builtin__._ = gettext.translation(
@@ -182,7 +181,7 @@ def saveConfiguration():
 
 def cleanConfiguration():
     """Remove items that are the same as in the default ini"""
-    newconfig = OCV.config    # Remember config
+    newconfig = OCV.config  # Remember config
     OCV.config = ConfigParser.ConfigParser()
 
     loadConfiguration(True)
@@ -199,88 +198,231 @@ def cleanConfiguration():
     OCV.config = newconfig
 
 
-def addSection(section):
+def add_config_section(section):
     """add section if it doesn't exist"""
     if not OCV.config.has_section(section):
         OCV.config.add_section(section)
 
 
-def getStr(section, name, default=""):
+def get_str(section, name, default=""):
     try:
         return OCV.config.get(section, name)
     except Exception:
         return default
 
 
-def getUtf(section, name, default=""):
+def set_str(section, name, value):
+    OCV.config.set(section, name, str(value))
+
+
+set_int = set_str
+set_float = set_str
+
+
+def set_utf(section, name, value):
     try:
-        return OCV.config.get(section, name)
-    except Exception:
-        return default
+        s = str(value)
+    except:
+        s = str(value)
+    OCV.config.set(section, name, s)
 
 
-def getInt(section, name, default=0):
+def get_int(section, name, default=0):
     try:
         return int(OCV.config.get(section, name))
     except Exception:
         return default
 
 
-def getFloat(section, name, default=0.0):
+def get_float(section, name, default=0.0):
     try:
         return float(OCV.config.get(section, name))
     except Exception:
         return default
 
 
-def getBool(section, name, default=False):
+def get_bool(section, name, default=False):
     try:
         return bool(int(OCV.config.get(section, name)))
     except Exception:
         return default
 
 
-def removeValue(section, name):
+def set_bool(section, name, value):
+    OCV.config.set(section, name, str(int(value)))
+
+def remove_config_item(section, name):
     if OCV.config.has_option(section, name):
         OCV.config.remove_option(section, name)
 
 
-def SetSteps():
-    """set the steps used in ControlPage"""
-    # Default steppings
+def do_nothing():
+    pass
+
+
+def makeFont(name, value=None):
+    """Return a proper tkFont from a string"""
     try:
-        OCV.step1 = getFloat("Control", "step1")
+        font = tkFont.Font(name=name, exists=True)
+    except Tk.TclError:
+        font = tkFont.Font(name=name)
+        font.delete_font = False
+    except AttributeError:
+        return None
+
+    if value is None:
+        return font
+
+    if isinstance(value, tuple):
+        font.configure(family=value[0])
+        try:
+            font.configure(size=value[1])
+        except:
+            pass
+
+        try:
+            font.configure(weight=value[2])
+        except:
+            pass
+
+        try:
+            font.configure(slant=value[3])
+        except:
+            pass
+
+    return font
+
+
+def fontString(font):
+    """Create a font string"""
+    name = str(font[0])
+    size = str(font[1])
+
+    if name.find(' ') >= 0:
+        s = '"{0}" {1}'.format(name, size)
+    else:
+        s = '{0}, {1}'.format(name, size)
+
+    try:
+        if font[2] == tkFont.BOLD:
+            s += " bold"
+    except:
+        pass
+    try:
+        if font[3] == tkFont.ITALIC:
+            s += " italic"
+    except:
+        pass
+    return s
+
+
+def get_font( name, default=None):
+    """Get font from configuration"""
+    try:
+        value = OCV.config.get(OCV.FONT_SECTION, name)
+    except:
+        value = None
+
+    if not value:
+        font = makeFont(name, default)
+        set_font(name, font)
+        return font
+
+    if isinstance(value, str):
+        value = tuple(value.split(','))
+
+    if isinstance(value, tuple):
+        font = makeFont(name, value)
+
+        if font is not None:
+            return font
+    return value
+
+
+def set_font(name, font):
+    """Set font in configuration"""
+    if font is None:
+        return
+
+    if isinstance(font, str):
+        OCV.config.set(OCV.FONT_SECTION, name, font)
+    elif isinstance(font, tuple):
+        OCV.config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
+    else:
+        OCV.config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
+            font.cget("family"),
+            font.cget("size"),
+            font.cget("weight")))
+
+
+def add_recent_file(filename):
+    """Add recent file"""
+    try:
+        sfn = str(os.path.abspath(filename))
+    except UnicodeEncodeError:
+        sfn = filename
+
+    last = OCV.maxRecent - 1
+    for i in range(OCV.maxRecent):
+        rfn = get_recent_file(i)
+        if rfn is None:
+            last = i - 1
+            break
+        if rfn == sfn:
+            if i == 0:
+                return
+            last = i - 1
+            break
+
+    # Shift everything by one
+    for i in range(last, -1, -1):
+        OCV.config.set("File", "recent.{0}".format(i + 1), get_recent_file(i))
+    OCV.config.set("File", "recent.0", sfn)
+
+
+def get_recent_file(recent):
+    try:
+        return OCV.config.get("File", "recent.{0}".format(recent))
+    except ConfigParser.NoOptionError:
+        return None
+
+
+def set_predefined_steps():
+    """set pre defined steps used in ControlPage"""
+    # Predefined XY steppings
+    try:
+        OCV.step1 = get_float("Control", "step1")
     except Exception:
         OCV.step1 = 1.0
 
     try:
-        OCV.step2 = getFloat("Control", "step2")
+        OCV.step2 = get_float("Control", "step2")
     except Exception:
         OCV.step2 = 1.0
 
     try:
-        OCV.step3 = getFloat("Control", "step3")
+        OCV.step3 = get_float("Control", "step3")
     except Exception:
         OCV.step3 = 10.0
 
-    # Default z-steppings
+    # Predefined Z steppings
     try:
-        OCV.zstep1 = getFloat("Control", "zstep1")
+        OCV.zstep1 = get_float("Control", "zstep1")
     except Exception:
         OCV.zstep1 = 0.1
 
     try:
-        OCV.zstep2 = getFloat("Control", "zstep2")
+        OCV.zstep2 = get_float("Control", "zstep2")
     except Exception:
         OCV.zstep2 = 1.0
 
     try:
-        OCV.zstep3 = getFloat("Control", "zstep3")
+        OCV.zstep3 = get_float("Control", "zstep3")
     except Exception:
         OCV.zstep3 = 5.0
 
     try:
-        OCV.zstep4 = getFloat("Control", "zstep4")
+        OCV.zstep4 = get_float("Control", "zstep4")
     except Exception:
         OCV.zstep4 = 10.0
 
@@ -367,157 +509,6 @@ def InputValue(app, caller):
         return None
     else:
         return retval
-
-
-def do_nothing():
-    pass
-
-
-def makeFont(name, value=None):
-    """Return a font from a string"""
-    try:
-        font = tkFont.Font(name=name, exists=True)
-    except Tk.TclError:
-        font = tkFont.Font(name=name)
-        font.delete_font = False
-    except AttributeError:
-        return None
-
-    if value is None:
-        return font
-
-    if isinstance(value, tuple):
-        font.configure(family=value[0])
-        try:
-            font.configure(size=value[1])
-        except:
-            pass
-
-        try:
-            font.configure(weight=value[2])
-        except:
-            pass
-
-        try:
-            font.configure(slant=value[3])
-        except:
-            pass
-
-    return font
-
-
-def fontString(font):
-    """Create a font string"""
-    name = str(font[0])
-    size = str(font[1])
-
-    if name.find(' ') >= 0:
-        s = '"{0}" {1}'.format(name, size)
-    else:
-        s = '{0}, {1}'.format(name, size)
-
-    try:
-        if font[2] == tkFont.BOLD:
-            s += " bold"
-    except:
-        pass
-    try:
-        if font[3] == tkFont.ITALIC:
-            s += " italic"
-    except:
-        pass
-    return s
-
-
-def getFont(name, default=None):
-    """Get font from configuration"""
-    try:
-        value = OCV.config.get(OCV.FONT_SECTION, name)
-    except:
-        value = None
-
-    if not value:
-        font = makeFont(name, default)
-        setFont(name, font)
-        return font
-
-    if isinstance(value, str):
-        value = tuple(value.split(','))
-
-    if isinstance(value, tuple):
-        font = makeFont(name, value)
-
-        if font is not None:
-            return font
-    return value
-
-
-def setFont(name, font):
-    """Set font in configuration"""
-    if font is None:
-        return
-
-    if isinstance(font, str):
-        OCV.config.set(OCV.FONT_SECTION, name, font)
-    elif isinstance(font, tuple):
-        OCV.config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
-    else:
-        OCV.config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
-            font.cget("family"),
-            font.cget("size"),
-            font.cget("weight")))
-
-
-def setBool(section, name, value):
-    OCV.config.set(section, name, str(int(value)))
-
-
-def setStr(section, name, value):
-    OCV.config.set(section, name, str(value))
-
-
-def setUtf(section, name, value):
-    try:
-        s = str(value)
-    except:
-        s = str(value)
-    OCV.config.set(section, name, s)
-
-
-setInt = setStr
-setFloat = setStr
-
-
-def addRecent(filename):
-    """Add Recent"""
-    try:
-        sfn = str(os.path.abspath(filename))
-    except UnicodeEncodeError:
-        sfn = filename
-
-    last = _maxRecent - 1
-    for i in range(_maxRecent):
-        rfn = getRecent(i)
-        if rfn is None:
-            last = i - 1
-            break
-        if rfn == sfn:
-            if i == 0:
-                return
-            last = i - 1
-            break
-
-    # Shift everything by one
-    for i in range(last, -1, -1):
-        OCV.config.set("File", "recent.{0}".format(i + 1), getRecent(i))
-    OCV.config.set("File", "recent.0", sfn)
-
-
-def getRecent(recent):
-    try:
-        return OCV.config.get("File", "recent.{0}".format(recent))
-    except ConfigParser.NoOptionError:
-        return None
 
 
 def comports(include_links=True):

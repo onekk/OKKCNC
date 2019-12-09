@@ -166,10 +166,10 @@ class Sender(object):
         self.saveConfig()
         Pendant.stop()
 
-    def loadConfig(self):
-        self.controllerSet(Utils.getStr("Connection", "controller"))
-        Pendant.port = Utils.getInt("Connection", "pendantport", Pendant.port)
-        GCode.LOOP_MERGE = Utils.getBool("File", "dxfloopmerge")
+    def load_sender_config(self):
+        self.controllerSet(Utils.get_str("Connection", "controller"))
+        Pendant.port = Utils.get_int("Connection", "pendantport", Pendant.port)
+        GCode.LOOP_MERGE = Utils.get_bool("File", "dxfloopmerge")
         self.loadHistory()
 
     def saveConfig(self):
@@ -414,9 +414,9 @@ class Sender(object):
     def _saveConfigFile(self, filename=None):
         if filename is None:
             filename = self.gcode.filename
-        Utils.setUtf("File", "dir", os.path.dirname(os.path.abspath(filename)))
-        Utils.setUtf("File", "file", os.path.basename(filename))
-        Utils.setUtf("File", "probe", os.path.basename(self.gcode.probe.filename))
+        Utils.set_utf("File", "dir", os.path.dirname(os.path.abspath(filename)))
+        Utils.set_utf("File", "file", os.path.basename(filename))
+        Utils.set_utf("File", "probe", os.path.basename(self.gcode.probe.filename))
 
 
     def load(self, filename):
@@ -434,7 +434,7 @@ class Sender(object):
         else:
             self.gcode.load(filename)
             self._saveConfigFile()
-        Utils.addRecent(filename)
+        Utils.add_recent_file(filename)
 
 
     def save(self, filename):
@@ -456,7 +456,7 @@ class Sender(object):
             if filename is not None:
                 self.gcode.filename = filename
                 self._saveConfigFile()
-            Utils.addRecent(self.gcode.filename)
+            Utils.add_recent_file(self.gcode.filename)
             return self.gcode.save()
 
     def saveAll(self, event=None):

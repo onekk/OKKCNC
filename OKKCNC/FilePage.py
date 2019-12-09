@@ -42,8 +42,8 @@ class _RecentMenuButton(Ribbon.MenuButton):
     """Recent Menu button"""
     def createMenu(self):
         menu = Tk.Menu(self, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
-        for i in range(Utils._maxRecent):
-            filename = Utils.getRecent(i)
+        for i in range(OCV.maxRecent):
+            filename = Utils.get_recent_file(i)
 
             if filename is None:
                 break
@@ -335,7 +335,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
                 self.portCombo,
                 _("Select (or manual enter) port to connect"))
 
-        self.portCombo.set(Utils.getStr("Connection","port"))
+        self.portCombo.set(Utils.get_str("Connection","port"))
 
         self.addWidget(self.portCombo)
 
@@ -358,7 +358,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.baudCombo.fill(BAUDS)
 
-        self.baudCombo.set(Utils.getStr("Connection","baud","115200"))
+        self.baudCombo.set(Utils.get_str("Connection","baud","115200"))
 
         self.addWidget(self.baudCombo)
 
@@ -397,7 +397,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
             b,
             _("Connect to serial on startup of the program"))
 
-        self.autostart.set(Utils.getBool("Connection","openserial"))
+        self.autostart.set(Utils.get_bool("Connection","openserial"))
 
         self.addWidget(b)
 
@@ -506,10 +506,10 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     def saveConfig(self):
         # Connection
-        Utils.setStr("Connection", "controller", OCV.APP.controller)
-        Utils.setStr("Connection", "port", self.portCombo.get().split("\t")[0])
-        Utils.setStr("Connection", "baud", self.baudCombo.get())
-        Utils.setBool("Connection", "openserial", self.autostart.get())
+        Utils.set_str("Connection", "controller", OCV.APP.controller)
+        Utils.set_str("Connection", "port", self.portCombo.get().split("\t")[0])
+        Utils.set_str("Connection", "baud", self.baudCombo.get())
+        Utils.set_bool("Connection", "openserial", self.autostart.get())
 
 
 class FilePage(CNCRibbon.Page):

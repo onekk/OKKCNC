@@ -98,13 +98,13 @@ class _Base:
     # ----------------------------------------------------------------------
     def _get(self, key, t, default):
         if t in ("float","mm"):
-            return Utils.getFloat(self.name, key, default)
+            return Utils.get_float(self.name, key, default)
         elif t == "int":
-            return Utils.getInt(self.name, key, default)
+            return Utils.get_int(self.name, key, default)
         elif t == "bool":
-            return Utils.getInt(self.name, key, default)
+            return Utils.get_int(self.name, key, default)
         else:
-            return Utils.getStr(self.name, key, default)
+            return Utils.get_str(self.name, key, default)
 
     # ----------------------------------------------------------------------
     # Override with execute command
@@ -366,7 +366,7 @@ class _Base:
                 self.listdb[p] = []
                 for i in range(1000):
                     key = "_{0}.{1}".format(p, i)
-                    value = Utils.getStr(self.name, key).strip()
+                    value = Utils.get_str(self.name, key).strip()
                     if value:
                         self.listdb[p].append(value)
                     else:
@@ -383,7 +383,7 @@ class _Base:
             self.n = self._get("n", "int", 0)
             for i in range(self.n):
                 key = "name.{0}".format(i)
-                self.values[key] = Utils.getStr(self.name, key)
+                self.values[key] = Utils.get_str(self.name, key)
 
                 for var in self.variables:
                     n, t, d, l = var[:4]
@@ -398,33 +398,33 @@ class _Base:
     def save(self):
         """Save to a configuration file"""
         # if section do not exist add it
-        Utils.addSection(self.name)
+        Utils.add_config_section(self.name)
 
         if self.listdb:
             for name, lst in self.listdb.items():
                 for i, value in enumerate(lst):
-                    Utils.setStr(self.name, "_{0}.{1}".format(name, i), value)
+                    Utils.set_str(self.name, "_{0}.{1}".format(name, i), value)
 
         # Save values
         if self.current is not None:
-            Utils.setStr(self.name, "current", str(self.current))
-            Utils.setStr(self.name, "n", str(self.n))
+            Utils.set_str(self.name, "current", str(self.current))
+            Utils.set_str(self.name, "n", str(self.n))
 
             for i in range(self.n):
                 key = "name.%d"%(i)
                 value = self.values.get(key)
                 if value is None: break
-                Utils.setStr(self.name, key, value)
+                Utils.set_str(self.name, key, value)
 
                 for var in self.variables:
                     n, t, d, l = var[:4]
                     key = "%s.%d"%(n,i)
-                    Utils.setStr(self.name, key,
+                    Utils.set_str(self.name, key,
                         str(self.values.get(key,d)))
         else:
             for var in self.variables:
                 n, t, d, l = var[:4]
-                Utils.setStr(self.name, n, str(self.values.get(n,d)))
+                Utils.set_str(self.name, n, str(self.values.get(n,d)))
 
     # ----------------------------------------------------------------------
     def fromMm(self, name, default=0.0):
@@ -918,7 +918,7 @@ class Tools:
     # Load from config file
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.active.set(Utils.getStr(OCV.PRGNAME, "tool", "CNC"))
+        self.active.set(Utils.get_str(OCV.PRGNAME, "tool", "CNC"))
         for tool in self.tools.values():
             tool.load()
 
@@ -926,7 +926,7 @@ class Tools:
     # Save to config file
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setStr(OCV.PRGNAME, "tool", self.active.get())
+        Utils.set_str(OCV.PRGNAME, "tool", self.active.get())
         for tool in self.tools.values():
             tool.save()
 
@@ -1179,17 +1179,18 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #        self.addWidget(b)
 
     def fillLanguage(self):
-        self.language.set(Utils.LANGUAGES.get(Utils.language,""))
+        self.language.set(Utils.LANGUAGES.get(Utils.language, ""))
         self.language.fill(list(sorted(Utils.LANGUAGES.values())))
 
     def languageChange(self):
         lang = self.language.get()
         # find translation
-        for a,b in Utils.LANGUAGES.items():
+        for a, b in Utils.LANGUAGES.items():
             if b == lang:
-                if Utils.language == a: return
+                if Utils.language == a:
+                    return
                 Utils.language = a
-                Utils.setStr(OCV.PRGNAME,  "language", Utils.language)
+                Utils.set_str(OCV.PRGNAME,  "language", Utils.language)
                 tkMessageBox.showinfo(_("Language change"),
                     _("Please restart the program."),
                     parent=self.winfo_toplevel())

@@ -68,9 +68,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         b_width = 2
         b_height = 2
 
-        z_step_font = Utils.getFont("z_step.font", ControlFrame.z_step_font)
+        z_step_font = Utils.get_font("z_step.font", ControlFrame.z_step_font)
 
-        Utils.SetSteps()
+        Utils.set_predefined_steps()
 
         row = 0
 
@@ -507,8 +507,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             pass
 
     def saveConfig(self):
-        Utils.setFloat("Control", "step", self.step.get())
-        Utils.setFloat("Control", "zstep", self.zstep.get())
+        Utils.set_float("Control", "step", self.step.get())
+        Utils.set_float("Control", "zstep", self.zstep.get())
 
     def reset_all(self):
         """reset all thing related to cam operation and memory
@@ -913,16 +913,16 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 wid = self.nametowidget("step_1")
                 OCV.step1 = retval
                 bal_text = "Step1 = {0}".format(OCV.step1)
-                Utils.setFloat("Control", "step1", retval)
+                Utils.set_float("Control", "step1", retval)
             elif caller == "S2":
                 wid = self.nametowidget("step_2")
                 OCV.step2 = retval
                 bal_text = "Step2 = {0}".format(OCV.step2)
-                Utils.setFloat("Control", "step2", retval)
+                Utils.set_float("Control", "step2", retval)
             elif caller == "S3":
                 wid = self.nametowidget("step_3")
                 OCV.step3 = retval
-                Utils.setFloat("Control", "step3", retval)
+                Utils.set_float("Control", "step3", retval)
                 bal_text = "Step2 = {0}".format(OCV.step3)
 
         elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
@@ -930,22 +930,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 wid = self.nametowidget("zstep_1")
                 OCV.zstep1 = retval
                 bal_text = "Zstep1 = {0}".format(OCV.zstep1)
-                Utils.setFloat("Control", "zstep1", retval)
+                Utils.set_float("Control", "zstep1", retval)
             elif caller == "ZS2":
                 wid = self.nametowidget("zstep_2")
                 OCV.zstep2 = retval
                 bal_text = "Zstep2 = {0}".format(OCV.zstep2)
-                Utils.setFloat("Control", "zstep2", retval)
+                Utils.set_float("Control", "zstep2", retval)
             elif caller == "ZS3":
                 wid = self.nametowidget("zstep_3")
                 OCV.zstep3 = retval
                 bal_text = "Zstep2 = {0}".format(OCV.zstep3)
-                Utils.setFloat("Control", "zstep3", retval)
+                Utils.set_float("Control", "zstep3", retval)
             elif caller == "ZS4":
                 wid = self.nametowidget("zstep_4")
                 OCV.zstep4 = retval
                 bal_text = "Zstep4 = {0}".format(OCV.zstep4)
-                Utils.setFloat("Control", "zstep4", retval)
+                Utils.set_float("Control", "zstep4", retval)
 
         if wid is not None:
             wid.configure(text=retval)

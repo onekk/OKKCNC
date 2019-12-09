@@ -149,6 +149,7 @@ lasercutter = False
 laseradaptive = False
 
 # M #
+maxRecent = 10
 memNum = 0
 
 # S #
