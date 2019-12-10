@@ -54,7 +54,7 @@ class _RecentMenuButton(Ribbon.MenuButton):
             menu.add_command(
                 label="{0:d} {1}".format(i+1, fn),
                 compound=Tk.LEFT,
-                image=Utils.icons["new"],
+                image=OCV.icons["new"],
                 accelerator=path,  # Show as accelerator in order to be aligned
                 command=lambda s=self, i=i: s.event_generate(
                         "<<Recent{0:d}>>".format(i)))
@@ -80,7 +80,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame, self, "<<New>>",
-            image=Utils.icons["new32"],
+            image=OCV.icons["new32"],
             text=_("New"),
             compound=Tk.TOP,
             background=OCV.BACKGROUND)
@@ -98,7 +98,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Open>>",
-            image=Utils.icons["open32"],
+            image=OCV.icons["open32"],
             background=OCV.BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
@@ -113,7 +113,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             None,
             text=_("Open"),
-            image=Utils.icons["triangle_down"],
+            image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
             background=OCV.BACKGROUND)
 
@@ -129,7 +129,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Import>>",
-            image=Utils.icons["import32"],
+            image=OCV.icons["import32"],
             text=_("Import"),
             compound=Tk.TOP,
             background=OCV.BACKGROUND)
@@ -146,7 +146,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Save>>",
-            image=Utils.icons["save32"],
+            image=OCV.icons["save32"],
             command=OCV.APP.save,
             background=OCV.BACKGROUND)
 
@@ -163,7 +163,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 self,
                 "<<SaveAs>>",
                 text=_("Save"),
-                image=Utils.icons["triangle_down"],
+                image=OCV.icons["triangle_down"],
                 compound=Tk.RIGHT,
                 background=OCV.BACKGROUND)
 
@@ -189,7 +189,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=0,0
 #        b = Ribbon.LabelButton(self.frame, #self.page, "<<Config>>",
 #                text=_("Config"),
-#                image=Utils.icons["config32"],
+#                image=OCV.icons["config32"],
 #                command=OCV.APP.preferences,
 #                state=DISABLED,
 #                compound=TOP,
@@ -202,7 +202,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=1,0
 #        b = Ribbon.LabelButton(self.frame,
 #                text=_("Report"),
-#                image=Utils.icons["debug"],
+#                image=OCV.icons["debug"],
 #                compound=LEFT,
 #                command=Utils.ReportDialog.sendErrorReport,
 #                anchor=W,
@@ -214,7 +214,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=1,1
 #        b = Ribbon.LabelButton(self.frame,
 #                text=_("Updates"),
-#                image=Utils.icons["global"],
+#                image=OCV.icons["global"],
 #                compound=LEFT,
 #                command=OCV.APP.checkUpdates,
 #                anchor=W,
@@ -227,7 +227,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("About"),
-            image=Utils.icons["about"],
+            image=OCV.icons["about"],
             compound=Tk.LEFT,
             command=OCV.APP.about,
             anchor=Tk.W,
@@ -253,7 +253,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Start"),
-            image=Utils.icons["start_pendant"],
+            image=OCV.icons["start_pendant"],
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.startPendant,
@@ -268,7 +268,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Stop"),
-            image=Utils.icons["stop_pendant"],
+            image=OCV.icons["stop_pendant"],
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.stopPendant,
@@ -292,7 +292,7 @@ class CloseGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Exit"),
-            image=Utils.icons["exit32"],
+            image=OCV.icons["exit32"],
             compound=Tk.TOP,
             command=OCV.APP.quit,
             anchor=Tk.W,
@@ -405,7 +405,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.comrefBtn = Ribbon.LabelButton(
             self,
-            image=Utils.icons["refresh"],
+            image=OCV.icons["refresh"],
             text=_("Refresh"),
             compound=Tk.TOP,
             command=lambda s=self: s.comportRefresh(True),
@@ -424,7 +424,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.connectBtn = Ribbon.LabelButton(
             self,
-            image=Utils.icons["serial48"],
+            image=OCV.icons["serial48"],
             text=_("Open"),
             compound=Tk.TOP,
             command=lambda s=self: s.event_generate("<<Connect>>"),
@@ -506,10 +506,10 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     def saveConfig(self):
         # Connection
-        Utils.set_str("Connection", "controller", OCV.APP.controller)
-        Utils.set_str("Connection", "port", self.portCombo.get().split("\t")[0])
-        Utils.set_str("Connection", "baud", self.baudCombo.get())
-        Utils.set_bool("Connection", "openserial", self.autostart.get())
+        Utils.set_value("Connection", "controller", OCV.APP.controller)
+        Utils.set_value("Connection", "port", self.portCombo.get().split("\t")[0])
+        Utils.set_value("Connection", "baud", self.baudCombo.get())
+        Utils.set_value("Connection", "openserial", self.autostart.get())
 
 
 class FilePage(CNCRibbon.Page):

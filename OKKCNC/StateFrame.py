@@ -362,7 +362,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         but = Tk.Checkbutton(
             frame1,
             text=_("Spindle"),
-            image=Utils.icons["spinningtop"],
+            image=OCV.icons["spinningtop"],
             command=self.spindleControl,
             compound=Tk.LEFT,
             indicatoron=0,

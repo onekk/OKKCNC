@@ -135,7 +135,7 @@ class Sender(object):
 
     def controllerLoad(self):
         """Find plugins in the controllers directory and load them"""
-        for f in glob.glob("{0}/controllers/*.py".format(Utils.prgpath)):
+        for f in glob.glob("{0}/controllers/*.py".format(OCV.PRG_PATH)):
             name, ext = os.path.splitext(os.path.basename(f))
             if name[0] == '_':
                 continue
@@ -177,7 +177,7 @@ class Sender(object):
 
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile, "r")
+            f = open(Utils.COMMAND_HISTORY, "r")
         except Exception:
             return
         self.history = [x.strip() for x in f]
@@ -185,7 +185,7 @@ class Sender(object):
 
     def saveHistory(self):
         try:
-            f = open(Utils.hisFile, "w")
+            f = open(Utils.COMMAND_HISTORY, "w")
         except Exception:
             return
         f.write("\n".join(self.history))

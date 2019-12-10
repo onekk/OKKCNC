@@ -93,7 +93,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         col, row = 0, 0
         b = Ribbon.LabelRadiobutton(
                 self.frame,
-                image=Utils.icons["probe32"],
+                image=OCV.icons["probe32"],
                 text=_("Probe"),
                 compound=TOP,
                 variable=self.tab,
@@ -106,7 +106,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         col += 1
         b = Ribbon.LabelRadiobutton(
                 self.frame,
-                image=Utils.icons["level32"],
+                image=OCV.icons["level32"],
                 text=_("Autolevel"),
                 compound=TOP,
                 variable=self.tab,
@@ -118,7 +118,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         # ---
         col += 1
         b = Ribbon.LabelRadiobutton(self.frame,
-                image=Utils.icons["camera32"],
+                image=OCV.icons["camera32"],
                 text=_("Camera"),
                 compound=TOP,
                 variable=self.tab,
@@ -131,7 +131,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         # ---
         col += 1
         b = Ribbon.LabelRadiobutton(self.frame,
-                image=Utils.icons["endmill32"],
+                image=OCV.icons["endmill32"],
                 text=_("Tool"),
                 compound=TOP,
                 variable=self.tab,
@@ -155,7 +155,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=0,0
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelMargins>>",
-                image=Utils.icons["margins"],
+                image=OCV.icons["margins"],
                 text=_("Margins"),
                 compound=LEFT,
                 anchor=W,
@@ -167,7 +167,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         row += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelZero>>",
-                image=Utils.icons["origin"],
+                image=OCV.icons["origin"],
                 text=_("Zero"),
                 compound=LEFT,
                 anchor=W,
@@ -179,7 +179,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         row += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelClear>>",
-                image=Utils.icons["clear"],
+                image=OCV.icons["clear"],
                 text=_("Clear"),
                 compound=LEFT,
                 anchor=W,
@@ -192,7 +192,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         row = 0
         col += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelScanMargins>>",
-                image=Utils.icons["margins"],
+                image=OCV.icons["margins"],
                 text=_("Scan"),
                 compound=LEFT,
                 anchor=W,
@@ -203,7 +203,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
 
         row += 1
         b = Ribbon.LabelButton(self.frame,
-                image=Utils.icons["level"],
+                image=OCV.icons["level"],
                 text=_("Autolevel"),
                 compound=LEFT,
                 anchor=W,
@@ -216,7 +216,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=2,0
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelScan>>",
-                image=Utils.icons["gear32"],
+                image=OCV.icons["gear32"],
                 text=_("Scan"),
                 compound=TOP,
                 justify=CENTER,
@@ -347,10 +347,10 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_float("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
-        Utils.set_float("Probe", "feed", ProbeCommonFrame.probeFeed.get())
-        Utils.set_float("Probe", "tlo",  ProbeCommonFrame.tlo.get())
-        Utils.set_float("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
+        Utils.set_value("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
+        Utils.set_value("Probe", "feed", ProbeCommonFrame.probeFeed.get())
+        Utils.set_value("Probe", "tlo",  ProbeCommonFrame.tlo.get())
+        Utils.set_value("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
 
     def loadConfig(self):
         ProbeCommonFrame.fastProbeFeed.set(Utils.get_float(
@@ -468,7 +468,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # ---
         col += 1
         b = Button(lframe(),
-                image=Utils.icons["rapid"],
+                image=OCV.icons["rapid"],
                 text=_("Goto"),
                 compound=LEFT,
                 command=self.goto2Probe,
@@ -503,7 +503,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # ---
         col += 2
         b = Button(lframe(), #"<<Probe>>",
-                image=Utils.icons["probe32"],
+                image=OCV.icons["probe32"],
                 text=_("Probe"),
                 compound=LEFT,
                 command=self.probe,
@@ -532,7 +532,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
         # ---
         b = Button(lframe(),
-                image=Utils.icons["target32"],
+                image=OCV.icons["target32"],
                 text=_("Center"),
                 compound=TOP,
                 command=self.probeCenter,
@@ -566,7 +566,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Add new point
         col += 2
         b = Button(lframe(), text=_("Add"),
-                image=Utils.icons["add"],
+                image=OCV.icons["add"],
                 compound=LEFT,
                 command=lambda s=self: s.event_generate("<<AddMarker>>"),
                 padx = 1,
@@ -600,7 +600,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 1
         b = Button(lframe(), text=_("Delete"),
-                image=Utils.icons["x"],
+                image=OCV.icons["x"],
                 compound=LEFT,
                 command = self.orientDelete,
                 padx = 1,
@@ -633,7 +633,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 1
         b = Button(lframe(), text=_("Clear"),
-                image=Utils.icons["clear"],
+                image=OCV.icons["clear"],
                 compound=LEFT,
                 command = self.orientClear,
                 padx = 1,
@@ -654,7 +654,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 2
         b = Button(lframe(), text=_("Orient"),
-                image=Utils.icons["setsquare32"],
+                image=OCV.icons["setsquare32"],
                 compound=TOP,
                 command = lambda a=app:a.insertCommand("ORIENT",True),
                 padx = 1,
@@ -696,16 +696,16 @@ class ProbeFrame(CNCRibbon.PageFrame):
         self.probeXdir.set(Utils.get_str("Probe", "x"))
         self.probeYdir.set(Utils.get_str("Probe", "y"))
         self.probeZdir.set(Utils.get_str("Probe", "z"))
-        self.diameter.set(Utils.get_str("Probe",  "center"))
+        self.diameter.set(Utils.get_str("Probe", "center"))
         self.warn = Utils.get_bool("Warning", "probe", self.warn)
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_float("Probe", "x",      self.probeXdir.get())
-        Utils.set_float("Probe", "y",      self.probeYdir.get())
-        Utils.set_float("Probe", "z",      self.probeZdir.get())
-        Utils.set_float("Probe", "center", self.diameter.get())
-        Utils.set_bool("Warning","probe",  self.warn)
+        Utils.set_value("Probe", "x", self.probeXdir.get())
+        Utils.set_value("Probe", "y", self.probeYdir.get())
+        Utils.set_value("Probe", "z", self.probeZdir.get())
+        Utils.set_value("Probe", "center", self.diameter.get())
+        Utils.set_value("Warning","probe",  self.warn)
 
     #-----------------------------------------------------------------------
     def updateProbe(self):
@@ -1117,7 +1117,6 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         self.loadConfig()
 
-    #-----------------------------------------------------------------------
     def setValues(self):
         probe = OCV.APP.gcode.probe
         self.probeXmin.set(str(probe.xmin))
@@ -1135,16 +1134,15 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         self.probeZmin.set(str(probe.zmin))
         self.probeZmax.set(str(probe.zmax))
 
-    #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_float("Probe", "xmin", self.probeXmin.get())
-        Utils.set_float("Probe", "xmax", self.probeXmax.get())
-        Utils.set_int(  "Probe", "xn",   self.probeXbins.get())
-        Utils.set_float("Probe", "ymin", self.probeYmin.get())
-        Utils.set_float("Probe", "ymax", self.probeYmax.get())
-        Utils.set_int(  "Probe", "yn",   self.probeYbins.get())
-        Utils.set_float("Probe", "zmin", self.probeZmin.get())
-        Utils.set_float("Probe", "zmax", self.probeZmax.get())
+        Utils.set_value("Probe", "xmin", self.probeXmin.get())
+        Utils.set_value("Probe", "xmax", self.probeXmax.get())
+        Utils.set_value("Probe", "xn", self.probeXbins.get())
+        Utils.set_value("Probe", "ymin", self.probeYmin.get())
+        Utils.set_value("Probe", "ymax", self.probeYmax.get())
+        Utils.set_value("Probe", "yn", self.probeYbins.get())
+        Utils.set_value("Probe", "zmin", self.probeZmin.get())
+        Utils.set_value("Probe", "zmax", self.probeZmax.get())
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
@@ -1294,7 +1292,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=0,0
         self.switchButton = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["camera32"],
+                image=OCV.icons["camera32"],
                 text=_("Switch To"),
                 compound=TOP,
                 variable=self.switch,
@@ -1306,7 +1304,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=1,0
         b = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["edge"],
+                image=OCV.icons["edge"],
                 text=_("Edge Detection"),
                 compound=LEFT,
                 variable=self.edge,
@@ -1319,7 +1317,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
         # ---
         row += 1
         b = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["freeze"],
+                image=OCV.icons["freeze"],
                 text=_("Freeze"),
                 compound=LEFT,
                 variable=self.freeze,
@@ -1340,11 +1338,11 @@ class CameraGroup(CNCRibbon.ButtonGroup):
         dy = OCV.APP.canvasFrame.canvas.cameraDy
         z  = OCV.APP.canvasFrame.canvas.cameraZ
         if self.switch.get():
-            self.switchButton.config(image=Utils.icons["endmill32"])
+            self.switchButton.config(image=OCV.icons["endmill32"])
             self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
             OCV.APP.canvasFrame.canvas.cameraSwitch = True
         else:
-            self.switchButton.config(image=Utils.icons["camera32"])
+            self.switchButton.config(image=OCV.icons["camera32"])
             self.sendGCode("G92.1")
             OCV.APP.canvasFrame.canvas.cameraSwitch = False
         if z is None:
@@ -1486,38 +1484,33 @@ class CameraFrame(CNCRibbon.PageFrame):
         self.spindleX = None
         self.spindleY = None
 
-    #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_str(  "Camera", "aligncam_anchor",self.location.get())
-        Utils.set_float("Camera", "aligncam_d",     self.diameter.get())
-        Utils.set_float("Camera", "aligncam_scale", self.scale.get())
-        Utils.set_float("Camera", "aligncam_dx",    self.dx.get())
-        Utils.set_float("Camera", "aligncam_dy",    self.dy.get())
-        Utils.set_float("Camera", "aligncam_z",     self.z.get())
-        Utils.set_float("Camera", "aligncam_rotation",     self.rotation.get())
-        Utils.set_float("Camera", "aligncam_xcenter",     self.xcenter.get())
-        Utils.set_float("Camera", "aligncam_ycenter",     self.ycenter.get())
+        Utils.set_value("Camera", "aligncam_anchor", self.location.get())
+        Utils.set_value("Camera", "aligncam_d", self.diameter.get())
+        Utils.set_value("Camera", "aligncam_scale", self.scale.get())
+        Utils.set_value("Camera", "aligncam_dx", self.dx.get())
+        Utils.set_value("Camera", "aligncam_dy", self.dy.get())
+        Utils.set_value("Camera", "aligncam_z", self.z.get())
+        Utils.set_value("Camera", "aligncam_rotation", self.rotation.get())
+        Utils.set_value("Camera", "aligncam_xcenter", self.xcenter.get())
+        Utils.set_value("Camera", "aligncam_ycenter", self.ycenter.get())
 
-    #-----------------------------------------------------------------------
     def loadConfig(self):
         self.location.set(Utils.get_str("Camera",  "aligncam_anchor"))
-        self.diameter.set(Utils.get_float("Camera","aligncam_d"))
-        self.scale.set( Utils.get_float("Camera",  "aligncam_scale"))
-        self.dx.set(    Utils.get_float("Camera",  "aligncam_dx"))
-        self.dy.set(    Utils.get_float("Camera",  "aligncam_dy"))
-        self.z.set(     Utils.get_float("Camera",  "aligncam_z", ""))
-        self.rotation.set(Utils.get_float("Camera","aligncam_rotation"))
+        self.diameter.set(Utils.get_float("Camera", "aligncam_d"))
+        self.scale.set(Utils.get_float("Camera", "aligncam_scale"))
+        self.dx.set(Utils.get_float("Camera", "aligncam_dx"))
+        self.dy.set(Utils.get_float("Camera", "aligncam_dy"))
+        self.z.set(Utils.get_float("Camera", "aligncam_z", ""))
+        self.rotation.set(Utils.get_float("Camera", "aligncam_rotation"))
         self.xcenter.set(Utils.get_float("Camera", "aligncam_xcenter"))
         self.ycenter.set(Utils.get_float("Camera", "aligncam_ycenter"))
         self.updateValues()
 
-    #-----------------------------------------------------------------------
-    # Return camera Anchor
-    #-----------------------------------------------------------------------
     def cameraAnchor(self):
+        """Return camera Anchor"""
         return CAMERA_LOCATION.get(self.location.get(),CENTER)
 
-    #-----------------------------------------------------------------------
     def getDiameter(self):
         self.diameter.set(OCV.CD["diameter"])
         self.updateValues()
@@ -1626,7 +1619,7 @@ class ToolGroup(CNCRibbon.ButtonGroup):
         self.label["background"] = OCV.BACKGROUND_GROUP2
 
         b = Ribbon.LabelButton(self.frame, self, "<<ToolCalibrate>>",
-                image=Utils.icons["calibrate32"],
+                image=OCV.icons["calibrate32"],
                 text=_("Calibrate"),
                 compound=TOP,
                 width=48,
@@ -1636,7 +1629,7 @@ class ToolGroup(CNCRibbon.ButtonGroup):
         tkExtra.Balloon.set(b, _("Perform a single a tool change cycle to set the calibration field"))
 
         b = Ribbon.LabelButton(self.frame, self, "<<ToolChange>>",
-                image=Utils.icons["endmill32"],
+                image=OCV.icons["endmill32"],
                 text=_("Change"),
                 compound=TOP,
                 width=48,
@@ -1804,23 +1797,23 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_int(
+        Utils.set_value(
                 "Probe", "toolpolicy",
                 TOOL_POLICY.index(self.toolPolicy.get()))
-        Utils.set_int(
+        Utils.set_value(
                 "Probe", "toolwait",
                 TOOL_WAIT.index(self.toolWait.get()))
-        Utils.set_float("Probe", "toolchangex", self.changeX.get())
-        Utils.set_float("Probe", "toolchangey", self.changeY.get())
-        Utils.set_float("Probe", "toolchangez", self.changeZ.get())
+        Utils.set_value("Probe", "toolchangex", self.changeX.get())
+        Utils.set_value("Probe", "toolchangey", self.changeY.get())
+        Utils.set_value("Probe", "toolchangez", self.changeZ.get())
 
-        Utils.set_float("Probe", "toolprobex", self.probeX.get())
-        Utils.set_float("Probe", "toolprobey", self.probeY.get())
-        Utils.set_float("Probe", "toolprobez", self.probeZ.get())
+        Utils.set_value("Probe", "toolprobex", self.probeX.get())
+        Utils.set_value("Probe", "toolprobey", self.probeY.get())
+        Utils.set_value("Probe", "toolprobez", self.probeZ.get())
 
-        Utils.set_float("Probe", "tooldistance",self.probeDistance.get())
-        Utils.set_float("Probe", "toolheight",  self.toolHeight.get())
-        Utils.set_float("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
+        Utils.set_value("Probe", "tooldistance",self.probeDistance.get())
+        Utils.set_value("Probe", "toolheight",  self.toolHeight.get())
+        Utils.set_value("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
@@ -1985,7 +1978,7 @@ class ToolFrame(CNCRibbon.PageFrame):
 #
 #        self.text = Label(frame,
 #                text="One\nTwo\nThree",
-#                image=Utils.icons["gear32"],
+#                image=OCV.icons["gear32"],
 #                compound=TOP,
 #                anchor=W,
 #                justify=LEFT)

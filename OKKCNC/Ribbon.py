@@ -69,7 +69,7 @@ class LabelGroup(Tk.Frame):
 
             self.label.config(
                 command=command,
-                image=Utils.icons["triangle_down"],
+                image=OCV.icons["triangle_down"],
                 foreground=OCV.FOREGROUND_GROUP,
                 background=OCV.BACKGROUND_GROUP,
                 highlightthickness=0,
@@ -254,7 +254,7 @@ class MenuButton(Tk.Button, _KeyboardFocus):
 
                 menu.add_command(
                     label=name,
-                    image=Utils.icons[icon],
+                    image=OCV.icons[icon],
                     compound=Tk.LEFT,
                     command=cmd)
 
@@ -338,7 +338,7 @@ class Page(object):  # <--- should be possible to be a toplevel as well
     def __init__(self, master, **kw):
         self.master = master
         self.name = self._name_
-        self._icon = Utils.icons[self._icon_]
+        self._icon = OCV.icons[self._icon_]
         self._tab = None  # Tab button
         self.ribbons = []
         self.frames = []
@@ -511,7 +511,7 @@ class TabRibbonFrame(Tk.Frame):
             frame,
             self,
             "<<New>>",
-            image=Utils.icons["new"],
+            image=OCV.icons["new"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("New file"))
@@ -522,7 +522,7 @@ class TabRibbonFrame(Tk.Frame):
             frame,
             self,
             "<<Open>>",
-            image=Utils.icons["load"],
+            image=OCV.icons["load"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("Open file [Ctrl-O]"))
@@ -533,7 +533,7 @@ class TabRibbonFrame(Tk.Frame):
             frame,
             self,
             "<<Save>>",
-            image=Utils.icons["save"],
+            image=OCV.icons["save"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("Save all [Ctrl-S]"))
@@ -543,7 +543,7 @@ class TabRibbonFrame(Tk.Frame):
         but = LabelButton(
             frame,
             self, "<<Undo>>",
-            image=Utils.icons["undo"],
+            image=OCV.icons["undo"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("Undo [Ctrl-Z]"))
@@ -554,7 +554,7 @@ class TabRibbonFrame(Tk.Frame):
 
         but = LabelButton(
             frame,
-            image=Utils.icons["triangle_down"],
+            image=OCV.icons["triangle_down"],
             command=self.undolist,
             background=OCV.BACKGROUND_DISABLE)
 
@@ -566,7 +566,7 @@ class TabRibbonFrame(Tk.Frame):
             frame,
             self,
             "<<Redo>>",
-            image=Utils.icons["redo"],
+            image=OCV.icons["redo"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("Redo [Ctrl-Y]"))
@@ -577,7 +577,7 @@ class TabRibbonFrame(Tk.Frame):
 
         lab = Tk.Label(
             frame,
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             background=OCV.BACKGROUND_DISABLE)
 
         lab.pack(side=Tk.LEFT, padx=3)
@@ -586,7 +586,7 @@ class TabRibbonFrame(Tk.Frame):
             frame,
             self,
             "<<Help>>",
-            image=Utils.icons["info"],
+            image=OCV.icons["info"],
             background=OCV.BACKGROUND_DISABLE)
 
         tkExtra.Balloon.set(but, _("Help [F1]"))
@@ -595,7 +595,7 @@ class TabRibbonFrame(Tk.Frame):
 
         lab = Tk.Label(
             frame,
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             background=OCV.BACKGROUND_DISABLE)
 
         lab.pack(side=Tk.RIGHT, padx=3)

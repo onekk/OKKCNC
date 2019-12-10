@@ -55,7 +55,7 @@ except ImportError:
 # and if needed replace the  translate function _()
 # before any string is initialized
 import Utils
-Utils.loadConfiguration()
+Utils.conf_file_load()
 
 import rexx
 import tkExtra
@@ -118,9 +118,9 @@ class Application(Tk.Toplevel, Sender):
         Sender.__init__(OCV.APP)
 
         if sys.platform == "win32":
-            self.iconbitmap("{0}\\OKKCNC.ico".format(Utils.prgpath))
+            self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
         else:
-            self.iconbitmap("@{0}/OKKCNC.xbm".format(Utils.prgpath))
+            self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
         self.title("{0} {1}".format(OCV.PRGNAME, OCV.PG_VER))
         self.widgets = []
 
@@ -557,8 +557,8 @@ class Application(Tk.Toplevel, Sender):
 
     @staticmethod
     def showUserFile(self):
-        webbrowser.open(Utils.iniUser)
-        # os.startfile(Utils.iniUser)
+        webbrowser.open(Utils.USER_CONFIG)
+        # os.startfile(Utils.USER_CONFIG)
 
     def load_main_config(self):
 
@@ -637,15 +637,15 @@ class Application(Tk.Toplevel, Sender):
 
     def saveConfig(self):
         # Program
-        Utils.set_int(OCV.PRGNAME, "width", str(self.winfo_width()))
-        Utils.set_int(OCV.PRGNAME, "height", str(self.winfo_height()))
-        # Utils.set_int(OCV.PRGNAME,  "x", str(self.winfo_rootx()))
-        # Utils.set_int(OCV.PRGNAME,  "y", str(self.winfo_rooty()))
-        Utils.set_int(OCV.PRGNAME, "sash", str(self.paned.sash_coord(0)[0]))
+        Utils.set_value(OCV.PRGNAME, "width", str(self.winfo_width()))
+        Utils.set_value(OCV.PRGNAME, "height", str(self.winfo_height()))
+        # Utils.set_value(OCV.PRGNAME,  "x", str(self.winfo_rootx()))
+        # Utils.set_value(OCV.PRGNAME,  "y", str(self.winfo_rooty()))
+        Utils.set_value(OCV.PRGNAME, "sash", str(self.paned.sash_coord(0)[0]))
 
         # save windowState
-        Utils.set_str(OCV.PRGNAME, "windowstate", str(self.wm_state()))
-        Utils.set_str(OCV.PRGNAME, "page",
+        Utils.set_value(OCV.PRGNAME, "windowstate", str(self.wm_state()))
+        Utils.set_value(OCV.PRGNAME, "page",
                      str(self.ribbon.getActivePage().name))
 
         # Connection
@@ -657,7 +657,7 @@ class Application(Tk.Toplevel, Sender):
 
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile, "r")
+            f = open(Utils.COMMAND_HISTORY, "r")
         except:
             return
         self.history = [x.strip() for x in f]
@@ -666,7 +666,7 @@ class Application(Tk.Toplevel, Sender):
 
     def saveHistory(self):
         try:
-            f = open(Utils.hisFile, "w")
+            f = open(Utils.COMMAND_HISTORY, "w")
         except:
             return
         f.write("\n".join(self.history))
@@ -719,7 +719,7 @@ class Application(Tk.Toplevel, Sender):
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
-            self.iconbitmap("@{0}/OKKCNC.xbm".format(Utils.prgpath))
+            self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
 
         bg = "#707070"
         fg = "#ffffff"
@@ -740,7 +740,7 @@ class Application(Tk.Toplevel, Sender):
         row = 0
         lab = Tk.Label(
             frame,
-            image=Utils.icons["OKKCNC"],
+            image=OCV.icons["OKKCNC"],
             foreground=fg,
             background=bg,
             relief=Tk.RAISED,
@@ -787,7 +787,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=Utils.__www__,
+            text=OCV.PRG_SITE,
             font=font2,
             foreground=fg,
             background=bg,
@@ -797,7 +797,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
 
-        lab.bind('<Button-1>', lambda e: webbrowser.open(Utils.__www__))
+        lab.bind('<Button-1>', lambda e: webbrowser.open(Utils.PRG_SITE))
 
         row += 1
 
@@ -857,7 +857,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=Utils.__contribute__,
+            text=OCV.PRG_CONTRIB,
             font=font2,
             foreground=fg,
             background=bg,
@@ -879,7 +879,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=Utils.__translations__,
+            text=OCV.PRG_TRANS,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -901,7 +901,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=Utils.__credits__,
+            text=OCV.PRG_CREDITS,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -2699,7 +2699,7 @@ def main(args=None):
     Tk.CallWrapper = Utils.CallWrapper
 
     tkExtra.bindClasses(OCV.root)
-    Utils.loadIcons()
+    Utils.load_icons()
 
     # Parse arguments
     try:
@@ -2719,8 +2719,8 @@ def main(args=None):
         if opt in ("-h", "-?", "--help"):
             usage(0)
         elif opt in ("-i", "--ini"):
-            Utils.iniUser = val
-            Utils.loadConfiguration()
+            Utils.USER_CONFIG = val
+            Utils.conf_file_load()
         elif opt == "-d":
             OCV.developer = True
         elif opt == "-D":
@@ -2870,7 +2870,7 @@ def main(args=None):
         _application.quit()
 
     _application.close()
-    Utils.saveConfiguration()
+    Utils.user_conf_file_save()
 
 
 if __name__ == "__main__":

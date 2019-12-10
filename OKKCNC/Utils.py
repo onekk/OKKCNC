@@ -23,6 +23,13 @@ import os
 import sys
 import glob
 import traceback
+import gettext
+try:
+    import __builtin__
+except:
+    import builtins as __builtin__
+#    __builtin__.unicode = str        # dirty hack for python3
+
 from lib.log import say
 
 try:
@@ -37,12 +44,6 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     import configparser as ConfigParser
 
-import gettext
-try:
-    import __builtin__
-except:
-    import builtins as __builtin__
-#    __builtin__.unicode = str        # dirty hack for python3
 
 try:
     import serial
@@ -50,17 +51,6 @@ except:
     serial = None
 
 import OCV
-
-prgpath = os.path.abspath(os.path.dirname(__file__))
-
-if getattr(sys, 'frozen', False):
-    # When being bundled by pyinstaller, paths are different
-    print("Running as pyinstaller bundle!", sys.argv[0])
-    prgpath = os.path.abspath(os.path.dirname(sys.argv[0]))
-
-iniSystem = os.path.join(prgpath, "{0}.ini".format(OCV.PRGNAME))
-iniUser = os.path.expanduser("~/.{0}".format(OCV.PRGNAME))
-hisFile = os.path.expanduser("~/.{0}.history".format(OCV.PRGNAME))
 
 # dirty way of substituting the "_" on the builtin namespace
 # __builtin__.__dict__["_"] = gettext.translation(
@@ -70,7 +60,7 @@ hisFile = os.path.expanduser("~/.{0}.history".format(OCV.PRGNAME))
 
 __builtin__._ = gettext.translation(
     'OKKCNC',
-    os.path.join(prgpath, 'locale'),
+    os.path.join(OCV.PRG_PATH, 'locale'),
     fallback=True).gettext
 
 __builtin__.N_ = lambda message: message
@@ -78,33 +68,13 @@ __builtin__.N_ = lambda message: message
 import Ribbon
 import tkExtra
 
-__www__ = "https://github.com/onekk/OKKCNC"
-__contribute__ = ""
-
-__credits__ = \
-        "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
-        "@effer Filippo Rivato , " \
-        "@harvie Tomas Mudrunka\n\n" \
-        "And all the contributors of bCNC"
-__translations__ = \
-        "Italian - @onekk\n" \
-
-LANGUAGES = {
-    "": "<system>",
-    "en": "English",
-    "it": "Italiano",
-    }
-
-icons = {}
-images = {}
 OCV.config = ConfigParser.ConfigParser()
 # This is here to debug the fact that config is sometimes instantiated twice
 print("new-config", __name__, OCV.config)
-language = ""
 
 _errorReport = True
 errors = []
-_maxRecent = 10
+
 
 class Config(object):
     """New class to provide config for everyone"""
@@ -112,79 +82,86 @@ class Config(object):
         """print on console the """
         print("Config class loaded in {0}".format(who))
 
-def loadIcons():
-    global icons
-    icons = {}
-    for img in glob.glob("{0}{1}icons{1}*.gif".format(prgpath, os.sep)):
+
+def load_icons():
+    """load icons and images in internal dictionaries"""
+    OCV.icons = {}
+    for img in glob.glob("{0}{1}icons{1}*.gif".format(OCV.PRG_PATH, os.sep)):
         name, ext = os.path.splitext(os.path.basename(img))
         try:
-            icons[name] = Tk.PhotoImage(file=img)
+            OCV.icons[name] = Tk.PhotoImage(file=img)
             if get_bool("CNC", "doublesizeicon"):
-                icons[name] = icons[name].zoom(2, 2)
+                OCV.icons[name] = OCV.icons[name].zoom(2, 2)
         except Tk.TclError:
             pass
 
     # Images
-    global images
-    images = {}
-    for img in glob.glob("{0}{1}images{1}*.gif".format(prgpath, os.sep)):
+    OCV.images = {}
+    for img in glob.glob("{0}{1}images{1}*.gif".format(OCV.PRG_PATH, os.sep)):
         name, ext = os.path.splitext(os.path.basename(img))
         try:
-            images[name] = Tk.PhotoImage(file=img)
+            OCV.images[name] = Tk.PhotoImage(file=img)
             if get_bool("CNC", "doublesizeicon"):
-                images[name] = images[name].zoom(2, 2)
+                OCV.images[name] = OCV.images[name].zoom(2, 2)
         except Tk.TclError:
             pass
 
 
-def delIcons():
-    global icons
-    if len(icons) > 0:
-        for i in icons.values():
+def del_icons():
+    """empty icons and images dictionaries"""
+    if len(OCV.icons) > 0:
+        for i in OCV.icons.values():
             del i
-        icons = {}    # needed otherwise it complains on deleting the icons
+        # needed otherwise it complains on deleting the icons
+        OCV.icons = {}
 
-    global images
-    if len(images) > 0:
-        for i in images.values():
+    if len(OCV.images) > 0:
+        for i in OCV.images.values():
             del i
-        images = {}    # needed otherwise it complains on deleting the icons
+        # needed otherwise it complains on deleting the icons
+        OCV.images = {}
 
 
-def loadConfiguration(systemOnly=False):
+def conf_file_load(only_from_system_ini=False):
     """Load configuration"""
-    global _errorReport, language
-    if systemOnly:
-        OCV.config.read(iniSystem)
+    global _errorReport
+
+    if only_from_system_ini is True:
+        OCV.config.read(OCV.SYS_CONFIG)
     else:
-        OCV.config.read([iniSystem, iniUser])
+        OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
         _errorReport = get_int("Connection", "errorreport", 1)
 
-        language = get_str(OCV.PRGNAME, "language")
-        if language:
+        OCV.language = get_str(OCV.PRGNAME, "language")
+        if OCV.language:
             # replace language
             __builtin__._ = gettext.translation(
                 OCV.PRGNAME,
-                os.path.join(prgpath, 'locale'),
+                os.path.join(OCV.PRG_PATH, 'locale'),
                 fallback=True,
-                languages=[language]).gettext
+                languages=[OCV.language]).gettext
 
 
-def saveConfiguration():
-    """Save configuration file"""
-    cleanConfiguration()
-    f = open(iniUser, "w")
-    OCV.config.write(f)
-    f.close()
-    delIcons()
+def user_conf_file_save():
+    """Save configuration file to disk"""
+    clean_configuration()
+    file_handler = open(OCV.USER_CONFIG, "w")
+    OCV.config.write(file_handler)
+    file_handler.close()
+    del_icons()
 
 
-def cleanConfiguration():
-    """Remove items that are the same as in the default ini"""
-    newconfig = OCV.config  # Remember config
+def clean_configuration():
+    """Remove items in user configuration file
+    that are present with the same value in the default ini
+    prior to save the userc onfiguration file to disk
+    """
+    # Remember config
+    newconfig = OCV.config
     OCV.config = ConfigParser.ConfigParser()
 
-    loadConfiguration(True)
+    # load configuration items from system ini file
+    conf_file_load(True)
 
     # Compare items
     for section in OCV.config.sections():
@@ -204,30 +181,24 @@ def add_config_section(section):
         OCV.config.add_section(section)
 
 
+def set_value(section, name, value):
+    """write value to configuration"""
+    if isinstance(value, bool):
+        OCV.config.set(section, name, str(int(value)))
+    else:
+        OCV.config.set(section, name, str(value))
+
+
 def get_str(section, name, default=""):
+    """retrieve a string from configuration"""
     try:
         return OCV.config.get(section, name)
     except Exception:
         return default
 
 
-def set_str(section, name, value):
-    OCV.config.set(section, name, str(value))
-
-
-set_int = set_str
-set_float = set_str
-
-
-def set_utf(section, name, value):
-    try:
-        s = str(value)
-    except:
-        s = str(value)
-    OCV.config.set(section, name, s)
-
-
 def get_int(section, name, default=0):
+    """retrieve an integer from configuration"""
     try:
         return int(OCV.config.get(section, name))
     except Exception:
@@ -235,6 +206,7 @@ def get_int(section, name, default=0):
 
 
 def get_float(section, name, default=0.0):
+    """retrieve a float from configuration"""
     try:
         return float(OCV.config.get(section, name))
     except Exception:
@@ -242,25 +214,20 @@ def get_float(section, name, default=0.0):
 
 
 def get_bool(section, name, default=False):
+    """retrieve a boolean from configuration"""
     try:
         return bool(int(OCV.config.get(section, name)))
     except Exception:
         return default
 
 
-def set_bool(section, name, value):
-    OCV.config.set(section, name, str(int(value)))
-
 def remove_config_item(section, name):
+    """remove unused item from configuration"""
     if OCV.config.has_option(section, name):
         OCV.config.remove_option(section, name)
 
 
-def do_nothing():
-    pass
-
-
-def makeFont(name, value=None):
+def font_from_string(name, value=None):
     """Return a proper tkFont from a string"""
     try:
         font = tkFont.Font(name=name, exists=True)
@@ -293,30 +260,30 @@ def makeFont(name, value=None):
     return font
 
 
-def fontString(font):
-    """Create a font string"""
+def string_from_font(font):
+    """Create a font string front tKFont"""
     name = str(font[0])
     size = str(font[1])
 
     if name.find(' ') >= 0:
-        s = '"{0}" {1}'.format(name, size)
+        font_string = '"{0}" {1}'.format(name, size)
     else:
-        s = '{0}, {1}'.format(name, size)
+        font_string = '{0}, {1}'.format(name, size)
 
     try:
         if font[2] == tkFont.BOLD:
-            s += " bold"
+            font_string += " bold"
     except:
         pass
     try:
         if font[3] == tkFont.ITALIC:
-            s += " italic"
+            font_string += " italic"
     except:
         pass
-    return s
+    return font_string
 
 
-def get_font( name, default=None):
+def get_font(name, default=None):
     """Get font from configuration"""
     try:
         value = OCV.config.get(OCV.FONT_SECTION, name)
@@ -324,7 +291,7 @@ def get_font( name, default=None):
         value = None
 
     if not value:
-        font = makeFont(name, default)
+        font = font_from_string(name, default)
         set_font(name, font)
         return font
 
@@ -332,7 +299,7 @@ def get_font( name, default=None):
         value = tuple(value.split(','))
 
     if isinstance(value, tuple):
-        font = makeFont(name, value)
+        font = font_from_string(name, value)
 
         if font is not None:
             return font
@@ -427,7 +394,7 @@ def set_predefined_steps():
         OCV.zstep4 = 10.0
 
 
-def InputValue(app, caller):
+def ask_for_value(app, caller):
     title_d = _("Enter A Value")
     title_p = _("Enter Value for {0} :")
     title_c = ""
@@ -617,7 +584,7 @@ class UserButton(Ribbon.LabelButton):
             return
         name = self.name()
         self["text"] = name
-        self["image"] = icons.get(self.icon(), icons["material"])
+        self["image"] = OCV.icons.get(self.icon(), OCV.icons["material"])
         self["compound"] = Tk.LEFT
         tooltip = self.tooltip()
 
@@ -702,7 +669,7 @@ class UserButtonDialog(Tk.Toplevel):
             width=5,
             command=self.iconChange)
 
-        lst = list(sorted(icons.keys()))
+        lst = list(sorted(OCV.icons.keys()))
 
         lst.insert(0, UserButtonDialog.NONE)
 
@@ -762,7 +729,7 @@ class UserButtonDialog(Tk.Toplevel):
             self.iconCombo.set(UserButtonDialog.NONE)
         else:
             self.iconCombo.set(icon)
-        self.icon["image"] = icons.get(icon, "")
+        self.icon["image"] = OCV.icons.get(icon, "")
         self.command.insert("1.0", self.button.command())
 
         # Wait action
@@ -798,7 +765,7 @@ class UserButtonDialog(Tk.Toplevel):
         self.destroy()
 
     def iconChange(self):
-        self.icon["image"] = icons.get(self.iconCombo.get(), "")
+        self.icon["image"] = OCV.icons.get(self.iconCombo.get(), "")
 
 
 class ErrorWindow(Tk.Toplevel):

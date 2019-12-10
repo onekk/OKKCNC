@@ -40,7 +40,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Paste>>",
-            image=Utils.icons["paste32"],
+            image=OCV.icons["paste32"],
             text=_("Paste"),
             compound=Tk.TOP,
             takefocus=Tk.FALSE,
@@ -56,7 +56,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Cut>>",
-            image=Utils.icons["cut"],
+            image=OCV.icons["cut"],
             text=_("Cut"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -73,7 +73,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Copy>>",
-            image=Utils.icons["copy"],
+            image=OCV.icons["copy"],
             text=_("Copy"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -99,7 +99,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectAll>>",
-            image=Utils.icons["select_all"],
+            image=OCV.icons["select_all"],
             text=_("All"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -116,7 +116,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectNone>>",
-            image=Utils.icons["select_none"],
+            image=OCV.icons["select_none"],
             text=_("None"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -134,7 +134,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectInvert>>",
-            image=Utils.icons["select_invert"],
+            image=OCV.icons["select_invert"],
             text=_("Invert"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -151,7 +151,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectLayer>>",
-            image=Utils.icons["select_layer"],
+            image=OCV.icons["select_layer"],
             text=_("Layer"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -216,7 +216,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<Add>>",
-            image=Utils.icons["add"],
+            image=OCV.icons["add"],
             anchor=Tk.W,
             background=OCV.BACKGROUND)
 
@@ -240,7 +240,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             menulist,
             text=_("Add"),
-            image=Utils.icons["triangle_down"],
+            image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
             anchor=Tk.W,
             background=OCV.BACKGROUND)
@@ -254,7 +254,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             app,
             "<<Clone>>",
-            image=Utils.icons["clone"],
+            image=OCV.icons["clone"],
             text=_("Clone"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -279,7 +279,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             app,
             "<<Delete>>",
-            image=Utils.icons["x"],
+            image=OCV.icons["x"],
             text=_("Delete"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -302,7 +302,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<EnableToggle>>",
-            image=Utils.icons["toggle"],
+            image=OCV.icons["toggle"],
             # text=_("Toggle"),
             # compound=Tk.LEFT,
             anchor=Tk.W,
@@ -326,7 +326,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             menulist,
             text=_("Active"),
-            image=Utils.icons["triangle_down"],
+            image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
             anchor=Tk.W,
             background=OCV.BACKGROUND)
@@ -343,7 +343,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<Expand>>",
-            image=Utils.icons["expand"],
+            image=OCV.icons["expand"],
             text=_("Expand"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -366,7 +366,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<Comment>>",
-            image=Utils.icons["comment"],
+            image=OCV.icons["comment"],
             text=_("Comment"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -384,7 +384,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<Join>>",
-            image=Utils.icons["union"],
+            image=OCV.icons["union"],
             text=_("Join"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -402,7 +402,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<Split>>",
-            image=Utils.icons["cut"],
+            image=OCV.icons["cut"],
             text=_("Split"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -420,7 +420,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             OCV.APP,
             "<<ClearEditor>>",
-            image=Utils.icons["clear"],
+            image=OCV.icons["clear"],
             text=_("Clear All"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -448,7 +448,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["move32"],
+            image=OCV.icons["move32"],
             text=_("Move"),
             compound=Tk.TOP,
             anchor=Tk.W,
@@ -467,7 +467,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["origin32"],
+            image=OCV.icons["origin32"],
             text=_("Origin"),
             compound=Tk.TOP,
             anchor=Tk.W,
@@ -497,7 +497,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
 
             menu.add_command(
                 label=n,
-                image=Utils.icons[i],
+                image=OCV.icons[i],
                 compound=Tk.LEFT,
                 command=lambda a=OCV.APP, c=c: a.insertCommand(c, True))
 
@@ -525,7 +525,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             self,
             "<Control-Key-Prior>",
-            image=Utils.icons["up"],
+            image=OCV.icons["up"],
             text=_("Up"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -543,7 +543,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
         row += 1
         b = Ribbon.LabelButton(
             self.frame, self, "<Control-Key-Next>",
-            image=Utils.icons["down"],
+            image=OCV.icons["down"],
             text=_("Down"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -563,7 +563,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             self,
             "<<Invert>>",
-            image=Utils.icons["swap"],
+            image=OCV.icons["swap"],
             text=_("Invert"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -587,7 +587,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_90"],
+            image=OCV.icons["rotate_90"],
             text=_("CW"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -604,7 +604,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_180"],
+            image=OCV.icons["rotate_180"],
             text=_("Flip"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -621,7 +621,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_270"],
+            image=OCV.icons["rotate_270"],
             text=_("CCW"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -635,7 +635,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["flip_horizontal"],
+            image=OCV.icons["flip_horizontal"],
             text=_("Horizontal"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -652,7 +652,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["flip_vertical"],
+            image=OCV.icons["flip_vertical"],
             text=_("Vertical"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -681,7 +681,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["conventional"],
+            image=OCV.icons["conventional"],
             text=_("Conventional"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -698,7 +698,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["climb"],
+            image=OCV.icons["climb"],
             text=_("Climb"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -715,7 +715,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["reverse"],
+            image=OCV.icons["reverse"],
             text=_("Reverse"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -732,7 +732,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_90"],
+            image=OCV.icons["rotate_90"],
             text=_("Cut CW"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -749,7 +749,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_270"],
+            image=OCV.icons["rotate_270"],
             text=_("Cut CCW"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -775,7 +775,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["stats"],
+            image=OCV.icons["stats"],
             text=_("Statistics"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -792,7 +792,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["info"],
+            image=OCV.icons["info"],
             text=_("Info"),
             compound=Tk.LEFT,
             anchor=Tk.W,

@@ -420,7 +420,7 @@ class DROFrame(CNCRibbon.PageFrame):
             frame,
             text=_("Set WPOS"),
             font=OCV.DRO_ZERO_FONT,
-            image=Utils.icons["origin"],
+            image=OCV.icons["origin"],
             compound=Tk.LEFT,
             activebackground="LightYellow",
             command=lambda s=self: s.event_generate("<<SetWPOS>>"),
@@ -437,7 +437,7 @@ class DROFrame(CNCRibbon.PageFrame):
             frame,
             text=_("Move Gantry"),
             font=OCV.DRO_ZERO_FONT,
-            image=Utils.icons["gantry"],
+            image=OCV.icons["gantry"],
             compound=Tk.LEFT,
             activebackground="LightYellow",
             command=lambda s=self: s.event_generate("<<MoveGantry>>"),
@@ -459,13 +459,13 @@ class DROFrame(CNCRibbon.PageFrame):
 
         menu.add_command(
             label=_("Show Info"),
-            image=Utils.icons["info"],
+            image=OCV.icons["info"],
             compound=Tk.LEFT,
             command=cmd.showState)
 
         menu.add_command(
             label=_("Clear Message"),
-            image=Utils.icons["clear"],
+            image=OCV.icons["clear"],
             compound=Tk.LEFT,
             command=lambda s=self: s.event_generate("<<AlarmClear>>"))
 
@@ -473,13 +473,13 @@ class DROFrame(CNCRibbon.PageFrame):
 
         menu.add_command(
             label=_("Feed hold"),
-            image=Utils.icons["pause"],
+            image=OCV.icons["pause"],
             compound=Tk.LEFT,
             command=lambda s=self: s.event_generate("<<FeedHold>>"))
 
         menu.add_command(
             label=_("Resume"),
-            image=Utils.icons["start"],
+            image=OCV.icons["start"],
             compound=Tk.LEFT,
             command=lambda s=self: s.event_generate("<<Resume>>"))
 
@@ -577,7 +577,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
         but = Ribbon.LabelButton(
             self.frame,
             self, "<<Run>>",
-            image=Utils.icons["start32"],
+            image=OCV.icons["start32"],
             text=_("Start"),
             compound=Tk.TOP,
             background=OCV.BACKGROUND)
@@ -593,7 +593,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self, "<<Pause>>",
             name="run_pause",
-            image=Utils.icons["pause32"],
+            image=OCV.icons["pause32"],
             text=_("Pause"),
             compound=Tk.TOP,
             background=OCV.BACKGROUND)
@@ -608,7 +608,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self, "<<Stop>>",
             name="run_stop",
-            image=Utils.icons["stop32"],
+            image=OCV.icons["stop32"],
             text=_("Stop"),
             compound=Tk.TOP,
             background=OCV.BACKGROUND)
@@ -639,7 +639,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["home32"],
+            image=OCV.icons["home32"],
             text=_("Home"),
             compound=Tk.TOP,
             anchor=Tk.W,
@@ -660,7 +660,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["unlock"],
+            image=OCV.icons["unlock"],
             text=_("Unlock"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -677,7 +677,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["serial"],
+            image=OCV.icons["serial"],
             text=_("Connection"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -692,7 +692,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
         row += 1
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["reset"],
+            image=OCV.icons["reset"],
             text=_("Reset"),
             compound=Tk.LEFT,
             anchor=Tk.W,
@@ -724,7 +724,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=Utils.icons["start32"],
+            #image=OCV.icons["start32"],
             font=OCV.FONT,
             text=_("M2A"),
             background=OCV.BACKGROUND,
@@ -740,7 +740,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=Utils.icons["pause32"],
+            #image=OCV.icons["pause32"],
             font=OCV.FONT,
             text=_("M2B"),
             background=OCV.BACKGROUND,
@@ -756,7 +756,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=Utils.icons["stop32"],
+            #image=OCV.icons["stop32"],
             font=OCV.FONT,
             text=_("C_M"),
             command=self.clr_mem,
@@ -786,7 +786,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            # image=Utils.icons["pause32"],
+            # image=OCV.icons["pause32"],
             font=OCV.FONT,
             text=_("B +"),
             background=OCV.BACKGROUND)
@@ -804,7 +804,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            # image=Utils.icons["stop32"],
+            # image=OCV.icons["stop32"],
             font=OCV.FONT,
             text=_("B -"),
             compound=Tk.TOP,
@@ -827,7 +827,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                 # print("creation", but_name)
                 but = Tk.Button(
                     self.frame,
-                    # image=Utils.icons["pause32"],
+                    # image=OCV.icons["pause32"],
                     font=OCV.FONT,
                     name=but_name,
                     text="M_{0}".format(sub_i + 2),
@@ -878,7 +878,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # Right Button Clicked, set mem
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
-                mem_name = Utils.InputValue(OCV.APP, "ME")
+                mem_name = Utils.ask_for_value(OCV.APP, "ME")
                 # print("MG mem_name = ", mem_name)
                 if mem_name is None:
                     mem_name = mem_key
@@ -951,7 +951,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def clr_mem(self):
         """clear memory - asking for memory number"""
-        mem_num = Utils.InputValue(OCV.APP, "MN")
+        mem_num = Utils.ask_for_value(OCV.APP, "MN")
 
         # print("clr_mem >", mem_num)
 
@@ -1067,6 +1067,6 @@ class Service(object):
                 mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
                     mem_data[4], mem_data[0], mem_data[1], mem_data[2],
                     mem_data[3])
-                Utils.set_str("Memory", mem_name, mem_value)
+                Utils.set_value("Memory", mem_name, mem_value)
             else:
                 Utils.remove_config_item("Memory", mem_name)

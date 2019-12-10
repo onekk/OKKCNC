@@ -15,15 +15,47 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import re
+import os
+import sys
 
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
 PRGNAME = "OKKCNC"
+PRG_PATH = os.path.abspath(os.path.dirname(__file__))
+
+if getattr(sys, 'frozen', False):
+    # When being bundled by pyinstaller, paths are different
+    print("Running as pyinstaller bundle!", sys.argv[0])
+    PRG_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+
+SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRGNAME))
+USER_CONFIG = os.path.expanduser("~/.{0}".format(PRGNAME))
+COMMAND_HISTORY = os.path.expanduser("~/.{0}.history".format(PRGNAME))
 
 """version and date"""
 PG_VER = "0.2.0-dev"
 PG_DATE = "26 Dec 2019"
+
+PRG_CREDITS = \
+    "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
+    "@effer Filippo Rivato , " \
+    "@harvie Tomas Mudrunka\n\n" \
+    "And all the contributors of bCNC"
+
+PRG_CONTRIB = ""
+
+PRG_LANGUAGES = {
+    "": "<system>",
+    "en": "English",
+    "it": "Italiano",
+    }
+
+PRG_SITE = "https://github.com/onekk/OKKCNC"
+
+PRG_TRANS = \
+    "Italian - @onekk\n" \
+
 
 DEBUG = False
 GRAP_DEBUG = True
@@ -142,9 +174,12 @@ feedmax_z = 2000
 # G #
 geometry = None
 # I #
+icons = {}
+images = {}
 inch = False
 
 # L #
+language = ""
 lasercutter = False
 laseradaptive = False
 

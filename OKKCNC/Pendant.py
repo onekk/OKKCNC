@@ -17,7 +17,6 @@ from __future__ import print_function
 
 import os
 import re
-import sys
 #import cgi
 import json
 import urllib
@@ -25,7 +24,6 @@ import tempfile
 import threading
 
 import OCV
-from Utils import prgpath
 
 try:
     import urlparse
@@ -48,8 +46,8 @@ HOSTNAME = "localhost"
 port     = 8080
 
 httpd    = None
-webpath  = "%s/pendant"%(prgpath)
-iconpath = "%s/icons/"%(prgpath)
+webpath  = "%s/pendant"%(OCV.PRG_PATH)
+iconpath = "%s/icons/"%(OCV.PRG_PATH)
 
 
 #==============================================================================

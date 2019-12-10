@@ -2301,7 +2301,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_in"],
+            image=OCV.icons["zoom_in"],
             command=self.canvas.menuZoomIn)
 
         tkExtra.Balloon.set(but, _("Zoom In [Ctrl-=]"))
@@ -2310,7 +2310,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_out"],
+            image=OCV.icons["zoom_out"],
             command=self.canvas.menuZoomOut)
 
         tkExtra.Balloon.set(but, _("Zoom Out [Ctrl--]"))
@@ -2319,7 +2319,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_on"],
+            image=OCV.icons["zoom_on"],
             command=self.canvas.fit2Screen)
 
         tkExtra.Balloon.set(but, _("Fit to screen [F]"))
@@ -2329,7 +2329,7 @@ class CanvasFrame(Tk.Frame):
         lab = Tk.Label(
             toolbar,
             text=_("Tool:"),
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             compound=Tk.LEFT)
 
         lab.pack(side=Tk.LEFT, padx=2)
@@ -2338,7 +2338,7 @@ class CanvasFrame(Tk.Frame):
         # -----
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["select"],
+            image=OCV.icons["select"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_SELECT,
@@ -2352,7 +2352,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["pan"],
+            image=OCV.icons["pan"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_PAN,
@@ -2364,7 +2364,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["ruler"],
+            image=OCV.icons["ruler"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_RULER,
@@ -2380,14 +2380,14 @@ class CanvasFrame(Tk.Frame):
         lab = Tk.Label(
             toolbar,
             text=_("Draw:"),
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             compound=Tk.LEFT)
 
         lab.pack(side=Tk.LEFT, padx=2)
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["axes"],
+            image=OCV.icons["axes"],
             indicatoron=0,
             variable=self.draw_axes,
             command=self.drawAxes)
@@ -2398,7 +2398,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["grid"],
+            image=OCV.icons["grid"],
             indicatoron=0,
             variable=self.draw_grid,
             command=self.drawGrid)
@@ -2409,7 +2409,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["margins"],
+            image=OCV.icons["margins"],
             indicatoron=0,
             variable=self.draw_margin,
             command=self.drawMargin)
@@ -2421,7 +2421,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Checkbutton(
             toolbar,
             text="P",
-            image=Utils.icons["measure"],
+            image=OCV.icons["measure"],
             indicatoron=0,
             variable=self.draw_probe,
             command=self.drawProbe)
@@ -2432,7 +2432,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["endmill"],
+            image=OCV.icons["endmill"],
             indicatoron=0,
             variable=self.draw_paths,
             command=self.toggleDrawFlag)
@@ -2443,7 +2443,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["rapid"],
+            image=OCV.icons["rapid"],
             indicatoron=0,
             variable=self.draw_rapid,
             command=self.toggleDrawFlag)
@@ -2454,7 +2454,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["workspace"],
+            image=OCV.icons["workspace"],
             indicatoron=0,
             variable=self.draw_workarea,
             command=self.drawWorkarea)
@@ -2465,7 +2465,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["camera"],
+            image=OCV.icons["camera"],
             indicatoron=0,
             variable=self.draw_camera,
             command=self.drawCamera)
@@ -2478,7 +2478,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["refresh"],
+            image=OCV.icons["refresh"],
             command=self.viewChange)
 
         tkExtra.Balloon.set(but, _("Redraw display [Ctrl-R]"))
@@ -2527,16 +2527,16 @@ class CanvasFrame(Tk.Frame):
         OCV.DRAW_TIME = Utils.get_int("Canvas", "drawtime", OCV.DRAW_TIME)
 
     def saveConfig(self):
-        Utils.set_int("Canvas", "drawtime", OCV.DRAW_TIME)
-        Utils.set_str("Canvas", "view", self.view.get())
-        Utils.set_bool("Canvas", "axes", self.draw_axes.get())
-        Utils.set_bool("Canvas", "grid", self.draw_grid.get())
-        Utils.set_bool("Canvas", "margin", self.draw_margin.get())
-        Utils.set_bool("Canvas", "probe", self.draw_probe.get())
-        Utils.set_bool("Canvas", "paths", self.draw_paths.get())
-        Utils.set_bool("Canvas", "rapid", self.draw_rapid.get())
-        Utils.set_bool("Canvas", "workarea", self.draw_workarea.get())
-        #Utils.set_bool("Canvas", "camera",  self.draw_camera.get())
+        Utils.set_value("Canvas", "drawtime", OCV.DRAW_TIME)
+        Utils.set_value("Canvas", "view", self.view.get())
+        Utils.set_value("Canvas", "axes", self.draw_axes.get())
+        Utils.set_value("Canvas", "grid", self.draw_grid.get())
+        Utils.set_value("Canvas", "margin", self.draw_margin.get())
+        Utils.set_value("Canvas", "probe", self.draw_probe.get())
+        Utils.set_value("Canvas", "paths", self.draw_paths.get())
+        Utils.set_value("Canvas", "rapid", self.draw_rapid.get())
+        Utils.set_value("Canvas", "workarea", self.draw_workarea.get())
+        #Utils.set_value("Canvas", "camera",  self.draw_camera.get())
 
 
     def redraw(self, event=None):

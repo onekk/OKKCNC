@@ -507,8 +507,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             pass
 
     def saveConfig(self):
-        Utils.set_float("Control", "step", self.step.get())
-        Utils.set_float("Control", "zstep", self.zstep.get())
+        Utils.set_value("Control", "step", self.step.get())
+        Utils.set_value("Control", "zstep", self.zstep.get())
 
     def reset_all(self):
         """reset all thing related to cam operation and memory
@@ -611,7 +611,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
 
-            end_depth = Utils.InputValue(OCV.APP, "TD")
+            end_depth = Utils.ask_for_value(OCV.APP, "TD")
 
             if end_depth is None:
                 return
@@ -622,7 +622,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """generate a rectangular pocket from mem_a to mem_b"""
         # avoid a dry run if both mem pos are not set
         if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-            end_depth = Utils.InputValue(OCV.APP, "TD")
+            end_depth = Utils.ask_for_value(OCV.APP, "TD")
 
             if end_depth is None:
                 return
@@ -901,7 +901,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """
         print("edit_pre_step caller > ", caller)
 
-        retval = Utils.InputValue(self, caller)
+        retval = Utils.ask_for_value(self, caller)
 
         if retval is None:
             return
@@ -913,16 +913,16 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 wid = self.nametowidget("step_1")
                 OCV.step1 = retval
                 bal_text = "Step1 = {0}".format(OCV.step1)
-                Utils.set_float("Control", "step1", retval)
+                Utils.set_value("Control", "step1", retval)
             elif caller == "S2":
                 wid = self.nametowidget("step_2")
                 OCV.step2 = retval
                 bal_text = "Step2 = {0}".format(OCV.step2)
-                Utils.set_float("Control", "step2", retval)
+                Utils.set_value("Control", "step2", retval)
             elif caller == "S3":
                 wid = self.nametowidget("step_3")
                 OCV.step3 = retval
-                Utils.set_float("Control", "step3", retval)
+                Utils.set_value("Control", "step3", retval)
                 bal_text = "Step2 = {0}".format(OCV.step3)
 
         elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
@@ -930,22 +930,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 wid = self.nametowidget("zstep_1")
                 OCV.zstep1 = retval
                 bal_text = "Zstep1 = {0}".format(OCV.zstep1)
-                Utils.set_float("Control", "zstep1", retval)
+                Utils.set_value("Control", "zstep1", retval)
             elif caller == "ZS2":
                 wid = self.nametowidget("zstep_2")
                 OCV.zstep2 = retval
                 bal_text = "Zstep2 = {0}".format(OCV.zstep2)
-                Utils.set_float("Control", "zstep2", retval)
+                Utils.set_value("Control", "zstep2", retval)
             elif caller == "ZS3":
                 wid = self.nametowidget("zstep_3")
                 OCV.zstep3 = retval
                 bal_text = "Zstep2 = {0}".format(OCV.zstep3)
-                Utils.set_float("Control", "zstep3", retval)
+                Utils.set_value("Control", "zstep3", retval)
             elif caller == "ZS4":
                 wid = self.nametowidget("zstep_4")
                 OCV.zstep4 = retval
                 bal_text = "Zstep4 = {0}".format(OCV.zstep4)
-                Utils.set_float("Control", "zstep4", retval)
+                Utils.set_value("Control", "zstep4", retval)
 
         if wid is not None:
             wid.configure(text=retval)
