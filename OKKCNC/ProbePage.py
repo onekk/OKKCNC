@@ -319,7 +319,7 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
             self.sendGCode(cmd)
         except:
             pass
-        OCV.mcontrol.viewParameters()
+        OCV.MCTRL.viewParameters()
 
     @staticmethod
     def probeUpdate():

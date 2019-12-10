@@ -159,8 +159,8 @@ class Sender(object):
         if ctl in self.controllers.keys():
             self.controller = ctl
             OCV.CD["controller"] = ctl
-            OCV.mcontrol = self.controllers[ctl]
-            # OCV.mcontrol.test()
+            OCV.MCTRL = self.controllers[ctl]
+            # OCV.MCTRL.test()
 
     def quit(self, event=None):
         self.saveConfig()
@@ -240,7 +240,7 @@ class Sender(object):
 
         # HOME: perform a homing cycle
         elif cmd == "HOME":
-            OCV.mcontrol.home()
+            OCV.MCTRL.home()
 
         # LO*AD [filename]: load filename containing g-code
         elif rexx.abbrev("LOAD", cmd, 2):
@@ -266,7 +266,7 @@ class Sender(object):
 
         # FEEDHOLD: feedhold
         elif cmd == "FEEDHOLD":
-            OCV.mcontrol.feedHold(None)
+            OCV.MCTRL.feedHold(None)
 
         # REL*ATIVE: switch to relative coordinates
         elif rexx.abbrev("RELATIVE", cmd, 3):
@@ -274,7 +274,7 @@ class Sender(object):
 
         # RESET: perform a soft reset to grbl
         elif cmd == "RESET":
-            OCV.mcontrol.softReset(True)
+            OCV.MCTRL.softReset(True)
 
         # RUN: run g-code
         elif cmd == "RUN":
@@ -318,10 +318,10 @@ class Sender(object):
             except Exception:
                 z = None
 
-            OCV.mcontrol.wcs_set(x, y, z)
+            OCV.MCTRL.wcs_set(x, y, z)
 
         elif cmd == "SET0":
-            OCV.mcontrol.wcs_set(0., 0., 0.)
+            OCV.MCTRL.wcs_set(0., 0., 0.)
 
         elif cmd == "SETX":
             try:
@@ -329,7 +329,7 @@ class Sender(object):
             except Exception:
                 x = 0.0
 
-            OCV.mcontrol.wcs_set(x, None, None)
+            OCV.MCTRL.wcs_set(x, None, None)
 
         elif cmd == "SETY":
             try:
@@ -337,7 +337,7 @@ class Sender(object):
             except Exception:
                 y = 0.0
 
-            OCV.mcontrol.wcs_set(None, y, None)
+            OCV.MCTRL.wcs_set(None, y, None)
 
         elif cmd == "SETZ":
             try:
@@ -345,7 +345,7 @@ class Sender(object):
             except Exception:
                 z = 0.0
 
-            OCV.mcontrol.wcs_set(None, None, z)
+            OCV.MCTRL.wcs_set(None, None, z)
 
         # STOP: stop current run
         elif cmd == "STOP":
@@ -353,10 +353,10 @@ class Sender(object):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
-            OCV.mcontrol.unlock(True)
+            OCV.MCTRL.unlock(True)
 
         # Send commands to SMOOTHIE
-        elif OCV.mcontrol.executeCommand(oline, line, cmd):
+        elif OCV.MCTRL.executeCommand(oline, line, cmd):
             pass
 
         else:
@@ -571,12 +571,12 @@ class Sender(object):
     def resume(self, event=None):
         but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
         but.config(background=OCV.BACKGROUND)
-        OCV.mcontrol.resume(None)
+        OCV.MCTRL.resume(None)
 
     def pause(self, event=None):
         but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
         but.config(background=STATECOLOR["Hold:0"])
-        OCV.mcontrol.pause(None)
+        OCV.MCTRL.pause(None)
 
     def emptyQueue(self):
         while self.queue.qsize() > 0:
@@ -632,7 +632,7 @@ class Sender(object):
 
     def stopRun(self, event=None):
         """Stop the current run"""
-        OCV.mcontrol.feedHold(None)
+        OCV.MCTRL.feedHold(None)
         self.log.put((Sender.MSG_RUNEND, "Stop Requested: " + str(datetime.now())))
         but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
         but.config(background=STATECOLOR["Hold:0"])
@@ -654,7 +654,7 @@ class Sender(object):
             print(
                 "Job done. Purging the controller. (Running: {0})".format(
                     OCV.s_running))
-        OCV.mcontrol.purgeController()
+        OCV.MCTRL.purgeController()
 
     def controllerStateChange(self, state):
         """
@@ -669,8 +669,8 @@ class Sender(object):
                     OCV.s_running))
 
         if state in ("Idle",):
-            OCV.mcontrol.viewParameters()
-            OCV.mcontrol.viewState()
+            OCV.MCTRL.viewParameters()
+            OCV.MCTRL.viewState()
 
         if self.cleanAfter is True and OCV.s_running is False and \
                 state in ("Idle",):
@@ -692,12 +692,12 @@ class Sender(object):
             t = time.time()
             # refresh machine position?
             if t-tr > SERIAL_POLL:
-                OCV.mcontrol.viewStatusReport()
+                OCV.MCTRL.viewStatusReport()
                 tr = t
 
                 # If Override change, attach feed
                 if OCV.CD["_OvChanged"]:
-                    OCV.mcontrol.overrideSet()
+                    OCV.MCTRL.overrideSet()
 
             # Fetch new command to send if...
             if tosend is None and not self.sio_wait and \
@@ -761,7 +761,7 @@ class Sender(object):
 
                     # Modify sent g-code to reflect overrided feed
                     # for controllers without override support
-                    if not OCV.mcontrol.has_override:
+                    if not OCV.MCTRL.has_override:
                         if OCV.CD["_OvChanged"]:
                             OCV.CD["_OvChanged"] = False
                             self._newFeed = float(
@@ -802,7 +802,7 @@ class Sender(object):
 #                print ("*-* stack=",sline,"sum=",sum(cline),"pause=",OCV.s_pause)
                 if not line:
                     pass
-                elif OCV.mcontrol.parseLine(line, cline, sline):
+                elif OCV.MCTRL.parseLine(line, cline, sline):
                     pass
                 else:
                     self.log.put((Sender.MSG_RECEIVE, line))
@@ -827,10 +827,10 @@ class Sender(object):
 #                    if not tosend: tosend = None
 
 #                print ">S>",repr(tosend),"stack=",sline,"sum=",sum(cline)
-                if OCV.mcontrol.gcode_case > 0:
+                if OCV.MCTRL.gcode_case > 0:
                     tosend = tosend.upper()
 
-                if OCV.mcontrol.gcode_case < 0:
+                if OCV.MCTRL.gcode_case < 0:
                     tosend = tosend.lower()
 
                 self.serial_write(tosend)

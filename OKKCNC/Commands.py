@@ -20,27 +20,27 @@ from _GenericGRBL import ERROR_CODES
 
 
 def set_x0():
-    OCV.mcontrol.wcs_set("0", None, None)
+    OCV.MCTRL.wcs_set("0", None, None)
     RefreshMemories()
 
 
 def set_y0():
-    OCV.mcontrol.wcs_set(None, "0", None)
+    OCV.MCTRL.wcs_set(None, "0", None)
     RefreshMemories()
 
 
 def set_z0():
-    OCV.mcontrol.wcs_set(None, None, "0")
+    OCV.MCTRL.wcs_set(None, None, "0")
     RefreshMemories()
 
 
 def set_xy0():
-    OCV.mcontrol.wcs_set("0", "0", None)
+    OCV.MCTRL.wcs_set("0", "0", None)
     RefreshMemories()
 
 
 def set_xyz0():
-    OCV.mcontrol.wcs_set("0", "0", "0")
+    OCV.MCTRL.wcs_set("0", "0", "0")
     RefreshMemories()
 
 
@@ -68,7 +68,7 @@ def showState():
 def RefreshMemories():
     for i in range(2, OCV.WK_mem_num):
         if OCV.WK_active_mems[i] == 2:
-            OCV.canvas.memDraw(i)
+            OCV.CANVAS.memDraw(i)
 
 
 def get_errors():

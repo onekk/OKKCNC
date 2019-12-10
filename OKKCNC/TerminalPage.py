@@ -52,9 +52,9 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         CNCRibbon.ButtonMenuGroup.__init__(
             self, master,
             N_("Commands"), app,
-            [(_("Restore Settings"), "grbl_settings", OCV.mcontrol.grblRestoreSettings),
-             (_("Restore Workspace"), "grbl_params", OCV.mcontrol.grblRestoreWCS),
-             (_("Restore All"), "reset", OCV.mcontrol.grblRestoreAll),
+            [(_("Restore Settings"), "grbl_settings", OCV.MCTRL.grblRestoreSettings),
+             (_("Restore Workspace"), "grbl_params", OCV.MCTRL.grblRestoreWCS),
+             (_("Restore All"), "reset", OCV.MCTRL.grblRestoreAll),
             ])
 
         self.grid3rows()
@@ -71,7 +71,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.viewSettings,
+            command=OCV.MCTRL.viewSettings,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -87,7 +87,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Parameters"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewParameters,
+            command=OCV.MCTRL.viewParameters,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -102,7 +102,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("State"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewState,
+            command=OCV.MCTRL.viewState,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -121,7 +121,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Build"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewBuild,
+            command=OCV.MCTRL.viewBuild,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -139,7 +139,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.viewStartup,
+            command=OCV.MCTRL.viewStartup,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -158,7 +158,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.checkGcode,
+            command=OCV.MCTRL.checkGcode,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -178,7 +178,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Help"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.grblHelp,
+            command=OCV.MCTRL.grblHelp,
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)

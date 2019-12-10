@@ -133,7 +133,7 @@ class CNCCanvas(Tk.Canvas, object):
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
-        OCV.canvas = self
+        OCV.CANVAS = self
 
         # Global variables
         self.view = 0
@@ -438,14 +438,14 @@ class CNCCanvas(Tk.Canvas, object):
     def actionGantry(self, x, y):
         """Move gantry to mouse location"""
         u, v, w = self.image2Machine(x, y)
-        OCV.mcontrol.goto(u, v, w)
+        OCV.MCTRL.goto(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionWPOS(self, x, y):
         """Set the work coordinates to mouse location"""
         u, v, w = self.image2Machine(x, y)
         # print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
-        OCV.mcontrol.wcs_set(u, v, w)
+        OCV.MCTRL.wcs_set(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionAddOrient(self, x, y):

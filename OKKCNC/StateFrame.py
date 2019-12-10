@@ -515,7 +515,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         try:
             tlo = float(self.tlo.get())
             self.sendGCode("G43.1 Z{0:.{1}f}".format(tlo, OCV.digits))
-            OCV.mcontrol.viewParameters()
+            OCV.MCTRL.viewParameters()
             self.event_generate("<<CanvasFocus>>")
         except ValueError:
             pass
@@ -610,4 +610,4 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
     def wcsChange(self):
         self.sendGCode(OCV.WCS[OCV.wcsvar.get()])
-        OCV.mcontrol.viewState()
+        OCV.MCTRL.viewState()

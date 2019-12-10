@@ -207,7 +207,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Recent9>>', self._loadRecent9)
         self.bind('<<AlarmClear>>', self.alarmClear)
         self.bind('<<Help>>', self.help)
-        self.bind('<<FeedHold>>', OCV.mcontrol.feedHold(None))
+        self.bind('<<FeedHold>>', OCV.MCTRL.feedHold(None))
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
         self.bind('<<Run>>', lambda e, s=self: s.run())
         self.bind('<<Stop>>', self.stopRun)
@@ -246,7 +246,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind("<<ClearEditor>>", self.ClearEditor)
         self.bind("<<Delete>>", self.editor.deleteBlock)
 
-        # CanvasFrame see if is == OCV.canvas
+        # CanvasFrame see if is == OCV.CANVAS
         self.canvasFrame.canvas.bind("<Control-Key-Prior>",
                                      self.editor.orderUp)
         self.canvasFrame.canvas.bind("<Control-Key-Next>",
@@ -384,7 +384,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<Key-2>', self.control.apply_pres_xy_step2)
         self.bind('<Key-3>', self.control.apply_pres_xy_step3)
 
-        self.bind('<Key-exclam>', OCV.mcontrol.feedHold(None))
+        self.bind('<Key-exclam>', OCV.MCTRL.feedHold(None))
         self.bind('<Key-asciitilde>', self.resume)
 
         for x in self.widgets:
@@ -1842,7 +1842,7 @@ class Application(Tk.Toplevel, Sender):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
-            OCV.mcontrol.unlock(True)
+            OCV.MCTRL.unlock(True)
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
@@ -2368,7 +2368,7 @@ class Application(Tk.Toplevel, Sender):
             self._paths = self.gcode.comp_level(self.queue, self.checkStop)
             if self._paths is None:
                 self.emptyQueue()
-                OCV.mcontrol.purgeController()
+                OCV.MCTRL.purgeController()
                 return
             elif not self._paths:
                 self.runEnded()

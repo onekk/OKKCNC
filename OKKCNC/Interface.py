@@ -146,7 +146,7 @@ def main_interface(self):
     # --- Canvas ---
     self.canvasFrame = CNCCanvas.CanvasFrame(self.Rframe, self)
     print("canvasFrame", self.canvasFrame)
-    print("OCV.canvas", OCV.canvas)
+    print("OCV.CANVAS", OCV.CANVAS)
 
     self.canvasFrame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
 
@@ -519,7 +519,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.xwork.get(), None, OCV.CD), 3)
-            OCV.mcontrol.wcs_set(value, None, None)
+            OCV.MCTRL.wcs_set(value, None, None)
         except:
             pass
 
@@ -530,7 +530,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.ywork.get(), None, OCV.CD), 3)
-            OCV.mcontrol.wcs_set(None, value, None)
+            OCV.MCTRL.wcs_set(None, value, None)
         except:
             pass
 
@@ -541,7 +541,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.zwork.get(), None, OCV.CD), 3)
-            OCV.mcontrol.wcs_set(None, None, value)
+            OCV.MCTRL.wcs_set(None, None, value)
         except:
             pass
 
@@ -629,7 +629,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", OCV.mcontrol.hardReset)])
+            [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset)])
 
         print("ConnectionGroup app", app)
 
@@ -643,7 +643,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Home"),
             compound=Tk.TOP,
             anchor=Tk.W,
-            command=OCV.mcontrol.home(),
+            command=OCV.MCTRL.home(),
             background=OCV.BACKGROUND)
 
         but.grid(
@@ -664,7 +664,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Unlock"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.unlock(True),
+            command=OCV.MCTRL.unlock(True),
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -696,7 +696,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Reset"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.softReset(True),
+            command=OCV.MCTRL.softReset(True),
             background=OCV.BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)

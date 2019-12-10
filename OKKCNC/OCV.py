@@ -133,17 +133,16 @@ ERROR_HANDLING = {}
 
 root = None
 APP = None
-canvas = None
-mcontrol = None
+CANVAS = None
+MCTRL = None
 RUN_GROUP = None
 
 
-
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
-_sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
-_gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
+sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
+gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
 
-"""Other vairables in alphabetical order"""
+"""Other variables in alphabetical order"""
 
 # A #
 acceleration_x = 25.0  # mm/s^2
@@ -264,7 +263,6 @@ WK_mems = {}
 WK_mem_num = 0
 
 
-
 CD = {
     "prbx": 0.0,
     "prby": 0.0,
@@ -374,7 +372,7 @@ TABS_COLOR = "Orange"
 WORK_COLOR = "Orange"
 
 def showC(X, Y, Z):
-    return _sh_coord.format(X, Y, Z, digits)
+    return sh_coord.format(X, Y, Z, digits)
 
 def gcodeCC(X, Y, Z):
-    return _gc_coord.format(X, Y, Z, digits)
+    return gc_coord.format(X, Y, Z, digits)

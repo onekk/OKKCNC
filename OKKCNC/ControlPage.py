@@ -635,31 +635,31 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """jog X axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("X", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("X", float(self.step.get())))
 
     def jog_x_down(self, event=None):
         """jog X axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("X-", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("X-", float(self.step.get())))
 
     def jog_y_up(self, event=None):
         """jog Y axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("Y", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Y", float(self.step.get())))
 
     def jog_y_down(self, event=None):
         """jog Y axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("Y-", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Y-", float(self.step.get())))
 
     def jog_x_down_y_up(self, event=None):
         """jog X axis down and Y axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog(
+        OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
                 "X-", float(self.step.get()),
                 "Y", float(self.step.get())))
@@ -668,7 +668,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """jog X axis up and Y axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog(
+        OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
                 "X", float(self.step.get()),
                 "Y", float(self.step.get())))
@@ -677,7 +677,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """jog X axis down and Y axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog(
+        OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
                 "X-", float(self.step.get()),
                 "Y-", float(self.step.get())))
@@ -686,7 +686,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """jog X axis up and Y axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog(
+        OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
                 "X", float(self.step.get()),
                 "Y-", float(self.step.get())))
@@ -695,13 +695,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """jog Z axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
 
     def jog_z_down(self, event=None):
         """jog Z axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.mcontrol.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
 
     def go_to_origin(self, event=None):
         """go to X0 Y0 raising Z to safe height prior to move"""
@@ -723,13 +723,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if self.zstep is self.step or z_step is None:
             self.event_generate(
                 "<<Status>>",
-                data=_("Step: {0:.4f}").format(float(xy_step)))
+                data=_("Step: {0:.{1}f}").format(float(xy_step), OCV.digits))
         else:
-            self.zstep.set("{0:.4f}".format(float(z_step)))
+            self.zstep.set("{0:.{1}f}".format(float(z_step), OCV.digits))
             self.event_generate(
                 "<<Status>>",
-                data=_("Step: {0:.4f}    Zstep: {1:.4f} ").format(
-                    float(xy_step), float(z_step)))
+                data=_("Step: {0:.{2}f}    Zstep: {1:.{2}f} ").format(
+                    float(xy_step), float(z_step), OCV.digits))
 
     @staticmethod
     def _step_power(step):
