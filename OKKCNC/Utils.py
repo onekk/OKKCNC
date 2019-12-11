@@ -7,7 +7,7 @@ This module contains some helper functions:
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -52,12 +52,6 @@ except:
 
 import OCV
 
-# dirty way of substituting the "_" on the builtin namespace
-# __builtin__.__dict__["_"] = gettext.translation(
-# 'OKKCNC',
-# 'locale',
-# fallback=True).ugettext
-
 __builtin__._ = gettext.translation(
     'OKKCNC',
     os.path.join(OCV.PRG_PATH, 'locale'),
@@ -65,22 +59,19 @@ __builtin__._ = gettext.translation(
 
 __builtin__.N_ = lambda message: message
 
+import IniFile
 import Ribbon
 import tkExtra
 
-OCV.config = ConfigParser.ConfigParser()
-# This is here to debug the fact that config is sometimes instantiated twice
-print("new-config", __name__, OCV.config)
-
-_errorReport = True
 errors = []
 
-
+'''
 class Config(object):
     """New class to provide config for everyone"""
     def greet(self, who=__name__):
         """print on console the """
         print("Config class loaded in {0}".format(who))
+'''
 
 
 def load_icons():
@@ -90,7 +81,7 @@ def load_icons():
         name, ext = os.path.splitext(os.path.basename(img))
         try:
             OCV.icons[name] = Tk.PhotoImage(file=img)
-            if get_bool("CNC", "doublesizeicon"):
+            if IniFile.get_bool("CNC", "doublesizeicon"):
                 OCV.icons[name] = OCV.icons[name].zoom(2, 2)
         except Tk.TclError:
             pass
@@ -101,7 +92,7 @@ def load_icons():
         name, ext = os.path.splitext(os.path.basename(img))
         try:
             OCV.images[name] = Tk.PhotoImage(file=img)
-            if get_bool("CNC", "doublesizeicon"):
+            if IniFile.get_bool("CNC", "doublesizeicon"):
                 OCV.images[name] = OCV.images[name].zoom(2, 2)
         except Tk.TclError:
             pass
@@ -120,111 +111,6 @@ def del_icons():
             del i
         # needed otherwise it complains on deleting the icons
         OCV.images = {}
-
-
-def conf_file_load(only_from_system_ini=False):
-    """Load configuration"""
-    global _errorReport
-
-    if only_from_system_ini is True:
-        OCV.config.read(OCV.SYS_CONFIG)
-    else:
-        OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
-        _errorReport = get_int("Connection", "errorreport", 1)
-
-        OCV.language = get_str(OCV.PRGNAME, "language")
-        if OCV.language:
-            # replace language
-            __builtin__._ = gettext.translation(
-                OCV.PRGNAME,
-                os.path.join(OCV.PRG_PATH, 'locale'),
-                fallback=True,
-                languages=[OCV.language]).gettext
-
-
-def user_conf_file_save():
-    """Save configuration file to disk"""
-    clean_configuration()
-    file_handler = open(OCV.USER_CONFIG, "w")
-    OCV.config.write(file_handler)
-    file_handler.close()
-    del_icons()
-
-
-def clean_configuration():
-    """Remove items in user configuration file
-    that are present with the same value in the default ini
-    prior to save the userc onfiguration file to disk
-    """
-    # Remember config
-    newconfig = OCV.config
-    OCV.config = ConfigParser.ConfigParser()
-
-    # load configuration items from system ini file
-    conf_file_load(True)
-
-    # Compare items
-    for section in OCV.config.sections():
-        for item, value in OCV.config.items(section):
-            try:
-                new = newconfig.get(section, item)
-                if value == new:
-                    newconfig.remove_option(section, item)
-            except ConfigParser.NoOptionError:
-                pass
-    OCV.config = newconfig
-
-
-def add_config_section(section):
-    """add section if it doesn't exist"""
-    if not OCV.config.has_section(section):
-        OCV.config.add_section(section)
-
-
-def set_value(section, name, value):
-    """write value to configuration"""
-    if isinstance(value, bool):
-        OCV.config.set(section, name, str(int(value)))
-    else:
-        OCV.config.set(section, name, str(value))
-
-
-def get_str(section, name, default=""):
-    """retrieve a string from configuration"""
-    try:
-        return OCV.config.get(section, name)
-    except Exception:
-        return default
-
-
-def get_int(section, name, default=0):
-    """retrieve an integer from configuration"""
-    try:
-        return int(OCV.config.get(section, name))
-    except Exception:
-        return default
-
-
-def get_float(section, name, default=0.0):
-    """retrieve a float from configuration"""
-    try:
-        return float(OCV.config.get(section, name))
-    except Exception:
-        return default
-
-
-def get_bool(section, name, default=False):
-    """retrieve a boolean from configuration"""
-    try:
-        return bool(int(OCV.config.get(section, name)))
-    except Exception:
-        return default
-
-
-def remove_config_item(section, name):
-    """remove unused item from configuration"""
-    if OCV.config.has_option(section, name):
-        OCV.config.remove_option(section, name)
 
 
 def font_from_string(name, value=None):
@@ -322,155 +208,101 @@ def set_font(name, font):
             font.cget("weight")))
 
 
-def add_recent_file(filename):
-    """Add recent file"""
-    try:
-        sfn = str(os.path.abspath(filename))
-    except UnicodeEncodeError:
-        sfn = filename
-
-    last = OCV.maxRecent - 1
-    for i in range(OCV.maxRecent):
-        rfn = get_recent_file(i)
-        if rfn is None:
-            last = i - 1
-            break
-        if rfn == sfn:
-            if i == 0:
-                return
-            last = i - 1
-            break
-
-    # Shift everything by one
-    for i in range(last, -1, -1):
-        OCV.config.set("File", "recent.{0}".format(i + 1), get_recent_file(i))
-    OCV.config.set("File", "recent.0", sfn)
-
-
-def get_recent_file(recent):
-    try:
-        return OCV.config.get("File", "recent.{0}".format(recent))
-    except ConfigParser.NoOptionError:
-        return None
-
-
 def set_predefined_steps():
     """set pre defined steps used in ControlPage"""
     # Predefined XY steppings
     try:
-        OCV.step1 = get_float("Control", "step1")
+        OCV.step1 = IniFile.get_float("Control", "step1")
     except Exception:
         OCV.step1 = 1.0
 
     try:
-        OCV.step2 = get_float("Control", "step2")
+        OCV.step2 = IniFile.get_float("Control", "step2")
     except Exception:
         OCV.step2 = 1.0
 
     try:
-        OCV.step3 = get_float("Control", "step3")
+        OCV.step3 = IniFile.get_float("Control", "step3")
     except Exception:
         OCV.step3 = 10.0
 
     # Predefined Z steppings
     try:
-        OCV.zstep1 = get_float("Control", "zstep1")
+        OCV.zstep1 = IniFile.get_float("Control", "zstep1")
     except Exception:
         OCV.zstep1 = 0.1
 
     try:
-        OCV.zstep2 = get_float("Control", "zstep2")
+        OCV.zstep2 = IniFile.get_float("Control", "zstep2")
     except Exception:
         OCV.zstep2 = 1.0
 
     try:
-        OCV.zstep3 = get_float("Control", "zstep3")
+        OCV.zstep3 = IniFile.get_float("Control", "zstep3")
     except Exception:
         OCV.zstep3 = 5.0
 
     try:
-        OCV.zstep4 = get_float("Control", "zstep4")
+        OCV.zstep4 = IniFile.get_float("Control", "zstep4")
     except Exception:
         OCV.zstep4 = 10.0
 
 
 def ask_for_value(app, caller):
+    """Show an input windows asking for a value
+    uses tkSimpleDialog
+    """
     title_d = _("Enter A Value")
-    title_p = _("Enter Value for {0} :")
-    title_c = ""
-    c_t = 0
-    if caller in ("S1", "S2", "S3"):
-        if caller == "S1":
-            title_c = title_p.format("Step1")
-        elif caller == "S2":
-            title_c = title_p.format("Step2")
-        elif caller == "S3":
-            title_c = title_p.format("Step3")
+    switch = {
+        "S1": ("Step1", "step", 0.001, 100.0),
+        "S2": ("Step2", "step", 0.001, 100.0),
+        "S3": ("Step3", "step", 0.001, 100.0),
+        "ZS1": ("Z Step1", "step", 0.001, 25.0),
+        "ZS2": ("Z Step2", "step", 0.001, 25.0),
+        "ZS3": ("Z Step3", "step", 0.001, 25.0),
+        "ZS4": ("Z Step4", "step", 0.001, 25.0),
+        "ZS4": ("Z Step4", "step", 0.001, 25.0),
+        "TD": (_("Enter Target Depth :"), "depth", -35.0, 0.0),
+        "MN": (_("Enter Memory Number :"), "mem_num", 2, OCV.WK_mem_num),
+        "ME": (_("Enter Memory {0} Description :"), "mem_desc", 0, 0),
+        }
+
+    choiche = switch.get(
+        caller, (_("Enter a float Value :"), "gen_float", 0.001, 100.0))
+
+    if choiche[1] in ("step", "depth", "gen_float"):
+        if choiche[1] == "step":
+            title_c = _("Enter Value for {0} :").format(choiche[0])
         else:
-            return
-        min_value = 0.001
-        max_value = 100.0
+            title_c = choiche[0]
 
-    elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
-        if caller == "ZS1":
-            title_c = title_p.format("Z Step1")
-        elif caller == "ZS2":
-            title_c = title_p.format("Z Step2")
-        elif caller == "ZS3":
-            title_c = title_p.format("Z Step3")
-        elif caller == "ZS4":
-            title_c = title_p.format("Z Step3")
-        else:
-            return
-        min_value = 0.001
-        max_value = 10.0
-
-    elif caller == "TD":
-        title_c = _("Enter Target Depth :")
-        min_value = -35.0
-        max_value = 0.0
-
-    elif caller == "MN":
-        title_c = _("Enter Memory Number :")
-        min_value = 2
-        max_value = OCV.WK_mem_num
-        c_t = 1
-
-    elif caller == "ME":
-        title_p = _("Enter Memory {0} Description :")
-        title_c = title_p.format(OCV.WK_mem)
-        c_t = 2
-
-    else:
-        title_c = _("Enter a float Value :")
-        min_value = 0.001
-        max_value = 100.0
-
-    if c_t == 0:
         prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(
             title_c,
-            min_value,
-            max_value)
+            choiche[2],
+            choiche[3])
 
         retval = tkSimpleDialog.askfloat(
             title_d, prompt, parent=app,
-            minvalue=min_value,
-            maxvalue=max_value)
-    elif c_t == 1:
+            minvalue=choiche[2],
+            maxvalue=choiche[3])
+
+    elif choiche[1] == "mem_num":
         prompt = "{0}\n (min: {1:d} max: {2:d})".format(
-            title_c,
-            min_value,
-            max_value)
+            choiche[0],
+            choiche[2],
+            choiche[3])
 
         retval = tkSimpleDialog.askinteger(
             title_d, prompt, parent=app,
-            minvalue=min_value,
-            maxvalue=max_value)
-    elif c_t == 2:
-        prompt = title_c
+            minvalue=choiche[2],
+            maxvalue=choiche[3])
+
+    elif choiche[1] == "mem_desc":
+        prompt = choiche[0].format(OCV.WK_mem)
         retval = tkSimpleDialog.askstring(title_d, prompt, parent=app)
 
-    # early check for null value
+    else:
+        retval = None
 
     if retval is None:
         return None
@@ -499,21 +331,22 @@ def comports(include_links=True):
 
             # Detects windows XP serial ports
             try:
-                s = serial.Serial(device)
-                s.close()
+                ser_dev = serial.Serial(device)
+                ser_dev.close()
                 comports.append((device, None, None))
             except:
                 pass
     return comports
 
 
-def q_round(x, prec=2, base=.05):
+def q_round(value, prec=2, base=.05):
     """round a number specifing the decimal digits
     and a quantization factor"""
-    return round(base * round(float(x)/base), prec)
+    return round(base * round(float(value)/base), prec)
 
 
 def addException():
+    """collect and report exceptions"""
     global errors
 #    self.widget._report_exception()
     try:
@@ -533,7 +366,7 @@ def addException():
         say(str(sys.exc_info()))
 
 
-class CallWrapper:
+class CallWrapper(object):
     """Replaces the Tkinter.CallWrapper with extra functionality"""
     def __init__(self, func, subst, widget):
         """Store FUNC, SUBST and WIDGET as members."""

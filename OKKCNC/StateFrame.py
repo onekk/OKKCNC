@@ -2,7 +2,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -23,10 +23,7 @@ except ImportError:
 
 import OCV
 import CNCRibbon
-# import Ribbon
-import Sender
 import tkExtra
-import Utils
 
 OVERRIDES = ["Feed", "Rapid", "Spindle"]
 
@@ -420,7 +417,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         col += 1
 
         floodEnable = Tk.Checkbutton(
-            frame1, text=_("Flood"),
+            frame1,
+            text=_("Flood"),
             command=self.coolantFlood,
             indicatoron=0,
             variable=self.flood,
@@ -434,7 +432,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         col += 1
 
         mistEnable = Tk.Checkbutton(
-            frame1, text=_("Mist"),
+            frame1,
+            text=_("Mist"),
             command=self.coolantMist,
             indicatoron=0,
             variable=self.mist,
@@ -448,7 +447,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         frame1.grid_columnconfigure(1, weight=1)
 
         # DEBUG
-        #print(self.gstate)
+        # print(self.gstate)
 
     def overrideChange(self, event=None):
         n_val = self.overrideCombo.get()
@@ -528,7 +527,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             return
 
         # Avoid sending commands before unlocking
-        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (OCV.STATE_CONN, OCV.STATE_NOT_CONN):
             return
 
         if self.spindle.get():
@@ -541,7 +540,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             return
 
         # Avoid sending commands before unlocking
-        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (OCV.STATE_CONN, OCV.STATE_NOT_CONN):
             self.mist.set(Tk.FALSE)
             return
 
@@ -554,7 +553,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             return
 
         # Avoid sending commands before unlocking
-        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (OCV.STATE_CONN, OCV.STATE_NOT_CONN):
             self.flood.set(Tk.FALSE)
             return
 
@@ -567,7 +566,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             return
 
         # Avoid sending commands before unlocking
-        if OCV.c_state in (Sender.CONNECTED, Sender.NOT_CONNECTED):
+        if OCV.c_state in (OCV.STATE_CONN, OCV.STATE_NOT_CONN):
             self.coolant.set(Tk.FALSE)
             return
 

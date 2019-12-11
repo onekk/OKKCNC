@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com

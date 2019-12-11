@@ -2,7 +2,7 @@
 """Interface.py
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -27,12 +27,12 @@ import CNCRibbon
 import Commands as cmd
 # Import Here the OCV module as it contains variables used across the program
 import OCV
+import IniFile
 import Ribbon
-import Sender
 import tkExtra
 import Utils
 
-from ToolsPage import Tools, ToolsPage
+from ToolsPage import ToolsPage  # , Tools
 from FilePage import FilePage
 from ControlPage import ControlPage
 from TerminalPage import TerminalPage
@@ -46,8 +46,8 @@ def main_interface(self):
     """
 
     # --- Ribbon ---
-    self.ribbon = Ribbon.TabRibbonFrame(self)
-    self.ribbon.pack(side=Tk.TOP, fill=Tk.X)
+    OCV.RIBBON = Ribbon.TabRibbonFrame(self)
+    OCV.RIBBON.pack(side=Tk.TOP, fill=Tk.X)
 
     # Main frame
     self.paned = Tk.PanedWindow(self, orient=Tk.HORIZONTAL)
@@ -56,17 +56,17 @@ def main_interface(self):
     # Status bar
     frame = Tk.Frame(self)
     frame.pack(side=Tk.BOTTOM, fill=Tk.X)
-    self.statusbar = tkExtra.ProgressBar(
+    OCV.STATUSBAR = tkExtra.ProgressBar(
         frame,
         height=20,
         relief=Tk.SUNKEN)
 
-    self.statusbar.pack(
+    OCV.STATUSBAR.pack(
         side=Tk.LEFT,
         fill=Tk.X,
         expand=Tk.YES)
 
-    self.statusbar.configText(
+    OCV.STATUSBAR.configText(
         fill="DarkBlue",
         justify=Tk.LEFT,
         anchor=Tk.W)
@@ -99,17 +99,17 @@ def main_interface(self):
     self.statusx.pack(side=Tk.RIGHT)
 
     # Buffer bar
-    self.bufferbar = tkExtra.ProgressBar(
+    OCV.BUFFERBAR = tkExtra.ProgressBar(
         frame,
         height=20,
         width=40,
         relief=Tk.SUNKEN)
 
-    self.bufferbar.pack(side=Tk.RIGHT, expand=Tk.NO)
+    OCV.BUFFERBAR.pack(side=Tk.RIGHT, expand=Tk.NO)
 
-    self.bufferbar.setLimits(0, 100)
+    OCV.BUFFERBAR.setLimits(0, 100)
 
-    tkExtra.Balloon.set(self.bufferbar, _("Controller buffer fill"))
+    tkExtra.Balloon.set(OCV.BUFFERBAR, _("Controller buffer fill"))
 
     # --- Left side ---
     self.Lframe = Tk.Frame(self.paned)
@@ -120,7 +120,7 @@ def main_interface(self):
 
     self.pageframe.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.BOTH)
 
-    self.ribbon.setPageFrame(self.pageframe)
+    OCV.RIBBON.setPageFrame(self.pageframe)
 
     # Command bar
     cmd_f = Tk.Frame(self.Lframe)
@@ -129,12 +129,12 @@ def main_interface(self):
     self.cmdlabel = Tk.Label(cmd_f, text=_("Command:"))
     self.cmdlabel.pack(side=Tk.LEFT)
 
-    self.command = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
+    OCV.CMD_W = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
 
-    self.command.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
+    OCV.CMD_W.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
 
     tkExtra.Balloon.set(
-        self.command,
+        OCV.CMD_W,
         _("MDI Command line: Accept g-code commands or macro " \
           "commands (RESET/HOME...) or editor commands " \
           "(move,inkscape, round...) [Space or Ctrl-Space]"))
@@ -144,11 +144,9 @@ def main_interface(self):
     self.paned.add(self.Rframe)
 
     # --- Canvas ---
-    self.canvasFrame = CNCCanvas.CanvasFrame(self.Rframe, self)
-    print("canvasFrame", self.canvasFrame)
-    print("OCV.CANVAS", OCV.CANVAS)
+    OCV.CANVAS_F = CNCCanvas.CanvasFrame(self.Rframe, self)
 
-    self.canvasFrame.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+    OCV.CANVAS_F.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
 
     self.linebuffer = Tk.Label(self.Rframe, background="khaki")
 
@@ -166,21 +164,21 @@ def main_interface(self):
     for cls in (ControlPage, EditorPage, FilePage, ProbePage,
                 TerminalPage, ToolsPage):
 
-        page = cls(self.ribbon, self)
+        page = cls(OCV.RIBBON, self)
 
         self.pages[page.name] = page
 
     # then add their properties (in separate loop)
     errors = []
     for name, page in self.pages.items():
-        for page_name in Utils.get_str(
+        for page_name in IniFile.get_str(
                 OCV.PRGNAME, "{0}.ribbon".format(page.name)).split():
             try:
                 page.addRibbonGroup(page_name)
             except KeyError:
                 errors.append(page_name)
 
-        for page_name in Utils.get_str(
+        for page_name in IniFile.get_str(
                 OCV.PRGNAME, "{0}.page".format(page.name)).split():
             last = page_name[-1]
             try:
@@ -225,11 +223,11 @@ class DROFrame(CNCRibbon.PageFrame):
 
         self.state = Tk.Button(
             self,
-            text=Sender.NOT_CONNECTED,
+            text=OCV.STATE_NOT_CONN,
             font=DROFrame.dro_status,
             command=cmd.showState,
             cursor="hand1",
-            background=Sender.STATECOLOR[Sender.NOT_CONNECTED],
+            background=OCV.STATECOLOR[OCV.STATE_NOT_CONN],
             activebackground="LightYellow")
 
         self.state.grid(row=row, column=col, columnspan=3, sticky=Tk.EW)
@@ -552,7 +550,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, "User", app)
         self.grid3rows()
 
-        b_num = Utils.get_int("Buttons", "n", 6)
+        b_num = IniFile.get_int("Buttons", "n", 6)
 
         for idx in range(1, b_num):
             but = Utils.UserButton(
@@ -1022,51 +1020,3 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             print("reset_all_displayed_mem index = ", mem)
             OCV.WK_mem = mem
             OCV.APP.event_generate("<<ClrMem>>")
-
-
-class Service(object):
-    """some service actions for memory, mainly configuration file operations
-    """
-
-    @staticmethod
-    def load_memories():
-        """ load saved WK_bank_max and WK_bank_num values from config file,
-        fill and init memory variables and saved memory data
-        """
-        OCV.WK_mem_num = ((OCV.WK_bank_max + 1) * OCV.WK_bank_mem) + 1
-        OCV.WK_active_mems = []
-
-        for idx in range(0, OCV.WK_mem_num + 1):
-            OCV.WK_active_mems.append(0)
-
-        OCV.WK_bank_show = []
-
-        for idx in range(0, OCV.WK_bank_max + 1):
-            OCV.WK_bank_show.append(0)
-
-        for name, value in OCV.config.items("Memory"):
-            content = value.split(",")
-            # print("Key: {0}  Name: {1} Value: X{2} Y{3} Z{4}".format(
-            #     name, *content ))
-            OCV.WK_mems[name] = [
-                float(content[1]),
-                float(content[2]),
-                float(content[3]),
-                1,
-                content[0]]
-        # print("Load Memory ended")
-
-    @staticmethod
-    def save_memories():
-        """save memories values in config file"""
-        for mem_name in OCV.WK_mems:
-            mem_data = OCV.WK_mems[mem_name]
-            # Test the indicator and delete the memory from config if
-            # indicator = 0
-            if mem_data[3] is not 0:
-                mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
-                    mem_data[4], mem_data[0], mem_data[1], mem_data[2],
-                    mem_data[3])
-                Utils.set_value("Memory", mem_name, mem_value)
-            else:
-                Utils.remove_config_item("Memory", mem_name)

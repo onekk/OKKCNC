@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -27,6 +27,7 @@ except ImportError:
 import OCV
 from CNC import CNC
 import Commands as cmd
+import IniFile
 import Utils
 import Camera
 import tkExtra
@@ -2505,38 +2506,40 @@ class CanvasFrame(Tk.Frame):
         lab.pack(side=Tk.RIGHT)
 
     def addWidget(self, widget):
-        OCV.APP.widgets.append(widget)
+        OCV.iface_widgets.append(widget)
 
     def loadConfig(self):
 
-        self.draw_axes.set(bool(int(Utils.get_bool("Canvas", "axes", True))))
-        self.draw_grid.set(bool(int(Utils.get_bool("Canvas", "grid", True))))
-        self.draw_margin.set(bool(int(
-                Utils.get_bool("Canvas", "margin", True))))
+        self.draw_axes.set(bool(int(IniFile.get_bool("Canvas", "axes", True))))
+        self.draw_grid.set(bool(int(IniFile.get_bool("Canvas", "grid", True))))
+        self.draw_margin.set(
+            bool(int(IniFile.get_bool("Canvas", "margin", True))))
         # self.draw_probe.set(bool(int(
-        #       Utils.get_bool("Canvas", "probe",   False))))
-        self.draw_paths.set(bool(int(Utils.get_bool("Canvas", "paths", True))))
-        self.draw_rapid.set(bool(int(Utils.get_bool("Canvas", "rapid", True))))
-        self.draw_workarea.set(bool(int(
-                Utils.get_bool("Canvas", "workarea", True))))
+        #       IniFile.get_bool("Canvas", "probe",   False))))
+        self.draw_paths.set(
+            bool(int(IniFile.get_bool("Canvas", "paths", True))))
+        self.draw_rapid.set(
+            bool(int(IniFile.get_bool("Canvas", "rapid", True))))
+        self.draw_workarea.set(
+            bool(int(IniFile.get_bool("Canvas", "workarea", True))))
         # self.draw_camera.set(bool(int(
-        #        Utils.get_bool("Canvas", "camera",  False))))
+        #        IniFile.get_bool("Canvas", "camera",  False))))
 
-        self.view.set(Utils.get_str("Canvas", "view", VIEWS[0]))
+        self.view.set(IniFile.get_str("Canvas", "view", VIEWS[0]))
 
-        OCV.DRAW_TIME = Utils.get_int("Canvas", "drawtime", OCV.DRAW_TIME)
+        OCV.DRAW_TIME = IniFile.get_int("Canvas", "drawtime", OCV.DRAW_TIME)
 
     def saveConfig(self):
-        Utils.set_value("Canvas", "drawtime", OCV.DRAW_TIME)
-        Utils.set_value("Canvas", "view", self.view.get())
-        Utils.set_value("Canvas", "axes", self.draw_axes.get())
-        Utils.set_value("Canvas", "grid", self.draw_grid.get())
-        Utils.set_value("Canvas", "margin", self.draw_margin.get())
-        Utils.set_value("Canvas", "probe", self.draw_probe.get())
-        Utils.set_value("Canvas", "paths", self.draw_paths.get())
-        Utils.set_value("Canvas", "rapid", self.draw_rapid.get())
-        Utils.set_value("Canvas", "workarea", self.draw_workarea.get())
-        #Utils.set_value("Canvas", "camera",  self.draw_camera.get())
+        IniFile.set_value("Canvas", "drawtime", OCV.DRAW_TIME)
+        IniFile.set_value("Canvas", "view", self.view.get())
+        IniFile.set_value("Canvas", "axes", self.draw_axes.get())
+        IniFile.set_value("Canvas", "grid", self.draw_grid.get())
+        IniFile.set_value("Canvas", "margin", self.draw_margin.get())
+        IniFile.set_value("Canvas", "probe", self.draw_probe.get())
+        IniFile.set_value("Canvas", "paths", self.draw_paths.get())
+        IniFile.set_value("Canvas", "rapid", self.draw_rapid.get())
+        IniFile.set_value("Canvas", "workarea", self.draw_workarea.get())
+        #IniFile.set_value("Canvas", "camera",  self.draw_camera.get())
 
 
     def redraw(self, event=None):

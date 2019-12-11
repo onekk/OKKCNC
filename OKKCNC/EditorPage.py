@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -452,9 +452,9 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Move"),
             compound=Tk.TOP,
             anchor=Tk.W,
-            variable=OCV.APP.canvasFrame.canvas.actionVar,
+            variable=OCV.CANVAS_F.canvas.actionVar,
             value=ACTION_MOVE,
-            command=OCV.APP.canvasFrame.canvas.setActionMove,
+            command=OCV.CANVAS_F.canvas.setActionMove,
             background=OCV.BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
@@ -471,9 +471,9 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Origin"),
             compound=Tk.TOP,
             anchor=Tk.W,
-            variable=OCV.APP.canvasFrame.canvas.actionVar,
+            variable=OCV.CANVAS_F.canvas.actionVar,
             value=ACTION_ORIGIN,
-            command=OCV.APP.canvasFrame.canvas.setActionOrigin,
+            command=OCV.CANVAS_F.canvas.setActionOrigin,
             background=OCV.BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)

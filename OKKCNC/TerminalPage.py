@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -21,7 +21,6 @@ except ImportError:
     import tkinter as Tk
 
 import OCV
-import Utils
 import Ribbon
 import tkExtra
 

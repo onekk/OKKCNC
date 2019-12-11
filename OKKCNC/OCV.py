@@ -98,6 +98,32 @@ PLANE = {
     "G18": "XZ",
     "G19": "YZ"}
 
+STATE_CONN = "Connected"
+STATE_NOT_CONN = "Not connected"
+
+STATECOLOR = {
+    "Idle": "Yellow",
+    "Run": "LightGreen",
+    "Alarm": "Red",
+    "Jog": "Green",
+    "Home": "Green",
+    "Check": "Magenta2",
+    "Sleep": "LightBlue",
+    "Hold": "Orange",
+    "Hold:0": "Orange",
+    "Hold:1": "OrangeRed",
+    "Queue": "OrangeRed",
+    "Door": "Red",
+    "Door:0": "OrangeRed",
+    "Door:1": "Red",
+    "Door:2": "Red",
+    "Door:3": "OrangeRed",
+    STATE_CONN: "Yellow",
+    STATE_NOT_CONN: "OrangeRed",
+    "Default": "LightYellow"
+    }
+
+
 """these group of variable holds Tk references to various object
 across the program, mainly:
     OCV.APP >
@@ -131,12 +157,27 @@ CCW = 3
 
 ERROR_HANDLING = {}
 
+# These vars are to simplify and make clear the code around
+# One name for one entity not var or self var or Module.var
+# if used across many modules
 root = None
+# Main window
 APP = None
+# Bufferbar
+BUFFERBAR = None
+# Canvas
 CANVAS = None
+# CanvaFrame
+CANVAS_F = None
+# Command Entry
+CMD_W = None
+# Machine controller instance
 MCTRL = None
+# Main interface Ribbon
+RIBBON = None
 RUN_GROUP = None
-
+# Statusbar
+STATUSBAR = None
 
 """ used to simplify mosto of the coordinates in Gcode and text strings"""
 sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
@@ -172,8 +213,14 @@ feedmax_z = 2000
 
 # G #
 geometry = None
+
+# H #
+history = []
+
 # I #
 icons = {}
+# This holds the interface widgets
+iface_widgets = []
 images = {}
 inch = False
 
@@ -261,7 +308,6 @@ WK_mem_name = "" # pass memory name across the different program part
 """
 WK_mems = {}
 WK_mem_num = 0
-
 
 CD = {
     "prbx": 0.0,

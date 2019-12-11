@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -23,11 +23,10 @@ except ImportError:
     import tkinter as Tk
 
 import OCV
-
-import tkExtra
-import Utils
-import Ribbon
 import CNCRibbon
+import IniFile
+import Ribbon
+import tkExtra
 
 try:
     from serial.tools.list_ports import comports
@@ -37,13 +36,12 @@ except:
 
 BAUDS = [2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400]
 
-
 class _RecentMenuButton(Ribbon.MenuButton):
     """Recent Menu button"""
     def createMenu(self):
         menu = Tk.Menu(self, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
         for i in range(OCV.maxRecent):
-            filename = Utils.get_recent_file(i)
+            filename = IniFile.get_recent_file(i)
 
             if filename is None:
                 break
@@ -335,7 +333,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
                 self.portCombo,
                 _("Select (or manual enter) port to connect"))
 
-        self.portCombo.set(Utils.get_str("Connection","port"))
+        self.portCombo.set(IniFile.get_str("Connection","port"))
 
         self.addWidget(self.portCombo)
 
@@ -358,7 +356,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.baudCombo.fill(BAUDS)
 
-        self.baudCombo.set(Utils.get_str("Connection","baud","115200"))
+        self.baudCombo.set(IniFile.get_str("Connection","baud","115200"))
 
         self.addWidget(self.baudCombo)
 
@@ -397,7 +395,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
             b,
             _("Connect to serial on startup of the program"))
 
-        self.autostart.set(Utils.get_bool("Connection","openserial"))
+        self.autostart.set(IniFile.get_bool("Connection","openserial"))
 
         self.addWidget(b)
 
@@ -506,10 +504,10 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     def saveConfig(self):
         # Connection
-        Utils.set_value("Connection", "controller", OCV.APP.controller)
-        Utils.set_value("Connection", "port", self.portCombo.get().split("\t")[0])
-        Utils.set_value("Connection", "baud", self.baudCombo.get())
-        Utils.set_value("Connection", "openserial", self.autostart.get())
+        IniFile.set_value("Connection", "controller", OCV.APP.controller)
+        IniFile.set_value("Connection", "port", self.portCombo.get().split("\t")[0])
+        IniFile.set_value("Connection", "baud", self.baudCombo.get())
+        IniFile.set_value("Connection", "openserial", self.autostart.get())
 
 
 class FilePage(CNCRibbon.Page):

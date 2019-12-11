@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -27,13 +27,14 @@ except ImportError:
 
 import OCV
 from CNC import CNC
+import CNCRibbon
 import Block
-import Utils
 import Camera
+import IniFile
 import Ribbon
 import tkExtra
+import Utils
 
-import CNCRibbon
 
 PROBE_CMD = [
     _("G38.2 stop on contact else error"),
@@ -347,17 +348,17 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_value("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
-        Utils.set_value("Probe", "feed", ProbeCommonFrame.probeFeed.get())
-        Utils.set_value("Probe", "tlo",  ProbeCommonFrame.tlo.get())
-        Utils.set_value("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
+        IniFile.set_value("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
+        IniFile.set_value("Probe", "feed", ProbeCommonFrame.probeFeed.get())
+        IniFile.set_value("Probe", "tlo",  ProbeCommonFrame.tlo.get())
+        IniFile.set_value("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
 
     def loadConfig(self):
-        ProbeCommonFrame.fastProbeFeed.set(Utils.get_float(
+        ProbeCommonFrame.fastProbeFeed.set(IniFile.get_float(
                 "Probe", "fastfeed"))
-        ProbeCommonFrame.probeFeed.set(Utils.get_float("Probe", "feed"))
-        ProbeCommonFrame.tlo.set(      Utils.get_float("Probe", "tlo"))
-        cmd = Utils.get_str("Probe", "cmd")
+        ProbeCommonFrame.probeFeed.set(IniFile.get_float("Probe", "feed"))
+        ProbeCommonFrame.tlo.set(      IniFile.get_float("Probe", "tlo"))
+        cmd = IniFile.get_str("Probe", "cmd")
         for p in PROBE_CMD:
             if p.split()[0] == cmd:
                 ProbeCommonFrame.probeCmd.set(p)
@@ -693,19 +694,19 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXdir.set(Utils.get_str("Probe", "x"))
-        self.probeYdir.set(Utils.get_str("Probe", "y"))
-        self.probeZdir.set(Utils.get_str("Probe", "z"))
-        self.diameter.set(Utils.get_str("Probe", "center"))
-        self.warn = Utils.get_bool("Warning", "probe", self.warn)
+        self.probeXdir.set(IniFile.get_str("Probe", "x"))
+        self.probeYdir.set(IniFile.get_str("Probe", "y"))
+        self.probeZdir.set(IniFile.get_str("Probe", "z"))
+        self.diameter.set(IniFile.get_str("Probe", "center"))
+        self.warn = IniFile.get_bool("Warning", "probe", self.warn)
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_value("Probe", "x", self.probeXdir.get())
-        Utils.set_value("Probe", "y", self.probeYdir.get())
-        Utils.set_value("Probe", "z", self.probeZdir.get())
-        Utils.set_value("Probe", "center", self.diameter.get())
-        Utils.set_value("Warning","probe",  self.warn)
+        IniFile.set_value("Probe", "x", self.probeXdir.get())
+        IniFile.set_value("Probe", "y", self.probeYdir.get())
+        IniFile.set_value("Probe", "z", self.probeZdir.get())
+        IniFile.set_value("Probe", "center", self.diameter.get())
+        IniFile.set_value("Warning","probe",  self.warn)
 
     #-----------------------------------------------------------------------
     def updateProbe(self):
@@ -1135,29 +1136,29 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         self.probeZmax.set(str(probe.zmax))
 
     def saveConfig(self):
-        Utils.set_value("Probe", "xmin", self.probeXmin.get())
-        Utils.set_value("Probe", "xmax", self.probeXmax.get())
-        Utils.set_value("Probe", "xn", self.probeXbins.get())
-        Utils.set_value("Probe", "ymin", self.probeYmin.get())
-        Utils.set_value("Probe", "ymax", self.probeYmax.get())
-        Utils.set_value("Probe", "yn", self.probeYbins.get())
-        Utils.set_value("Probe", "zmin", self.probeZmin.get())
-        Utils.set_value("Probe", "zmax", self.probeZmax.get())
+        IniFile.set_value("Probe", "xmin", self.probeXmin.get())
+        IniFile.set_value("Probe", "xmax", self.probeXmax.get())
+        IniFile.set_value("Probe", "xn", self.probeXbins.get())
+        IniFile.set_value("Probe", "ymin", self.probeYmin.get())
+        IniFile.set_value("Probe", "ymax", self.probeYmax.get())
+        IniFile.set_value("Probe", "yn", self.probeYbins.get())
+        IniFile.set_value("Probe", "zmin", self.probeZmin.get())
+        IniFile.set_value("Probe", "zmax", self.probeZmax.get())
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXmin.set(Utils.get_float("Probe","xmin"))
-        self.probeXmax.set(Utils.get_float("Probe","xmax"))
-        self.probeYmin.set(Utils.get_float("Probe","ymin"))
-        self.probeYmax.set(Utils.get_float("Probe","ymax"))
-        self.probeZmin.set(Utils.get_float("Probe","zmin"))
-        self.probeZmax.set(Utils.get_float("Probe","zmax"))
+        self.probeXmin.set(IniFile.get_float("Probe","xmin"))
+        self.probeXmax.set(IniFile.get_float("Probe","xmax"))
+        self.probeYmin.set(IniFile.get_float("Probe","ymin"))
+        self.probeYmax.set(IniFile.get_float("Probe","ymax"))
+        self.probeZmin.set(IniFile.get_float("Probe","zmin"))
+        self.probeZmax.set(IniFile.get_float("Probe","zmax"))
 
         self.probeXbins.delete(0,END)
-        self.probeXbins.insert(0,max(2,Utils.get_int("Probe","xn",5)))
+        self.probeXbins.insert(0,max(2,IniFile.get_int("Probe","xn",5)))
 
         self.probeYbins.delete(0,END)
-        self.probeYbins.insert(0,max(2,Utils.get_int("Probe","yn",5)))
+        self.probeYbins.insert(0,max(2,IniFile.get_int("Probe","yn",5)))
         self.change(False)
 
     #-----------------------------------------------------------------------
@@ -1334,17 +1335,17 @@ class CameraGroup(CNCRibbon.ButtonGroup):
     def switchCommand(self, event=None):
         wx = OCV.CD["wx"]
         wy = OCV.CD["wy"]
-        dx = OCV.APP.canvasFrame.canvas.cameraDx
-        dy = OCV.APP.canvasFrame.canvas.cameraDy
-        z  = OCV.APP.canvasFrame.canvas.cameraZ
+        dx = OCV.CANVAS_F.canvas.cameraDx
+        dy = OCV.CANVAS_F.canvas.cameraDy
+        z  = OCV.CANVAS_F.canvas.cameraZ
         if self.switch.get():
             self.switchButton.config(image=OCV.icons["endmill32"])
             self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-            OCV.APP.canvasFrame.canvas.cameraSwitch = True
+            OCV.CANVAS_F.canvas.cameraSwitch = True
         else:
             self.switchButton.config(image=OCV.icons["camera32"])
             self.sendGCode("G92.1")
-            OCV.APP.canvasFrame.canvas.cameraSwitch = False
+            OCV.CANVAS_F.canvas.cameraSwitch = False
         if z is None:
             self.sendGCode("G0X%gY%g"%(wx,wy))
         else:
@@ -1357,11 +1358,11 @@ class CameraGroup(CNCRibbon.ButtonGroup):
 
     #-----------------------------------------------------------------------
     def edgeDetection(self):
-        OCV.APP.canvasFrame.canvas.cameraEdge = self.edge.get()
+        OCV.CANVAS_F.canvas.cameraEdge = self.edge.get()
 
     #-----------------------------------------------------------------------
     def freezeImage(self):
-        OCV.APP.canvasFrame.canvas.cameraFreeze(self.freeze.get())
+        OCV.CANVAS_F.canvas.cameraFreeze(self.freeze.get())
 
 
 #===============================================================================
@@ -1485,26 +1486,26 @@ class CameraFrame(CNCRibbon.PageFrame):
         self.spindleY = None
 
     def saveConfig(self):
-        Utils.set_value("Camera", "aligncam_anchor", self.location.get())
-        Utils.set_value("Camera", "aligncam_d", self.diameter.get())
-        Utils.set_value("Camera", "aligncam_scale", self.scale.get())
-        Utils.set_value("Camera", "aligncam_dx", self.dx.get())
-        Utils.set_value("Camera", "aligncam_dy", self.dy.get())
-        Utils.set_value("Camera", "aligncam_z", self.z.get())
-        Utils.set_value("Camera", "aligncam_rotation", self.rotation.get())
-        Utils.set_value("Camera", "aligncam_xcenter", self.xcenter.get())
-        Utils.set_value("Camera", "aligncam_ycenter", self.ycenter.get())
+        IniFile.set_value("Camera", "aligncam_anchor", self.location.get())
+        IniFile.set_value("Camera", "aligncam_d", self.diameter.get())
+        IniFile.set_value("Camera", "aligncam_scale", self.scale.get())
+        IniFile.set_value("Camera", "aligncam_dx", self.dx.get())
+        IniFile.set_value("Camera", "aligncam_dy", self.dy.get())
+        IniFile.set_value("Camera", "aligncam_z", self.z.get())
+        IniFile.set_value("Camera", "aligncam_rotation", self.rotation.get())
+        IniFile.set_value("Camera", "aligncam_xcenter", self.xcenter.get())
+        IniFile.set_value("Camera", "aligncam_ycenter", self.ycenter.get())
 
     def loadConfig(self):
-        self.location.set(Utils.get_str("Camera",  "aligncam_anchor"))
-        self.diameter.set(Utils.get_float("Camera", "aligncam_d"))
-        self.scale.set(Utils.get_float("Camera", "aligncam_scale"))
-        self.dx.set(Utils.get_float("Camera", "aligncam_dx"))
-        self.dy.set(Utils.get_float("Camera", "aligncam_dy"))
-        self.z.set(Utils.get_float("Camera", "aligncam_z", ""))
-        self.rotation.set(Utils.get_float("Camera", "aligncam_rotation"))
-        self.xcenter.set(Utils.get_float("Camera", "aligncam_xcenter"))
-        self.ycenter.set(Utils.get_float("Camera", "aligncam_ycenter"))
+        self.location.set(IniFile.get_str("Camera",  "aligncam_anchor"))
+        self.diameter.set(IniFile.get_float("Camera", "aligncam_d"))
+        self.scale.set(IniFile.get_float("Camera", "aligncam_scale"))
+        self.dx.set(IniFile.get_float("Camera", "aligncam_dx"))
+        self.dy.set(IniFile.get_float("Camera", "aligncam_dy"))
+        self.z.set(IniFile.get_float("Camera", "aligncam_z", ""))
+        self.rotation.set(IniFile.get_float("Camera", "aligncam_rotation"))
+        self.xcenter.set(IniFile.get_float("Camera", "aligncam_xcenter"))
+        self.ycenter.set(IniFile.get_float("Camera", "aligncam_ycenter"))
         self.updateValues()
 
     def cameraAnchor(self):
@@ -1519,26 +1520,26 @@ class CameraFrame(CNCRibbon.PageFrame):
     # Update canvas with values
     #-----------------------------------------------------------------------
     def updateValues(self, *args):
-        OCV.APP.canvasFrame.canvas.cameraAnchor = self.cameraAnchor()
-        try: OCV.APP.canvasFrame.canvas.cameraRotation = float(self.rotation.get())
+        OCV.CANVAS_F.canvas.cameraAnchor = self.cameraAnchor()
+        try: OCV.CANVAS_F.canvas.cameraRotation = float(self.rotation.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraXCenter = float(self.xcenter.get())
+        try: OCV.CANVAS_F.canvas.cameraXCenter = float(self.xcenter.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraYCenter = float(self.ycenter.get())
+        try: OCV.CANVAS_F.canvas.cameraYCenter = float(self.ycenter.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraScale = max(0.0001, float(self.scale.get()))
+        try: OCV.CANVAS_F.canvas.cameraScale = max(0.0001, float(self.scale.get()))
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraR = float(self.diameter.get())/2.0
+        try: OCV.CANVAS_F.canvas.cameraR = float(self.diameter.get())/2.0
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraDx = float(self.dx.get())
+        try: OCV.CANVAS_F.canvas.cameraDx = float(self.dx.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraDy = float(self.dy.get())
+        try: OCV.CANVAS_F.canvas.cameraDy = float(self.dy.get())
         except ValueError: pass
         try:
-            OCV.APP.canvasFrame.canvas.cameraZ  = float(self.z.get())
+            OCV.CANVAS_F.canvas.cameraZ  = float(self.z.get())
         except ValueError:
-            OCV.APP.canvasFrame.canvas.cameraZ  = None
-        OCV.APP.canvasFrame.canvas.cameraUpdate()
+            OCV.CANVAS_F.canvas.cameraZ  = None
+        OCV.CANVAS_F.canvas.cameraUpdate()
 
     #-----------------------------------------------------------------------
     # Register spindle position
@@ -1566,30 +1567,30 @@ class CameraFrame(CNCRibbon.PageFrame):
 #    #-----------------------------------------------------------------------
 #    def findScale(self):
 #        return
-#        OCV.APP.canvasFrame.canvas.cameraMakeTemplate(30)
+#        OCV.CANVAS_F.canvas.cameraMakeTemplate(30)
 #
 #        OCV.APP.control.jog_x_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # right
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # right
 #
 #        OCV.APP.control.jog_x_down()
 #        OCV.APP.control.jog_x_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # left
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # left
 #
 #        OCV.APP.control.jog_x_up()
 #        OCV.APP.control.jog_y_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # top
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # top
 #
 #        OCV.APP.control.jog_y_down()
 #        OCV.APP.control.jog_y_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # down
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # down
 #
 #        OCV.APP.control.jog_y_up()
 
@@ -1797,39 +1798,39 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_value(
+        IniFile.set_value(
                 "Probe", "toolpolicy",
                 TOOL_POLICY.index(self.toolPolicy.get()))
-        Utils.set_value(
+        IniFile.set_value(
                 "Probe", "toolwait",
                 TOOL_WAIT.index(self.toolWait.get()))
-        Utils.set_value("Probe", "toolchangex", self.changeX.get())
-        Utils.set_value("Probe", "toolchangey", self.changeY.get())
-        Utils.set_value("Probe", "toolchangez", self.changeZ.get())
+        IniFile.set_value("Probe", "toolchangex", self.changeX.get())
+        IniFile.set_value("Probe", "toolchangey", self.changeY.get())
+        IniFile.set_value("Probe", "toolchangez", self.changeZ.get())
 
-        Utils.set_value("Probe", "toolprobex", self.probeX.get())
-        Utils.set_value("Probe", "toolprobey", self.probeY.get())
-        Utils.set_value("Probe", "toolprobez", self.probeZ.get())
+        IniFile.set_value("Probe", "toolprobex", self.probeX.get())
+        IniFile.set_value("Probe", "toolprobey", self.probeY.get())
+        IniFile.set_value("Probe", "toolprobez", self.probeZ.get())
 
-        Utils.set_value("Probe", "tooldistance",self.probeDistance.get())
-        Utils.set_value("Probe", "toolheight",  self.toolHeight.get())
-        Utils.set_value("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
+        IniFile.set_value("Probe", "tooldistance",self.probeDistance.get())
+        IniFile.set_value("Probe", "toolheight",  self.toolHeight.get())
+        IniFile.set_value("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.changeX.set(Utils.get_float("Probe","toolchangex"))
-        self.changeY.set(Utils.get_float("Probe","toolchangey"))
-        self.changeZ.set(Utils.get_float("Probe","toolchangez"))
+        self.changeX.set(IniFile.get_float("Probe","toolchangex"))
+        self.changeY.set(IniFile.get_float("Probe","toolchangey"))
+        self.changeZ.set(IniFile.get_float("Probe","toolchangez"))
 
-        self.probeX.set(Utils.get_float("Probe","toolprobex"))
-        self.probeY.set(Utils.get_float("Probe","toolprobey"))
-        self.probeZ.set(Utils.get_float("Probe","toolprobez"))
+        self.probeX.set(IniFile.get_float("Probe","toolprobex"))
+        self.probeY.set(IniFile.get_float("Probe","toolprobey"))
+        self.probeZ.set(IniFile.get_float("Probe","toolprobez"))
 
-        self.probeDistance.set(Utils.get_float("Probe","tooldistance"))
-        self.toolHeight.set(   Utils.get_float("Probe","toolheight"))
-        self.toolPolicy.set(TOOL_POLICY[Utils.get_int("Probe","toolpolicy",0)])
-        self.toolWait.set(TOOL_WAIT[Utils.get_int("Probe","toolwait",1)])
-        OCV.CD["toolmz"] = Utils.get_float("Probe","toolmz")
+        self.probeDistance.set(IniFile.get_float("Probe","tooldistance"))
+        self.toolHeight.set(   IniFile.get_float("Probe","toolheight"))
+        self.toolPolicy.set(TOOL_POLICY[IniFile.get_int("Probe","toolpolicy",0)])
+        self.toolWait.set(TOOL_WAIT[IniFile.get_int("Probe","toolwait",1)])
+        OCV.CD["toolmz"] = IniFile.get_float("Probe","toolmz")
         self.set()
 
     #-----------------------------------------------------------------------

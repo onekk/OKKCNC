@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -30,14 +30,12 @@ import time
 import glob
 
 import OCV
-import Utils
+
+import CNCRibbon
+import IniFile
 import Ribbon
 import tkExtra
-
 import Unicode
-import CNCRibbon
-
-# from CNC import CNC
 
 
 class InPlaceText(tkExtra.InPlaceText):
@@ -92,13 +90,13 @@ class _Base(object):
 
     def _get(self, key, typ, default):
         if typ in ("float", "mm"):
-            return Utils.get_float(self.name, key, default)
+            return IniFile.get_float(self.name, key, default)
         elif typ == "int":
-            return Utils.get_int(self.name, key, default)
+            return IniFile.get_int(self.name, key, default)
         elif typ == "bool":
-            return Utils.get_int(self.name, key, default)
+            return IniFile.get_int(self.name, key, default)
         else:
-            return Utils.get_str(self.name, key, default)
+            return IniFile.get_str(self.name, key, default)
 
     def execute(self, app):
         """Override with execute command"""
@@ -359,7 +357,7 @@ class _Base(object):
                 self.listdb[p] = []
                 for i in range(1000):
                     key = "_{0}.{1}".format(p, i)
-                    value = Utils.get_str(self.name, key).strip()
+                    value = IniFile.get_str(self.name, key).strip()
                     if value:
                         self.listdb[p].append(value)
                     else:
@@ -376,7 +374,7 @@ class _Base(object):
             self.num = self._get("n", "int", 0)
             for i in range(self.num):
                 key = "name.{0}".format(i)
-                self.values[key] = Utils.get_str(self.name, key)
+                self.values[key] = IniFile.get_str(self.name, key)
 
                 for var in self.variables:
                     n, t, d, l = var[:4]
@@ -391,35 +389,35 @@ class _Base(object):
     def save(self):
         """Save to a configuration file"""
         # if section do not exist add it
-        Utils.add_config_section(self.name)
+        IniFile.add_config_section(self.name)
 
         if self.listdb:
             for name, lst in self.listdb.items():
                 for i, value in enumerate(lst):
-                    Utils.set_value(self.name, "_{0}.{1}".format(name, i), value)
+                    IniFile.set_value(self.name, "_{0}.{1}".format(name, i), value)
 
         # Save values
         if self.current is not None:
-            Utils.set_value(self.name, "current", str(self.current))
-            Utils.set_value(self.name, "n", str(self.num))
+            IniFile.set_value(self.name, "current", str(self.current))
+            IniFile.set_value(self.name, "n", str(self.num))
 
             for idx in range(self.num):
                 key = "name.{0}".format(idx)
                 value = self.values.get(key)
                 if value is None:
                     break
-                Utils.set_value(self.name, key, value)
+                IniFile.set_value(self.name, key, value)
 
                 for var in self.variables:
                     n, t, d, l = var[:4]
                     key = "{0}.{1}".format(n, idx)
-                    Utils.set_value(
+                    IniFile.set_value(
                         self.name, key,
                         str(self.values.get(key, d)))
         else:
             for var in self.variables:
                 n, t, d, l = var[:4]
-                Utils.set_value(self.name, n, str(self.values.get(n, d)))
+                IniFile.set_value(self.name, n, str(self.values.get(n, d)))
 
     def fromMm(self, name, default=0.0):
         try:
@@ -875,7 +873,7 @@ class Tools:
     # Load from config file
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.active.set(Utils.get_str(OCV.PRGNAME, "tool", "CNC"))
+        self.active.set(IniFile.get_str(OCV.PRGNAME, "tool", "CNC"))
         for tool in self.tools.values():
             tool.load()
 
@@ -883,19 +881,16 @@ class Tools:
     # Save to config file
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.set_value(OCV.PRGNAME, "tool", self.active.get())
+        IniFile.set_value(OCV.PRGNAME, "tool", self.active.get())
         for tool in self.tools.values():
             tool.save()
 
-    # ----------------------------------------------------------------------
     def cnc(self):
         return self.gcode.cnc
 
-    # ----------------------------------------------------------------------
     def addButton(self, name, button):
         self.buttons[name] = button
 
-    # ----------------------------------------------------------------------
     def activateButtons(self, tool):
         for btn in self.buttons.values():
             btn.config(state=Tk.DISABLED)
@@ -1202,7 +1197,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 if OCV.language == a:
                     return
                 OCV.language = a
-                Utils.set_value(OCV.PRGNAME, "language", OCV.language)
+                IniFile.set_value(OCV.PRGNAME, "language", OCV.language)
                 tkMessageBox.showinfo(
                     _("Language change"),
                     _("Please restart the program."),
@@ -1315,10 +1310,8 @@ class ToolsFrame(CNCRibbon.PageFrame):
                     helptext = helpname+':\nnot available yet!'
                 tkMessageBox.showinfo(helpname, helptext)
 
-    #----------------------------------------------------------------------
-    # Edit tool listbox
-    #----------------------------------------------------------------------
     def edit(self, event=None):
+        """Edit tool listbox"""
         sel = self.toolList.curselection()
         if not sel: return
         if sel[0] == 0 and (event is None or event.keysym == 0):
@@ -1326,29 +1319,20 @@ class ToolsFrame(CNCRibbon.PageFrame):
         else:
             self.tools.getActive().edit(event)
 
-    #----------------------------------------------------------------------
     def execute(self, event=None):
         self.tools.getActive().execute(OCV.APP)
 
-    #----------------------------------------------------------------------
     def add(self, event=None):
         self.tools.getActive().add()
 
-    #----------------------------------------------------------------------
     def delete(self, event=None):
         self.tools.getActive().delete()
 
-    #----------------------------------------------------------------------
     def clone(self, event=None):
         self.tools.getActive().clone()
 
-    #----------------------------------------------------------------------
     def rename(self, event=None):
         self.tools.getActive().rename()
-
-    #----------------------------------------------------------------------
-#    def selectTab(self, tabid):
-#
 
 
 class ToolsPage(CNCRibbon.Page):
