@@ -429,7 +429,7 @@ class Sender(object):
     def serial_write_byte(self, data):
         """Serial write a byte character > 128 decimal"""
 
-        if OCV.COM_DEBUG is True:
+        if OCV.DEBUG_COM is True:
             print("s_write byte > ", data)
 #            print("s_write type > ", type(data))
 
@@ -502,7 +502,7 @@ class Sender(object):
         """
         if self.serial and not OCV.s_running:
 
-            if OCV.COM_DEBUG is True:
+            if OCV.DEBUG_COM is True:
                 print("Cmd      > ", cmd)
                 print("Cmd type > ", type(cmd))
 
@@ -520,7 +520,7 @@ class Sender(object):
 
     def resume(self, event=None):
         but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
-        but.config(background=OCV.BACKGROUND)
+        but.config(background=OCV.COLOR_BACKGROUND)
         OCV.MCTRL.resume(None)
 
     def pause(self, event=None):
@@ -570,12 +570,12 @@ class Sender(object):
         if OCV.s_pause is True:
             OCV.s_pause = False
             but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
-            but.config(background=OCV.BACKGROUND)
+            but.config(background=OCV.COLOR_BACKGROUND)
 
         if OCV.s_stop_req is True:
             OCV.s_stop_req = False
             but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
-            but.config(background=OCV.BACKGROUND)
+            but.config(background=OCV.COLOR_BACKGROUND)
 
         OCV.s_running = False
         OCV.CD["running"] = False
@@ -601,7 +601,7 @@ class Sender(object):
         So we can purge the controller for the next job
         See https://github.com/vlachoudis/bCNC/issues/1035
         """
-        if OCV.COM_DEBUG is True:
+        if OCV.DEBUG_COM is True:
             print(
                 "Job done. Purging the controller. (Running: {0})".format(
                     OCV.s_running))
@@ -613,7 +613,7 @@ class Sender(object):
         YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT ONEKKCNC STATE
         Right now the primary idea is to detect when job stopped running
         """
-        if OCV.COM_DEBUG is True:
+        if OCV.DEBUG_COM is True:
             print(
                 "Controller state changed to: {0} (Running: {1})".format(
                     state,

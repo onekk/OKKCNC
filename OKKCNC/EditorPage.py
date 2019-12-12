@@ -44,7 +44,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             text=_("Paste"),
             compound=Tk.TOP,
             takefocus=Tk.FALSE,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=0, column=0, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -61,7 +61,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             takefocus=Tk.FALSE,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         tkExtra.Balloon.set(b, _("Cut [Ctrl-X]"))
 
@@ -78,7 +78,7 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             takefocus=Tk.FALSE,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         tkExtra.Balloon.set(b, _("Copy [Ctrl-C]"))
 
@@ -103,7 +103,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             text=_("All"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -120,7 +120,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             text=_("None"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -138,7 +138,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             text=_("Invert"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -155,7 +155,7 @@ class SelectGroup(CNCRibbon.ButtonGroup):
             text=_("Layer"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -218,7 +218,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             "<<Add>>",
             image=OCV.icons["add"],
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -243,7 +243,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col+1, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(
             b,
@@ -258,7 +258,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Clone"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(
             row=row,
@@ -283,7 +283,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Delete"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(
             row=row,
@@ -306,7 +306,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             # text=_("Toggle"),
             # compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -329,7 +329,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col+1, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -347,7 +347,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Expand"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(
             row=row,
@@ -370,7 +370,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Comment"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -388,7 +388,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Join"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -406,7 +406,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Split"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, columnspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -424,7 +424,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Clear All"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(
             row=row,
@@ -455,7 +455,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
             variable=OCV.CANVAS_F.canvas.actionVar,
             value=ACTION_MOVE,
             command=OCV.CANVAS_F.canvas.setActionMove,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -474,7 +474,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
             variable=OCV.CANVAS_F.canvas.actionVar,
             value=ACTION_ORIGIN,
             command=OCV.CANVAS_F.canvas.setActionOrigin,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -529,7 +529,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Up"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -547,7 +547,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Down"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -567,7 +567,7 @@ class OrderGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Invert"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -592,7 +592,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("ROTATE CW", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -609,7 +609,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("ROTATE FLIP", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -626,7 +626,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("ROTATE CCW", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Rotate selected gcode counter-clock-wise (90deg)"))
         self.addWidget(b)
@@ -640,7 +640,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("MIRROR horizontal", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -657,7 +657,7 @@ class TransformGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("MIRROR vertical", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -686,7 +686,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("DIRECTION CONVENTIONAL", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -703,7 +703,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("DIRECTION CLIMB", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -720,7 +720,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("REVERSE", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -737,7 +737,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("DIRECTION CW", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -754,7 +754,7 @@ class RouteGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=app: s.insertCommand("DIRECTION CCW", True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -780,7 +780,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.showStats,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -797,7 +797,7 @@ class InfoGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.showInfo,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 

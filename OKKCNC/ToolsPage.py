@@ -126,14 +126,14 @@ class _Base(object):
                 else:
                     value = Unicode.BALLOT_BOX
             elif typ == "mm" and self.master.inches:
-                ivalue = OCV.LISTBOX_NUMBER
+                ivalue = OCV.COLOR_LSTB_NUMBER
                 try:
                     value /= 25.4
                     value = round(value, self.master.digits)
                 except:
                     value = ""
             elif typ == "float":
-                ivalue = OCV.LISTBOX_NUMBER
+                ivalue = OCV.COLOR_LSTB_NUMBER
                 try:
                     value = round(value, self.master.digits)
                 except:
@@ -145,13 +145,13 @@ class _Base(object):
             self.master.listbox.insert(Tk.END, (l, value))
 
             if typ in ("mm", "float", "int"):
-                ivalue = OCV.LISTBOX_NUMBER
+                ivalue = OCV.COLOR_LSTB_NUMBER
             elif typ in ("text", "str"):
-                ivalue = OCV.LISTBOX_TEXT
+                ivalue = OCV.COLOR_LSTB_TEXT
             elif typ == "sep":
-                ivalue = OCV.LISTBOX_SEP
+                ivalue = OCV.COLOR_LSTB_SEP
             else:
-                ivalue = OCV.LISTBOX_VAL
+                ivalue = OCV.COLOR_LSTB_VAL
 
             self.master.listbox.listbox(0).itemconfig(
                 Tk.END, background=ivalue)
@@ -873,7 +873,7 @@ class Tools:
     # Load from config file
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.active.set(IniFile.get_str(OCV.PRGNAME, "tool", "CNC"))
+        self.active.set(IniFile.get_str(OCV.PRG_NAME, "tool", "CNC"))
         for tool in self.tools.values():
             tool.load()
 
@@ -881,7 +881,7 @@ class Tools:
     # Save to config file
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        IniFile.set_value(OCV.PRGNAME, "tool", self.active.get())
+        IniFile.set_value(OCV.PRG_NAME, "tool", self.active.get())
         for tool in self.tools.values():
             tool.save()
 
@@ -921,7 +921,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Stock",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=2, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Stock material currently on machine"))
@@ -937,7 +937,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Material",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -955,7 +955,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="EndMill",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -971,7 +971,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Rename"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -989,7 +989,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Add"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1007,7 +1007,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Clone"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1025,7 +1025,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Delete"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1051,7 +1051,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             padx=0, pady=0,
             sticky=Tk.NSEW)
 
-        b = Tk.Label(f, image=OCV.icons["globe"], background=OCV.BACKGROUND)
+        b = Tk.Label(f, image=OCV.icons["globe"], background=OCV.COLOR_BACKGROUND)
         b.pack(side=Tk.LEFT)
 
         self.language = Ribbon.LabelCombobox(
@@ -1074,7 +1074,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Camera",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1092,7 +1092,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Color",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1110,7 +1110,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="CNC",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1128,7 +1128,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Controller",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1145,7 +1145,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Font",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1163,7 +1163,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.APP.tools.active,
             value="Shortcut",
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1180,7 +1180,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #            anchor=Tk.W,
 #            variable=OCV.APP.tools.active,
 #            value="Events",
-#            background=OCV.BACKGROUND)
+#            background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 #        tkExtra.Balloon.set(b, _("Events configuration"))
 #        self.addWidget(b)
@@ -1197,7 +1197,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                 if OCV.language == a:
                     return
                 OCV.language = a
-                IniFile.set_value(OCV.PRGNAME, "language", OCV.language)
+                IniFile.set_value(OCV.PRG_NAME, "language", OCV.language)
                 tkMessageBox.showinfo(
                     _("Language change"),
                     _("Please restart the program."),
@@ -1238,7 +1238,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
             foreground="DarkRed",
             activeforeground="DarkRed",
             activebackground="LightYellow",
-            font=OCV.EXE_FONT,
+            font=OCV.FONT_EXE,
             command=self.execute)
 
         b.pack(side=Tk.TOP, fill=Tk.X)

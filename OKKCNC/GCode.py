@@ -144,7 +144,10 @@ class GCode(object):
             self.blocks.append(Block.Block("Header"))
 
         cmds = CNC.parseLine(line)
-        # print("_addLine ", line, cmds)
+
+        if OCV.DEBUG_PAR is True:
+            print("_addLine ", line, cmds)
+
         if cmds is None:
             self.blocks[-1].append(line)
             return
@@ -153,7 +156,6 @@ class GCode(object):
 
         # Add line to the list for display
         self.gcodelines.append(line)
-        # print("_addLine ", len(self.gcodelines), line)
 
         # rapid move up = end of block
         if self._blocksExist:
@@ -245,7 +247,7 @@ class GCode(object):
         if not self.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
             curr_header = "(Created By OKKCNC version {0}) \n".format(
-                OCV.PG_VER)
+                OCV.PRG_VER)
             curr_header += "(Date: {0})\n".format(currDate)
             curr_header += self.header
 

@@ -99,7 +99,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 variable=self.tab,
                 value="Probe",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Simple probing along a direction"))
 
@@ -112,7 +112,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 variable=self.tab,
                 value="Autolevel",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Autolevel Z surface"))
 
@@ -124,7 +124,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 variable=self.tab,
                 value="Camera",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Work surface camera view and alignment"))
         if Camera.cv is None: b.config(state=DISABLED)
@@ -137,7 +137,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 variable=self.tab,
                 value="Tool",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Setup probing for manual tool change"))
 
@@ -150,7 +150,7 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
 class AutolevelGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Autolevel", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
         self.grid3rows()
 
         # ---
@@ -160,7 +160,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 text=_("Margins"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Get margins from gcode file"))
         self.addWidget(b)
@@ -172,7 +172,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 text=_("Zero"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Set current XY location as autoleveling Z-zero (recalculate probed data to be relative to this XY origin point)"))
         self.addWidget(b)
@@ -184,7 +184,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 text=_("Clear"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Clear probe data"))
         self.addWidget(b)
@@ -197,7 +197,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 text=_("Scan"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Scan Autolevel Margins"))
         self.addWidget(b)
@@ -209,7 +209,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 compound=LEFT,
                 anchor=W,
                 command=lambda a=app:a.insertCommand("AUTOLEVEL",True),
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Modify selected G-Code to match autolevel"))
         self.addWidget(b)
@@ -222,7 +222,7 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 justify=CENTER,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Scan probed area for level information on Z plane"))
@@ -1283,7 +1283,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 class CameraGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Camera", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
         self.grid3rows()
 
         self.switch = BooleanVar()
@@ -1298,7 +1298,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 variable=self.switch,
                 command=self.switchCommand,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         self.switchButton.grid(row=row, column=col, rowspan=3, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(self.switchButton, _("Switch between camera and spindle"))
 
@@ -1311,7 +1311,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
                 variable=self.edge,
                 anchor=W,
                 command=self.edgeDetection,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Turn on/off edge detection"))
 
@@ -1324,7 +1324,7 @@ class CameraGroup(CNCRibbon.ButtonGroup):
                 variable=self.freeze,
                 anchor=W,
                 command=self.freezeImage,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Turn on/off freeze image"))
 
@@ -1617,14 +1617,14 @@ class CameraFrame(CNCRibbon.PageFrame):
 class ToolGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Tool", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
 
         b = Ribbon.LabelButton(self.frame, self, "<<ToolCalibrate>>",
                 image=OCV.icons["calibrate32"],
                 text=_("Calibrate"),
                 compound=TOP,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.pack(side=LEFT, fill=BOTH, expand=YES)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Perform a single a tool change cycle to set the calibration field"))
@@ -1634,7 +1634,7 @@ class ToolGroup(CNCRibbon.ButtonGroup):
                 text=_("Change"),
                 compound=TOP,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.pack(side=LEFT, fill=BOTH, expand=YES)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Perform a tool change cycle"))

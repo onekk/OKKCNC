@@ -52,7 +52,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                 subframe,
                 text=w,
                 foreground="DarkRed",
-                font=OCV.STATE_WCS_FONT,
+                font=OCV.FONT_STATE_WCS,
                 padx=1, pady=1,
                 variable=OCV.wcsvar,
                 value=p,
@@ -77,7 +77,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             lab = Tk.Label(
                 frame,
                 text=label_text[idx],
-                font=OCV.STATE_BUT_FONT)
+                font=OCV.FONT_STATE_BUT)
 
             lab.grid(
                 row=label_pos[idx][0],

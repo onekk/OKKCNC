@@ -131,7 +131,7 @@ class Application(Tk.Toplevel, Sender):
             self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
         else:
             self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
-        self.title("{0} {1}".format(OCV.PRGNAME, OCV.PG_VER))
+        self.title("{0} {1}".format(OCV.PRG_NAME, OCV.PRG_VER))
         OCV.iface_widgets = []
 
         # Global variables
@@ -163,7 +163,7 @@ class Application(Tk.Toplevel, Sender):
         self.buffer = Page.frames["Terminal"].buffer
 
         # Left side
-        for name in IniFile.get_str(OCV.PRGNAME, "ribbon").split():
+        for name in IniFile.get_str(OCV.PRG_NAME, "ribbon").split():
             last = name[-1]
             if last == '>':
                 name = name[:-1]
@@ -175,7 +175,7 @@ class Application(Tk.Toplevel, Sender):
         # Restore last page
         # Select "Probe:Probe" tab to show the dialogs!
         self.pages["Probe"].tabChange()
-        OCV.RIBBON.changePage(IniFile.get_str(OCV.PRGNAME, "page", "File"))
+        OCV.RIBBON.changePage(IniFile.get_str(OCV.PRG_NAME, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
 
@@ -416,7 +416,7 @@ class Application(Tk.Toplevel, Sender):
         self.monitorSerial()
         OCV.CANVAS_F.toggleDrawFlag()
 
-        self.paned.sash_place(0, IniFile.get_int(OCV.PRGNAME, "sash", 340), 0)
+        self.paned.sash_place(0, IniFile.get_int(OCV.PRG_NAME, "sash", 340), 0)
 
         # Auto start pendant and serial
         if IniFile.get_bool("Connection", "pendant"):
@@ -552,7 +552,7 @@ class Application(Tk.Toplevel, Sender):
     def checkUpdates(self):
         """Check for updates"""
         # Find OKKCNC version
-        # Updates.CheckUpdateDialog(self, OCV.PG_VER)
+        # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
         pass
 
     def loadShortcuts(self):
@@ -574,8 +574,8 @@ class Application(Tk.Toplevel, Sender):
 
         if OCV.geometry is None:
             OCV.geometry = "{0:d}x{1:d}".format(
-                IniFile.get_int(OCV.PRGNAME, "width", 900),
-                IniFile.get_int(OCV.PRGNAME, "height", 650))
+                IniFile.get_int(OCV.PRG_NAME, "width", 900),
+                IniFile.get_int(OCV.PRG_NAME, "height", 650))
         try:
             self.geometry(OCV.geometry)
         except:
@@ -583,7 +583,7 @@ class Application(Tk.Toplevel, Sender):
 
         # restore windowsState
         try:
-            self.wm_state(IniFile.get_str(OCV.PRGNAME, "windowstate", "normal"))
+            self.wm_state(IniFile.get_str(OCV.PRG_NAME, "windowstate", "normal"))
         except:
             pass
 
@@ -602,8 +602,8 @@ class Application(Tk.Toplevel, Sender):
 
         tkExtra.Balloon.font = Utils.get_font("balloon", tkExtra.Balloon.font)
 
-        OCV.RIBBON_FONT = Utils.get_font("ribbon.label", OCV.RIBBON_FONT)
-        OCV.RIBBON_TABFONT = Utils.get_font("ribbon.tab", OCV.RIBBON_TABFONT)
+        OCV.FONT_RIBBON = Utils.get_font("ribbon.label", OCV.FONT_RIBBON)
+        OCV.FONT_RIBBON_TAB = Utils.get_font("ribbon.tab", OCV.FONT_RIBBON_TAB)
 
         IniFile.load_colors()
 
@@ -614,17 +614,17 @@ class Application(Tk.Toplevel, Sender):
 
     def saveConfig(self):
         # Program
-        IniFile.set_value(OCV.PRGNAME, "width", str(self.winfo_width()))
-        IniFile.set_value(OCV.PRGNAME, "height", str(self.winfo_height()))
-        # IniFile.set_value(OCV.PRGNAME,  "x", str(self.winfo_rootx()))
-        # IniFile.set_value(OCV.PRGNAME,  "y", str(self.winfo_rooty()))
+        IniFile.set_value(OCV.PRG_NAME, "width", str(self.winfo_width()))
+        IniFile.set_value(OCV.PRG_NAME, "height", str(self.winfo_height()))
+        # IniFile.set_value(OCV.PRG_NAME,  "x", str(self.winfo_rootx()))
+        # IniFile.set_value(OCV.PRG_NAME,  "y", str(self.winfo_rooty()))
         IniFile.set_value(
-            OCV.PRGNAME, "sash", str(self.paned.sash_coord(0)[0]))
+            OCV.PRG_NAME, "sash", str(self.paned.sash_coord(0)[0]))
 
         # save windowState
-        IniFile.set_value(OCV.PRGNAME, "windowstate", str(self.wm_state()))
+        IniFile.set_value(OCV.PRG_NAME, "windowstate", str(self.wm_state()))
         IniFile.set_value(
-            OCV.PRGNAME, "page", str(OCV.RIBBON.getActivePage().name))
+            OCV.PRG_NAME, "page", str(OCV.RIBBON.getActivePage().name))
 
         # Connection
         Page.saveConfig()
@@ -676,7 +676,7 @@ class Application(Tk.Toplevel, Sender):
     def about(self, event=None, timer=None):
         toplevel = Tk.Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About {0} v{1}").format(OCV.PRGNAME, OCV.PG_VER))
+        toplevel.title(_("About {0} v{1}").format(OCV.PRG_NAME, OCV.PRG_VER))
         if sys.platform == "win32":
             self.iconbitmap("OKKCNC.ico")
         else:
@@ -884,7 +884,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=OCV.PG_VER,
+            text=OCV.PRG_VER,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -906,7 +906,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=OCV.PG_DATE,
+            text=OCV.PRG_DATE,
             foreground=fg,
             background=bg,
             justify=Tk.LEFT,
@@ -2028,7 +2028,7 @@ class Application(Tk.Toplevel, Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title("{0}{1}".format(OCV.PRGNAME, OCV.PG_VER))
+        self.title("{0}{1}".format(OCV.PRG_NAME, OCV.PRG_VER))
 
     def loadDialog(self, event=None):
         """load dialog"""
@@ -2141,7 +2141,8 @@ class Application(Tk.Toplevel, Sender):
         else:
             self.setStatus(_("'{0}' loaded").format(filename))
 
-        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
+        self.title("{0}{1}: {2}".format(
+            OCV.PRG_NAME, OCV.PRG_VER, self.gcode.filename))
 
     def save(self, filename):
         """save file"""
@@ -2149,7 +2150,8 @@ class Application(Tk.Toplevel, Sender):
 
         self.setStatus(_("'{0}' saved").decode("utf8").format(filename))
 
-        self.title("{0}{1}: {2}".format(OCV.PRGNAME, OCV.PG_VER, self.gcode.filename))
+        self.title("{0}{1}: {2}".format(
+            OCV.PRG_NAME, OCV.PRG_VER, self.gcode.filename))
 
     def saveAll(self, event=None):
         """save all open file"""
@@ -2350,11 +2352,11 @@ class Application(Tk.Toplevel, Sender):
                 path = self.gcode[ij[0]].path(ij[1])
                 if path:
                     color = OCV.CANVAS_F.canvas.itemcget(path, "fill")
-                    if color != OCV.ENABLE_COLOR:
+                    if color != OCV.COLOR_ENABLE:
                         OCV.CANVAS_F.canvas.itemconfig(
                             path,
                             width=1,
-                            fill=OCV.ENABLE_COLOR)
+                            fill=OCV.COLOR_ENABLE)
                     # Force a periodic update since this loop can take time
                     if time.time() - before > 0.25:
                         self.update()
@@ -2585,7 +2587,7 @@ class Application(Tk.Toplevel, Sender):
                             OCV.CANVAS_F.canvas.itemconfig(
                                 path,
                                 width=2,
-                                fill=OCV.PROCESS_COLOR)
+                                fill=OCV.COLOR_PROCESS)
                     self._selectI += 1
 
             if self._gcount >= self._runLines:
@@ -2616,7 +2618,7 @@ class Application(Tk.Toplevel, Sender):
 def usage(ret_code):
     """Print on console the usage message"""
     sys.stdout.write(
-        "{0} V{1} [{2}]\n".format(OCV.PRGNAME, OCV.PG_VER, OCV.PG_DATE))
+        "{0} V{1} [{2}]\n".format(OCV.PRG_NAME, OCV.PRG_VER, OCV.PRG_DATE))
     sys.stdout.write("{0} <{1}>\n\n".format(OCV.author, OCV.email))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")

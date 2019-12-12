@@ -51,11 +51,11 @@ def conf_file_load(only_from_system_ini=False):
         OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
         _errorReport = get_int("Connection", "errorreport", 1)
 
-        OCV.language = get_str(OCV.PRGNAME, "language")
+        OCV.language = get_str(OCV.PRG_NAME, "language")
         if OCV.language:
             # replace language
             __builtin__._ = gettext.translation(
-                OCV.PRGNAME,
+                OCV.PRG_NAME,
                 os.path.join(OCV.PRG_PATH, 'locale'),
                 fallback=True,
                 languages=[OCV.language]).gettext
@@ -180,7 +180,7 @@ def add_config_section(section):
 
 def loadHistory():
     try:
-        f = open(OCV.COMMAND_HISTORY, "r")
+        f = open(OCV.COM_HIST_FILE, "r")
     except Exception:
         return
     OCV.history = [x.strip() for x in f]
@@ -190,7 +190,7 @@ def loadHistory():
 
 def save_command_history():
     try:
-        f = open(OCV.COMMAND_HISTORY, "w")
+        f = open(OCV.COM_HIST_FILE, "w")
     except Exception:
         return
     f.write("\n".join(OCV.history))
@@ -199,55 +199,56 @@ def save_command_history():
 
 def load_colors():
     """Load Interface Colors"""
-    OCV.ACTIVE_COLOR = get_str(
-        "Color", "ribbon.active", OCV.ACTIVE_COLOR)
+    OCV.COLOR_ACTIVE = get_str(
+        "Color", "ribbon.active", OCV.COLOR_ACTIVE)
 
-    OCV.LABEL_SELECT_COLOR = get_str(
-        "Color", "ribbon.select", OCV.LABEL_SELECT_COLOR)
+    OCV.COLOR_CAMERA = get_str(
+        "Color", "canvas.camera",  OCV.COLOR_CAMERA)
 
-    OCV.INSERT_COLOR = get_str(
-        "Color", "canvas.insert", OCV.INSERT_COLOR)
+    OCV.COLOR_CANVAS = get_str(
+        "Color", "canvas.background", OCV.COLOR_CANVAS)
 
-    OCV.GANTRY_COLOR = get_str(
-        "Color", "canvas.gantry", OCV.GANTRY_COLOR)
+    OCV.COLOR_SELECT_BOX = get_str(
+        "Color", "canvas.selectbox", OCV.COLOR_SELECT_BOX)
 
-    OCV.MARGIN_COLOR = get_str(
-        "Color", "canvas.margin", OCV.MARGIN_COLOR)
+    OCV.COLOR_SELECT_LABEL = get_str(
+        "Color", "ribbon.select", OCV.COLOR_SELECT_LABEL)
 
-    OCV.GRID_COLOR = get_str(
-        "Color", "canvas.grid",  OCV.GRID_COLOR)
+    OCV.COLOR_INSERT = get_str(
+        "Color", "canvas.insert", OCV.COLOR_INSERT)
 
-    OCV.BOX_SELECT = get_str(
-        "Color", "canvas.selectbox", OCV.BOX_SELECT)
+    OCV.COLOR_GANTRY = get_str(
+        "Color", "canvas.gantry", OCV.COLOR_GANTRY)
 
-    OCV.ENABLE_COLOR = get_str(
-        "Color", "canvas.enable", OCV.ENABLE_COLOR)
+    OCV.COLOR_MARGIN = get_str(
+        "Color", "canvas.margin", OCV.COLOR_MARGIN)
 
-    OCV.DISABLE_COLOR = get_str(
-        "Color", "canvas.disable", OCV.DISABLE_COLOR)
+    OCV.COLOR_GRID = get_str(
+        "Color", "canvas.grid",  OCV.COLOR_GRID)
 
-    OCV.SELECT_COLOR = get_str(
-        "Color", "canvas.select", OCV.SELECT_COLOR)
+    OCV.COLOR_ENABLE = get_str(
+        "Color", "canvas.enable", OCV.COLOR_ENABLE)
 
-    OCV.SELECT2_COLOR = get_str(
-        "Color", "canvas.select2", OCV.SELECT2_COLOR)
+    OCV.COLOR_DISABLE = get_str(
+        "Color", "canvas.disable", OCV.COLOR_DISABLE)
 
-    OCV.PROCESS_COLOR = get_str(
-        "Color", "canvas.process", OCV.PROCESS_COLOR)
+    OCV.COLOR_SELECT = get_str(
+        "Color", "canvas.select", OCV.COLOR_SELECT)
 
-    OCV.MOVE_COLOR = get_str(
-        "Color", "canvas.move", OCV.MOVE_COLOR)
+    OCV.COLOR_SELECT2 = get_str(
+        "Color", "canvas.select2", OCV.COLOR_SELECT2)
 
-    OCV.RULER_COLOR = get_str(
-        "Color", "canvas.ruler", OCV.RULER_COLOR)
-    OCV.CAMERA_COLOR = get_str(
-        "Color", "canvas.camera",  OCV.CAMERA_COLOR)
+    OCV.COLOR_PROCESS = get_str(
+        "Color", "canvas.process", OCV.COLOR_PROCESS)
 
-    OCV.PROBE_TEXT_COLOR = get_str(
-        "Color", "canvas.probetext", OCV.PROBE_TEXT_COLOR)
+    OCV.COLOR_MOVE = get_str(
+        "Color", "canvas.move", OCV.COLOR_MOVE)
 
-    OCV.CANVAS_COLOR = get_str(
-        "Color", "canvas.background", OCV.CANVAS_COLOR)
+    OCV.COLOR_RULER = get_str(
+        "Color", "canvas.ruler", OCV.COLOR_RULER)
+
+    OCV.COLOR_PROBE_TEXT = get_str(
+        "Color", "canvas.probetext", OCV.COLOR_PROBE_TEXT)
 
 
 def load_memories():

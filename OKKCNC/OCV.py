@@ -21,22 +21,35 @@ import sys
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
-PRGNAME = "OKKCNC"
+PRG_NAME = "OKKCNC"
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
+"""version and date"""
+PRG_VER = "0.2.0-dev"
+PRG_DATE = "26 Dec 2019"
 
 if getattr(sys, 'frozen', False):
     # When being bundled by pyinstaller, paths are different
     print("Running as pyinstaller bundle!", sys.argv[0])
     PRG_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRGNAME))
-USER_CONFIG = os.path.expanduser("~/.{0}".format(PRGNAME))
-COMMAND_HISTORY = os.path.expanduser("~/.{0}.history".format(PRGNAME))
+SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
+USER_CONFIG = os.path.expanduser("~/.{0}".format(PRG_NAME))
+COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
 
-"""version and date"""
-PG_VER = "0.2.0-dev"
-PG_DATE = "26 Dec 2019"
+# Debug flags. used across the interface to print on command line
+# proper statements
+# General unspecified debug flag
+DEBUG = False
+# Debug graphical part
+DEBUG_GRAPH = True
+# Debug Interface
+DEBUG_INT = False
+# Debug Comunications
+DEBUG_COM = True
+# debug GCode parsing
+DEBUG_PAR = True
 
+# This are string present in the About window
 PRG_CREDITS = \
     "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
     "@effer Filippo Rivato , " \
@@ -56,26 +69,81 @@ PRG_SITE = "https://github.com/onekk/OKKCNC"
 PRG_TRANS = \
     "Italian - @onekk\n" \
 
-
-DEBUG = False
-GRAP_DEBUG = True
-INT_DEBUG = False
-COM_DEBUG = True
-
+# Some flags to make choices based on init values
 HAS_SERIAL = None
 IS_PY3 = False
 
+# INTERFACE COLORS
+"""See Inifile.py/load_colors()
+values with comments Above are the corresponding itens in IniFile
+"""
+# "ribbon.active"
+COLOR_ACTIVE = "LightYellow"
+COLOR_BACKGROUND = "#E6E2E0"
+COLOR_BACKGROUND_LABELS = "pale green"
+COLOR_BACKGROUND_DISABLE = "#A6A2A0"
+
+COLOR_BLOCK = "LightYellow"
+# "canvas.camera"
+COLOR_CAMERA = "Cyan"
+# "canvas.background"
+COLOR_CANVAS = "White"
+
+COLOR_COMMENT = "Blue"
+# "canvas.disable"
+COLOR_DISABLE = "LightGray"
+# "canvas.enable"
+COLOR_ENABLE = "Black"
+# "canvas.gantry"
+COLOR_GANTRY = "Red"
+# "canvas.grid"
+COLOR_GRID = "Gray"
+COLOR_GROUP_BACKGROUND = "#B6B2B0"
+COLOR_GROUP_BACKGROUND2 = "#B0C0C0"
+# COLOR_GROUP_BACKGROUND3 = "#A0C0A0"
+# COLOR_GROUP_BACKGROUND4 = "#B0C0A0"
+COLOR_GROUP_FOREGROUND = "White"
+COLOR_INFO = "Gold"
+COLOR_INSERT = "Blue"  # CHECK set but unused
+COLOR_LSTB_NUMBER = "khaki1"
+COLOR_LSTB_SEP = "aquamarine"
+COLOR_LSTB_TEXT = "azure"
+COLOR_LSTB_VAL = "AntiqueWhite1"
+# "canvas.margin"
+COLOR_MARGIN = "Magenta"
+COLOR_MEM = "Orchid1"
+# "canvas.move"
+COLOR_MOVE = "DarkCyan"
+# "canvas.probetext"
+COLOR_PROBE_TEXT = "Green"
+# "canvas.process"
+COLOR_PROCESS = "Green"
+# "canvas.ruler"
+COLOR_RULER = "Green"
+# "canvas.select"
+COLOR_SELECT = "Blue"
+# "canvas.select2"
+COLOR_SELECT2 = "DarkCyan"
+# "canvas.selectbox"
+COLOR_SELECT_BOX = "Cyan"
+# "ribbon.select"
+COLOR_SELECT_LABEL = "#C0FFC0"
+COLOR_TAB = "DarkOrange"
+# TODO we need this color?
+COLOR_TABS = "Orange"
+COLOR_WORK = "Orange"
+
+# INTERFACE FONTS
 FONT = ("Sans", "-10")
-EXE_FONT = ("Helvetica", 12, "bold")
-RIBBON_TABFONT = ("Sans", "-14", "bold")
-RIBBON_FONT = ("Sans", "-11")
+FONT_DRO_ZERO = ("Sans", "-11")
+FONT_EXE = ("Helvetica", 12, "bold")
+FONT_RIBBON_TAB = ("Sans", "-14", "bold")
+FONT_RIBBON = ("Sans", "-11")
+FONT_STATE_WCS = ("Helvetica", "-14")
+FONT_STATE_BUT = ("Sans", "-11")
 
-DRO_ZERO_FONT = ("Sans", "-11")
-
-STATE_WCS_FONT = ("Helvetica", "-14")
-STATE_BUT_FONT = ("Sans", "-11")
-
-FONT_SECTION = "Font"
+# Font section name in Config file.
+FONT_SEC_NAME = "Font"
 
 #
 WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
@@ -190,9 +258,11 @@ acceleration_x = 25.0  # mm/s^2
 acceleration_y = 25.0  # mm/s^2
 acceleration_z = 25.0  # mm/s^2
 accuracy = 0.01  # sagitta error during arc conversion
-appendFeed = False  # append feed on every G1/G2/G3 commands to be used
-                    # for feed override testing
-                    # FIXME will not be needed after Grbl v1.0
+"""append feed on every G1/G2/G3 commands to be used
+for feed override testing
+will not be needed after Grbl v1.0
+"""
+appendFeed = False
 
 # C #
 comment = ""  # last parsed comment
@@ -248,7 +318,6 @@ s_runningPrev = None
 s_stop = None
 s_stop_req = None
 
-
 # T #
 toolPolicy = 1
 """
@@ -293,8 +362,8 @@ WK_bank_mem = 9
 """Toggle used to whow the memory bank"""
 WK_bank_show = []
 
-WK_mem = 0 # pass memory number across the different program part
-WK_mem_name = "" # pass memory name across the different program part
+WK_mem = 0  # pass memory number across the different program part
+WK_mem_name = ""  # pass memory name across the different program part
 
 """
     dictionary containing memories data
@@ -372,53 +441,16 @@ CD = {
     "stepover": 40.,
 
     "PRB": None,
-    "TLO": 0.,
 
     "version": "",
     "controller": "",
     "running": False,
     }
 
-# INTERFACE COLORS #
-ACTIVE_COLOR = "LightYellow"
-BACKGROUND = "#E6E2E0"
-BACKGROUND_LABELS = "pale green"
-BACKGROUND_DISABLE = "#A6A2A0"
-BACKGROUND_GROUP = "#B6B2B0"
-BACKGROUND_GROUP2 = "#B0C0C0"
-BACKGROUND_GROUP3 = "#A0C0A0"
-BACKGROUND_GROUP4 = "#B0C0A0"
-BLOCK_COLOR = "LightYellow"
-BOX_SELECT = "Cyan"
-CAMERA_COLOR = "Cyan"
-CANVAS_COLOR = "White"
-COMMENT_COLOR = "Blue"
-DISABLE_COLOR = "LightGray"
-ENABLE_COLOR = "Black"
-FOREGROUND_GROUP = "White"
-GANTRY_COLOR = "Red"
-GRID_COLOR = "Gray"
-INFO_COLOR = "Gold"
-INSERT_COLOR = "Blue"
-LABEL_SELECT_COLOR = "#C0FFC0"
-LISTBOX_NUMBER = "khaki1"
-LISTBOX_SEP = "aquamarine"
-LISTBOX_TEXT = "azure"
-LISTBOX_VAL = "AntiqueWhite1"
-MARGIN_COLOR = "Magenta"
-MEM_COLOR = "Orchid1"
-MOVE_COLOR = "DarkCyan"
-PROBE_TEXT_COLOR = "Green"
-PROCESS_COLOR = "Green"
-RULER_COLOR = "Green"
-SELECT_COLOR = "Blue"
-SELECT2_COLOR = "DarkCyan"
-TAB_COLOR = "DarkOrange"
-TABS_COLOR = "Orange"
-WORK_COLOR = "Orange"
 
-def showC(X, Y, Z):
-    return sh_coord.format(X, Y, Z, digits)
+def showC(x_val, y_val, z_val):
+    return sh_coord.format(x_val, y_val, z_val, digits)
 
-def gcodeCC(X, Y, Z):
-    return gc_coord.format(X, Y, Z, digits)
+
+def gcodeCC(x_val, y_val, z_val):
+    return gc_coord.format(x_val, y_val, z_val, digits)

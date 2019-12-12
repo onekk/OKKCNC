@@ -522,14 +522,14 @@ class CNCCanvas(Tk.Canvas, object):
                         self._mouseAction = ACTION_SELECT_SINGLE
                         return
 
-                    fill = OCV.MOVE_COLOR
+                    fill = OCV.COLOR_MOVE
                     arrow = Tk.LAST
 
                 except:
                     self._mouseAction = ACTION_SELECT_SINGLE
                     return
             else:
-                fill = OCV.RULER_COLOR
+                fill = OCV.COLOR_RULER
                 arrow = Tk.BOTH
             self._vector = self.create_line(
                 (i, j, i, j), fill=fill, arrow=arrow)
@@ -580,7 +580,7 @@ class CNCCanvas(Tk.Canvas, object):
                     self.canvasy(self._y),
                     self.canvasx(event.x),
                     self.canvasy(event.y),
-                    outline=OCV.BOX_SELECT)
+                    outline=OCV.COLOR_SELECT_BOX)
 
         elif self._mouseAction in (ACTION_MOVE, ACTION_RULER):
             coords = self.coords(self._vector)
@@ -825,7 +825,7 @@ class CNCCanvas(Tk.Canvas, object):
         y = self._ty
         zoom = self.__tzoom
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.DEBUG_GRAPH is True:
             print("--- _zoomCanvas ---")
             print("ACTUAL_ZOOM", self.zoom)
 
@@ -866,7 +866,7 @@ class CNCCanvas(Tk.Canvas, object):
         dx = self.canvasx(x) * (1.0 - zoom)
         dy = self.canvasy(y) * (1.0 - zoom)
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.OCV.DEBUG_GRAPH is True:
             print("FACTOR ", zoom)
             print("x0 y0 ", x0, y0)
             print("dx, dy ", dx, dy)
@@ -940,7 +940,7 @@ class CNCCanvas(Tk.Canvas, object):
         else:
             self.__tzoom = 0.5
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.OCV.DEBUG_GRAPH is True:
             print("--- fit2Screen ---")
             print("OLD ZOOM ", self.zoom)
             print("BB", bb)
@@ -1067,16 +1067,16 @@ class CNCCanvas(Tk.Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = OCV.ENABLE_COLOR
+                        fill = OCV.COLOR_ENABLE
                 except IndexError:
-                    fill = OCV.ENABLE_COLOR
+                    fill = OCV.COLOR_ENABLE
             else:
-                    fill = OCV.ENABLE_COLOR
+                    fill = OCV.COLOR_ENABLE
             self.itemconfig(i, width=1, fill=fill)
 
-        self.itemconfig("sel2", width=1, fill=OCV.DISABLE_COLOR)
-        self.itemconfig("sel3", width=1, fill=OCV.TAB_COLOR)
-        self.itemconfig("sel4", width=1, fill=OCV.DISABLE_COLOR)
+        self.itemconfig("sel2", width=1, fill=OCV.COLOR_DISABLE)
+        self.itemconfig("sel3", width=1, fill=OCV.COLOR_TAB)
+        self.itemconfig("sel4", width=1, fill=OCV.COLOR_DISABLE)
 
         for i in SELECTION_TAGS:
             self.dtag(i)
@@ -1100,10 +1100,10 @@ class CNCCanvas(Tk.Canvas, object):
                     sel = block.enable and "sel" or "sel2"
                     self.addtag_withtag(sel, path)
 
-        self.itemconfig("sel", width=2, fill=OCV.SELECT_COLOR)
-        self.itemconfig("sel2", width=2, fill=OCV.SELECT2_COLOR)
-        self.itemconfig("sel3", width=2, fill=OCV.TAB_COLOR)
-        self.itemconfig("sel4", width=2, fill=OCV.TABS_COLOR)
+        self.itemconfig("sel", width=2, fill=OCV.COLOR_SELECT)
+        self.itemconfig("sel2", width=2, fill=OCV.COLOR_SELECT2)
+        self.itemconfig("sel3", width=2, fill=OCV.COLOR_TAB)
+        self.itemconfig("sel4", width=2, fill=OCV.COLOR_TABS)
 
         for i in SELECTION_TAGS:
             self.tag_raise(i)
@@ -1147,7 +1147,7 @@ class CNCCanvas(Tk.Canvas, object):
                    (block.xmin, block.ymin, 0.)]
             self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.INFO_COLOR,
+                fill=OCV.COLOR_INFO,
                 tag="info")
             xc = (block.xmin + block.xmax)/2.0
             yc = (block.ymin + block.ymax)/2.0
@@ -1182,7 +1182,7 @@ class CNCCanvas(Tk.Canvas, object):
                 f += df
             self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.INFO_COLOR,
+                fill=OCV.COLOR_INFO,
                 width=5,
                 arrow=Tk.LAST,
                 arrowshape=(32, 40, 12),
@@ -1236,22 +1236,22 @@ class CNCCanvas(Tk.Canvas, object):
             # create cross hair at dummy location we will correct latter
             self._cameraHori = self.create_line(
                 0, 0, 1, 0,
-                fill=OCV.CAMERA_COLOR,
+                fill=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraVert = self.create_line(
                 0, 0, 0, 1,
-                fill=OCV.CAMERA_COLOR,
+                fill=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraCircle = self.create_oval(
                 0, 0, 1, 1,
-                outline=OCV.CAMERA_COLOR,
+                outline=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraCircle2 = self.create_oval(
                 0, 0, 1, 1,
-                outline=OCV.CAMERA_COLOR,
+                outline=OCV.COLOR_CAMERA,
                 dash=(3, 3),
                 tag="CrossHair")
 
@@ -1370,7 +1370,7 @@ class CNCCanvas(Tk.Canvas, object):
     def initPosition(self):
         """Initialize gantry position"""
 
-        self.configure(background=OCV.CANVAS_COLOR)
+        self.configure(background=OCV.COLOR_CANVAS)
         self.delete(Tk.ALL)
         self._cameraImage = None
         gr = max(3, int(OCV.CD["diameter"]/2.0*self.zoom))
@@ -1380,7 +1380,7 @@ class CNCCanvas(Tk.Canvas, object):
             self._gantry1 = self.create_oval(
                 (-gr, -gr), (gr, gr),
                 width=2,
-                outline=OCV.GANTRY_COLOR)
+                outline=OCV.COLOR_GANTRY)
 
             self._gantry2 = None
 
@@ -1393,17 +1393,17 @@ class CNCCanvas(Tk.Canvas, object):
                 self._gantry2 = self.create_line(
                     (-gx, -gh, 0, 0, gx, -gh, -gx, -gh),
                     width=2,
-                    fill=OCV.GANTRY_COLOR)
+                    fill=OCV.COLOR_GANTRY)
             else:
                 self._gantry1 = self.create_oval(
                     (-gx, -gh-gy, gx, -gh+gy),
                     width=2,
-                    outline=OCV.GANTRY_COLOR)
+                    outline=OCV.COLOR_GANTRY)
 
                 self._gantry2 = self.create_line(
                     (-gx, -gh, 0, 0, gx, -gh),
                     width=2,
-                    fill=OCV.GANTRY_COLOR)
+                    fill=OCV.COLOR_GANTRY)
 
         self._lastInsert = None
         self._lastActive = None
@@ -1439,11 +1439,11 @@ class CNCCanvas(Tk.Canvas, object):
         wc = c_dim // 2
         hc = c_dim // 2
 
-        objA = self.create_line(0, 0, c_dim, 0, fill=OCV.MEM_COLOR,
+        objA = self.create_line(0, 0, c_dim, 0, fill=OCV.COLOR_MEM,
                                 tag=mem_cross_h)
-        objB = self.create_line(0, 0, 0, c_dim, fill=OCV.MEM_COLOR,
+        objB = self.create_line(0, 0, 0, c_dim, fill=OCV.COLOR_MEM,
                                 tag=mem_cross_v)
-        objC = self.create_oval(0, 0, r_dim, r_dim, outline=OCV.MEM_COLOR,
+        objC = self.create_oval(0, 0, r_dim, r_dim, outline=OCV.COLOR_MEM,
                                 tag=mem_cross_c)
         if mem_num == 0:
             mem_id = "mem_A"
@@ -1618,7 +1618,7 @@ class CNCCanvas(Tk.Canvas, object):
 
             self._margin = self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.MARGIN_COLOR)
+                fill=OCV.COLOR_MARGIN)
 
             self.tag_lower(self._margin)
 
@@ -1634,7 +1634,7 @@ class CNCCanvas(Tk.Canvas, object):
         self._amargin = self.create_line(
             self.plotCoords(xyz),
             dash=(3, 2),
-            fill=OCV.MARGIN_COLOR)
+            fill=OCV.COLOR_MARGIN)
 
         self.tag_lower(self._amargin)
 
@@ -1709,7 +1709,7 @@ class CNCCanvas(Tk.Canvas, object):
         self._workarea = self._drawRect(
             xmin, ymin, xmax, ymax,
             0.,
-            fill=OCV.WORK_COLOR,
+            fill=OCV.COLOR_WORK,
             dash=(3, 2))
 
         self.tag_lower(self._workarea)
@@ -1735,7 +1735,7 @@ class CNCCanvas(Tk.Canvas, object):
                 item = self.create_line(
                     self.plotCoords(xyz),
                     tag="Grid",
-                    fill=OCV.GRID_COLOR,
+                    fill=OCV.COLOR_GRID,
                     dash=(1, 3))
 
                 self.tag_lower(item)
@@ -1746,7 +1746,7 @@ class CNCCanvas(Tk.Canvas, object):
 
                 item = self.create_line(
                     self.plotCoords(xyz),
-                    fill=OCV.GRID_COLOR,
+                    fill=OCV.COLOR_GRID,
                     tag="Grid",
                     dash=(1, 3))
 
@@ -1903,7 +1903,7 @@ class CNCCanvas(Tk.Canvas, object):
                 text="{0:.{1}f}".format(probe.points[i][2], OCV.digits),
                 tag="Probe",
                 justify=Tk.CENTER,
-                fill=OCV.PROBE_TEXT_COLOR)
+                fill=OCV.COLOR_PROBE_TEXT)
 
             self.tag_lower(item)
 
@@ -2129,9 +2129,9 @@ class CNCCanvas(Tk.Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = OCV.ENABLE_COLOR
+                        fill = OCV.COLOR_ENABLE
                 else:
-                    fill = OCV.DISABLE_COLOR
+                    fill = OCV.COLOR_DISABLE
 
                 if self.cnc.gcode == 0:
 

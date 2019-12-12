@@ -172,7 +172,7 @@ def string_from_font(font):
 def get_font(name, default=None):
     """Get font from configuration"""
     try:
-        value = OCV.config.get(OCV.FONT_SECTION, name)
+        value = OCV.config.get(OCV.FONT_SEC_NAME, name)
     except:
         value = None
 
@@ -198,11 +198,11 @@ def set_font(name, font):
         return
 
     if isinstance(font, str):
-        OCV.config.set(OCV.FONT_SECTION, name, font)
+        OCV.config.set(OCV.FONT_SEC_NAME, name, font)
     elif isinstance(font, tuple):
-        OCV.config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
+        OCV.config.set(OCV.FONT_SEC_NAME, name, ",".join(map(str, font)))
     else:
-        OCV.config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
+        OCV.config.set(OCV.FONT_SEC_NAME, name, "{0},{1},{2}".format(
             font.cget("family"),
             font.cget("size"),
             font.cget("weight")))

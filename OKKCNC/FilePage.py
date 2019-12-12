@@ -39,7 +39,7 @@ BAUDS = [2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400]
 class _RecentMenuButton(Ribbon.MenuButton):
     """Recent Menu button"""
     def createMenu(self):
-        menu = Tk.Menu(self, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
+        menu = Tk.Menu(self, tearoff=0, activebackground=OCV.COLOR_ACTIVE)
         for i in range(OCV.maxRecent):
             filename = IniFile.get_recent_file(i)
 
@@ -81,7 +81,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["new32"],
             text=_("New"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -97,7 +97,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self,
             "<<Open>>",
             image=OCV.icons["open32"],
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -113,7 +113,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             text=_("Open"),
             image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -130,7 +130,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["import32"],
             text=_("Import"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -146,7 +146,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
             "<<Save>>",
             image=OCV.icons["save32"],
             command=OCV.APP.save,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -163,7 +163,7 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 text=_("Save"),
                 image=OCV.icons["triangle_down"],
                 compound=Tk.RIGHT,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -192,7 +192,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #                state=DISABLED,
 #                compound=TOP,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NS)
 #        tkExtra.Balloon.set(b, _("Open configuration dialog"))
 
@@ -204,7 +204,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #                compound=LEFT,
 #                command=Utils.ReportDialog.sendErrorReport,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #        tkExtra.Balloon.set(b, _("Send Error Report"))
 #
@@ -216,7 +216,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #                compound=LEFT,
 #                command=OCV.APP.checkUpdates,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #        tkExtra.Balloon.set(b, _("Check Updates"))
 
@@ -229,7 +229,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             command=OCV.APP.about,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
 
@@ -255,7 +255,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.startPendant,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -270,7 +270,7 @@ class PendantGroup(CNCRibbon.ButtonGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.stopPendant,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -294,7 +294,7 @@ class CloseGroup(CNCRibbon.ButtonGroup):
             compound=Tk.TOP,
             command=OCV.APP.quit,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.pack(fill=Tk.BOTH, expand=Tk.YES)
 
@@ -407,7 +407,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
             text=_("Refresh"),
             compound=Tk.TOP,
             command=lambda s=self: s.comportRefresh(True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         self.comrefBtn.grid(
             row=row,
@@ -426,7 +426,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
             text=_("Open"),
             compound=Tk.TOP,
             command=lambda s=self: s.event_generate("<<Connect>>"),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         self.connectBtn.grid(
             row=row,

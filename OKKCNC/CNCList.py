@@ -126,17 +126,17 @@ class CNCListbox(Listbox):
             self._blockPos.append(y)
             self.insert(END, block.header())
             self._items.append((bi, None))
-            self.itemconfig(END, background=OCV.BLOCK_COLOR)
+            self.itemconfig(END, background=OCV.COLOR_BLOCK)
             y += 1
             if not block.enable:
-                self.itemconfig(END, foreground=OCV.DISABLE_COLOR)
+                self.itemconfig(END, foreground=OCV.COLOR_DISABLE)
             if not block.expand: continue
 
             for lj,line in enumerate(block):
                 self.insert(END, line)
                 y += 1
                 if line and line[0] in ("(","%"):
-                    self.itemconfig(END, foreground=OCV.COMMENT_COLOR)
+                    self.itemconfig(END, foreground=OCV.COLOR_COMMENT)
                 self._items.append((bi, lj))
 
         self.select(items)
@@ -326,23 +326,23 @@ class CNCListbox(Listbox):
         if edit.value is None or edit.value==txt:
             if lid is None:
                 self.set(active,txt0)
-                self.itemconfig(active, background=OCV.BLOCK_COLOR)
+                self.itemconfig(active, background=OCV.COLOR_BLOCK)
                 if not self.gcode[bid].enable:
-                    self.itemconfig(active, foreground=OCV.DISABLE_COLOR)
+                    self.itemconfig(active, foreground=OCV.COLOR_DISABLE)
             return
 
         if isinstance(lid,int):
             self.gcode.addUndo(self.gcode.setLineUndo(bid, lid, edit.value))
             self.set(active, edit.value)
             if edit.value and edit.value[0] in ("(","%"):
-                self.itemconfig(active, foreground=OCV.COMMENT_COLOR)
+                self.itemconfig(active, foreground=OCV.COLOR_COMMENT)
 
         else:
             self.gcode.addUndo(self.gcode.setBlockNameUndo(bid, edit.value))
             self.set(active, self.gcode[bid].header())
-            self.itemconfig(active, background=OCV.BLOCK_COLOR)
+            self.itemconfig(active, background=OCV.COLOR_BLOCK)
             if not self.gcode[bid].enable:
-                self.itemconfig(active, foreground=OCV.DISABLE_COLOR)
+                self.itemconfig(active, foreground=OCV.COLOR_DISABLE)
 
         self.yview_moveto(ypos)
         self.winfo_toplevel().event_generate("<<Modified>>")
@@ -435,7 +435,7 @@ class CNCListbox(Listbox):
         self.selection_set(active)
         self.activate(active)
         if edit.value and edit.value[0] in ("(","%"):
-            self.itemconfig(active, foreground=OCV.COMMENT_COLOR)
+            self.itemconfig(active, foreground=OCV.COLOR_COMMENT)
         self.yview_moveto(ypos)
 
         # Add line into code
@@ -610,9 +610,9 @@ class CNCListbox(Listbox):
             sel = self.selection_includes(pos)
             self.delete(pos)
             self.insert(pos, block.header())
-            self.itemconfig(pos, background=OCV.BLOCK_COLOR)
+            self.itemconfig(pos, background=OCV.COLOR_BLOCK)
             if not block.enable:
-                self.itemconfig(pos, foreground=OCV.DISABLE_COLOR)
+                self.itemconfig(pos, foreground=OCV.COLOR_DISABLE)
             if sel: self.selection_set(pos)
 
         if undoinfo:

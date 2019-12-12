@@ -172,14 +172,14 @@ def main_interface(self):
     errors = []
     for name, page in self.pages.items():
         for page_name in IniFile.get_str(
-                OCV.PRGNAME, "{0}.ribbon".format(page.name)).split():
+                OCV.PRG_NAME, "{0}.ribbon".format(page.name)).split():
             try:
                 page.addRibbonGroup(page_name)
             except KeyError:
                 errors.append(page_name)
 
         for page_name in IniFile.get_str(
-                OCV.PRGNAME, "{0}.page".format(page.name)).split():
+                OCV.PRG_NAME, "{0}.page".format(page.name)).split():
             last = page_name[-1]
             try:
                 if last == "*":
@@ -329,7 +329,7 @@ class DROFrame(CNCRibbon.PageFrame):
         self.xzero = Tk.Button(
             self,
             text=_("X=0"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             command=cmd.set_x0,
             activebackground="LightYellow",
             padx=2, pady=1)
@@ -345,7 +345,7 @@ class DROFrame(CNCRibbon.PageFrame):
         self.yzero = Tk.Button(
             self,
             text=_("Y=0"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             command=cmd.set_y0,
             activebackground="LightYellow",
             padx=2, pady=1)
@@ -361,7 +361,7 @@ class DROFrame(CNCRibbon.PageFrame):
         self.zzero = Tk.Button(
             self,
             text=_("Z=0"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             command=cmd.set_z0,
             activebackground="LightYellow",
             padx=2, pady=1)
@@ -379,7 +379,7 @@ class DROFrame(CNCRibbon.PageFrame):
         self.xyzero = Tk.Button(
             self,
             text=_("XY=0"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             command=cmd.set_xy0,
             activebackground="LightYellow",
             padx=2, pady=1)
@@ -395,7 +395,7 @@ class DROFrame(CNCRibbon.PageFrame):
         self.xyzzero = Tk.Button(
             self,
             text=_("XYZ=0"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             command=cmd.set_xyz0,
             activebackground="LightYellow",
             padx=2, pady=1)
@@ -417,7 +417,7 @@ class DROFrame(CNCRibbon.PageFrame):
         but = Tk.Button(
             frame,
             text=_("Set WPOS"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             image=OCV.icons["origin"],
             compound=Tk.LEFT,
             activebackground="LightYellow",
@@ -434,7 +434,7 @@ class DROFrame(CNCRibbon.PageFrame):
         but = Tk.Button(
             frame,
             text=_("Move Gantry"),
-            font=OCV.DRO_ZERO_FONT,
+            font=OCV.FONT_DRO_ZERO,
             image=OCV.icons["gantry"],
             compound=Tk.LEFT,
             activebackground="LightYellow",
@@ -558,7 +558,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
                 OCV.APP,
                 idx,
                 anchor=Tk.W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
             col, row = divmod(idx-1, 3)
 
             but.grid(row=row, column=col, sticky=Tk.NSEW)
@@ -578,7 +578,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["start32"],
             text=_("Start"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.pack(side=Tk.LEFT, fill=Tk.BOTH)
 
@@ -594,7 +594,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["pause32"],
             text=_("Pause"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.pack(side=Tk.LEFT, fill=Tk.BOTH)
 
@@ -609,7 +609,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["stop32"],
             text=_("Stop"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.pack(side=Tk.LEFT, fill=Tk.BOTH)
 
@@ -642,7 +642,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.TOP,
             anchor=Tk.W,
             command=OCV.MCTRL.home(),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(
             row=row, column=col,
@@ -663,7 +663,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.MCTRL.unlock(True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -680,7 +680,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=lambda s=self: s.event_generate("<<Connect>>"),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -695,7 +695,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.MCTRL.softReset(True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -725,7 +725,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             #image=OCV.icons["start32"],
             font=OCV.FONT,
             text=_("M2A"),
-            background=OCV.BACKGROUND,
+            background=OCV.COLOR_BACKGROUND,
             command=None)
 
         but.grid(row=row, column=col)# padx=0, pady=0, sticky=Tk.EW)
@@ -741,7 +741,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             #image=OCV.icons["pause32"],
             font=OCV.FONT,
             text=_("M2B"),
-            background=OCV.BACKGROUND,
+            background=OCV.COLOR_BACKGROUND,
             command=None)
 
         but.grid(row=row, column=col)#, padx=0, pady=0, sticky=Tk.EW)
@@ -758,7 +758,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             font=OCV.FONT,
             text=_("C_M"),
             command=self.clr_mem,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
         but.grid(row=row, column=col)#, padx=0, pady=0, sticky=Tk.EW)
 
         tkExtra.Balloon.set(but, _("Cancel mem X"))
@@ -771,7 +771,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             self.frame,
             name="lab_bank",
             text="B {0}".format(OCV.WK_bank),
-            background=OCV.BACKGROUND_LABELS)
+            background=OCV.COLOR_BACKGROUND_LABELS)
 
         lab.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
 
@@ -787,7 +787,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # image=OCV.icons["pause32"],
             font=OCV.FONT,
             text=_("B +"),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
 
@@ -806,7 +806,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             font=OCV.FONT,
             text=_("B -"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
 
@@ -830,7 +830,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                     name=but_name,
                     text="M_{0}".format(sub_i + 2),
                     compound=Tk.TOP,
-                    background=OCV.BACKGROUND)
+                    background=OCV.COLOR_BACKGROUND)
 
                 but.grid(row=rows, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -925,7 +925,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         OCV.WK_bank_start = (OCV.WK_bank * OCV.WK_bank_mem) + 2
         wdg = self.frame.nametowidget("lab_bank")
         wdg.config(text="B {0}".format(OCV.WK_bank))
-        but_color = OCV.BACKGROUND
+        but_color = OCV.COLOR_BACKGROUND
 
         for idx in range(0, OCV.WK_bank_mem):
             but_name = "but_m_{0}".format(str(idx))
@@ -942,7 +942,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                     tkExtra.Balloon.set(
                         wdg, mem_tt.format(mem_addr, *mem_data))
             else:
-                but_color = OCV.BACKGROUND
+                but_color = OCV.COLOR_BACKGROUND
                 tkExtra.Balloon.set(wdg, "Empty")
 
             wdg.config(text=label, background=but_color)
@@ -973,7 +973,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                 # print("clr_mem but_name > ", but_name)
 
                 wdg = self.frame.nametowidget(but_name)
-                but_color = OCV.BACKGROUND
+                but_color = OCV.COLOR_BACKGROUND
                 tkExtra.Balloon.set(wdg, "Empty")
                 wdg.config(text=label, background=but_color)
 
