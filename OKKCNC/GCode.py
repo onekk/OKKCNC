@@ -116,8 +116,6 @@ class GCode(object):
 
     def process_line(self, line):
         """add new line to list create block if necessary"""
-        str_b_data_z = "Z_MIN {0:.{2}f} Z_MAX {1:.{2}f}"
-        str_b_data_pos = "X {0:.{3}f} Y {1:.{3}f} Z {2:.{3}f}"
         data_info = ""
 
         if line.startswith("(Block-name:"):

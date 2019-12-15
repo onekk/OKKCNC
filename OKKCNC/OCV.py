@@ -494,9 +494,10 @@ def printout_infos(messages):
 
     print(str_sep)
 
+
 def showC(x_val, y_val, z_val):
     return sh_coord.format(x_val, y_val, z_val, digits)
 
 
 def gcodeCC(x_val, y_val, z_val):
-    return gc_coord.format(x_val, y_val, z_val, digits)
+    return gc_coord.format(x_val, y_val, z_val, g_code_precision)

@@ -40,9 +40,9 @@ class Block(list):
             self.copy(name)
             return
         self._name = name
-        self.b_start = ""
-        self.b_end = ""
-        self.b_z_span = ""
+        self.b_start = []
+        self.b_end = []
+        self.b_z_span = []
         self.enable = True      # Enabled/Visible in drawing
         self.expand = False     # Expand in editor
         self.color = None       # Custom color for path
@@ -201,10 +201,11 @@ class Block(list):
         header = ''
         header += "(Block-name:  {0})\n".format(self.name())
 
-        if self.b_start != "":
-            header += "(Block-start  {0})\n".format(self.b_start)
-            header += "(Block-end    {0})\n".format(self.b_end)
-            header += "(Block-z span {0})\n".format(self.b_z_span)
+        if len(self.b_start) > 0:
+            header += "(Block-start {0})\n".format(OCV.gcodeCC(*self.b_start))
+            header += "(Block-end {0})\n".format(OCV.gcodeCC(*self.b_end))
+            header += "(Block-z span Z_MIN {0} Z_MAX {1})\n".format(
+                *self.b_z_span)
 
         if OCV.NUMBER_BLOCKS is True:
             header += "(Block-number: {0})\n".format(OCV.block_num)
