@@ -40,19 +40,25 @@ class Block(list):
             self.copy(name)
             return
         self._name = name
+        self.b_start = ""
+        self.b_end = ""
+        self.b_z_span = ""
         self.enable = True      # Enabled/Visible in drawing
         self.expand = False     # Expand in editor
         self.color = None       # Custom color for path
         self._path = []         # canvas drawing paths
         # (entry point first non rapid motion)
-        self.sx = self.sy = self.sz = 0    # start  coordinates
+        self.sx = self.sy = self.sz = 0  # start  coordinates
 
-        self.ex = self.ey = self.ez = 0    # ending coordinates
+        self.ex = self.ey = self.ez = 0  # ending coordinates
         self.resetPath()
 
     def copy(self, src):
         """Copy a Block"""
         self._name = src._name
+        self.b_start = src.b_start
+        self.b_end = src.b_end
+        self.b_z_span = src.b_z_span
         self.enable = src.enable
         self.expand = src.expand
         self.color = src.color
@@ -193,7 +199,13 @@ class Block(list):
         do not confuse with 'header block'
         the block header contains metadata for OKKCNC as GCode comments"""
         header = ''
-        header += "(Block-name: {0})\n".format(self.name())
+        header += "(Block-name:  {0})\n".format(self.name())
+
+        if self.b_start != "":
+            header += "(Block-start  {0})\n".format(self.b_start)
+            header += "(Block-end    {0})\n".format(self.b_end)
+            header += "(Block-z span {0})\n".format(self.b_z_span)
+
         if OCV.NUMBER_BLOCKS is True:
             header += "(Block-number: {0})\n".format(OCV.block_num)
             OCV.block_num += 1
@@ -213,6 +225,9 @@ class Block(list):
             else:
                 f.write("(Block-X: {0})\n".format(
                     line.replace('(', '[').replace(')', ']')))
+
+    def get_metadata(self):
+        return self.b_start, self.b_end, self.b_z_span
 
     def dump(self):
         """Return a dump object for pickler"""

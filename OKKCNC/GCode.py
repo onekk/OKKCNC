@@ -53,6 +53,7 @@ class GCode(object):
         OCV.blocks = []  # list of blocks
         OCV.block_num = 0
         OCV.max_z = 0
+        OCV.min_z = 0
         self.gcodelines = ["",]  # Add a starting 0 pos to better align index
         self.vars.clear()
         self.undoredo.reset()
@@ -113,8 +114,12 @@ class GCode(object):
         else:
             return line
 
-    def _addLine(self, line):
+    def process_line(self, line):
         """add new line to list create block if necessary"""
+        str_b_data_z = "Z_MIN {0:.{2}f} Z_MAX {1:.{2}f}"
+        str_b_data_pos = "X {0:.{3}f} Y {1:.{3}f} Z {2:.{3}f}"
+        data_info = ""
+
         if line.startswith("(Block-name:"):
             self._blocksExist = True
             pat = OCV.BLOCKPAT.match(line)
@@ -132,39 +137,58 @@ class GCode(object):
         cmds = CNC.parseLine(line)
 
         if OCV.DEBUG_PAR is True:
-            print("_addLine ", line, cmds)
+            print("Line >", line)
 
         if cmds is None:
             OCV.blocks[-1].append(line)
+            print("No commands")
             return
 
         self.cnc.motionStart(cmds)
 
-        OCV.max_z = max(OCV.max_z, self.cnc.zval)
+        if OCV.start_block == 0:
+            OCV.infos = []
+            # print(cmds[0])
+            if cmds[0] in ("G1", "G2", "G3"):
+                b_start = [self.cnc.x, self.cnc.y, self.cnc.z]
+                OCV.blocks[-1].b_start = b_start
+                data_info = "start X{0} Y{1} Z{2}".format(*b_start)
+                OCV.infos.append(data_info)
+                # set the flag to determine the first move of the block
+                OCV.start_block = 1
+                # print("Block Start")
 
-        if OCV.DEBUG_PAR is True:
-            if self.cnc.dz > 0:
-                print("-------------------------------------")
-                print(" cnc.dz    == ", self.cnc.dz)
-                print(" cnc.z     == ", self.cnc.z)
-                print(" cnc.zval  == ", self.cnc.zval)
-                print(" max.z     == ", OCV.max_z)
-                print("-------------------------------------")
+        OCV.min_z = min(OCV.min_z, self.cnc.z)
+        OCV.max_z = max(OCV.max_z, self.cnc.z)
 
         # Add line to the list for display
         self.gcodelines.append(line)
 
-        # rapid Z move up = end of block
-        # the rapid move Z up is moved to the next block
         if self._blocksExist:
             OCV.blocks[-1].append(line)
-
         elif self.cnc.gcode == 0 and self.cnc.dz > 0.0:
+            # rapid Z move up = end of block
+            # the rapid move Z up is moved to the next block
+            b_end = [self.cnc.x, self.cnc.y, self.cnc.z]
+            b_z_span = [OCV.min_z, OCV.max_z]
+            OCV.blocks[-1].b_end = b_end
+            OCV.blocks[-1].b_z_span = b_z_span
+
+            # reset start block flag
+            OCV.start_block = 0
+
+            if OCV.DEBUG_PAR is True:
+                OCV.infos.append("Z_span Z_MIN {0} Z_MAX {1}".format(*b_z_span))
+                OCV.infos.append("end X{0} Y{1} Z{2}".format(*b_end))
+
+                OCV.printout_infos(OCV.infos)
+                OCV.infos = []
+
+            # create a new block
             # OCV.blocks[-1].append(line)
             # Test if a new block is better with a z raise at the begin
             OCV.blocks.append(Block.Block())
             OCV.blocks[-1].append(line)
-            print("new block ? at >", line)
         elif self.cnc.gcode == 0 and len(OCV.blocks) == 1:
             OCV.blocks.append(Block.Block())
             OCV.blocks[-1].append(line)
@@ -190,8 +214,16 @@ class GCode(object):
         self.cnc.initPath()
         self.cnc.resetAllMargins()
         self._blocksExist = False
+
+        if OCV.DEBUG_PAR is True:
+            OCV.printout_header("loading {0}", filename)
+
         for line in f:
-            self._addLine(line[:-1].replace("\x0d", ""))
+            self.process_line(line[:-1].replace("\x0d", ""))
+
+        if OCV.DEBUG_PAR is True:
+            OCV.printout_header("{0}", "END LOAD")
+
         self._trim()
         f.close()
         return True
@@ -554,7 +586,7 @@ class GCode(object):
         self._blocksExist = False
 
         for line in lines:
-            self._addLine(line)
+            self.process_line(line)
 
         self._trim()
         return undoinfo

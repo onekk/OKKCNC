@@ -1307,7 +1307,7 @@ class Application(Tk.Toplevel, Sender):
             # fire analyze actions
             # it has to detect z min and select all the path for adding a
             # z-height override for cutting the remaining material.
-            ana_code = Utils.ZAnalyzer(OCV.blocks)
+            ana_code = Utils.ZAnalyzer()
             ana_code.analyze()
 
     def selectAll(self, event=None):

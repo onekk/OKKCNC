@@ -614,17 +614,22 @@ class ErrorWindow(Tk.Toplevel):
 
 class ZAnalyzer(object):
 
-    def __init__(self, blocks):
-        self.int_blocks = blocks
+    def __init__(self):
         self.z_min = 1000
         self.z_max = 1000
 
     def analyze(self):
-        count = 0
-        for block in self.int_blocks:
+        for idx, block in enumerate(OCV.blocks):
             div_str = "-=-=-=-=-=-=-=-=-=-- Block N.{0} --=-=-=-=-=-=-=-=--=-"
-            print(div_str.format(count))
+            print(div_str.format(idx))
+
+            if idx != 0:
+                p_sp, p_ep, p_zs = OCV.blocks[idx - 1].get_metadata()
+                a_sp, a_ep, a_zs = OCV.blocks[idx].get_metadata()
+                print("previous end_pos > ", p_ep)
+                print("actual start_pos > ", a_sp)
+
+            print(block)
             for cmds in block:
                 print(cmds)
 
-            count += 1

@@ -196,7 +196,7 @@ class CNCListbox(Listbox):
                     if self._bid > len(OCV.blocks):
                         self._bid = len(OCV.blocks)
                     self._lid = OCV.MAXINT
-                    block = Block()
+                    block = Block.Block()
                     undoinfo.append(self.gcode.addBlockUndo(self._bid,block))
                     selitems.append((self._bid, None))
                 else:

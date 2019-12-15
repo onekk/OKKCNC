@@ -24,7 +24,7 @@ email = "carlo.dormeletti@gmail.com"
 PRG_NAME = "OKKCNC"
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
 """version and date"""
-PRG_VER = "0.2.0-dev"
+PRG_VER = "0.2.10-dev"
 PRG_DATE = "26 Dec 2019"
 
 if getattr(sys, 'frozen', False):
@@ -277,7 +277,7 @@ c_state = ""  # controller state to determine the state
 # D #
 DRAW_TIME = 5  # Maximum draw time permitted
 developer = False
-digits = 3
+digits = 4
 drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
@@ -288,6 +288,7 @@ feedmax_z = 2000
 
 # G #
 geometry = None
+g_code_precision = 4
 
 # H #
 history = []
@@ -298,6 +299,8 @@ icons = {}
 iface_widgets = []
 images = {}
 inch = False
+# hold infos used to display values
+infos = []
 
 # L #
 language = ""
@@ -305,17 +308,24 @@ lasercutter = False
 laseradaptive = False
 
 # M #
-maxRecent = 10
 memNum = 0
+min_z = 0
+max_z = 0
+maxRecent = 10
+
 
 # S #
+
 serial_open = False
 startup = "G90"
+start_block = 0
 stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
 step2 = 0.0
 step3 = 0.0
 step4 = 0.0
+str_sep = "-"*78
+str_pad = "-" + " "*76 + "-"
 s_alarm = None
 s_pause = None
 s_running = None
@@ -452,6 +462,37 @@ CD = {
     "running": False,
     }
 
+
+def printout_header(message, content):
+    """printout a padded text using message with a {0} for the content"""
+    # str_sep is 78 chr long as 80 chr is the conventional terminal line length
+    # compensate using 80 for the {} in the message
+    msg_length = len(message) + len(str(content))
+    pad_str = "-" + " "*((80 - msg_length)//2)
+    pad2_str = " "*(80 - len(pad_str) - msg_length) + "-"
+    info_str = pad_str + message + pad2_str
+    print(str_sep)
+    print(str_pad)
+    print(info_str.format(content))
+    print(str_pad)
+    print(str_sep)
+
+
+def printout_infos(messages):
+    """printout a padded text using formatted string in a list"""
+    # str_sep is 78 chr long as 80 chr is the conventional terminal line length
+    print(str_sep)
+    print(str_pad)
+
+    for message in messages:
+        msg_length = len(message)
+        pad_str = "-" + " "*((77 - msg_length)//2)
+        pad2_str = " "*(77 - len(pad_str) - msg_length) + "-"
+        info_str = pad_str + message + pad2_str
+        print(info_str)
+        print(str_pad)
+
+    print(str_sep)
 
 def showC(x_val, y_val, z_val):
     return sh_coord.format(x_val, y_val, z_val, digits)
