@@ -532,11 +532,11 @@ class TabRibbonFrame(Tk.Frame):
         but = LabelButton(
             frame,
             self,
-            "<<Save>>",
+            "<<SaveAs>>",
             image=OCV.icons["save"],
             background=OCV.COLOR_BACKGROUND_DISABLE)
 
-        tkExtra.Balloon.set(but, _("Save all [Ctrl-S]"))
+        tkExtra.Balloon.set(but, _("Save As"))
 
         but.pack(side=Tk.LEFT)
 

@@ -626,14 +626,20 @@ class CNC(object):
         return CNC.zexit(OCV.CD["safe"])
 
     @staticmethod
-    def parseLine(line):
+    def parseLine(line, comments = False):
         """@return
             lines breaking a line containing list of commands,
             None if empty or comment
         """
         # skip empty lines
-        if len(line) == 0 or line[0] in ("%", "(", "#", ";"):
+        if len(line) == 0 or line[0] in ("%", "#", ";"):
             return None
+
+        if line[0] == "(":
+            if comments is True:
+                pass
+            else:
+                return None
 
         # remove comments
         line = OCV.PARENPAT.sub("", line)
@@ -829,7 +835,11 @@ class CNC(object):
         return line.split()
 
     def motionStart(self, cmds):
-        """Create path for one g command"""
+        """extract informations from a block of commands
+         calculate G code value: (Number of motion GXXX)
+         axis values (X, Y, Z, A, I, J, K, U, V, W)
+         and some deltas for (X, Y, Z)
+        """
         # print "\n<<<",cmds
         self.mval = 0  # reset m command
         for cmd in cmds:

@@ -197,6 +197,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Paste>>', self.paste)
 
         self.bind('<<Connect>>', self.openClose)
+        self.bind('<<Analyze>>', self.analyze_z_height)
 
         self.bind('<<New>>', self.newFile)
         self.bind('<<Open>>', self.loadDialog)
@@ -238,6 +239,8 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<SelectNone>>', self.unselectAll)
         self.bind('<<SelectInvert>>', self.selectInvert)
         self.bind('<<SelectLayer>>', self.selectLayer)
+        self.bind('<<ShowInfo>>', self.showInfo)
+        self.bind('<<ShowStats>>', self.showStats)
 
         self.bind('<<ZmoveUp>>', self.control.jog_z_up)
         self.bind('<<ZmoveDown>>', self.control.jog_z_down)
@@ -961,17 +964,22 @@ class Application(Tk.Toplevel, Sender):
         else:
             unit = "mm"
 
+        infostr = "{0:.3f} .. {1:.3f} [{2:.3f}] {3}"
+        infostr1 = "{0:.3f} {1}"
+        time_str = "H:{0:d} M:{1:02d} S:{2:02d}"
+
         # count enabled blocks
         e = 0
-        l = 0
-        r = 0
-        t = 0
-        for block in self.gcode.blocks:
+        b_l = 0
+        b_r = 0
+        b_t = 0
+
+        for block in OCV.blocks:
             if block.enable:
                 e += 1
-                l += block.length
-                r += block.rapid
-                t += block.time
+                b_l += block.length
+                b_r += block.rapid
+                b_t += block.time
 
         frame = Tk.LabelFrame(
             toplevel,
@@ -992,7 +1000,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["xmin"], OCV.CD["xmax"],
                 OCV.CD["xmax"] -OCV.CD["xmin"],
                 unit),
@@ -1011,7 +1019,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["ymin"], OCV.CD["ymax"],
                 OCV.CD["ymax"] -OCV.CD["ymin"],
                 unit),
@@ -1030,7 +1038,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["zmin"], OCV.CD["zmax"],
                 OCV.CD["zmax"] -OCV.CD["zmin"],
                 unit),
@@ -1067,7 +1075,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} {1}".format(l, unit),
+            text=infostr1.format(b_l, unit),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1083,7 +1091,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} {1}".format(r, unit),
+            text=infostr1.format(b_r, unit),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1097,12 +1105,12 @@ class Application(Tk.Toplevel, Sender):
 
         col += 1
 
-        h, m = divmod(t, 60)  # t in min
-        s = (m-int(m))*60
+        bt_h, bt_m = divmod(b_t, 60)  # t in min
+        bt_s = (bt_m-int(bt_m))*60
 
         lab = Tk.Label(
             frame,
-            text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+            text=time_str.format(int(bt_h), int(bt_m), int(bt_s)),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1127,7 +1135,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["axmin"], OCV.CD["axmax"],
                 OCV.CD["axmax"] -OCV.CD["axmin"],
                 unit),
@@ -1146,7 +1154,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["aymin"], OCV.CD["aymax"],
                 OCV.CD["aymax"] -OCV.CD["aymin"],
                 unit),
@@ -1165,7 +1173,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} .. {1:.f} [{2:.f}] {3}".format(
+            text=infostr.format(
                 OCV.CD["azmin"], OCV.CD["azmax"],
                 OCV.CD["azmax"] -OCV.CD["azmin"],
                 unit),
@@ -1186,7 +1194,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text=str(len(self.gcode.blocks)),
+            text=str(len(OCV.blocks)),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1204,7 +1212,7 @@ class Application(Tk.Toplevel, Sender):
 
         lab = Tk.Label(
             frame,
-            text="{0:.f} {1}".format(self.cnc.totalLength, unit),
+            text=infostr1.format(self.cnc.totalLength, unit),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1218,12 +1226,12 @@ class Application(Tk.Toplevel, Sender):
 
         col += 1
 
-        h, m = divmod(self.cnc.totalTime, 60) # t in min
-        s = (m-int(m))*60
+        tt_h, tt_m = divmod(self.cnc.totalTime, 60) # t in min
+        tt_s = (tt_m-int(tt_m))*60
 
         lab = Tk.Label(
             frame,
-            text="{0:d}{1:02d}{2:02d}".format(int(h), int(m), int(s)),
+            text=time_str.format(int(tt_h), int(tt_m), int(tt_s)),
             foreground="DarkBlue")
 
         lab.grid(row=row, column=col, sticky=Tk.W)
@@ -1291,6 +1299,16 @@ class Application(Tk.Toplevel, Sender):
     def canvasFocus(self, event=None):
         OCV.CANVAS_F.canvas.focus_set()
         return "break"
+
+    def analyze_z_height(self, event=None):
+        print("analyze reached", event)
+        if event is not None:
+            print("analyze fired")
+            # fire analyze actions
+            # it has to detect z min and select all the path for adding a
+            # z-height override for cutting the remaining material.
+            ana_code = Utils.ZAnalyzer(OCV.blocks)
+            ana_code.analyze()
 
     def selectAll(self, event=None):
         focus = self.focus_get()
@@ -1369,7 +1387,7 @@ class Application(Tk.Toplevel, Sender):
             if OCV.history[self._historyPos] != line:
                 OCV.history.append(line)
         elif not OCV.history or OCV.history[-1] != line:
-            self.OCV.append(line)
+            OCV.history.append(line)
 
         if len(OCV.history) > MAX_HISTORY:
             OCV.history.pop(0)
@@ -1915,13 +1933,6 @@ class Application(Tk.Toplevel, Sender):
             self.gcode.roundLines(items, *args)
         elif cmd == "ROTATE":
             self.gcode.rotateLines(items, *args)
-
-        """
-        elif cmd == "INKSCAPE":
-            self.gcode.inkscapeLines()
-        elif cmd == "ISLAND":
-            self.gcode.island(items, *args)
-        """
 
         # Fill listbox and update selection
         self.editor.fill()

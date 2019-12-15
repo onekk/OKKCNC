@@ -388,6 +388,7 @@ class Sender(object):
         IniFile.add_recent_file(filename)
 
     def save(self, filename):
+        """manage the saving of the file based on extension"""
         fn, ext = os.path.splitext(filename)
         ext = ext.lower()
         if ext == ".probe" or ext == ".xyz":
@@ -402,6 +403,12 @@ class Sender(object):
         elif ext == ".txt":
             # save gcode as txt (only enabled blocks and no OKKCNC metadata)
             return self.gcode.saveTXT(filename)
+        elif ext == ".okk":
+            # save gcode with OKKCNC metadata
+            return self.gcode.saveOKK(filename)
+        elif ext == ".ngc":
+            # save gcode without OKKCNC metadata
+            return self.gcode.saveNGC(filename)
         else:
             if filename is not None:
                 self.gcode.filename = filename

@@ -31,7 +31,7 @@ import bmath
 import undo
 
 from CNC import CNC, Orient, get_dict_value
-from bpath import eq, Path, Segment
+from bpath import Path, Segment  # eq,
 
 
 class GCode(object):
@@ -50,7 +50,9 @@ class GCode(object):
 
     def init(self):
         self.filename = ""
-        self.blocks = []  # list of blocks
+        OCV.blocks = []  # list of blocks
+        OCV.block_num = 0
+        OCV.max_z = 0
         self.gcodelines = ["",]  # Add a starting 0 pos to better align index
         self.vars.clear()
         self.undoredo.reset()
@@ -62,7 +64,7 @@ class GCode(object):
     def calculateEnableMargins(self):
         """Recalculate enabled path margins"""
         self.cnc.resetEnableMargins()
-        for block in self.blocks:
+        for block in OCV.blocks:
             if block.enable:
                 OCV.CD["xmin"] = min(OCV.CD["xmin"], block.xmin)
                 OCV.CD["ymin"] = min(OCV.CD["ymin"], block.ymin)
@@ -78,10 +80,10 @@ class GCode(object):
         self._modified = False
 
     def __getitem__(self, item):
-        return self.blocks[item]
+        return OCV.blocks[item]
 
     def __setitem__(self, item, value):
-        self.blocks[item] = value
+        OCV.blocks[item] = value
 
     def evaluate(self, line, app=None):
         """Evaluate code expressions if any and return line"""
@@ -118,30 +120,14 @@ class GCode(object):
             pat = OCV.BLOCKPAT.match(line)
             if pat:
                 value = pat.group(2).strip()
-                if not self.blocks or len(self.blocks[-1]):
-                    self.blocks.append(Block.Block(value))
+                if not OCV.blocks or len(OCV.blocks[-1]):
+                    OCV.blocks.append(Block.Block(value))
                 else:
-                    self.blocks[-1]._name = value
+                    OCV.blocks[-1]._name = value
                 return
 
-        """
-        # FIXME: Code to import legacy tabs
-        # can be probably removed in year 2020 or so:
-        if line.startswith("(Block-tab:"):
-            pat = OCV.BLOCKPAT.match(line)
-            if pat:
-                value = pat.group(2).strip()
-                items = map(float, value.split())
-                tablock = Block(
-                    "legacy [tab,island,minz:{0:0.f}]".format(items[4]))
-                tablock.color = "orange"
-                tablock.extend(self.createTab(*items))
-                self.insBlocks(-1, [tablock], "Legacy tab")
-                print("WARNING: Converted legacy tabs loaded from file to new g-code island tabs: %s"%(tablock._name))
-        """
-
-        if not self.blocks:
-            self.blocks.append(Block.Block("Header"))
+        if not OCV.blocks:
+            OCV.blocks.append(Block.Block("Header"))
 
         cmds = CNC.parseLine(line)
 
@@ -149,25 +135,41 @@ class GCode(object):
             print("_addLine ", line, cmds)
 
         if cmds is None:
-            self.blocks[-1].append(line)
+            OCV.blocks[-1].append(line)
             return
 
         self.cnc.motionStart(cmds)
 
+        OCV.max_z = max(OCV.max_z, self.cnc.zval)
+
+        if OCV.DEBUG_PAR is True:
+            if self.cnc.dz > 0:
+                print("-------------------------------------")
+                print(" cnc.dz    == ", self.cnc.dz)
+                print(" cnc.z     == ", self.cnc.z)
+                print(" cnc.zval  == ", self.cnc.zval)
+                print(" max.z     == ", OCV.max_z)
+                print("-------------------------------------")
+
         # Add line to the list for display
         self.gcodelines.append(line)
 
-        # rapid move up = end of block
+        # rapid Z move up = end of block
+        # the rapid move Z up is moved to the next block
         if self._blocksExist:
-            self.blocks[-1].append(line)
+            OCV.blocks[-1].append(line)
+
         elif self.cnc.gcode == 0 and self.cnc.dz > 0.0:
-            self.blocks[-1].append(line)
-            self.blocks.append(Block.Block())
-        elif self.cnc.gcode == 0 and len(self.blocks) == 1:
-            self.blocks.append(Block.Block())
-            self.blocks[-1].append(line)
+            # OCV.blocks[-1].append(line)
+            # Test if a new block is better with a z raise at the begin
+            OCV.blocks.append(Block.Block())
+            OCV.blocks[-1].append(line)
+            print("new block ? at >", line)
+        elif self.cnc.gcode == 0 and len(OCV.blocks) == 1:
+            OCV.blocks.append(Block.Block())
+            OCV.blocks[-1].append(line)
         else:
-            self.blocks[-1].append(line)
+            OCV.blocks[-1].append(line)
 
         self.cnc.motionEnd()
 
@@ -204,7 +206,7 @@ class GCode(object):
         except Exception:
             return False
 
-        for block in self.blocks:
+        for block in OCV.blocks:
             block.write(f)
         f.close()
         self._lastModified = os.stat(self.filename).st_mtime
@@ -212,14 +214,13 @@ class GCode(object):
         return True
 
     def saveTXT(self, filename):
-        """
-        Save in TXT format
+        """Save in TXT format
         Enabled Blocks only
         Cleaned from OKKCNC metadata and comments
         Uppercase
         """
         txt = open(filename, 'w')
-        for block in self.blocks:
+        for block in OCV.blocks:
             if block.enable:
                 for line in block:
                     cmds = CNC.parseLine(line)
@@ -227,9 +228,37 @@ class GCode(object):
                     if cmds is None:
                         continue
 
-                txt.write("{0}\n".format(line.upper()))
+                    txt.write("{0}\n".format(line.upper()))
         txt.close()
         return True
+
+    def saveNGC(self, filename):
+        """Save in NGC format
+        Cleaned from Block OKKCNC metadata and comments
+        """
+        txt = open(filename, 'w')
+        for block in OCV.blocks:
+            print(block.enable)
+            if block.enable:
+                for line in block:
+                    cmds = CNC.parseLine(line, True)
+                    print(cmds)
+                    if cmds is None:
+                        continue
+                    txt.write("{0}\n".format(line.upper()))
+        txt.close()
+        return True
+
+    def saveOKK(self, filename):
+        """Save in OKK format
+        with OKKCNC metadata and comments
+        """
+        okkf = open(filename, 'w')
+        for block in OCV.blocks:
+            block.write(okkf)
+        okkf.close()
+        return True
+
 
     def addBlockFromString(self, name, text):
 
@@ -238,13 +267,13 @@ class GCode(object):
 
         block = Block.Block(name)
         block.extend(text.splitlines())
-        self.blocks.append(block)
+        OCV.blocks.append(block)
 
     def headerFooter(self):
         """Check if Block is empty:
              If Empty insert a header and a footer
             """
-        if not self.blocks:
+        if not OCV.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
             curr_header = "(Created By OKKCNC version {0}) \n".format(
                 OCV.PRG_VER)
@@ -261,7 +290,7 @@ class GCode(object):
         """get document margins"""
         # Get bounding box of document
         min_x, min_y, max_x, max_y = 0, 0, 0, 0
-        for idx, block in enumerate(self.blocks):
+        for idx, block in enumerate(OCV.blocks):
             paths = self.toPath(idx)
 
             for path in paths:
@@ -307,7 +336,7 @@ class GCode(object):
 
     def toPath(self, bid):
         """convert a block to path"""
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
         paths = []
         path = Path(block.name())
         self.initPath(bid)
@@ -479,17 +508,18 @@ class GCode(object):
         return self.cnc.fmt(c, v, d)
 
     def _trim(self):
-        if not self.blocks:
+        """Trim blocks - delete last block if empty"""
+        if not OCV.blocks:
             return
 
         # Delete last block if empty
-        last = self.blocks[-1]
+        last = OCV.blocks[-1]
 
         if len(last) == 1 and len(last[0]) == 0:
             del last[0]
 
-        if len(self.blocks[-1]) == 0:
-            self.blocks.pop()
+        if len(OCV.blocks[-1]) == 0:
+            OCV.blocks.pop()
 
     def undo(self):
         """Undo operation"""
@@ -519,7 +549,7 @@ class GCode(object):
         """Change all lines in editor"""
         undoinfo = (self.setLinesUndo, list(self.lines()))
         # Delete all blocks and create new ones
-        del self.blocks[:]
+        del OCV.blocks[:]
         self.cnc.initPath()
         self._blocksExist = False
 
@@ -530,20 +560,20 @@ class GCode(object):
         return undoinfo
 
     def setAllBlocksUndo(self, blocks=[]):
-        undoinfo = [self.setAllBlocksUndo, self.blocks]
-        self.blocks = blocks
+        undoinfo = [self.setAllBlocksUndo, OCV.blocks]
+        OCV.blocks = blocks
         return undoinfo
 
     def setLineUndo(self, bid, lid, line):
         """Change a single line in a block"""
-        undoinfo = (self.setLineUndo, bid, lid, self.blocks[bid][lid])
-        self.blocks[bid][lid] = line
+        undoinfo = (self.setLineUndo, bid, lid, OCV.blocks[bid][lid])
+        OCV.blocks[bid][lid] = line
         return undoinfo
 
     def insLineUndo(self, bid, lid, line):
         """Insert a new line into block"""
         undoinfo = (self.delLineUndo, bid, lid)
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
 
         if lid >= len(block):
             block.append(line)
@@ -554,11 +584,11 @@ class GCode(object):
 
     def cloneLineUndo(self, bid, lid):
         """Clone line inside a block"""
-        return self.insLineUndo(bid, lid, self.blocks[bid][lid])
+        return self.insLineUndo(bid, lid, OCV.blocks[bid][lid])
 
     def delLineUndo(self, bid, lid):
         """Delete line from block"""
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
         undoinfo = (self.insLineUndo, bid, lid, block[lid])
         del block[lid]
         return undoinfo
@@ -567,14 +597,14 @@ class GCode(object):
         """Add a block"""
 
         if bid is None:
-            bid = len(self.blocks)
+            bid = len(OCV.blocks)
 
-        if bid >= len(self.blocks):
-            undoinfo = (self.delBlockUndo, len(self.blocks))
-            self.blocks.append(block)
+        if bid >= len(OCV.blocks):
+            undoinfo = (self.delBlockUndo, len(OCV.blocks))
+            OCV.blocks.append(block)
         else:
             undoinfo = (self.delBlockUndo, bid)
-            self.blocks.insert(bid, block)
+            OCV.blocks.insert(bid, block)
         return undoinfo
 
     def cloneBlockUndo(self, bid, pos=None):
@@ -583,29 +613,29 @@ class GCode(object):
         if pos is None:
             pos = bid
 
-        return self.addBlockUndo(pos, Block.Block(self.blocks[bid]))
+        return self.addBlockUndo(pos, Block.Block(OCV.blocks[bid]))
 
     def delBlockUndo(self, bid):
         """Delete a whole block"""
         # seems to be a remnant of old code
-#        lines = [x for x in self.blocks[bid]]
-        block = self.blocks.pop(bid)
+#        lines = [x for x in OCV.blocks[bid]]
+        block = OCV.blocks.pop(bid)
         undoinfo = (self.addBlockUndo, bid, block)
         return undoinfo
 
     def insBlocksUndo(self, bid, blocks):
         """Insert a list of other blocks from another gcode file probably"""
-        if bid is None or bid >= len(self.blocks):
-            bid = len(self.blocks)
+        if bid is None or bid >= len(OCV.blocks):
+            bid = len(OCV.blocks)
         undoinfo = ("Insert blocks", self.delBlocksUndo, bid, bid+len(blocks))
-        self.blocks[bid:bid] = blocks
+        OCV.blocks[bid:bid] = blocks
         return undoinfo
 
     def delBlocksUndo(self, from_, to_):
         """Delete a range of blocks"""
-        blocks = self.blocks[from_:to_]
+        blocks = OCV.blocks[from_:to_]
         undoinfo = ("Delete blocks", self.insBlocksUndo, from_, blocks)
-        del self.blocks[from_:to_]
+        del OCV.blocks[from_:to_]
         return undoinfo
 
     def insBlocks(self, bid, blocks, msg=""):
@@ -616,28 +646,28 @@ class GCode(object):
 
     def setBlockExpandUndo(self, bid, expand):
         """Set block expand"""
-        undoinfo = (self.setBlockExpandUndo, bid, self.blocks[bid].expand)
-        self.blocks[bid].expand = expand
+        undoinfo = (self.setBlockExpandUndo, bid, OCV.blocks[bid].expand)
+        OCV.blocks[bid].expand = expand
         return undoinfo
 
     def setBlockEnableUndo(self, bid, enable):
         """Set block state"""
-        undoinfo = (self.setBlockEnableUndo, bid, self.blocks[bid].enable)
-        self.blocks[bid].enable = enable
+        undoinfo = (self.setBlockEnableUndo, bid, OCV.blocks[bid].enable)
+        OCV.blocks[bid].enable = enable
         return undoinfo
 
     def setBlockColorUndo(self, bid, color):
         """Set block color"""
-        undoinfo = (self.setBlockColorUndo, bid, self.blocks[bid].color)
-        self.blocks[bid].color = color
+        undoinfo = (self.setBlockColorUndo, bid, OCV.blocks[bid].color)
+        OCV.blocks[bid].color = color
         return undoinfo
 
     def swapBlockUndo(self, a, b):
         """Swap two blocks"""
         undoinfo = (self.swapBlockUndo, a, b)
-        tmp = self.blocks[a]
-        self.blocks[a] = self.blocks[b]
-        self.blocks[b] = tmp
+        tmp = OCV.blocks[a]
+        OCV.blocks[a] = OCV.blocks[b]
+        OCV.blocks[b] = tmp
         return undoinfo
 
     def moveBlockUndo(self, src, dst):
@@ -649,9 +679,9 @@ class GCode(object):
         undoinfo = (self.moveBlockUndo, dst, src)
 
         if dst > src:
-            self.blocks.insert(dst-1, self.blocks.pop(src))
+            OCV.blocks.insert(dst-1, OCV.blocks.pop(src))
         else:
-            self.blocks.insert(dst, self.blocks.pop(src))
+            OCV.blocks.insert(dst, OCV.blocks.pop(src))
 
         return undoinfo
 
@@ -672,14 +702,14 @@ class GCode(object):
             return None
         undoinfo = (self.orderDownBlockUndo, bid - 1)
         # swap with the block above
-        before = self.blocks[bid-1]
-        self.blocks[bid-1] = self.blocks[bid]
-        self.blocks[bid] = before
+        before = OCV.blocks[bid-1]
+        OCV.blocks[bid-1] = OCV.blocks[bid]
+        OCV.blocks[bid] = before
         return undoinfo
 
     def orderDownBlockUndo(self, bid):
         """Move block downwards"""
-        if bid >= len(self.blocks) - 1:
+        if bid >= len(OCV.blocks) - 1:
             return None
         undoinfo = (self.orderUpBlockUndo, bid+1)
         # swap with the block below
@@ -694,31 +724,31 @@ class GCode(object):
         block = Block.Block()
         for line in lines:
             block.append(line)
-        self.blocks.insert(bid, block)
+        OCV.blocks.insert(bid, block)
         return undoinfo
 
     def delBlockLinesUndo(self, bid):
         """Delete a whole block lines"""
-        lines = [x for x in self.blocks[bid]]
+        lines = [x for x in OCV.blocks[bid]]
         undoinfo = (self.insBlockLinesUndo, bid, lines)
-        del self.blocks[bid]
+        del OCV.blocks[bid]
         return undoinfo
 
     def setBlockNameUndo(self, bid, name):
         """Set Block name"""
-        undoinfo = (self.setBlockNameUndo, bid, self.blocks[bid]._name)
-        self.blocks[bid]._name = name
+        undoinfo = (self.setBlockNameUndo, bid, OCV.blocks[bid]._name)
+        OCV.blocks[bid]._name = name
         return undoinfo
 
     def addBlockOperationUndo(self, bid, operation, remove=None):
         """Add an operation code in the name as [drill, cut, in/out...]"""
-        undoinfo = (self.setBlockNameUndo, bid, self.blocks[bid]._name)
-        self.blocks[bid].addOperation(operation, remove)
+        undoinfo = (self.setBlockNameUndo, bid, OCV.blocks[bid]._name)
+        OCV.blocks[bid].addOperation(operation, remove)
         return undoinfo
 
     def setBlockLinesUndo(self, bid, lines):
         """Replace the lines of a block"""
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
         undoinfo = (self.setBlockLinesUndo, bid, block[:])
         del block[:]
         block.extend(lines)
@@ -729,14 +759,14 @@ class GCode(object):
         if lid == 0:
             return None
 
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
         undoinfo = (self.orderDownLineUndo, bid, lid-1)
         block.insert(lid-1, block.pop(lid))
         return undoinfo
 
     def orderDownLineUndo(self, bid, lid):
         """Move line downwards"""
-        block = self.blocks[bid]
+        block = OCV.blocks[bid]
 
         if lid >= len(block) - 1:
             return None
@@ -812,7 +842,7 @@ class GCode(object):
         undoinfo = []
         operation = "autolevel"
         for bid in items:
-            block = self.blocks[bid]
+            block = OCV.blocks[bid]
 
             if block.name() in ("Header", "Footer"):
                 continue
@@ -833,8 +863,8 @@ class GCode(object):
 #        """
 #        # Working in place tricky
 #        bid = 0    # block index
-#        while bid < len(self.blocks):
-#            block = self.blocks[bid]
+#        while bid < len(OCV.blocks):
+#            block = OCV.blocks[bid]
 #            li = 0    # line index
 #            prefix = True
 #            suffix = False
@@ -861,7 +891,7 @@ class GCode(object):
 #                    if self.cnc.dz > 0.0:
 #                        if suffix:
 #                            # Move all subsequent lines to a new block
-#                            #self.blocks.append(Block())
+#                            #OCV.blocks.append(Block())
 #                            pass
 #                self.cnc.motionEnd()
 
@@ -870,9 +900,9 @@ class GCode(object):
     #----------------------------------------------------------------------
 #    def __iter__(self):
 #        self._iter = 0    #self._iter_start
-#        self._iter_block = self.blocks[self._iter]
+#        self._iter_block = OCV.blocks[self._iter]
 #        self._iter_block_i = 0
-#        self._iter_end   = len(self.blocks)
+#        self._iter_end   = len(OCV.blocks)
 #        return self
 #
 #    #----------------------------------------------------------------------
@@ -884,7 +914,7 @@ class GCode(object):
 #        while self._iter_block_i >= len(self._iter_block):
 #            self._iter += 1
 #            if self._iter >= self._iter_end: raise StopIteration()
-#            self._iter_block = self.blocks[self._iter]
+#            self._iter_block = OCV.blocks[self._iter]
 #            self._iter_block_i = 0
 #
 #        item = self._iter_block[self._iter_block_i]
@@ -899,7 +929,7 @@ class GCode(object):
         """Iterate over the items"""
         for bid, lid in items:
             if lid is None:
-                block = self.blocks[bid]
+                block = OCV.blocks[bid]
                 for i in range(len(block)):
                     yield bid, i
             else:
@@ -907,7 +937,7 @@ class GCode(object):
 
     def lines(self):
         """Iterate over all lines"""
-        for block in self.blocks:
+        for block in OCV.blocks:
             for line in block:
                 yield line
 
@@ -918,7 +948,7 @@ class GCode(object):
         else:
             # Use the ending point of the previous block
             # since the starting (sxyz is after the rapid motion)
-            block = self.blocks[bid-1]
+            block = OCV.blocks[bid-1]
             self.cnc.initPath(block.ex, block.ey, block.ez)
 
     def orderUp(self, items):
@@ -948,7 +978,7 @@ class GCode(object):
                 sel.append((bid, lid + 1))
             elif lid is None:
                 undoinfo.append(self.orderDownBlockUndo(bid))
-                if bid >= len(self.blocks) - 1:
+                if bid >= len(OCV.blocks) - 1:
                     return items
                 else:
                     sel.append((bid + 1, None))
@@ -960,7 +990,7 @@ class GCode(object):
         """Close paths by joining end with start with a line segment"""
         undoinfo = []
         for bid in items:
-            block = self.blocks[bid]
+            block = OCV.blocks[bid]
 
             if block.name() in ("Header", "Footer"):
                 continue
@@ -977,26 +1007,26 @@ class GCode(object):
         for bid in items:
             operation = "reverse"
 
-            if self.blocks[bid].name() in ("Header", "Footer"):
+            if OCV.blocks[bid].name() in ("Header", "Footer"):
                 continue
 
-            newpath = Path(self.blocks[bid].name())
+            newpath = Path(OCV.blocks[bid].name())
 
             """
             Not sure if this is good idea...
             Might get confusing if something goes wrong,
             but seems to work fine
             """
-            if self.blocks[bid].operationTest('conventional'):
+            if OCV.blocks[bid].operationTest('conventional'):
                 operation += ",climb"
 
-            if self.blocks[bid].operationTest('climb'):
+            if OCV.blocks[bid].operationTest('climb'):
                 operation += ",conventional"
 
-            if self.blocks[bid].operationTest('cw'):
+            if OCV.blocks[bid].operationTest('cw'):
                 operation += ",ccw"
 
-            if self.blocks[bid].operationTest('ccw'):
+            if OCV.blocks[bid].operationTest('ccw'):
                 operation += ",cw"
 
             for path in self.toPath(bid):
@@ -1031,14 +1061,14 @@ class GCode(object):
         remove = ["cut", "reverse", "climb", "conventional", "cw", "ccw"]
 
         for bid in items:
-            if self.blocks[bid].name() in ("Header", "Footer"):
+            if OCV.blocks[bid].name() in ("Header", "Footer"):
                 continue
 
             opdir = direction
             operation = ""
 
             # Decide conventional/climb/error:
-            side = self.blocks[bid].operationSide()
+            side = OCV.blocks[bid].operationSide()
 
             if abs(direction) > 1 and side == 0:
                 msg = "Conventional/Climb feature only works for paths"
@@ -1084,6 +1114,7 @@ class GCode(object):
 
         return msg
 
+    '''
     # CHECK IF NEEDED
     def island(self, items, island=None):
         """Toggle or set island tag on block"""
@@ -1093,32 +1124,38 @@ class GCode(object):
         for bid in items:
             isl = island
 
-            if self.blocks[bid].name() in ("Header", "Footer"): continue
+            if OCV.blocks[bid].name() in ("Header", "Footer"): continue
 
-            if isl is None: isl = not self.blocks[bid].operationTest('island')
+            if isl is None: isl = not OCV.blocks[bid].operationTest('island')
             if isl:
                 tag = 'island'
-                self.blocks[bid].color = '#ff0000'
+                OCV.blocks[bid].color = '#ff0000'
             else:
                 tag = ''
-                self.blocks[bid].color = None
+                OCV.blocks[bid].color = None
 
             undoinfo.append(self.addBlockOperationUndo(bid, tag, remove))
             # undoinfo.append(self.setBlockLinesUndo(bid, block))
 
         self.addUndo(undoinfo)
+    '''
 
     def info(self, bid):
         """Return information for a block
            return XXX
         """
-        # block = self.blocks[bid] # seems to be unused
+        # block = OCV.blocks[bid] # seems to be unused
         paths = self.toPath(bid)
+
         if not paths:
             return None, 1
+
         if len(paths) > 1:
             closed = paths[0].isClosed()
-            return len(paths), paths[0]._direction(closed)
+            return int(closed), paths[0]._direction(closed)
+            # No treatment for closed not 0 or 1 or None
+            # len(paths) could return 2 or plus
+            # return len(paths), paths[0]._direction(closed)
         else:
             closed = paths[0].isClosed()
             return int(closed), paths[0]._direction(closed)
@@ -1131,7 +1168,7 @@ class GCode(object):
         relative = False
 
         for bid, lid in self.iterate(items):
-            block = self.blocks[bid]
+            block = OCV.blocks[bid]
 
             if isinstance(lid, int):
                 cmds = CNC.parseLine(block[lid])
@@ -1380,13 +1417,13 @@ class GCode(object):
 
         # Find distances between blocks (end to start)
         for i in range(n):
-            block = self.blocks[items[i]]
+            block = OCV.blocks[items[i]]
             x1 = block.ex
             y1 = block.ey
             for j in range(n):
                 if i == j:
                     continue
-                block = self.blocks[items[j]]
+                block = OCV.blocks[items[j]]
                 x2 = block.sx
                 y2 = block.sy
                 dx = x1-x2
@@ -1453,7 +1490,7 @@ class GCode(object):
             add(line, None)
 
         every = 1
-        for i, block in enumerate(self.blocks):
+        for i, block in enumerate(OCV.blocks):
 
             if not block.enable:
                 continue

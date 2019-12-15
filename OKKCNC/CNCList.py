@@ -115,7 +115,7 @@ class CNCListbox(Listbox):
         del self._blockPos[:]
         del self._items[:]
         y = 0
-        for bi,block in enumerate(self.gcode.blocks):
+        for bi,block in enumerate(OCV.blocks):
             if self.filter is not None:
                 if not (self.filter in block.name() or \
                     self.filter=="enable" and block.enable or
@@ -154,9 +154,9 @@ class CNCListbox(Listbox):
         #sio.write(_PLOT_CLIP)
         for block,line in self.getCleanSelection():
             if line is None:
-                pickler.dump(self.gcode.blocks[block].dump())
+                pickler.dump(OCV.blocks[block].dump())
             else:
-                pickler.dump(self.gcode.blocks[block][line])
+                pickler.dump(OCV.blocks[block][line])
         self.clipboard_clear()
         self.clipboard_append(sio.getvalue())
         return "break"
@@ -193,14 +193,14 @@ class CNCListbox(Listbox):
                 # Create a new block
                 if self._lid is None:
                     self._bid += 1
-                    if self._bid > len(self.gcode.blocks):
-                        self._bid = len(self.gcode.blocks)
+                    if self._bid > len(OCV.blocks):
+                        self._bid = len(OCV.blocks)
                     self._lid = OCV.MAXINT
                     block = Block()
                     undoinfo.append(self.gcode.addBlockUndo(self._bid,block))
                     selitems.append((self._bid, None))
                 else:
-                    block = self.gcode.blocks[self._bid]
+                    block = OCV.blocks[self._bid]
 
                 if self._lid == OCV.MAXINT:
                     self._lid = len(block)
@@ -767,7 +767,7 @@ class CNCListbox(Listbox):
                 else:
                     # select all blocks with the same name
                     name = block.nameNop()
-                    for i,bl in enumerate(self.gcode.blocks):
+                    for i,bl in enumerate(OCV.blocks):
                         if name == bl.nameNop():
                             self.selection_set(self._blockPos[i])
                     continue
@@ -844,7 +844,7 @@ class CNCListbox(Listbox):
     def selectLayer(self):
         for bid in self.getSelectedBlocks():
             name = self.gcode[bid].nameNop()
-            for i,bl in enumerate(self.gcode.blocks):
+            for i,bl in enumerate(OCV.blocks):
                 if name == bl.nameNop():
                     self.selection_set(self._blockPos[i])
 
@@ -944,7 +944,7 @@ class CNCListbox(Listbox):
             print(i,item)
 
         print("\n*** CODE ***")
-        for i, block in enumerate(self.gcode.blocks):
+        for i, block in enumerate(OCV.blocks):
             print("Block:",i,block.name())
             for j,line in enumerate(block):
                 print("   {0:3d} {1}".format(j, line))

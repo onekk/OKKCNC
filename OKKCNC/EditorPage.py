@@ -21,7 +21,7 @@ except ImportError:
 
 import OCV
 import tkExtra
-import Utils
+# import Utils
 import Ribbon
 import CNCList
 import CNCRibbon
@@ -87,10 +87,15 @@ class ClipboardGroup(CNCRibbon.ButtonGroup):
         self.addWidget(b)
 
 
-class SelectGroup(CNCRibbon.ButtonGroup):
+class SelectGroup(CNCRibbon.ButtonMenuGroup):
     """Select Group"""
     def __init__(self, master, app):
-        CNCRibbon.ButtonGroup.__init__(self, master, N_("Select"), app)
+        CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Select"), app,
+            [(_("Show statistics for enabled gcode"), "stats",
+              lambda a=app: a.event_generate("<<ShowStats>>")),
+            (_("Show cutting information on selected blocks [Ctrl-n]"), "info",
+              lambda a=app: a.event_generate("<<ShowInfo>>"))
+            ])
         self.grid3rows()
 
         col, row = 0, 0
@@ -199,12 +204,12 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             app,
             [(_("Autolevel"), "level",
               lambda a=app: a.insertCommand("AUTOLEVEL", True)),
+            (_("Analyze"), "island",
+              lambda a=app: a.event_generate("<<Analyze>>")),
              (_("Color"), "color",
               lambda a=app: a.event_generate("<<ChangeColor>>")),
              (_("Import"), "load",
               lambda a=app: a.insertCommand("IMPORT", True)),
-             (_("Postprocess Inkscape g-code"), "inkscape",
-              lambda a=app: a.insertCommand("INKSCAPE all", True)),
              (_("Round"), "digits",
               lambda s=app: s.insertCommand("ROUND", True))
             ])
@@ -763,51 +768,6 @@ class RouteGroup(CNCRibbon.ButtonGroup):
         self.addWidget(b)
 
 
-class InfoGroup(CNCRibbon.ButtonGroup):
-    """Info Group"""
-    def __init__(self, master, app):
-
-        CNCRibbon.ButtonGroup.__init__(self, master, N_("Info"), app)
-
-        self.grid2rows()
-
-        col, row = 0, 0
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["stats"],
-            text=_("Statistics"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=OCV.APP.showStats,
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Show statistics for enabled gcode"))
-
-        self.addWidget(b)
-
-        row += 1
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["info"],
-            text=_("Info"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=OCV.APP.showInfo,
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(
-            b,
-            _("Show cutting information on selected blocks [Ctrl-n]"))
-
-        self.addWidget(b)
-
-
 class EditorFrame(CNCRibbon.PageFrame):
     """Main Frame of Editor"""
     def __init__(self, master, app):
@@ -840,5 +800,5 @@ class EditorPage(CNCRibbon.Page):
         """Add a widget in the widgets list to enable disable during the run"""
         self._register(
             (ClipboardGroup, SelectGroup, EditGroup, MoveGroup,
-             OrderGroup, TransformGroup, RouteGroup, InfoGroup),
+             OrderGroup, TransformGroup, RouteGroup),
             (EditorFrame,))

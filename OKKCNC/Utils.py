@@ -611,3 +611,20 @@ class ErrorWindow(Tk.Toplevel):
 
     def show_message(self):
         print(self.winfo_name)
+
+class ZAnalyzer(object):
+
+    def __init__(self, blocks):
+        self.int_blocks = blocks
+        self.z_min = 1000
+        self.z_max = 1000
+
+    def analyze(self):
+        count = 0
+        for block in self.int_blocks:
+            div_str = "-=-=-=-=-=-=-=-=-=-- Block N.{0} --=-=-=-=-=-=-=-=--=-"
+            print(div_str.format(count))
+            for cmds in block:
+                print(cmds)
+
+            count += 1

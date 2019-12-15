@@ -41,13 +41,14 @@ COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
 # General unspecified debug flag
 DEBUG = False
 # Debug graphical part
-DEBUG_GRAPH = True
+DEBUG_GRAPH = False
 # Debug Interface
 DEBUG_INT = False
 # Debug Comunications
-DEBUG_COM = True
+DEBUG_COM = False
 # debug GCode parsing
 DEBUG_PAR = True
+NUMBER_BLOCKS = True
 
 # This are string present in the About window
 PRG_CREDITS = \
@@ -263,6 +264,10 @@ for feed override testing
 will not be needed after Grbl v1.0
 """
 appendFeed = False
+
+# B #
+blocks = []  # Gcode blocks, here to be shared
+block_num = 0  # block number order of creation
 
 # C #
 comment = ""  # last parsed comment

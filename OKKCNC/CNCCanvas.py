@@ -866,7 +866,7 @@ class CNCCanvas(Tk.Canvas, object):
         dx = self.canvasx(x) * (1.0 - zoom)
         dy = self.canvasy(y) * (1.0 - zoom)
 
-        if OCV.OCV.DEBUG_GRAPH is True:
+        if OCV.DEBUG_GRAPH is True:
             print("FACTOR ", zoom)
             print("x0 y0 ", x0, y0)
             print("dx, dy ", dx, dy)
@@ -940,7 +940,7 @@ class CNCCanvas(Tk.Canvas, object):
         else:
             self.__tzoom = 0.5
 
-        if OCV.OCV.DEBUG_GRAPH is True:
+        if OCV.DEBUG_GRAPH is True:
             print("--- fit2Screen ---")
             print("OLD ZOOM ", self.zoom)
             print("BB", bb)
@@ -1138,13 +1138,15 @@ class CNCCanvas(Tk.Canvas, object):
     def showInfo(self, blocks):
         """Display graphical information on selected blocks"""
         self.delete("info")    # clear any previous information
+
         for bid in blocks:
-            block = self.gcode.blocks[bid]
+            block = OCV.blocks[bid]
             xyz = [(block.xmin, block.ymin, 0.),
                    (block.xmax, block.ymin, 0.),
                    (block.xmax, block.ymax, 0.),
                    (block.xmin, block.ymax, 0.),
                    (block.xmin, block.ymin, 0.)]
+
             self.create_line(
                 self.plotCoords(xyz),
                 fill=OCV.COLOR_INFO,
@@ -1152,7 +1154,10 @@ class CNCCanvas(Tk.Canvas, object):
             xc = (block.xmin + block.xmax)/2.0
             yc = (block.ymin + block.ymax)/2.0
             r = min(block.xmax-xc, block.ymax-yc)
+
             closed, direction = self.gcode.info(bid)
+
+            print("ShowInfo >> ", closed, direction)
 
             if closed == 0:  # open path
                 if direction == 1:
@@ -1180,6 +1185,7 @@ class CNCCanvas(Tk.Canvas, object):
                 # towards up
                 xyz.append((xc+r*math.sin(f), yc+r*math.cos(f), 0.))
                 f += df
+
             self.create_line(
                 self.plotCoords(xyz),
                 fill=OCV.COLOR_INFO,
@@ -2038,7 +2044,7 @@ class CNCCanvas(Tk.Canvas, object):
         """
 
         if not self.draw_paths:
-            for block in self.gcode.blocks:
+            for block in OCV.blocks:
                 block.resetPath()
             return
 
@@ -2049,7 +2055,7 @@ class CNCCanvas(Tk.Canvas, object):
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
             bid = OCV.APP.editor.getSelectedBlocks()
 
-            for i, block in enumerate(self.gcode.blocks):
+            for i, block in enumerate(OCV.blocks):
 
                 if i in bid:
                     selected = True
@@ -2104,8 +2110,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def drawPath(self, block, cmds):
-        """
-            Create path for one g command
+        """Create path for one g command
         """
 
         self.cnc.motionStart(cmds)

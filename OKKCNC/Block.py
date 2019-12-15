@@ -31,8 +31,7 @@ class Block(list):
        above the working surface
     -
      Inherits from list and contains:
-        - a list list of gcode lines
-        - (imported shape)
+        - a list list of gcode lines - (imported shape)
     """
 
     def __init__(self, name=None):
@@ -190,12 +189,19 @@ class Block(list):
             print(e, v, self.name(), len(self))
 
     def write_header(self):
+        """Compose the block header
+        do not confuse with 'header block'
+        the block header contains metadata for OKKCNC as GCode comments"""
         header = ''
         header += "(Block-name: {0})\n".format(self.name())
+        if OCV.NUMBER_BLOCKS is True:
+            header += "(Block-number: {0})\n".format(OCV.block_num)
+            OCV.block_num += 1
         header += "(Block-expand: {0:d})\n".format(int(self.expand))
         header += "(Block-enable: {0:d})\n".format(int(self.enable))
         if self.color:
             header += "(Block-color: {0})\n".format(self.color)
+
         return header
 
     def write(self, f):

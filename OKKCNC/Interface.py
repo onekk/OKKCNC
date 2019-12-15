@@ -194,7 +194,7 @@ def main_interface(self):
         tkMessageBox.showwarning(
             "OKKCNC configuration",
             "The following pages \"{0}\" are found in " \
-            "your ${HOME}/.OKKCNC initialization file, " \
+            "your <HOME>/.OKKCNC initialization file, " \
             "which are either spelled wrongly or " \
             "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
