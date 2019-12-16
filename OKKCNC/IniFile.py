@@ -38,28 +38,6 @@ __builtin__._ = gettext.translation(
 
 __builtin__.N_ = lambda message: message
 
-_errorReport = True
-
-
-def conf_file_load(only_from_system_ini=False):
-    """Load configuration"""
-    global _errorReport
-
-    if only_from_system_ini is True:
-        OCV.config.read(OCV.SYS_CONFIG)
-    else:
-        OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
-        _errorReport = get_int("Connection", "errorreport", 1)
-
-        OCV.language = get_str(OCV.PRG_NAME, "language")
-        if OCV.language:
-            # replace language
-            __builtin__._ = gettext.translation(
-                OCV.PRG_NAME,
-                os.path.join(OCV.PRG_PATH, 'locale'),
-                fallback=True,
-                languages=[OCV.language]).gettext
-
 
 def set_value(section, name, value):
     """write value to configuration"""
@@ -139,7 +117,30 @@ def add_recent_file(filename):
     OCV.config.set("File", "recent.0", sfn)
 
 
-def user_conf_file_save():
+def conf_file_load(only_from_system_ini=False):
+    """Load configuration file(s)
+    it load both the system config OKKCNC.ini file located in the program dir
+    and the user file .OKKCNC located in the HOME dir
+    configuration items are merged with a precedence of those in the user file
+    """
+
+    if only_from_system_ini is True:
+        OCV.config.read(OCV.SYS_CONFIG)
+    else:
+        OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
+        OCV.error_report = get_int("Connection", "errorreport", 1)
+
+        OCV.language = get_str(OCV.PRG_NAME, "language")
+        if OCV.language:
+            # replace language
+            __builtin__._ = gettext.translation(
+                OCV.PRG_NAME,
+                os.path.join(OCV.PRG_PATH, 'locale'),
+                fallback=True,
+                languages=[OCV.language]).gettext
+
+
+def save_user_conf_file():
     """Save configuration file to disk"""
     clean_configuration()
     file_handler = open(OCV.USER_CONFIG, "w")

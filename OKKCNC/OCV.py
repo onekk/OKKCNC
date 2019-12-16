@@ -22,22 +22,24 @@ author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
 PRG_NAME = "OKKCNC"
-PRG_PATH = os.path.abspath(os.path.dirname(__file__))
 """version and date"""
+
 PRG_VER = "0.2.10-dev"
 PRG_DATE = "26 Dec 2019"
+
+PRG_PATH = os.path.abspath(os.path.dirname(__file__))
 
 if getattr(sys, 'frozen', False):
     # When being bundled by pyinstaller, paths are different
     print("Running as pyinstaller bundle!", sys.argv[0])
     PRG_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+HOME_DIR = os.path.expanduser("~/")
 SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
 USER_CONFIG = os.path.expanduser("~/.{0}".format(PRG_NAME))
 COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
 
-# Debug flags. used across the interface to print on command line
-# proper statements
+# Debug flags. used across the interface to print debug info on terminal
 # General unspecified debug flag
 DEBUG = False
 # Debug graphical part
@@ -202,14 +204,18 @@ TOLERANCE = 1e-7
 # but i think setting a mximun value here is enough
 MAXINT = 1000000000
 
+# -- Regular expressions
+AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
+BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
+CMDPAT = re.compile(r"([A-Za-z]+)")
+FEEDPAT = re.compile(r"^(.*)[fF](\d+\.?\d+)(.*)$")
+GPAT = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
 IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
+OPPAT = re.compile(r"(.*)\[(.*)\]")
 PARENPAT = re.compile(r"(\(.*?\))")
 SEMIPAT = re.compile(r"(;.*)")
-OPPAT = re.compile(r"(.*)\[(.*)\]")
-CMDPAT = re.compile(r"([A-Za-z]+)")
-BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
-AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
 
+# -- GRBL States
 STOP = 0
 SKIP = 1
 ASK = 2
@@ -281,6 +287,10 @@ digits = 4
 drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
+# E #
+errors = []
+error_report = True
+
 # F #
 feedmax_x = 3000
 feedmax_y = 3000
@@ -313,12 +323,18 @@ min_z = 0
 max_z = 0
 maxRecent = 10
 
+# N #
 
+# O #
+
+# P #
+post_proc = True
+post_temp_fname = ""
 # S #
 
 serial_open = False
 startup = "G90"
-start_block = 0
+start_block = False
 stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
 step2 = 0.0

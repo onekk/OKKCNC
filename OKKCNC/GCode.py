@@ -144,7 +144,7 @@ class GCode(object):
 
         self.cnc.motionStart(cmds)
 
-        if OCV.start_block == 0:
+        if OCV.start_block is False:
             OCV.infos = []
             # print(cmds[0])
             if cmds[0] in ("G1", "G2", "G3"):
@@ -153,8 +153,7 @@ class GCode(object):
                 data_info = "start X{0} Y{1} Z{2}".format(*b_start)
                 OCV.infos.append(data_info)
                 # set the flag to determine the first move of the block
-                OCV.start_block = 1
-                # print("Block Start")
+                OCV.start_block = True
 
         OCV.min_z = min(OCV.min_z, self.cnc.z)
         OCV.max_z = max(OCV.max_z, self.cnc.z)
@@ -173,10 +172,11 @@ class GCode(object):
             OCV.blocks[-1].b_z_span = b_z_span
 
             # reset start block flag
-            OCV.start_block = 0
+            OCV.start_block = False
 
             if OCV.DEBUG_PAR is True:
-                OCV.infos.append("Z_span Z_MIN {0} Z_MAX {1}".format(*b_z_span))
+                OCV.infos.append(
+                    "Z_span Z_MIN {0} Z_MAX {1}".format(*b_z_span))
                 OCV.infos.append("end X{0} Y{1} Z{2}".format(*b_end))
 
                 OCV.printout_infos(OCV.infos)
@@ -185,6 +185,9 @@ class GCode(object):
             # create a new block
             # OCV.blocks[-1].append(line)
             # Test if a new block is better with a z raise at the begin
+            if OCV.start_block is False:
+                b_foot = "(Block-EP {0})".format(OCV.gcodeCC(*b_end))
+                OCV.blocks[-1].append(b_foot)
             OCV.blocks.append(Block.Block())
             OCV.blocks[-1].append(line)
         elif self.cnc.gcode == 0 and len(OCV.blocks) == 1:
@@ -204,11 +207,12 @@ class GCode(object):
         self.filename = filename
 
         try:
-            f = open(self.filename, "r")
+            f_handle = open(self.filename, "r")
         except Exception:
             return False
 
         self._lastModified = os.stat(self.filename).st_mtime
+
         self.cnc.initPath()
         self.cnc.resetAllMargins()
         self._blocksExist = False
@@ -216,14 +220,28 @@ class GCode(object):
         if OCV.DEBUG_PAR is True:
             OCV.printout_header("loading {0}", filename)
 
-        for line in f:
+        for line in f_handle:
             self.process_line(line[:-1].replace("\x0d", ""))
 
         if OCV.DEBUG_PAR is True:
             OCV.printout_header("{0}", "END LOAD")
 
         self._trim()
-        f.close()
+        f_handle.close()
+
+        # TODO is better to move this part to the file_load in main method ?
+        if OCV.post_proc is True:
+            dir_name = OCV.HOME_DIR
+            file_name = os.path.basename(filename)
+            fn, ext = os.path.splitext(file_name)
+            new_file_name = ".okktmp_" + fn + ".okk"
+            OCV.post_temp_fname = os.path.join(dir_name, new_file_name)
+
+            print(OCV.post_temp_fname)
+
+            self.saveOKK(OCV.post_temp_fname)
+
+
         return True
 
     def save(self, filename=None):
@@ -243,40 +261,21 @@ class GCode(object):
         self._modified = False
         return True
 
-    def saveTXT(self, filename):
-        """Save in TXT format
-        Enabled Blocks only
-        Cleaned from OKKCNC metadata and comments
-        Uppercase
-        """
-        txt = open(filename, 'w')
-        for block in OCV.blocks:
-            if block.enable:
-                for line in block:
-                    cmds = CNC.parseLine(line)
-
-                    if cmds is None:
-                        continue
-
-                    txt.write("{0}\n".format(line.upper()))
-        txt.close()
-        return True
-
-    def saveNGC(self, filename):
+    def saveNGC(self, filename, comments=False):
         """Save in NGC format
-        Cleaned from Block OKKCNC metadata and comments
+        Cleaned from Block OKKCNC metadata with or without comments
         """
-        txt = open(filename, 'w')
+        f_handle = open(filename, 'w')
         for block in OCV.blocks:
             print(block.enable)
             if block.enable:
                 for line in block:
-                    cmds = CNC.parseLine(line, True)
+                    cmds = CNC.parseLine(line, comments)
                     print(cmds)
                     if cmds is None:
                         continue
-                    txt.write("{0}\n".format(line.upper()))
-        txt.close()
+                    f_handle.write("{0}\n".format(line.upper()))
+        f_handle.close()
         return True
 
     def saveOKK(self, filename):
@@ -289,7 +288,6 @@ class GCode(object):
         okkf.close()
         return True
 
-
     def addBlockFromString(self, name, text):
 
         if not text:
@@ -301,12 +299,12 @@ class GCode(object):
 
     def headerFooter(self):
         """Check if Block is empty:
-             If Empty insert a header and a footer
+             If empty insert a header and a footer
             """
         if not OCV.blocks:
             currDate = strftime("%Y-%m-%d - %H:%M:%S", localtime())
-            curr_header = "(Created By OKKCNC version {0}) \n".format(
-                OCV.PRG_VER)
+            curr_header = "(Created By {0} version {1}) \n".format(
+                OCV.PRG_NAME, OCV.PRG_VER)
             curr_header += "(Date: {0})\n".format(currDate)
             curr_header += self.header
 
@@ -314,55 +312,6 @@ class GCode(object):
             self.addBlockFromString("Footer", self.footer)
             return True
         return False
-
-# CHECK if it is a remnant of SVG or DXF imports
-    def getMargins(self):
-        """get document margins"""
-        # Get bounding box of document
-        min_x, min_y, max_x, max_y = 0, 0, 0, 0
-        for idx, block in enumerate(OCV.blocks):
-            paths = self.toPath(idx)
-
-            for path in paths:
-                min_x2, min_y2, max_x2, max_y2 = path.bbox()
-                min_x = min(min_x, min_x2)
-                min_y = min(min_y, min_y2)
-                max_x = max(max_x, max_x2)
-                max_y = max(max_y, max_y2)
-
-        return min_x, min_y, max_x, max_y
-
-    def importEntityPoints(self, pos, entities, name, enable=True, color=None):
-        """Import POINTS from entities"""
-        undoinfo = []
-        i = 0
-
-        while i < len(entities):
-            if entities[i].type != "POINT":
-                i += 1
-                continue
-
-            block = Block.Block("{0} [P]".format(name))
-            block.enable = enable
-
-            block.color = entities[i].color()
-            if block.color is None:
-                block.color = color
-
-            x, y = entities[i].start()
-            block.append("G0 {0} {1}}".format(
-                self.fmt("X", x, 7),
-                self.fmt("Y", y, 7)))
-            block.append(CNC.zenter(self.cnc["surface"]))
-            block.append(CNC.zsafe())
-            undoinfo.append(self.addBlockUndo(pos, block))
-
-            if pos is not None:
-                pos += 1
-
-            del entities[i]
-
-        return undoinfo
 
     def toPath(self, bid):
         """convert a block to path"""
@@ -639,7 +588,6 @@ class GCode(object):
 
     def cloneBlockUndo(self, bid, pos=None):
         """Clone a block"""
-
         if pos is None:
             pos = bid
 
@@ -647,8 +595,6 @@ class GCode(object):
 
     def delBlockUndo(self, bid):
         """Delete a whole block"""
-        # seems to be a remnant of old code
-#        lines = [x for x in OCV.blocks[bid]]
         block = OCV.blocks.pop(bid)
         undoinfo = (self.addBlockUndo, bid, block)
         return undoinfo
@@ -702,7 +648,6 @@ class GCode(object):
 
     def moveBlockUndo(self, src, dst):
         """Move block from location src to location dst"""
-
         if src == dst:
             return None
 
@@ -886,70 +831,6 @@ class GCode(object):
 
         if undoinfo:
             self.addUndo(undoinfo)
-
-#    def correctBlocks(self):
-#        """Merge or split blocks depending on motion
-#           Each block should start with a rapid move and end with a rapid move
-#        """
-#        # Working in place tricky
-#        bid = 0    # block index
-#        while bid < len(OCV.blocks):
-#            block = OCV.blocks[bid]
-#            li = 0    # line index
-#            prefix = True
-#            suffix = False
-#            lastg0 = None
-#            while li < len(block):
-#                line = block[li]
-#                cmds = CNC.parseLine(line)
-#                if cmds is None:
-#                    li += 1
-#                    continue
-#
-#                self.cnc.motionStart(cmds)
-#
-#                # move
-#                if self.gcode in (1,2,3):
-#                    if prefix is None: prefix = li-1
-#
-#                # rapid movement
-#                elif self.gcode == 0:
-#                    lastg0 = li
-#                    if prefix is not None: suffix = li
-#
-#                    # moving up = end of block
-#                    if self.cnc.dz > 0.0:
-#                        if suffix:
-#                            # Move all subsequent lines to a new block
-#                            #OCV.blocks.append(Block())
-#                            pass
-#                self.cnc.motionEnd()
-
-    #----------------------------------------------------------------------
-    # Start a new iterator
-    #----------------------------------------------------------------------
-#    def __iter__(self):
-#        self._iter = 0    #self._iter_start
-#        self._iter_block = OCV.blocks[self._iter]
-#        self._iter_block_i = 0
-#        self._iter_end   = len(OCV.blocks)
-#        return self
-#
-#    #----------------------------------------------------------------------
-#    # Next iterator item
-#    #----------------------------------------------------------------------
-#    def next(self):
-#        if self._iter >= self._iter_end: raise StopIteration()
-#
-#        while self._iter_block_i >= len(self._iter_block):
-#            self._iter += 1
-#            if self._iter >= self._iter_end: raise StopIteration()
-#            self._iter_block = OCV.blocks[self._iter]
-#            self._iter_block_i = 0
-#
-#        item = self._iter_block[self._iter_block_i]
-#        self._iter_block_i += 1
-#        return item
 
     def __repr__(self):
         """Return string representation of whole file"""

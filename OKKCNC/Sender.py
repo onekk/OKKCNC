@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os
-import re
 import sys
 import glob
 import traceback
@@ -53,9 +52,6 @@ SERIAL_TIMEOUT = 0.10
 G_POLL = 10
 RX_BUFFER_SIZE = 128
 
-GPAT = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
-FEEDPAT = re.compile(r"^(.*)[fF](\d+\.?\d+)(.*)$")
-
 
 class Sender(object):
     """OKKCNC Sender class"""
@@ -70,7 +66,9 @@ class Sender(object):
 
     def __init__(self):
         self._historyPos = None
-        print("Init Sender > ", self)
+
+        # print("Init Sender > ", self)
+
         self.controllers = {}
         self.controllerLoad()
         self.controllerSet("GRBL1")
@@ -161,7 +159,7 @@ class Sender(object):
         False otherwise
         """
         if isinstance(line, tuple) or \
-           line[0] in ("$", "!", "~", "?", "(", "@") or GPAT.match(line):
+           line[0] in ("$", "!", "~", "?", "(", "@") or OCV.GPAT.match(line):
             self.sendGCode(line)
             return True
         return False
@@ -402,13 +400,13 @@ class Sender(object):
             return self.gcode.orient.save(filename)
         elif ext == ".txt":
             # save gcode as txt (only enabled blocks and no OKKCNC metadata)
-            return self.gcode.saveTXT(filename)
+            return self.gcode.saveNGC(filename, False)
         elif ext == ".okk":
             # save gcode with OKKCNC metadata
             return self.gcode.saveOKK(filename)
         elif ext == ".ngc":
             # save gcode without OKKCNC metadata
-            return self.gcode.saveNGC(filename)
+            return self.gcode.saveNGC(filename, True)
         else:
             if filename is not None:
                 self.gcode.filename = filename
@@ -713,7 +711,7 @@ class Sender(object):
                     # done before adding it to cline
 
                     # Keep track of last feed
-                    pat = FEEDPAT.match(str(tosend))
+                    pat = OCV.FEEDPAT.match(str(tosend))
                     if pat is not None:
                         self._lastFeed = pat.group(2)
 
@@ -732,7 +730,7 @@ class Sender(object):
 
                         # Apply override Feed
                         if OCV.CD["_OvFeed"] != 100 and self._newFeed != 0:
-                            pat = FEEDPAT.match(tosend)
+                            pat = OCV.FEEDPAT.match(tosend)
                             if pat is not None:
                                 try:
                                     tosend = "{0}f{1:f}{2}\n".format(

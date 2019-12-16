@@ -199,11 +199,14 @@ class Block(list):
         do not confuse with 'header block'
         the block header contains metadata for OKKCNC as GCode comments"""
         header = ''
+
+        if len(self.b_start) > 0:
+            header += "(Block-SP {0})\n".format(OCV.gcodeCC(*self.b_start))
+
         header += "(Block-name:  {0})\n".format(self.name())
 
         if len(self.b_start) > 0:
-            header += "(Block-start {0})\n".format(OCV.gcodeCC(*self.b_start))
-            header += "(Block-end {0})\n".format(OCV.gcodeCC(*self.b_end))
+            # header += "(Block-SP {0})\n".format(OCV.gcodeCC(*self.b_start))
             header += "(Block-z span Z_MIN {0} Z_MAX {1})\n".format(
                 *self.b_z_span)
 

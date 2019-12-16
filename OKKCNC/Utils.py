@@ -63,7 +63,6 @@ import IniFile
 import Ribbon
 import tkExtra
 
-errors = []
 
 '''
 class Config(object):
@@ -347,21 +346,20 @@ def q_round(value, prec=2, base=.05):
 
 def addException():
     """collect and report exceptions"""
-    global errors
-#    self.widget._report_exception()
+    # self.widget._report_exception()
     try:
         typ, val, tb = sys.exc_info()
         traceback.print_exception(typ, val, tb)
 
-        if errors:
-            errors.append("")
+        if OCV.errors:
+            OCV.errors.append("")
 
         exception = traceback.format_exception(typ, val, tb)
-        errors.extend(exception)
+        OCV.errors.extend(exception)
 
-        if len(errors) > 100:
+        if len(OCV.errors) > 100:
             # do nothing for now
-            print(errors)
+            print(OCV.errors)
     except:
         say(str(sys.exc_info()))
 
@@ -612,6 +610,7 @@ class ErrorWindow(Tk.Toplevel):
     def show_message(self):
         print(self.winfo_name)
 
+
 class ZAnalyzer(object):
 
     def __init__(self):
@@ -619,17 +618,16 @@ class ZAnalyzer(object):
         self.z_max = 1000
 
     def analyze(self):
+
         for idx, block in enumerate(OCV.blocks):
             div_str = "-=-=-=-=-=-=-=-=-=-- Block N.{0} --=-=-=-=-=-=-=-=--=-"
+            mat_str = "---------- Continuous  Path---------------------------"
             print(div_str.format(idx))
 
             if idx != 0:
                 p_sp, p_ep, p_zs = OCV.blocks[idx - 1].get_metadata()
                 a_sp, a_ep, a_zs = OCV.blocks[idx].get_metadata()
-                print("previous end_pos > ", p_ep)
-                print("actual start_pos > ", a_sp)
+                if p_ep[0] == a_sp[0] and p_ep[1] == a_sp[1]:
+                    print(mat_str)
 
-            print(block)
-            for cmds in block:
-                print(cmds)
 

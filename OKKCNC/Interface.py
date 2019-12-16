@@ -208,7 +208,7 @@ class DROFrame(CNCRibbon.PageFrame):
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "DRO", app)
 
-        print("DROFrame self.app", self.app)
+        # print("DROFrame self.app", self.app)
 
         DROFrame.dro_status = Utils.get_font("dro.status", DROFrame.dro_status)
         DROFrame.dro_wpos = Utils.get_font("dro.wpos", DROFrame.dro_wpos)
@@ -629,7 +629,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             app,
             [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset)])
 
-        print("ConnectionGroup app", app)
+        # print("ConnectionGroup app", app)
 
         self.grid2rows()
 
@@ -848,7 +848,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
                 rows += 1
 
-        print("MemoryGroup: Init end")
+        # print("MemoryGroup: Init end")
         self.select_bank(0)
 
     def on_click_mem(self, event, obj):

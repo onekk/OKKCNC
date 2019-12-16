@@ -509,9 +509,10 @@ class Application(Tk.Toplevel, Sender):
         self.saveConfig()
         self.destroy()
 
-        if Utils.errors and IniFile._errorReport:
+        if OCV.errors and OCV.error_report:
             # Don't send report dialog
-            #    Utils.ReportDialog.sendErrorReport()
+            # Infrastructure not (yet) created
+            # Utils.ReportDialog.sendErrorReport()
             pass
 
         OCV.root.destroy()
@@ -2845,7 +2846,7 @@ def main(args=None):
         _application.quit()
 
     _application.close()
-    IniFile.user_conf_file_save()
+    IniFile.save_user_conf_file()
 
 
 if __name__ == "__main__":

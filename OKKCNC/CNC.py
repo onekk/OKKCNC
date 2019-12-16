@@ -1294,8 +1294,7 @@ class CNC(object):
 
     @staticmethod
     def compile_pgm(program):
-        """
-        Instead of the current code, override with the custom user lines
+        """Instead of the current code, override with the custom user lines
         # @param program a list of lines to execute
         # @return the new list of lines
         """
