@@ -61,11 +61,7 @@ DEBUG_COM = False
 # debug GCode parsing
 DEBUG_PAR = True
 
-# Adds a (Block-number ) comment that hold a progressive number assigned
-# durign block writing in Block.write_header functions
-NUMBER_BLOCKS = True
-
-# This string are related to About window
+# String related to About window
 PRG_CREDITS = \
     "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
     "@effer Filippo Rivato , " \
@@ -269,7 +265,8 @@ RUN_GROUP = None
 # Statusbar
 STATUSBAR = None
 
-""" used to simplify mosto of the coordinates in Gcode and text strings"""
+""" used to unify most of coordinates printout in Gcode and text strings
+note the {3} parameter holding decimal precision """
 sh_coord = "X: {0:0.{3}f} \nY: {1:0.{3}f} \nZ: {2:0.{3}f}"
 gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
 
@@ -288,8 +285,7 @@ appendFeed = False
 
 # B #
 blocks = []  # Gcode blocks, here to be shared
-block_num = 0  # block number order of creation
-
+# b_mdata_xx variables holds Block metedata used in heuristic analisys
 b_mdata_sp = "(B_MD SP {0})"
 b_mdata_ep = "(B_MD EP {0})"
 b_mdata_pz = "(B_MD PZ Z: {0})"
@@ -318,6 +314,11 @@ feedmax_z = 2000
 # G #
 geometry = None
 g_code_precision = 4
+# holds the value of the detected post processor that generate the GCode file
+# used in heuristic module to rearrange GCode in a proper manner
+# values are "Generic" and "CamBam" to use the custom GRBL.cbpp present in
+# OKKCNC/controllers dir that is taylored to supply some relevant metadata
+g_code_pp = "Generic"
 
 # H #
 history = []
@@ -349,8 +350,8 @@ maxRecent = 10
 # P #
 post_proc = False
 post_temp_fname = ""
-# S #
 
+# S #
 serial_open = False
 startup = "G90"
 start_block = False

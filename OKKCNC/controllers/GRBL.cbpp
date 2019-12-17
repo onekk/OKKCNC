@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PostProcessor xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="0.9.8.0">
+ <PostFile>
+  {$comment} Made using CamBam - http://www.cambam.co.uk {$endcomment}
+  {$comment} Grbl Post Processor v 1.1{$endcomment}
+  {$comment} modified by onekk {$endcomment}
+  {$header}
+  {$mops}
+  {$footer}
+ </PostFile>
+ <Header>
+  {$comment}{$cbfile.name} {$date}{$endcomment}
+  {$tooltable}
+  {$cbfile.header}
+  {$units} {$distancemode} {$cuttercomp(off)}
+  {$toolchange(first)}
+  {$clearance}
+ </Header>
+ <Footer>
+  {$clearance}
+  {$spindle(off)}
+  {$endrewind}
+  {$cbfile.footer}
+ </Footer>
+ <ToolChange>
+  {$clearance}
+  {$comment} T{$tool.index} : {$tool.diameter} {$endcomment}
+  T{$tool.index}
+ </ToolChange>
+ <MOP>
+  {$comment}MOP Start: {$mop.name} {$endcomment}
+  {$toolchange}
+  {$workplane}
+  {$mop.header}
+  {$spindle} {$s}
+  {$blocks}
+  {$mop.footer}
+  {$comment}MOP End: {$mop.name} {$endcomment}
+ </MOP>
+ <G81 />
+ <G82 />
+ <G83 />
+ <CutterCompOff />
+ <CutterCompLeft />
+ <CutterCompRight />
+ <CannedCycleStart />
+ <CannedCycleEnd />
+ <VelocityModeExactStop />
+ <VelocityModeConstantVelocity />
+ <EndRewind>M2</EndRewind>
+ <Repeat />
+ <SpindleCW>
+  M8
+  M3
+ </SpindleCW>
+ <SpindleCCW>
+  M8
+  M4
+ </SpindleCCW>
+ <SpindleOff>
+  M9
+  M5
+ </SpindleOff>
+ <Drill>
+  {$g0} {$_x} {$_y}
+  {$g0} Z{$mop.retractheight}
+  {$g1} {$_z} {$_f}
+  {$g0} Z{$mop.clearanceplane}
+ </Drill>
+ <DrillDwell>
+  {$g0} {$_x} {$_y}
+  {$g0} Z{$mop.retractheight}
+  {$g1} {$_z} {$_f}
+  G4 {$p}
+  {$g0} Z{$mop.clearanceplane}
+ </DrillDwell>
+ <UpperCase>false</UpperCase>
+ <MinimumArcLength>0.0001</MinimumArcLength>
+ <MaximumArcRadius>1000</MaximumArcRadius>
+</PostProcessor>

@@ -51,7 +51,6 @@ class GCode(object):
     def init(self):
         self.filename = ""
         OCV.blocks = []  # list of blocks
-        OCV.block_num = 0
         OCV.max_z = 0
         OCV.min_z = 0
         self.gcodelines = ["",]  # Add a starting 0 pos to better align index

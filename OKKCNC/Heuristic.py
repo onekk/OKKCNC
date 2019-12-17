@@ -52,8 +52,8 @@ class CodeAnalyzer(object):
     def detect_profiles(self):
         """analyze start and ending points to 'detect' the shapes at least
         profile """
-        match_str = "end of block {0} match X and Y of start of block {1} "
         idx = 0
+        # process control while flow if set to True will end the loop
         process = True
         match = False
         # print("Z_analisys started")
@@ -96,4 +96,3 @@ class CodeAnalyzer(object):
                 OCV.blocks[index-1].append(line)
 
         del OCV.blocks[index]
-
