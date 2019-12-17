@@ -153,7 +153,7 @@ class GCode(object):
             if cmds[0] in ("G1", "G2", "G3"):
                 b_start = [self.cnc.x, self.cnc.y, self.cnc.z]
                 # insert at the top of the block the b_start value
-                b_head = "(B_MD SP {0})".format(OCV.gcodeCC(*b_start))
+                b_head = OCV.b_mdata_sp.format(OCV.gcodeCC(*b_start))
                 OCV.blocks[-1].insert(0, b_head)
                 data_info = "start X{0} Y{1} Z{2}".format(*b_start)
                 OCV.infos.append(data_info)
@@ -185,10 +185,9 @@ class GCode(object):
 
             if OCV.start_block is True:
                 # add only if Block SP exist
-                b_foot_z = "(B_MD ZS Z_MIN {0} Z_MAX {1})".format(*b_z_span)
-                OCV.blocks[-1].append(b_foot_z)
-                b_foot = "(B_MD EP {0})".format(OCV.gcodeCC(*b_end))
-                OCV.blocks[-1].append(b_foot)
+                OCV.blocks[-1].append(OCV.b_mdata_pz.format(OCV.min_z))
+                OCV.blocks[-1].append(
+                    OCV.b_mdata_ep.format(OCV.gcodeCC(*b_end)))
 
             # reset start block flag
             OCV.start_block = False

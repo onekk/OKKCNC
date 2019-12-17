@@ -42,9 +42,10 @@ except ImportError:
 import OCV
 from CNC import CNC
 import GCode
+import Heuristic
 import IniFile
 import Pendant
-import Utils
+
 
 # WIKI = "https://github.com/vlachoudis/bCNC/wiki"
 
@@ -384,9 +385,12 @@ class Sender(object):
         else:
             self.gcode.load(filename)
             # save the post processed file, for debugging or other
-            g_parse = Utils.ZAnalyzer()
-            g_parse.analyze()
+            g_parse = Heuristic.CodeAnalyzer()
+            g_parse.detect_profiles()
 
+        IniFile.add_recent_file(filename)
+
+        """This code is for the offline analisys not needed for now
             if OCV.post_proc is True:
                 dir_name = OCV.HOME_DIR
                 file_name = os.path.basename(filename)
@@ -399,7 +403,7 @@ class Sender(object):
                 self.gcode.saveOKK(OCV.post_temp_fname)
 
             self._saveConfigFile()
-        IniFile.add_recent_file(filename)
+        """
 
     def save(self, filename):
         """manage the saving of the file based on extension"""

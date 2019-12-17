@@ -72,6 +72,7 @@ import bFileDialog
 import tkDialogs
 import CNCCanvas
 import Commands as cmd
+import Heuristic
 import Interface
 
 from CNC import CNC
@@ -1308,8 +1309,8 @@ class Application(Tk.Toplevel, Sender):
             # fire analyze actions
             # it has to detect z min and select all the path for adding a
             # z-height override for cutting the remaining material.
-            ana_code = Utils.ZAnalyzer()
-            ana_code.analyze()
+            ana_code = Heuristic.CodeAnalyzer()
+            ana_code.detect_profiles()
 
     def selectAll(self, event=None):
         focus = self.focus_get()

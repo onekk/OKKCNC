@@ -290,6 +290,10 @@ appendFeed = False
 blocks = []  # Gcode blocks, here to be shared
 block_num = 0  # block number order of creation
 
+b_mdata_sp = "(B_MD SP {0})"
+b_mdata_ep = "(B_MD EP {0})"
+b_mdata_pz = "(B_MD PZ Z: {0})"
+
 # C #
 comment = ""  # last parsed comment
 config = None
