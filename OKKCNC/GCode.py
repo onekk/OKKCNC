@@ -116,6 +116,9 @@ class GCode(object):
 
     def process_line(self, line):
         """add new line to list create block if necessary"""
+        # DEBUG_INFO
+        # INT_DEBUG = OCV.DEBUG_PAR
+        INT_DEBUG = False
         data_info = ""
 
         if line.startswith("(Block-name:"):
@@ -134,7 +137,7 @@ class GCode(object):
 
         cmds = CNC.parseLine(line)
 
-        if OCV.DEBUG_PAR is True:
+        if INT_DEBUG is True:
             print("Line >", line)
 
         if cmds is None:
@@ -149,11 +152,14 @@ class GCode(object):
             # print(cmds[0])
             if cmds[0] in ("G1", "G2", "G3"):
                 b_start = [self.cnc.x, self.cnc.y, self.cnc.z]
-                OCV.blocks[-1].b_start = b_start
+                # insert at the top of the block the b_start value
+                b_head = "(B_MD SP {0})".format(OCV.gcodeCC(*b_start))
+                OCV.blocks[-1].insert(0, b_head)
                 data_info = "start X{0} Y{1} Z{2}".format(*b_start)
                 OCV.infos.append(data_info)
                 # set the flag to determine the first move of the block
                 OCV.start_block = True
+                # print("Start pos detected", OCV.blocks[-1])
 
         OCV.min_z = min(OCV.min_z, self.cnc.z)
         OCV.max_z = max(OCV.max_z, self.cnc.z)
@@ -168,13 +174,8 @@ class GCode(object):
             # the rapid move Z up is moved to the next block
             b_end = [self.cnc.x, self.cnc.y, self.cnc.z]
             b_z_span = [OCV.min_z, OCV.max_z]
-            OCV.blocks[-1].b_end = b_end
-            OCV.blocks[-1].b_z_span = b_z_span
 
-            # reset start block flag
-            OCV.start_block = False
-
-            if OCV.DEBUG_PAR is True:
+            if INT_DEBUG is True:
                 OCV.infos.append(
                     "Z_span Z_MIN {0} Z_MAX {1}".format(*b_z_span))
                 OCV.infos.append("end X{0} Y{1} Z{2}".format(*b_end))
@@ -182,12 +183,18 @@ class GCode(object):
                 OCV.printout_infos(OCV.infos)
                 OCV.infos = []
 
+            if OCV.start_block is True:
+                # add only if Block SP exist
+                b_foot_z = "(B_MD ZS Z_MIN {0} Z_MAX {1})".format(*b_z_span)
+                OCV.blocks[-1].append(b_foot_z)
+                b_foot = "(B_MD EP {0})".format(OCV.gcodeCC(*b_end))
+                OCV.blocks[-1].append(b_foot)
+
+            # reset start block flag
+            OCV.start_block = False
             # create a new block
             # OCV.blocks[-1].append(line)
             # Test if a new block is better with a z raise at the begin
-            if OCV.start_block is False:
-                b_foot = "(Block-EP {0})".format(OCV.gcodeCC(*b_end))
-                OCV.blocks[-1].append(b_foot)
             OCV.blocks.append(Block.Block())
             OCV.blocks[-1].append(line)
         elif self.cnc.gcode == 0 and len(OCV.blocks) == 1:
@@ -228,19 +235,6 @@ class GCode(object):
 
         self._trim()
         f_handle.close()
-
-        # TODO is better to move this part to the file_load in main method ?
-        if OCV.post_proc is True:
-            dir_name = OCV.HOME_DIR
-            file_name = os.path.basename(filename)
-            fn, ext = os.path.splitext(file_name)
-            new_file_name = ".okktmp_" + fn + ".okk"
-            OCV.post_temp_fname = os.path.join(dir_name, new_file_name)
-
-            print(OCV.post_temp_fname)
-
-            self.saveOKK(OCV.post_temp_fname)
-
 
         return True
 

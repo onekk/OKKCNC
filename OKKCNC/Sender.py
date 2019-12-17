@@ -44,6 +44,7 @@ from CNC import CNC
 import GCode
 import IniFile
 import Pendant
+import Utils
 
 # WIKI = "https://github.com/vlachoudis/bCNC/wiki"
 
@@ -382,6 +383,21 @@ class Sender(object):
             self.gcode.orient.load(filename)
         else:
             self.gcode.load(filename)
+            # save the post processed file, for debugging or other
+            g_parse = Utils.ZAnalyzer()
+            g_parse.analyze()
+
+            if OCV.post_proc is True:
+                dir_name = OCV.HOME_DIR
+                file_name = os.path.basename(filename)
+                fn, ext = os.path.splitext(file_name)
+                new_file_name = ".okktmp_" + fn + ".okk"
+                OCV.post_temp_fname = os.path.join(dir_name, new_file_name)
+
+                print(OCV.post_temp_fname)
+
+                self.gcode.saveOKK(OCV.post_temp_fname)
+
             self._saveConfigFile()
         IniFile.add_recent_file(filename)
 

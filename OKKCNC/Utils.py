@@ -612,6 +612,23 @@ class ErrorWindow(Tk.Toplevel):
 
 
 class ZAnalyzer(object):
+    """Analyze for Z raise and XY pos of  actual and peceding blocks
+    to detect the consecutive paths, they are generally a same shape
+    the z raises could be the tabs, if they are not at the maximum Z
+    Some assumptions are made:
+        First move serve to place the gantry at the path starts, and generally
+            is done at Z max-height, maybe if there are some auto z adjust,
+            or tool lenght probe some code has to be added to cope with this
+            case
+
+        Subsequent moves aren't higher than this first move Z, generally is
+            true as the endmill is lowered at Z safe_height at the beginning
+            of the work
+
+        Moves that aren't at Z safe_height are generally tabs or pecks_heights
+            maybe defining some Z values for the race cases would be a good
+            approach
+        """
 
     def __init__(self):
         self.z_min = 1000
@@ -619,15 +636,44 @@ class ZAnalyzer(object):
 
     def analyze(self):
 
-        for idx, block in enumerate(OCV.blocks):
-            div_str = "-=-=-=-=-=-=-=-=-=-- Block N.{0} --=-=-=-=-=-=-=-=--=-"
-            mat_str = "---------- Continuous  Path---------------------------"
-            print(div_str.format(idx))
+        idx = 0
+        process = True
+        match = False
+        print("Z_analisys started")
+        # Not using a for loop due to OCV.Blocks in-place modifications
+        while (process is True):
+            #div_str = "-=-=-=-=-=-=-=-=-=-- Block N.{0} --=-=-=-=-=-=-=-=--=-"
+            #print(div_str.format(idx))
+            start = OCV.POSPAT.findall(OCV.blocks[idx][0])
+            # the block is detected as the first Z up so generally is safe
+            # to skip first block as generally has no start and no end data
+            if idx > 0 and len(start) != 0:
+                end = OCV.POSPAT.findall(OCV.blocks[idx-1][-1])
 
-            if idx != 0:
-                p_sp, p_ep, p_zs = OCV.blocks[idx - 1].get_metadata()
-                a_sp, a_ep, a_zs = OCV.blocks[idx].get_metadata()
-                if p_ep[0] == a_sp[0] and p_ep[1] == a_sp[1]:
-                    print(mat_str)
+                if len(end) != 0:
+                    print(start[0], start[1], start[2])
+                    print(end[0], end[1], end[2])
+                    if start[0][1] == end[0][1] and start[1][1] == end[1][1]:
+                        # print("matching X and Y")
+                        match =  True
+                        self.joinblocks(idx)
 
+            if match is False:
+                if idx < (len(OCV.blocks) - 1):
+                    idx += 1
+                else:
+                    process = False
+            else:
+                idx -= 1
+                match = False
+
+        else:
+            print("Z_analisys terminated")
+            OCV.APP.event_generate("<<Modified>>")
+
+    def joinblocks(self, index):
+        for line in OCV.blocks[index]:
+            OCV.blocks[index-1].append(line)
+
+        del OCV.blocks[index]
 

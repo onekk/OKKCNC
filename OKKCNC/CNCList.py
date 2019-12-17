@@ -1,6 +1,7 @@
 # -*- coding: ascii -*-
 """CNCList.py
-
+This module deal with the blocks of gcode into editor frame.
+It manages the variour editing operation on the blocks of gcode
 
 Credits:
     this module code is based on bCNC code
@@ -14,14 +15,17 @@ Credits:
 
 from __future__ import print_function
 from __future__ import absolute_import
+
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
+
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
+
 try:
     import Tkinter as Tk
     import tkFont
@@ -388,8 +392,8 @@ class CNCListbox(Tk.Listbox):
 
         block = Block.Block()
         block.expand = True
-        block.append("g0 x0 y0")
-        block.append("g1 z0")
+        block.append("G0 X0 Y0")
+        block.append("G1 Z0")
         block.append(CNC.zsafe())
         self.gcode.addUndo(self.gcode.addBlockUndo(bid, block))
         self.selection_clear(0, Tk.END)
@@ -661,13 +665,13 @@ class CNCListbox(Tk.Listbox):
             self.winfo_toplevel().event_generate("<<ListboxSelect>>")
 
     def enable(self, event=None):
-        """Enable selected objects"""
+        """Enable selected blocks"""
         self._toggleEnable(True)
         self.winfo_toplevel().event_generate(
             "<<Status>>", data="Enabled selected objects")
 
     def disable(self, event=None):
-        """Disable selected objects"""
+        """Disable selected blocks"""
         self._toggleEnable(False)
         self.winfo_toplevel().event_generate(
             "<<Status>>", data="Disabled selected objects")
@@ -703,7 +707,7 @@ class CNCListbox(Tk.Listbox):
             self.fill()
 
     def joinBlocks(self, event=None):
-        """join Blocks"""
+        """join blocks"""
         if not self._items:
             return
 

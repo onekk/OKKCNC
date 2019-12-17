@@ -39,7 +39,17 @@ SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
 USER_CONFIG = os.path.expanduser("~/.{0}".format(PRG_NAME))
 COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
 
-# Debug flags. used across the interface to print debug info on terminal
+"""Debug flags. used across the interface to print debug info on terminal
+    the debug comment
+    # DEBUG_INFO
+    denote a place where a DEBUG info are relevant, in some methods
+    or functions there are a "dual level" mechanism, after DEBUG_INFO line
+    there is an assignement of INT_DEBUG "local" variable to one of the
+    DEBUG_XXX "flags" below, to have the relevant information shown only when
+    needed to debug the code in the development process, searching for
+    DEBUG_INFO in the code permit to decomment the line to show the relevant
+    code, this for not having to define too many DEBUG_XXX "flags"
+"""
 # General unspecified debug flag
 DEBUG = False
 # Debug graphical part
@@ -50,9 +60,12 @@ DEBUG_INT = False
 DEBUG_COM = False
 # debug GCode parsing
 DEBUG_PAR = True
+
+# Adds a (Block-number ) comment that hold a progressive number assigned
+# durign block writing in Block.write_header functions
 NUMBER_BLOCKS = True
 
-# This are string present in the About window
+# This string are related to About window
 PRG_CREDITS = \
     "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
     "@effer Filippo Rivato , " \
@@ -72,13 +85,13 @@ PRG_SITE = "https://github.com/onekk/OKKCNC"
 PRG_TRANS = \
     "Italian - @onekk\n" \
 
-# Some flags to make choices based on init values
+# Some flags to make choices based on init values, used across different files
 HAS_SERIAL = None
 IS_PY3 = False
 
 # INTERFACE COLORS
 """See Inifile.py/load_colors()
-values with comments Above are the corresponding itens in IniFile
+values with comments Above are the corresponding item names in IniFile
 """
 # "ribbon.active"
 COLOR_ACTIVE = "LightYellow"
@@ -213,6 +226,8 @@ GPAT = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
 IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
 OPPAT = re.compile(r"(.*)\[(.*)\]")
 PARENPAT = re.compile(r"(\(.*?\))")
+# [\+\-]?[\d\.]+)\D?
+POSPAT = re.compile(r"([XYZ]+):\s*([\+\-]?[\d\.]+)\D")
 SEMIPAT = re.compile(r"(;.*)")
 
 # -- GRBL States
@@ -328,7 +343,7 @@ maxRecent = 10
 # O #
 
 # P #
-post_proc = True
+post_proc = False
 post_temp_fname = ""
 # S #
 

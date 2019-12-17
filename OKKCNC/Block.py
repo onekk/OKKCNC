@@ -40,9 +40,6 @@ class Block(list):
             self.copy(name)
             return
         self._name = name
-        self.b_start = []
-        self.b_end = []
-        self.b_z_span = []
         self.enable = True      # Enabled/Visible in drawing
         self.expand = False     # Expand in editor
         self.color = None       # Custom color for path
@@ -56,9 +53,6 @@ class Block(list):
     def copy(self, src):
         """Copy a Block"""
         self._name = src._name
-        self.b_start = src.b_start
-        self.b_end = src.b_end
-        self.b_z_span = src.b_z_span
         self.enable = src.enable
         self.expand = src.expand
         self.color = src.color
@@ -199,20 +193,12 @@ class Block(list):
         do not confuse with 'header block'
         the block header contains metadata for OKKCNC as GCode comments"""
         header = ''
-
-        if len(self.b_start) > 0:
-            header += "(Block-SP {0})\n".format(OCV.gcodeCC(*self.b_start))
-
         header += "(Block-name:  {0})\n".format(self.name())
-
-        if len(self.b_start) > 0:
-            # header += "(Block-SP {0})\n".format(OCV.gcodeCC(*self.b_start))
-            header += "(Block-z span Z_MIN {0} Z_MAX {1})\n".format(
-                *self.b_z_span)
 
         if OCV.NUMBER_BLOCKS is True:
             header += "(Block-number: {0})\n".format(OCV.block_num)
             OCV.block_num += 1
+
         header += "(Block-expand: {0:d})\n".format(int(self.expand))
         header += "(Block-enable: {0:d})\n".format(int(self.enable))
         if self.color:
@@ -229,9 +215,6 @@ class Block(list):
             else:
                 f.write("(Block-X: {0})\n".format(
                     line.replace('(', '[').replace(')', ']')))
-
-    def get_metadata(self):
-        return self.b_start, self.b_end, self.b_z_span
 
     def dump(self):
         """Return a dump object for pickler"""
