@@ -626,34 +626,6 @@ class CNC(object):
         return CNC.zexit(OCV.CD["safe"])
 
     @staticmethod
-    def parseLine(line, comments = False):
-        """@return
-            lines breaking a line containing list of commands,
-            None if empty or comment
-        """
-        # skip empty lines
-        if len(line) == 0 or line[0] in ("%", "#", ";"):
-            return None
-
-        if line[0] == "(":
-            if comments is True:
-                pass
-            else:
-                return None
-
-        # remove comments
-        line = OCV.PARENPAT.sub("", line)
-        line = OCV.SEMIPAT.sub("", line)
-
-        # process command
-        # strip all spaces
-        line = line.replace(" ", "")
-
-        # Insert space before each command
-        line = OCV.CMDPAT.sub(r" \1", line).lstrip()
-        return line.split()
-
-    @staticmethod
     def compileLine(line, space=False):
         """
          @return line,comment

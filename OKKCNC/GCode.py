@@ -26,6 +26,7 @@ from time import strftime, localtime
 
 import OCV
 import Block
+import Heuristic
 import Probe
 import bmath
 import undo
@@ -134,14 +135,14 @@ class GCode(object):
         if not OCV.blocks:
             OCV.blocks.append(Block.Block("Header"))
 
-        cmds = CNC.parseLine(line)
+        cmds = Heuristic.parseLine(line)
 
         if INT_DEBUG is True:
             print("Line >", line)
 
         if cmds is None:
             OCV.blocks[-1].append(line)
-            print("No commands")
+            # print("No commands")
             return
 
         self.cnc.motionStart(cmds)
@@ -183,7 +184,7 @@ class GCode(object):
                 OCV.infos = []
 
             if OCV.start_block is True:
-                # add only if Block SP exist
+                # add end metadata only if start metadata exist
                 OCV.blocks[-1].append(OCV.b_mdata_pz.format(OCV.min_z))
                 OCV.blocks[-1].append(
                     OCV.b_mdata_ep.format(OCV.gcodeCC(*b_end)))
@@ -259,14 +260,14 @@ class GCode(object):
         """
         f_handle = open(filename, 'w')
         for block in OCV.blocks:
-            print(block.enable)
+            # print(block.enable)
             if block.enable:
                 for line in block:
-                    cmds = CNC.parseLine(line, comments)
-                    print(cmds)
+                    cmds = Heuristic.parseLine(line, comments)
+                    # print(cmds)
                     if cmds is None:
                         continue
-                    f_handle.write("{0}\n".format(line.upper()))
+                    f_handle.write("{0}\n".format(line))
         f_handle.close()
         return True
 
@@ -333,7 +334,7 @@ class GCode(object):
             if passno > 1:
                 continue
 
-            cmds = CNC.parseLine(line)
+            cmds = Heuristic.parseLine(line)
 
             if cmds is None:
                 continue
@@ -1074,7 +1075,7 @@ class GCode(object):
             block = OCV.blocks[bid]
 
             if isinstance(lid, int):
-                cmds = CNC.parseLine(block[lid])
+                cmds = Heuristic.parseLine(block[lid])
 
                 if cmds is None:
                     continue

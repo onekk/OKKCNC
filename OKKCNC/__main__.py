@@ -1309,7 +1309,7 @@ class Application(Tk.Toplevel, Sender):
             # fire analyze actions
             # it has to detect z min and select all the path for adding a
             # z-height override for cutting the remaining material.
-            ana_code = Heuristic.CodeAnalyzer()
+            ana_code = Heuristic.CodeAnalizer()
             ana_code.detect_profiles()
 
     def selectAll(self, event=None):

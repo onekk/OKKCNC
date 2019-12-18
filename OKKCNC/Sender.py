@@ -384,9 +384,10 @@ class Sender(object):
             self.gcode.orient.load(filename)
         else:
             self.gcode.load(filename)
-            # save the post processed file, for debugging or other
-            g_parse = Heuristic.CodeAnalyzer()
+            # after the loading analyze the code
+            g_parse = Heuristic.CodeAnalizer()
             g_parse.detect_profiles()
+            g_parse.parse_blocks()
 
         IniFile.add_recent_file(filename)
 
