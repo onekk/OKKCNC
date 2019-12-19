@@ -537,3 +537,15 @@ def showC(x_val, y_val, z_val):
 
 def gcodeCC(x_val, y_val, z_val):
     return gc_coord.format(x_val, y_val, z_val, g_code_precision)
+
+
+def fmt(c, val, precision=None):
+    """Number formating"""
+    if precision is None:
+        precision = digits
+    # Don't know why, but in some cases floats are not truncated
+    # by format string unless rounded
+    # I guess it's vital idea to round them rather than truncate anyway!
+    r_val = round(val, precision)
+    # return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
+    return "{0}{2:0.{1}f}".format(c, precision, r_val)

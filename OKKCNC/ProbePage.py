@@ -1923,7 +1923,6 @@ class ToolFrame(CNCRibbon.PageFrame):
         self.toolHeight.set(OCV.CD["toolheight"])
         self.toolHeight.config(state=state)
 
-    #-----------------------------------------------------------------------
     def calibrate(self, event=None):
         self.set()
         if self.check4Errors(): return
@@ -1935,15 +1934,16 @@ class ToolFrame(CNCRibbon.PageFrame):
         if OCV.CD["fastprbfeed"]:
             prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
             OCV.CD["prbcmdreverse"] = (OCV.CD["prbcmd"][:-1] +
-                        prb_reverse[OCV.CD["prbcmd"][-1]])
+                  prb_reverse[OCV.CD["prbcmd"][-1]])
             currentFeedrate = OCV.CD["fastprbfeed"]
             while currentFeedrate > OCV.CD["prbfeed"]:
                 lines.append("%wait")
-                lines.append("g91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
-                        CNC.fmt('f',currentFeedrate)))
+                lines.append(
+                    "g91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
+                        OCV.fmt('f', currentFeedrate)))
                 lines.append("%wait")
                 lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
-                        CNC.fmt('f',currentFeedrate)))
+                        OCV.fmt('f', currentFeedrate)))
                 currentFeedrate /= 10
         lines.append("%wait")
         lines.append("g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")

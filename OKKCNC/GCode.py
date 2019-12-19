@@ -428,13 +428,13 @@ class GCode(object):
                 # Had to lower the decimal precision to OCV.digits
                 if z is None:
                     block.append("G1 {0} {1}".format(
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7)) + cm)
+                        OCV.fmt("X", x, 7),
+                        OCV.fmt("Y", y, 7)) + cm)
                 else:
                     block.append("G1 {0} {1} {2}".format(
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("Z", z, 7)) + cm)
+                        OCV.fmt("X", x, 7),
+                        OCV.fmt("Y", y, 7),
+                        OCV.fmt("Z", z, 7)) + cm)
 
             # Generate ARCS
             elif segment.type in (Segment.CW, Segment.CCW):
@@ -449,18 +449,18 @@ class GCode(object):
                 if z is None:
                     block.append("G{0:d} {1} {2} {3} {4}".format(
                         segment.type,
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("I", ij[0], 7),
-                        self.fmt("J", ij[1], 7)) + cm)
+                        OCV.fmt("X", x, 7),
+                        OCV.fmt("Y", y, 7),
+                        OCV.fmt("I", ij[0], 7),
+                        OCV.fmt("J", ij[1], 7)) + cm)
                 else:
                     block.append("G{0:d} {1} {2} {3} {4} {5}".format(
                         segment.type,
-                        self.fmt("X", x, 7),
-                        self.fmt("Y", y, 7),
-                        self.fmt("I", ij[0], 7),
-                        self.fmt("J", ij[1], 7),
-                        self.fmt("Z", z, 7)) + cm)
+                        OCV.fmt("X", x, 7),
+                        OCV.fmt("Y", y, 7),
+                        OCV.fmt("I", ij[0], 7),
+                        OCV.fmt("J", ij[1], 7),
+                        OCV.fmt("Z", z, 7)) + cm)
 
     def syncFileTime(self):
         """sync file timestamp"""
@@ -475,9 +475,6 @@ class GCode(object):
             return os.stat(self.filename).st_mtime > self._lastModified
         except Exception:
             return False
-
-    def fmt(self, c, v, d=None):
-        return self.cnc.fmt(c, v, d)
 
     def _trim(self):
         """Trim blocks - delete last block if empty"""
@@ -792,9 +789,9 @@ class GCode(object):
 
                             new.append("G{0:d} {1} {2} {3} {4}".format(
                                 g,
-                                self.fmt('X', x/self.cnc.unit),
-                                self.fmt('Y', y/self.cnc.unit),
-                                self.fmt('Z', z/self.cnc.unit),
+                                OCV.fmt('X', x/self.cnc.unit),
+                                OCV.fmt('Y', y/self.cnc.unit),
+                                OCV.fmt('Z', z/self.cnc.unit),
                                 extra))
 
                             extra = ""
@@ -1110,7 +1107,7 @@ class GCode(object):
                         c = cmd[0].upper()
                         if c in "XYZIJKR":
                             # Coordinates
-                            newcmd.append(self.fmt(c, new[c]/self.cnc.unit))
+                            newcmd.append(OCV.fmt(c, new[c]/self.cnc.unit))
                         elif c == "G" and int(cmd[1:]) in (0, 1, 2, 3):
                             # Motion
                             newcmd.append("G{0}".format(self.cnc.gcode))
@@ -1128,7 +1125,7 @@ class GCode(object):
                         try:
                             if c not in present and new.get(c) != old.get(c):
                                 newcmd.append(
-                                    self.fmt(c, new[c]/self.cnc.unit))
+                                    OCV.fmt(c, new[c]/self.cnc.unit))
                         except Exception:
                             pass
 
@@ -1434,7 +1431,7 @@ class GCode(object):
                             break
                     else:
                         cmds.append(
-                            self.fmt(
+                            OCV.fmt(
                                 'F',
                                 self.cnc.feed / self.cnc.unit))
 
@@ -1462,9 +1459,9 @@ class GCode(object):
                                     x1, y1, z1, x2, y2, z2):
                                 add("G{0:d} {1} {2} {3} {4}".format(
                                     g,
-                                    self.fmt('X', x/self.cnc.unit),
-                                    self.fmt('Y', y/self.cnc.unit),
-                                    self.fmt('Z', z/self.cnc.unit),
+                                    OCV.fmt('X', x/self.cnc.unit),
+                                    OCV.fmt('Y', y/self.cnc.unit),
+                                    OCV.fmt('Z', z/self.cnc.unit),
                                     extra),
                                     (i, j))
 
@@ -1511,7 +1508,7 @@ class GCode(object):
                             "F", "X", "Y", "Z",
                             "I", "J", "K", "R", "P"):
 
-                        cmd = self.fmt(c, value)
+                        cmd = OCV.fmt(c, value)
                     else:
                         opt = OCV.ERROR_HANDLING.get(cmd.upper(), 0)
 

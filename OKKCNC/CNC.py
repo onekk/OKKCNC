@@ -506,18 +506,6 @@ class CNC(object):
             OCV.CD["azmin"] <= OCV.CD["azmax"]
 
     @staticmethod
-    def fmt(c, val, d=None):
-        """Number formating"""
-        if d is None:
-            digits = OCV.digits
-        # Don't know why, but in some cases floats are not truncated
-        # by format string unless rounded
-        # I guess it's vital idea to round them rather than truncate anyway!
-        r_val = round(val, digits)
-        # return ("{0}{2:0.{1}f}".format(c,d,v)).rstrip("0").rstrip(".")
-        return "{0}{2:0.{1}f}".format(c, digits, r_val)
-
-    @staticmethod
     def gcode_string(g_num, pairs):
         ret_s = "G{0}".format(g_num)
         for wrd, val in pairs:
@@ -531,7 +519,7 @@ class CNC(object):
     def _gcode(g_num, **args):
         ret_s = "G{0}".format(g_num)
         for num, val in args.items():
-            ret_s += ' ' + CNC.fmt(num, val)
+            ret_s += ' ' + OCV.fmt(num, val)
         return ret_s
 
     @staticmethod
@@ -539,16 +527,16 @@ class CNC(object):
         ret_s = "G{0}".format(g_num)
 
         if x_val is not None:
-            ret_s += ' ' + CNC.fmt('X', x_val)
+            ret_s += ' ' + OCV.fmt('X', x_val)
 
         if y_val is not None:
-            ret_s += ' ' + CNC.fmt('Y', y_val)
+            ret_s += ' ' + OCV.fmt('Y', y_val)
 
         if z_val is not None:
-            ret_s += ' ' + CNC.fmt('Z', z_val)
+            ret_s += ' ' + OCV.fmt('Z', z_val)
 
         for num, val in args.items():
-            ret_s += ' ' + CNC.fmt(num, val)
+            ret_s += ' ' + OCV.fmt(num, val)
 
         return ret_s
 
@@ -575,25 +563,25 @@ class CNC(object):
     def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
         s = "G{0}".format(g)
         if x is not None:
-            s += ' ' + CNC.fmt('X', x)
+            s += ' ' + OCV.fmt('X', x)
 
         if y is not None:
-            s += ' ' + CNC.fmt('Y', y)
+            s += ' ' + OCV.fmt('Y', y)
 
         if z is not None:
-            s += ' ' + CNC.fmt('Z', z)
+            s += ' ' + OCV.fmt('Z', z)
 
         if i is not None:
-            s += ' ' + CNC.fmt('I', i)
+            s += ' ' + OCV.fmt('I', i)
 
         if j is not None:
-            s += ' ' + CNC.fmt('J', j)
+            s += ' ' + OCV.fmt('J', j)
 
         if k is not None:
-            s += ' ' + CNC.fmt('K', k)
+            s += ' ' + OCV.fmt('K', k)
 
         for n, v in args.items():
-            s += ' ' + CNC.fmt(n, v)
+            s += ' ' + OCV.fmt(n, v)
 
         return s
 
@@ -607,15 +595,15 @@ class CNC(object):
                 return "M3"
         else:
             return "G1 {0} {1}".format(
-                CNC.fmt("Z", z, d),
-                CNC.fmt("F", OCV.CD["cutfeedz"]))
+                OCV.fmt("Z", z, d),
+                OCV.fmt("F", OCV.CD["cutfeedz"]))
 
     @staticmethod
     def zexit(z, d=None):
         if OCV.lasercutter:
             return "M5"
         else:
-            return "G0 {0}".format(CNC.fmt("Z", z, d))
+            return "G0 {0}".format(OCV.fmt("Z", z, d))
 
     @staticmethod
     def zsafe():
@@ -1295,7 +1283,7 @@ class CNC(object):
                     value = 0.0
 
                 if c.upper() in ("F", "X", "Y", "Z", "I", "J", "K", "R", "P"):
-                    cmd = CNC.fmt(c, value)
+                    cmd = OCV.fmt(c, value)
                 else:
                     opt = OCV.ERROR_HANDLING.get(cmd.upper(), 0)
 
@@ -1359,10 +1347,10 @@ class CNC(object):
                     lines.append("%wait")
                     lines.append(
                         "G91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
-                            CNC.fmt('f', currentFeedrate)))
+                            OCV.fmt('f', currentFeedrate)))
                     lines.append("%wait")
                     lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
-                        CNC.fmt('f', currentFeedrate)))
+                        OCV.fmt('f', currentFeedrate)))
                     currentFeedrate /= 10
             lines.append("%wait")
             lines.append(

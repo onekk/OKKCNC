@@ -388,23 +388,9 @@ class Sender(object):
             g_parse = Heuristic.CodeAnalizer()
             g_parse.detect_profiles()
             g_parse.parse_blocks()
+            print("parsing finished")
 
         IniFile.add_recent_file(filename)
-
-        """This code is for the offline analisys not needed for now
-            if OCV.post_proc is True:
-                dir_name = OCV.HOME_DIR
-                file_name = os.path.basename(filename)
-                fn, ext = os.path.splitext(file_name)
-                new_file_name = ".okktmp_" + fn + ".okk"
-                OCV.post_temp_fname = os.path.join(dir_name, new_file_name)
-
-                print(OCV.post_temp_fname)
-
-                self.gcode.saveOKK(OCV.post_temp_fname)
-
-            self._saveConfigFile()
-        """
 
     def save(self, filename):
         """manage the saving of the file based on extension"""
@@ -465,7 +451,7 @@ class Sender(object):
     def open(self, device, baudrate):
         """Open serial port"""
         self.serial = serial.serial_for_url(
-            device.replace('\\', '\\\\'), # Escape for windows
+            device.replace('\\', '\\\\'),  # Escape for windows
             baudrate,
             bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_NONE,
@@ -481,8 +467,8 @@ class Sender(object):
         time.sleep(1)
         OCV.c_state = OCV.STATE_CONN
         OCV.CD["color"] = OCV.STATECOLOR[OCV.c_state]
-#        self.state.config(text=OCV.c_state,
-#                background=OCV.CD["color"])
+        # self.state.config(text=OCV.c_state,
+        #     background=OCV.CD["color"])
         # toss any data already received, see
         # http://pyserial.sourceforge.net/pyserial_api.html#serial.Serial.flushInput
         self.serial.flushInput()

@@ -119,8 +119,9 @@ class CNCListbox(Tk.Listbox):
         del self._blockPos[:]
         del self._items[:]
         ydx = 0
-
+        print("Editor Fill")
         for bidx, block in enumerate(OCV.blocks):
+            print(bidx, block, block.header())
             if self.filter is not None:
                 if not (self.filter in block.name() or
                         self.filter == "enable" and block.enable or

@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import OCV
+import Block
 # from CNC import CNC
 
 
@@ -136,14 +137,31 @@ class CodeAnalizer(object):
 
     def parse_blocks(self):
         """perform a block analisys and track all the detection"""
-        cnt = 0
+        al_cnt = 0
         first_z = 10000.0  # dummy height in hobby machine may be enough
-        for block in OCV.blocks:
-            for line in block:
+        process = True
+        b_idx = 0
+        block_moved = False
+        # we are not using loops as the Block count could be modified
+        while (process is True):
+            print("Scanning Block {0}".format(b_idx))
+            l_cnt = 0
+            process2 = True
+            while (process2 is True):
+                block = OCV.blocks[b_idx]
+                # avoid the recheck of the first (moved) line of new block
+                # as it genrated a loop that end in a AttributeError for
+                # OCV.blocks
+                if block_moved is True:
+                    print("advance index")
+                    l_cnt += 1
+                    block_moved = False
+
+                line = block[l_cnt]
                 msg = []
-                # print(cnt, line)
+                print(l_cnt, line)
                 cmds = parseLine(line)
-                cnt += 1
+
                 # print(cmds)
                 if cmds is not None and first_z > 9999 \
                         and cmds[0] == "G0" and cmds[1][:1] == "Z":
@@ -161,19 +179,55 @@ class CodeAnalizer(object):
                             "--- GO single z_move {0}".format(other_z))
 
                 if cmds is None:
-                    if line[:5] == "(B_MD":
-                        msg.append("--- Block metadata")
+                    if line[:8] == "(B_MD SP":
+                        msg.append("--- Block metadata START")
+                    elif line[:8] == "(B_MD EP":
+                        msg.append("--- Block metadata END")
                     elif line[:10] == "(MOP Start":
-                        msg.append("--- MOP START detected")
+                        # msg.append("--- MOP START detected")
+                        self.move_lines_next_block(b_idx, l_cnt)
+                        block_moved = True
+                        OCV.APP.event_generate("<<Modified>>")
+                        process2 = False
                     elif line[:8] == "(MOP End":
                         msg.append("--- MOP END detected")
                     else:
                         msg.append("--- comment detected?")
 
-                print(cnt, line)
-
+                print(al_cnt, l_cnt, line)
                 if msg is not []:
                     print("\n".join(msg))
+
+                if l_cnt < (len(block) - 1):
+                    l_cnt += 1
+                    al_cnt += 1
+                else:
+                    process2 = False
+
+            # Check all blocks are scanned
+            if b_idx < (len(OCV.blocks) - 1):
+                b_idx += 1
+            else:
+                process = False
+
+        # rearrange blocks
+        OCV.APP.event_generate("<<Modified>>")
+
+    def move_lines_next_block(self, b_idx, l_cnt):
+        boundary = l_cnt
+        # print(boundary, OCV.blocks[b_idx][boundary])
+        block = Block.Block()
+        block.extend(OCV.blocks[b_idx][boundary:])
+        block.append("(end prior block)")
+        OCV.blocks.insert((b_idx + 1), block)
+
+        cur_block = Block.Block()
+        cur_block.extend(OCV.blocks[b_idx][:boundary])
+        OCV.blocks[b_idx] = cur_block
+
+        # debugging infos
+        # print("block actual", OCV.blocks[b_idx])
+        # print("block next", OCV.blocks[b_idx + 1])
 
     def extract_value(self, cmds):
         """extract X Y Z value from G0 and G1 commands"""
