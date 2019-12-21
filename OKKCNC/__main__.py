@@ -2290,7 +2290,7 @@ class Application(Tk.Toplevel, Sender):
         """
         Send enabled gcode file to the CNC machine
         """
-        self.cleanAfter = True    #Clean when this operation stops
+        self.cleanAfter = True  # Clean when this operation stops
         print("Will clean after this operation")
 
         if OCV.HAS_SERIAL is False and not OCV.developer:
@@ -2334,9 +2334,11 @@ class Application(Tk.Toplevel, Sender):
                 pass
 
         if lines is None:
-            # if not self.gcode.probe.isEmpty() and not self.gcode.probe.zeroed:
+            # if not self.gcode.probe.isEmpty() and \
+            #        not self.gcode.probe.zeroed:
             #    tkMessageBox.showerror(_("Probe is not zeroed"),
-            #        _("Please ZERO any location of the probe before starting a run"),
+            #        _("Please ZERO any location of the probe before
+            #           starting a run"),
             #        parent=self)
             #    return
             OCV.STATUSBAR.setLimits(0, 9999)
@@ -2569,7 +2571,7 @@ class Application(Tk.Toplevel, Sender):
 
         if OCV.s_running:
             self.proc_line_n = self._runLines - self.queue.qsize()
-            #print(self.proc_line_n)
+            # print(self.proc_line_n)
             OCV.STATUSBAR.setProgress(
                 self.proc_line_n,
                 self._gcount)
@@ -2577,22 +2579,23 @@ class Application(Tk.Toplevel, Sender):
             OCV.CD["msg"] = OCV.STATUSBAR.msg
 
             b_fill = Sender.getBufferFill(self)
-            #print ("Buffer = ", b_fill)
+            # print ("Buffer = ", b_fill)
             OCV.BUFFERBAR.setProgress(b_fill)
             OCV.BUFFERBAR.setText("{0:02.2f}".format(b_fill))
-            #print("Queue > ", self.queue.queue)
+            # print("Queue > ", self.queue.queue)
 
             if self.proc_line_n > 0 and \
-                self.proc_line_n < len(self.gcode.gcodelines):
+                    self.proc_line_n < len(OCV.gcodelines):
 
                 displ_line = "{0} > {1} ".format(
                     self.proc_line_n,
-                    self.gcode.gcodelines[self.proc_line_n])
+                    OCV.gcodelines[self.proc_line_n])
 
                 self.proc_line.set(displ_line)
 
             if self._selectI >= 0 and self._paths:
-                while self._selectI <= self._gcount and self._selectI < len(self._paths):
+                while self._selectI <= self._gcount and\
+                        self._selectI < len(self._paths):
                     if self._paths[self._selectI]:
                         i, j = self._paths[self._selectI]
                         path = self.gcode[i].path(j)

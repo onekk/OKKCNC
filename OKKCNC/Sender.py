@@ -384,11 +384,6 @@ class Sender(object):
             self.gcode.orient.load(filename)
         else:
             self.gcode.load(filename)
-            # after the loading analyze the code
-            g_parse = Heuristic.CodeAnalizer()
-            g_parse.detect_profiles()
-            g_parse.parse_blocks()
-            print("parsing finished")
 
         IniFile.add_recent_file(filename)
 
@@ -406,13 +401,14 @@ class Sender(object):
             # save orientation file
             return self.gcode.orient.save(filename)
         elif ext == ".txt":
-            # save gcode as txt (only enabled blocks and no OKKCNC metadata)
+            # save gcode as txt:
+            # only enabled blocks and no OKKCNC metadata or comments
             return self.gcode.saveNGC(filename, False)
         elif ext == ".okk":
             # save gcode with OKKCNC metadata
             return self.gcode.saveOKK(filename)
         elif ext == ".ngc":
-            # save gcode without OKKCNC metadata
+            # save gcode with OKKCNC metadata and comments
             return self.gcode.saveNGC(filename, True)
         else:
             if filename is not None:

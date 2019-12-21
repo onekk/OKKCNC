@@ -310,8 +310,12 @@ error_report = True
 feedmax_x = 3000
 feedmax_y = 3000
 feedmax_z = 2000
+first_move_detect = False
 
 # G #
+# gcodelines holds "plain" lines, readed from file, used by heuristic and
+# other parts
+gcodelines = ["(-)",]
 geometry = None
 g_code_precision = 4
 # holds the value of the detected post processor that generate the GCode file
@@ -319,6 +323,8 @@ g_code_precision = 4
 # values are "Generic" and "CamBam" to use the custom GRBL.cbpp present in
 # OKKCNC/controllers dir that is taylored to supply some relevant metadata
 g_code_pp = "Generic"
+g_c_mop_s = False
+g_c_mop_name = ""
 
 # H #
 history = []
@@ -354,7 +360,6 @@ post_temp_fname = ""
 # S #
 serial_open = False
 startup = "G90"
-start_block = False
 stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
 step2 = 0.0
