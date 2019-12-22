@@ -147,8 +147,7 @@ class GCode(object):
 
         # act depending on prostprocessor marker
         if OCV.g_code_pp in ("CamBam",):
-            for l_idx, line in enumerate(OCV.gcodelines):
-                self.process_line(line)
+                self.pre_process_gcode()
         else:
             # Plain Gcode file use the "Generic" add_line method
             for line in OCV.gcodelines:
@@ -162,96 +161,147 @@ class GCode(object):
         if OCV.g_code_pp in ("CamBam",) and adv_heur is True:
             # after the loading analyze the code
             g_parse = Heuristic.CodeAnalizer()
-            g_parse.detect_profiles()
+            # g_parse.detect_profiles()
 
-            g_parse.parse_blocks()
+            # g_parse.parse_blocks()
             OCV.printout_header("{0}", "PARSING FINISHED")
 
             Heuristic.adjust_mops()
 
-    def process_line(self, line):
-        """add line to a unique block and create block if necessary"""
+    def pre_process_gcode(self):
+        """scan gcode lines and inject some metadata in the blocks
+        ideally this will create at least 3 blocks:
+            - "Header" block
+            - Command block
+            - "End Job" block with the end Gcode commands detected using
+                some heuristic, usually a G0 Z_max followed by:
+                    M5 (Spindle Stop) or M9 (Coolant Stop)
+                    M2 or M30 (Program End)
+        more blocks are created detecting the custom '(MOP Start:' supplied
+        by CamBam postprocessor.
+        See in Documentation for more infos.
+        """
         # DEBUG_INFO
         # INT_DEBUG = OCV.DEBUG_PAR
         INT_DEBUG = True
         OCV.infos = []
 
-        if INT_DEBUG is True:
-            print("Line >", line)
+        process = True
+        l_idx = -1
 
-        if line.startswith("(-)"):
-            return
-        if not OCV.blocks:
-            OCV.blocks.append(Block.Block("Header"))
-
-        cmds = Heuristic.parse_line(line)
-
-        if cmds is None:
-            # the line contains comments or no valid commands
-            OCV.blocks[-1].append(line)
-            return
-
-        self.cnc.motionStart(cmds)
-        move = cmds[0]
-        move_c = [self.cnc.x, self.cnc.y, self.cnc.z]
-
-        if OCV.first_move_detect is False:
-            if move in ("G1", "G2", "G3"):
-                # insert at the top of the block the coordinates value
-                b_head = OCV.b_mdata_sp.format(OCV.gcodeCC(*move_c))
-                OCV.blocks[-1].insert(0, b_head)
-                OCV.first_move_detect = True
-
-            elif move == "G0":
-                OCV.infos.append(
-                    "MDF - G0 move start X{0} Y{1} Z{2}".format(*move_c))
-                if OCV.g_c_mop_s is True:
-                    self.new_block(line, 0, INT_DEBUG)
-                    OCV.g_c_mop_s = False
-                    self.finalize_move(INT_DEBUG)
-                    return
+        while (process is True):
+            if l_idx < (len(OCV.gcodelines) - 1):
+                l_idx += 1
             else:
-                # OCV.infos.append(" MDF - no move")
-                pass
+                # continue here is to force the loop to terminate here
+                # if not present the last lline is scanned again
+                process = False
+                continue
 
-        OCV.min_z = min(OCV.min_z, self.cnc.z)
-        OCV.max_z = max(OCV.max_z, self.cnc.z)
+            line = OCV.gcodelines[l_idx]
 
-        # NOTE: self.cnc.gcode is not the content of the current command
-        # but a state of motion the move value the cmds[0] in the current
-        # line first gcode command number, usually only one motion command per
-        # line is specified in a well formed gcode line
-        if self.cnc.gcode == 0 and self.cnc.dz > 0.0:
-            OCV.infos.append("ZD - move {0} X{1} Y{2} Z{3}".format(
-                    move, *move_c))
-            # rapid Z move up detected
-            if move in ("G17", "G18", "G19", "G20", "G21") or\
-                    (move == "G0" and move_c == [0, 0, 0]) or\
-                    (move[:1] in ("T", "M", "S")):
-                OCV.blocks[-1].append(line)
+            if INT_DEBUG is True:
+                print("{0} Line > {1}".format(l_idx, line))
+
+            if l_idx == (len(OCV.gcodelines) - 1):
+                print("last line fo gcode")
+                line_next = None
+            else:
+                line_next = OCV.gcodelines[l_idx + 1]
+                next_cmds = Heuristic.parse_line(line_next)
+
+            if line.startswith("(-)"):
+                continue
+            if not OCV.blocks:
+                OCV.blocks.append(Block.Block("Header"))
+
+            # catch the MOP Start comment and create a new Block
+
+            if line[:10] == "(MOP Start":
+                print("MS check")
+                OCV.infos.append("MOP Start")
+                self.new_block(line, 0, INT_DEBUG)
                 self.finalize_move(INT_DEBUG)
-            # detect a z_move at the max_z level, a small value is added
-            # to avoid false checking against == for float values
-            elif (self.cnc.zval + 0.00001) > OCV.max_z:
+                continue
+
+            cmds = Heuristic.parse_line(line)
+
+            if cmds is None:
+                # the line contains comments or no valid commands
+                OCV.blocks[-1].append(line)
+                continue
+
+            self.cnc.motionStart(cmds)
+            move = cmds[0]
+            move_c = [self.cnc.x, self.cnc.y, self.cnc.z]
+
+            if OCV.first_move_detect is False:
+                if move in ("G1", "G2", "G3"):
+                    # insert at the top of the block the coordinates value
+                    b_head = OCV.b_mdata_sp.format(OCV.gcodeCC(*move_c))
+                    OCV.blocks[-1].insert(0, b_head)
+                    OCV.first_move_detect = True
+
+                elif move == "G0":
+                    OCV.infos.append(
+                        "MDF - G0 move start X{0} Y{1} Z{2}".format(*move_c))
+                    if OCV.g_c_mop_s is True:
+
+                        self.new_block(line, 0, INT_DEBUG)
+                        OCV.g_c_mop_s = False
+                        self.finalize_move(INT_DEBUG)
+                        continue
+                else:
+                    # OCV.infos.append(" MDF - no move")
+                    pass
+
+            OCV.min_z = min(OCV.min_z, self.cnc.z)
+            OCV.max_z = max(OCV.max_z, self.cnc.z)
+
+            # NOTE: self.cnc.gcode is not always holding the content of
+            # current move commands CNC.motionStart method don't modify
+            # self.cnc.gcode for the following commands
+            # 4, 10, 53, 17 ,18 , 19, 20, 21, 80, 90, 91, 93, 94, 95, 98, 99
+            # so other checks are needed to detectd the "cause" of this z_move
+            if self.cnc.gcode == 0 and self.cnc.dz > 0.0:
                 b_end = OCV.b_mdata_ep.format(OCV.gcodeCC(*move_c))
-                OCV.blocks[-1].append(b_end)
-                self.new_block(line, 1, INT_DEBUG)
-                self.finalize_move(INT_DEBUG)
-            # if z_val is lower than z_max this could be a tab or a z_pass
-            elif self.cnc.zval < OCV.max_z:
-                OCV.blocks[-1].append(
-                    "(B_MD ZP X{0} Y{1} Z{2})".format(*move_c))
+                # rapid Z move up detected
+                # if the commands are in set commands, probably this is the
+                # z_safe move at the beginning of file, no new block is needed
+                if move in OCV.set_cmds or\
+                        (move == "G0" and move_c == [0, 0, 0]) or\
+                        (move[:1] in ("T", "M", "S")):
+                    OCV.blocks[-1].append(line)
+                # To avoid false checking against == for float values
+                # a small value is added and is checked for "greater than"
+                elif (self.cnc.zval + 0.00001) > OCV.max_z:
+                    # analyze if this is the end block
+                    if line_next is not None and next_cmds is not None:
+                        if next_cmds[0] in OCV.end_cmds:
+                            OCV.blocks[-1].append(b_end)
+                            OCV.blocks.append(Block.Block("End Job"))
+                            OCV.blocks[-1].append(line)
+                        else:
+                            print("ZD - next cmds", next_cmds)
+                            # Here some more Heuristic
+                            pass
+                    else:
+                        OCV.blocks[-1].append(b_end)
+                        OCV.blocks[-1].append(line)
+                        # self.new_block(line, 0, INT_DEBUG)
+                # if z_val is lower than z_max this could be a tab or a z_pass
+                elif self.cnc.zval < OCV.max_z:
+                    OCV.blocks[-1].append(OCV.b_mdata_zp.format(*move_c))
+                    OCV.blocks[-1].append(line)
+                else:
+                    # printout the infos for an un processed Z_up move
+                    OCV.infos.append("ZD - move {0} X{1} Y{2} Z{3}".format(
+                        move, *move_c))
+
+            else:
                 OCV.blocks[-1].append(line)
-                self.finalize_move(INT_DEBUG)
 
-        elif self.cnc.gcode == 0 and len(OCV.blocks) == 1:
-            OCV.infos.append("G0 and len(OCV.blocks = 1)")
-            OCV.blocks.append(Block.Block())
-            OCV.blocks[-1].append(line)
-        else:
-            OCV.blocks[-1].append(line)
-
-        self.finalize_move(INT_DEBUG)
+            self.finalize_move(INT_DEBUG)
 
     def finalize_move(self, DEBUG):
 
@@ -346,7 +396,7 @@ class GCode(object):
 
         f_handle.close()
 
-        self.parse_gcode(filename, True)
+        self.parse_gcode(filename, False)
 
         return True
 

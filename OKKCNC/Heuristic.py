@@ -84,8 +84,8 @@ def adjust_mops():
     print(OCV.str_sep)
 
     for idx, block in enumerate(OCV.blocks):
-        block_s = block[0]
-        block_e = block[-1]
+        block_s = block[:2]
+        block_e = block[-2:]
         print("Block {0}".format(idx))
         print(block_s)
         print(block_e)
@@ -200,7 +200,6 @@ class CodeAnalizer(object):
 
             l_cnt = 0
             block = OCV.blocks[b_idx]
-            print("\n", block[0], "\n", block[1], "\n", OCV.str_sep)
             # avoid the recheck of the first (moved) line of new block
             # as it generate a loop that end in a AttributeError for
             # OCV.blocks
@@ -399,7 +398,6 @@ class CodeAnalizer(object):
                 l_cnt += 1
             else:
                 b_scan = False
-
 
     def extract_value(self, cmds):
         """extract X Y Z value from G0 and G1 commands"""

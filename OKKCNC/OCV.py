@@ -288,6 +288,7 @@ blocks = []  # Gcode blocks, here to be shared
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
 b_mdata_sp = "(B_MD SP {0})"
 b_mdata_ep = "(B_MD EP {0})"
+b_mdata_zp = "(B_MD ZP X{0} Y{1} Z{2})"
 b_mdata_pz = "(B_MD PZ Z: {0})"
 
 # C #
@@ -303,6 +304,8 @@ drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
 # E #
+# theese command are parsed as a block end command after a G0 Z_max
+end_cmds = ("M9", "M5", "M2", "M30")
 errors = []
 error_report = True
 
@@ -359,6 +362,8 @@ post_temp_fname = ""
 
 # S #
 serial_open = False
+# hold the set commands that probably follow
+set_cmds = ("G17", "G18", "G19", "G20", "G21")
 startup = "G90"
 stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
