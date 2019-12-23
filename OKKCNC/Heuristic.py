@@ -135,31 +135,42 @@ class CodeAnalizer(object):
     def detect_profiles(self):
         """analyze start and ending points to 'detect' the shapes at least
         profile """
-        idx = 0
+        b_idx = 0
         # process control while flow if set to True will end the loop
         process = True
         match = False
         # print("Z_analisys started")
         # Not using a for loop due to OCV.Blocks in-place modifications
         while (process is True):
-            start = OCV.POSPAT.findall(OCV.blocks[idx][0])
-            # the block is detected as the first Z up so generally is safe
-            # to skip first block as generally has no start and no end data
-            if idx > 0 and len(start) != 0:
-                end = OCV.POSPAT.findall(OCV.blocks[idx-1][-1])
+            l_idx = 0  # reset line counter
+            process2 = True  # reset counter for internal loop
 
-                if len(end) != 0:
-                    if start[0][1] == end[0][1] and start[1][1] == end[1][1]:
-                        match = True
-                        self.joinblocks(idx)
+            while (process2 is True):
+                line = OCV.blocks[b_idx][l_idx]
+                # print("Block {0} - Line {1} >>".format(b_idx, l_idx), line)
+
+                if line[:8] == "(B_MD SP":
+                    print("Detect Shape start\n",
+                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+                elif line[:8] == "(B_MD EP":
+                    print("Detect Shape end\n",
+                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+                elif line[:8] == "(B_MD ZP":
+                    print("Detect Z raise\n",
+                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+
+                if l_idx < (len(OCV.blocks[b_idx]) - 1):
+                    l_idx += 1
+                else:
+                    process2 = False
 
             if match is False:
-                if idx < (len(OCV.blocks) - 1):
-                    idx += 1
+                if b_idx < (len(OCV.blocks) - 1):
+                    b_idx += 1
                 else:
                     process = False
             else:
-                idx -= 1
+                b_idx -= 1
                 match = False
 
         else:

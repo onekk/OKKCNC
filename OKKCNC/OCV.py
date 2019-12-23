@@ -319,6 +319,11 @@ first_move_detect = False
 # gcodelines holds "plain" lines, readed from file, used by heuristic and
 # other parts
 gcodelines = ["(-)",]
+# gcp_ vars are used in GCode.pre_process_gcode to signal some detection
+gcp_mop_s = False  # 'MOP Start:' detection
+gcp_mop_e = False  # 'MOP End:' detection
+gcp_mop_name = ""
+
 geometry = None
 g_code_precision = 4
 # holds the value of the detected post processor that generate the GCode file
@@ -326,8 +331,7 @@ g_code_precision = 4
 # values are "Generic" and "CamBam" to use the custom GRBL.cbpp present in
 # OKKCNC/controllers dir that is taylored to supply some relevant metadata
 g_code_pp = "Generic"
-g_c_mop_s = False
-g_c_mop_name = ""
+
 
 # H #
 history = []
