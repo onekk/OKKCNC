@@ -17,6 +17,8 @@ import OCV
 import Block
 from CNC import CNC
 
+# TODO uniform the metadata in CAMGen with those used by heuristic
+# eliminate all gcodeCC formatting and substitute them with '(B_MD ...'
 
 def rect_path(x_0, y_0, r_w, r_h):
     """calculate the rectangular path"""

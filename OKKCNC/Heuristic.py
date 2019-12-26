@@ -122,25 +122,48 @@ class CodeAnalizer(object):
         self.z_min = 1000.0
         self.z_max = 1000.0
         self.first_z = 10000.0
-        # assuming that the code is parsed at least one time to set all the
-        # relevant variables
-        # A proper check has to be added if this Heuristic has to be used
-        # without a first gcode scan
-        if OCV.inch:
-            self.unit = 1.0/25.4
-        else:
-            self.unit = 1.0
         self.block_moved = False
 
     def detect_profiles(self):
         """analyze start and ending points to 'detect' the shapes at least
         profile """
+        z_pass = self.pre_process_md()
+
+        if z_pass == []:
+            print("empty z_pass")
+
+        process = True
+
+        zp_cnt = 0
+        p_bl_id = -1
+        block = []
+
+        while (process is True):
+            bl_id = z_pass[zp_cnt][0]
+            print(bl_id, zp_cnt, z_pass[zp_cnt])
+
+            if bl_id == p_bl_id:
+                pass
+            else:
+                block = OCV.blocks[bl_id]
+                print(block[0], bl_id, zp_cnt)
+
+            print(block[z_pass[zp_cnt][1]])
+
+            print(OCV.str_sep)
+            if zp_cnt < (len(z_pass) - 1):
+                p_bl_id = bl_id
+                zp_cnt += 1
+            else:
+                process = False
+
+    def pre_process_md(self):
         b_idx = 0
         # process control while flow if set to True will end the loop
         process = True
         match = False
-        # print("Z_analisys started")
         # Not using a for loop due to OCV.Blocks in-place modifications
+        z_pass = []
         while (process is True):
             l_idx = 0  # reset line counter
             process2 = True  # reset counter for internal loop
@@ -150,14 +173,14 @@ class CodeAnalizer(object):
                 # print("Block {0} - Line {1} >>".format(b_idx, l_idx), line)
 
                 if line[:8] == "(B_MD SP":
-                    print("Detect Shape start\n",
-                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+                    vals = self.extract_md_value(line)
+                    z_pass.append((b_idx, l_idx, "SS", vals))
                 elif line[:8] == "(B_MD EP":
-                    print("Detect Shape end\n",
-                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+                    vals = self.extract_md_value(line)
+                    z_pass.append((b_idx, l_idx, "SE", vals))
                 elif line[:8] == "(B_MD ZP":
-                    print("Detect Z raise\n",
-                          "Blk {0} - Line {1} >>".format(b_idx, l_idx), line)
+                    vals = self.extract_md_value(line)
+                    z_pass.append((b_idx, l_idx, "ZP", vals))
 
                 if l_idx < (len(OCV.blocks[b_idx]) - 1):
                     l_idx += 1
@@ -174,8 +197,9 @@ class CodeAnalizer(object):
                 match = False
 
         else:
-            OCV.APP.event_generate("<<Modified>>")
             OCV.printout_header("{0}", "END PROFILE DETECTION")
+
+        return z_pass
 
     def joinblocks(self, index):
         """perfrom a join of the two block, the actual and the preceding
@@ -410,21 +434,34 @@ class CodeAnalizer(object):
             else:
                 b_scan = False
 
+    def extract_md_value(self, md_string):
+        """extract X Y Z value from metadata string"""
+        # split the header part from the value part
+        parsed = md_string.split(":")
+        # eliminate ending ')'
+        vals = parse_line(parsed[1].rstrip(")"))
+        # print(vals)
+        return self.extract_value(vals)
+
     def extract_value(self, cmds):
         """extract X Y Z value from G0 and G1 commands"""
+        x_val = y_val = z_val = float('-inf')
+
         for cmd in cmds:
             # print(cmd)
             c = cmd[0].upper()
+
             try:
                 value = float(cmd[1:])
             except ValueError:
                 value = float('-inf')
-            x_val = y_val = z_val = float('-inf')
+
+            # print("EV > ",cmd, c, value)
             if c == "X":
-                x_val = value*self.unit
+                x_val = value*OCV.unit
             elif c == "Y":
-                y_val = value*self.unit
+                y_val = value*OCV.unit
             elif c == "Z":
-                z_val = value*self.unit
+                z_val = value*OCV.unit
 
         return (x_val, y_val, z_val)

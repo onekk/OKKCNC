@@ -286,10 +286,11 @@ appendFeed = False
 # B #
 blocks = []  # Gcode blocks, here to be shared
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
-b_mdata_sp = "(B_MD SP {0})"
-b_mdata_ep = "(B_MD EP {0})"
-b_mdata_zp = "(B_MD ZP X{0} Y{1} Z{2})"
-b_mdata_pz = "(B_MD PZ Z: {0})"
+# ':' is used to quiclky separate string from values
+b_mdata_sp = "(B_MD SP: X{0} Y{1} Z{2})"
+b_mdata_ep = "(B_MD EP: X{0} Y{1} Z{2})"
+b_mdata_zp = "(B_MD ZP: X{0} Y{1} Z{2})"
+b_mdata_pz = "(B_MD PZ: Z{0})"
 
 # C #
 comment = ""  # last parsed comment
@@ -398,6 +399,11 @@ toolWaitAfterProbe = True  # wait at tool change position after probing
 travel_x = 300
 travel_y = 300
 travel_z = 60
+
+
+# U #
+
+unit = 1.0
 
 # Z #
 zstep1 = 0.0
@@ -548,7 +554,8 @@ def printout_infos(messages):
 def showC(x_val, y_val, z_val):
     return sh_coord.format(x_val, y_val, z_val, digits)
 
-
+# TODO uniform the metadata in CAMGen with those used by heuristic
+# gcodeCC is used only in CAMGen
 def gcodeCC(x_val, y_val, z_val):
     return gc_coord.format(x_val, y_val, z_val, g_code_precision)
 

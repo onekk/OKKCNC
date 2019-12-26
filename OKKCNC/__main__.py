@@ -2161,7 +2161,7 @@ class Application(Tk.Toplevel, Sender):
         """save file"""
         Sender.save(self, filename)
 
-        self.setStatus(_("'{0}' saved").decode("utf8").format(filename))
+        self.setStatus(_("'{0}' saved").format(filename))
 
         self.title("{0}{1}: {2}".format(
             OCV.PRG_NAME, OCV.PRG_VER, self.gcode.filename))

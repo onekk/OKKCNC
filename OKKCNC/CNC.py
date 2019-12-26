@@ -467,7 +467,7 @@ class CNC(object):
         self.rval = 0.0
         self.pval = 0.0
         self.qval = 0.0
-        self.unit = 1.0
+        OCV.unit = 1.0
         self.mval = 0
         self.lval = 1
         self.tool = 0
@@ -810,28 +810,28 @@ class CNC(object):
                 value = 0
 
             if c == "X":
-                self.xval = value*self.unit
+                self.xval = value*OCV.unit
                 if not self.absolute:
                     self.xval += self.x
                 self.dx = self.xval - self.x
 
             elif c == "Y":
-                self.yval = value*self.unit
+                self.yval = value*OCV.unit
                 if not self.absolute:
                     self.yval += self.y
                 self.dy = self.yval - self.y
 
             elif c == "Z":
-                self.zval = value*self.unit
+                self.zval = value*OCV.unit
                 if not self.absolute:
                     self.zval += self.z
                 self.dz = self.zval - self.z
 
             elif c == "A":
-                self.aval = value*self.unit
+                self.aval = value*OCV.unit
 
             elif c == "F":
-                self.feed = value*self.unit
+                self.feed = value*OCV.unit
 
             elif c == "G":
                 gcode = int(value)
@@ -851,15 +851,15 @@ class CNC(object):
 
                 elif gcode == 20:  # Switch to inches
                     if OCV.inch:
-                        self.unit = 1.0
+                        OCV.unit = 1.0
                     else:
-                        self.unit = 25.4
+                        OCV.unit = 25.4
 
                 elif gcode == 21:  # Switch to mm
                     if OCV.inch:
-                        self.unit = 1.0/25.4
+                        OCV.unit = 1.0/25.4
                     else:
-                        self.unit = 1.0
+                        OCV.unit = 1.0
 
                 elif gcode == 80:
                     # turn off canned cycles
@@ -892,17 +892,17 @@ class CNC(object):
                     self.gcode = gcode
 
             elif c == "I":
-                self.ival = value*self.unit
+                self.ival = value*OCV.unit
                 if self.arcabsolute:
                     self.ival -= self.x
 
             elif c == "J":
-                self.jval = value*self.unit
+                self.jval = value*OCV.unit
                 if self.arcabsolute:
                     self.jval -= self.y
 
             elif c == "K":
-                self.kval = value*self.unit
+                self.kval = value*OCV.unit
                 if self.arcabsolute:
                     self.kval -= self.z
 
@@ -919,22 +919,22 @@ class CNC(object):
                 self.pval = value
 
             elif c == "Q":
-                self.qval = value*self.unit
+                self.qval = value*OCV.unit
 
             elif c == "R":
-                self.rval = value*self.unit
+                self.rval = value*OCV.unit
 
             elif c == "T":
                 self.tool = int(value)
 
             elif c == "U":
-                self.uval = value*self.unit
+                self.uval = value*OCV.unit
 
             elif c == "V":
-                self.vval = value*self.unit
+                self.vval = value*OCV.unit
 
             elif c == "W":
-                self.wval = value*self.unit
+                self.wval = value*OCV.unit
 
     def motionCenter(self):
         """Return center x,y,z,r for arc motions 2,3 and set self.rval"""
@@ -1441,26 +1441,26 @@ class CNC(object):
         x, y, z = self.x, self.y, self.z
         if z < clearz:
             z = clearz
-            lines.append(CNC.grapid(z=z/self.unit))
+            lines.append(CNC.grapid(z=z/OCV.unit))
 
         for l in range(self.lval):
             # Rapid move parallel to XY
             x += self.dx
             y += self.dy
-            lines.append(CNC.grapid(x/self.unit, y/self.unit))
+            lines.append(CNC.grapid(x/OCV.unit, y/OCV.unit))
 
             # Rapid move parallel to retract
             zstep = max(drill, retract - peck)
             while z > drill:
                 if z != retract:
                     z = retract
-                    lines.append(CNC.grapid(z=z/self.unit))
+                    lines.append(CNC.grapid(z=z/OCV.unit))
 
                 z = max(drill, zstep)
                 zstep -= peck
 
                 # Drill to z
-                lines.append(CNC.gline(z=z/self.unit, f=self.feed/self.unit))
+                lines.append(CNC.gline(z=z/OCV.unit, f=self.feed/OCV.unit))
 
             # 82=dwell, 86=boring-stop, 89=boring-dwell
             if self.gcode in (82, 86, 89):
@@ -1472,10 +1472,10 @@ class CNC(object):
             # Move to original position
             if self.gcode in (85, 89):     # boring cycle
                 z = retract
-                lines.append(CNC.gline(z=z/self.unit, f=self.feed/self.unit))
+                lines.append(CNC.gline(z=z/OCV.unit, f=self.feed/OCV.unit))
 
             z = clearz
-            lines.append(CNC.grapid(z=z/self.unit))
+            lines.append(CNC.grapid(z=z/OCV.unit))
 
             if self.gcode == 86:
                 lines.append("M3")    # restart spindle???
