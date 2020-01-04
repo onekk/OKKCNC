@@ -8,7 +8,7 @@ from _GenericGRBL import _GenericGRBL
 from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, VARPAT
 
 from CNC import CNC
-import time
+# import time
 
 # Extended override commands
 OV_FEED_100 = b'\x90'

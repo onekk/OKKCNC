@@ -21,11 +21,16 @@ import sys
 author = "Carlo Dormeletti (onekk)"
 email = "carlo.dormeletti@gmail.com"
 
+PLATFORM = "({0} py{1}.{2}.{3})".format(
+        sys.platform, sys.version_info.major, sys.version_info.minor,
+        sys.version_info.micro)
+
 PRG_NAME = "OKKCNC"
 """version and date"""
 
 PRG_VER = "0.2.10-dev"
 PRG_DATE = "26 Dec 2019"
+PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -296,6 +301,7 @@ b_mdata_pz = "(B_MD PZ: Z{0})"
 comment = ""  # last parsed comment
 config = None
 c_state = ""  # controller state to determine the state
+CTL_ERRORS = [] # controllers errors (only for GBRL for now)
 
 # D #
 DRAW_TIME = 5  # Maximum draw time permitted

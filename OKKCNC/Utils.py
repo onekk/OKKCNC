@@ -603,10 +603,15 @@ class ErrorWindow(Tk.Toplevel):
 
     def __init__(self, master):
         Tk.Toplevel.__init__(self, master, name="error_panel")
-        self.title(_("User configurable Dialog"))
+        self.title(_("Error Dialog"))
         self.transient(master)
-        self.msg = "message"
+        frame = Tk.Frame(self, width=100, height=100)
+        self.m_txt = Tk.Text(frame, wrap=Tk.WORD)
+        frame.pack(fill=Tk.BOTH, expand=1)
 
-    def show_message(self):
-        print(self.winfo_name)
-
+    def show_message(self, msg):
+        self.m_txt.configure(state=Tk.NORMAL)
+        self.m_txt.delete(1.0, Tk.END)
+        self.m_txt.insert(Tk.END, msg)
+        self.m_txt.configure(state=Tk.DISABLED)
+        self.m_txt.pack()

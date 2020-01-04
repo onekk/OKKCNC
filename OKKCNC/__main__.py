@@ -132,7 +132,7 @@ class Application(Tk.Toplevel, Sender):
             self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
         else:
             self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
-        self.title("{0} {1}".format(OCV.PRG_NAME, OCV.PRG_VER))
+        self.title("{0} {1} {2}".format(OCV.PRG_NAME, OCV.PRG_VER, OCV.PLATFORM))
         OCV.iface_widgets = []
 
         # Global variables
@@ -142,6 +142,12 @@ class Application(Tk.Toplevel, Sender):
 
         # many widget for main interface are definited in Interface.py
         Interface.main_interface(OCV.APP)
+
+        ctl = OCV.CD["controller"]
+        if ctl in ("GRBL1", "GRBL0"):
+            cmd.get_errors(ctl)
+        else:
+            OCV.CTL_ERRORS = []
 
         OCV.CMD_W.bind("<Return>", self.cmdExecute)
         OCV.CMD_W.bind("<Up>", self.commandHistoryUp)
@@ -1269,12 +1275,13 @@ class Application(Tk.Toplevel, Sender):
 
     def show_error_panel(self, event=None):
         msg = "Messages"
-
-        err_list = cmd.get_errors()
-        msg = "".join(err_list)
-
+        if len(OCV.CTL_ERRORS) > 1:
+            msg = " \n\n".join(OCV.CTL_ERRORS)
+        else:
+            msg = "This controllers has no error list"
+            
         panel = Utils.ErrorWindow(OCV.APP)
-        panel.show_message(err_list)
+        panel.show_message(msg)
 
     def viewChange(self, event=None):
         if OCV.s_running:
@@ -2664,17 +2671,32 @@ def main(args=None):
     OCV.root = Tk.Tk()
     OCV.root.withdraw()
 
-    if sys.version_info[0] != 2:
+    if sys.version_info[0] == 3:
+        warn_mess = "WARNING:\n"
+        warn_mess += "OKKCNC Python v3.x version is experimental.\n"
+        warn_mess += "Please report any error through github page {0}\n"
+
         sys.stdout.write("="*80+"\n")
-        sys.stdout.write(
-            "WARNING: OKKCNC is tested for running on python v2.x for now\n")
+        sys.stdout.write(warn_mess.format(OCV.PRG_DEV_HOME))
         sys.stdout.write("="*80+"\n")
 
         tkMessageBox.showwarning(
-            "OKKCNC: Unsupported Python version",
-            "Only Python 2 is currently supported by bCNC.\
-            \nContinue on your own risk!")
+            "WARNING !", warn_mess.format(OCV.PRG_DEV_HOME))
+
         OCV.IS_PY3 = True
+    else:
+        warn_mess = "WARNING:\n"
+        warn_mess += "OKKCNC Python v2.x version is at his end of life.\n"
+        warn_mess += "As python 2.x is deprecated and no longer mantained:\n"
+        warn_mess += "see {0} for more info \n"
+
+        sys.stdout.write("="*80+"\n")
+        sys.stdout.write(warn_mess.format(OCV.PRG_DEV_HOME))
+        sys.stdout.write("="*80+"\n")
+
+        tkMessageBox.showwarning(
+            "WARNING !", warn_mess.format(OCV.PRG_DEV_HOME))
+        OCV.IS_PY3 = False           
 
     Tk.CallWrapper = Utils.CallWrapper
 

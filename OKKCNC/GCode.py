@@ -226,16 +226,23 @@ class GCode(object):
             # created by a MOP End istance
 
             if line[:10] == "(MOP Start":
-                self.process_event(
-                    "MS", l_idx, line,
-                    (-9999.9, -9999.9, -9999.9, 0.0))
+                self.b_event.append(
+                    ("MS", l_idx, line,
+                     ((self.cnc.x, self.cnc.y, self.cnc.z),
+                      self.cnc.zval,
+                      (self.cnc.dx, self.cnc.dy, self.cnc.dz))))
+                OCV.blocks[-1].append(line)
                 continue
 
             if line[:8] == "(MOP End":
                 # if there is a MOP end
-                self.process_event(
-                    "ME", l_idx, line,
-                    (self.cnc.x, self.cnc.y, self.cnc.z, self.cnc.dz))
+                self.b_event.append(
+                    ("ME", l_idx, line,
+                     ((self.cnc.x, self.cnc.y, self.cnc.z),
+                      self.cnc.zval,
+                      (self.cnc.dx, self.cnc.dy, self.cnc.dz))))
+                OCV.blocks[-1].append(line)
+
                 continue
 
             cmds = Heuristic.parse_line(line)
@@ -247,7 +254,9 @@ class GCode(object):
 
             self.cnc.motionStart(cmds)
             move = cmds[0]
-            move_c = (self.cnc.x, self.cnc.y, self.cnc.z, self.cnc.dz)
+            move_c = ((self.cnc.x, self.cnc.y, self.cnc.z),
+                      self.cnc.zval,
+                      (self.cnc.dx, self.cnc.dy, self.cnc.dz))
 
             OCV.min_z = min(OCV.min_z, self.cnc.z)
             OCV.max_z = max(OCV.max_z, self.cnc.z)
@@ -256,7 +265,8 @@ class GCode(object):
             if move in ("G1", "G2", "G3"):
                 # 'cut move' with feedrate
                 if cmds[1][:1] == "F":
-                    self.process_event("GM", l_idx, line, move_c)
+                    self.b_event.append(("GM", l_idx, line, move_c))
+                    OCV.blocks[-1].append(line)
                     continue
                 else:
                     # 'cut move' with no feedrate, generally a plain move no
@@ -271,33 +281,44 @@ class GCode(object):
                 # of this z_move
                 if self.cnc.gcode == 0 and self.cnc.dz > 0.0:
                     # rapid Z move up detected
-                    self.process_event("ZU", l_idx, line, move_c)
+                    self.b_event.append(("ZU", l_idx, line, move_c))
+                    OCV.blocks[-1].append(line)
                     continue
                 else:
                     # a normal G0 move is detected
-                    self.process_event("G0", l_idx, line, move_c)
+                    self.b_event.append(("G0", l_idx, line, move_c))
+                    OCV.blocks[-1].append(line)
+                    continue
             else:
                 # other moves T or M
                 OCV.blocks[-1].append(line)
 
             self.cnc.motionEnd()
 
-    def process_event(self, ev_id, l_idx, line, move_c):
-        """observe a block change event and analyse if some block change
-        has to be issued, analyzing the preceding event"""
+        self.process_event()
 
-        self.b_event.append((ev_id, l_idx, move_c))
+    def process_event(self):
+        """process event list and make the approrpiate actions like:
+            block change
+            inject metadata
+            add comments to the gcode"""
+        INT_DEBUG = True
 
-        if len(self.b_event) > 2:
-            print("Process Event in Line {0}".format(l_idx))
-            print("Prec Ev >", self.b_event[-2])
-        else:
-            print("first event")
+        process = True
+        l_idx = 1
 
-        print("Ev", self.b_event[-1])
-
-        OCV.blocks[-1].append(line)
-        self.cnc.motionEnd()
+        while (process is True):
+            if l_idx < (len(self.b_event) - 2):
+                l_idx += 1
+            else:
+                # continue here is to force the loop to terminate here
+                # if not present last line is scanned again
+                process = False
+                continue
+            print(OCV.str_sep)
+            print("act ev", self.b_event[l_idx])
+            print("prec ev", self.b_event[l_idx - 1])
+            print("next ev", self.b_event[l_idx + 1])
 
     def new_block(self, line, b_pos, DEBUG):
         """Add a new block to the block list
