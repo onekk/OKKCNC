@@ -18,8 +18,8 @@ import re
 import os
 import sys
 
-author = "Carlo Dormeletti (onekk)"
-email = "carlo.dormeletti@gmail.com"
+AUTHOR = "Carlo Dormeletti (onekk)"
+AUT_EMAIL = "carlo.dormeletti@gmail.com"
 
 PLATFORM = "({0} py{1}.{2}.{3})".format(
         sys.platform, sys.version_info.major, sys.version_info.minor,
@@ -28,8 +28,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.2.10-dev"
-PRG_DATE = "26 Dec 2019"
+PRG_VER = "0.2.15-dev"
+PRG_DATE = "05 Jan 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -85,10 +85,6 @@ PRG_SITE = "https://github.com/onekk/OKKCNC"
 
 PRG_TRANS = \
     "Italian - @onekk\n" \
-
-# Some flags to make choices based on init values, used across different files
-HAS_SERIAL = None
-IS_PY3 = False
 
 # INTERFACE COLORS
 """See Inifile.py/load_colors()
@@ -150,74 +146,7 @@ COLOR_TAB = "DarkOrange"
 COLOR_TABS = "Orange"
 COLOR_WORK = "Orange"
 
-# INTERFACE FONTS
-FONT = ("Sans", "-10")
-FONT_DRO_ZERO = ("Sans", "-11")
-FONT_EXE = ("Helvetica", 12, "bold")
-FONT_RIBBON_TAB = ("Sans", "-14", "bold")
-FONT_RIBBON = ("Sans", "-11")
-FONT_STATE_WCS = ("Helvetica", "-14")
-FONT_STATE_BUT = ("Sans", "-11")
-
-# Font section name in Config file.
-FONT_SEC_NAME = "Font"
-
 #
-WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
-
-DISTANCE_MODE = {
-    "G90": "Absolute",
-    "G91": "Incremental"}
-
-FEED_MODE = {
-    "G93": "1/Time",
-    "G94": "unit/min",
-    "G95": "unit/rev"}
-
-UNITS = {
-    "G20": "inch",
-    "G21": "mm"}
-
-PLANE = {
-    "G17": "XY",
-    "G18": "XZ",
-    "G19": "YZ"}
-
-STATE_CONN = "Connected"
-STATE_NOT_CONN = "Not connected"
-
-STATECOLOR = {
-    "Idle": "Yellow",
-    "Run": "LightGreen",
-    "Alarm": "Red",
-    "Jog": "Green",
-    "Home": "Green",
-    "Check": "Magenta2",
-    "Sleep": "LightBlue",
-    "Hold": "Orange",
-    "Hold:0": "Orange",
-    "Hold:1": "OrangeRed",
-    "Queue": "OrangeRed",
-    "Door": "Red",
-    "Door:0": "OrangeRed",
-    "Door:1": "Red",
-    "Door:2": "Red",
-    "Door:3": "OrangeRed",
-    STATE_CONN: "Yellow",
-    STATE_NOT_CONN: "OrangeRed",
-    "Default": "LightYellow"
-    }
-
-
-"""these group of variable holds Tk references to various object
-across the program, mainly:
-    OCV.APP >
-"""
-TOLERANCE = 1e-7
-# python3 doesn't have maxint it has sys.maxsize
-# but i think setting a mximun value here is enough
-MAXINT = 1000000000
-
 # -- Regular expressions
 AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
 BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
@@ -246,14 +175,16 @@ YZ = 2
 CW = 2
 CCW = 3
 
-ERROR_HANDLING = {}
+"""these group of variable holds Tk references to various object
+across the program, to simplify and make clear the code:
+    One name for one entity not var or self var or Module.var
+"""
 
-# These vars are to simplify and make clear the code around
-# One name for one entity not var or self var or Module.var
-# if used across many modules
 root = None
 # Main window
 APP = None
+# About window, needed to have a reference for the close function
+ABOUT = None
 # Bufferbar
 BUFFERBAR = None
 # Canvas
@@ -307,6 +238,9 @@ CTL_ERRORS = [] # controllers errors (only for GBRL for now)
 DRAW_TIME = 5  # Maximum draw time permitted
 developer = False
 digits = 4
+DISTANCE_MODE = {
+    "G90": "Absolute",
+    "G91": "Incremental"}
 drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
@@ -314,13 +248,28 @@ drozeropad = 0
 # theese command are parsed as a block end command after a G0 Z_max
 end_cmds = ("M9", "M5", "M2", "M30")
 errors = []
+ERROR_HANDLING = {}
 error_report = True
 
 # F #
 feedmax_x = 3000
 feedmax_y = 3000
 feedmax_z = 2000
+FEED_MODE = {
+    "G93": "1/Time",
+    "G94": "unit/min",
+    "G95": "unit/rev"}
 first_move_detect = False
+# INTERFACE FONTS
+FONT = ("Sans", "-10")
+FONT_DRO_ZERO = ("Sans", "-11")
+FONT_EXE = ("Helvetica", 12, "bold")
+FONT_RIBBON_TAB = ("Sans", "-14", "bold")
+FONT_RIBBON = ("Sans", "-11")
+FONT_STATE_WCS = ("Helvetica", "-14")
+FONT_STATE_BUT = ("Sans", "-11")
+# Font section name in Config file.
+FONT_SEC_NAME = "Font"
 
 # G #
 # gcodelines holds "plain" lines, readed from file, used by heuristic and
@@ -339,8 +288,8 @@ g_code_precision = 4
 # OKKCNC/controllers dir that is taylored to supply some relevant metadata
 g_code_pp = "Generic"
 
-
 # H #
+HAS_SERIAL = None # flag
 history = []
 
 # I #
@@ -349,8 +298,10 @@ icons = {}
 iface_widgets = []
 images = {}
 inch = False
+init_msg = []
 # hold infos used to display values
 infos = []
+IS_PY3 = False # flag
 
 # L #
 language = ""
@@ -358,16 +309,22 @@ lasercutter = False
 laseradaptive = False
 
 # M #
+# python3 doesn't have maxint it has sys.maxsize
+MAXINT = 1000000000
+maxRecent = 10
 memNum = 0
 min_z = 0
 max_z = 0
-maxRecent = 10
 
 # N #
 
 # O #
 
 # P #
+PLANE = {
+    "G17": "XY",
+    "G18": "XZ",
+    "G19": "YZ"}
 post_proc = False
 post_temp_fname = ""
 
@@ -376,6 +333,29 @@ serial_open = False
 # hold the set commands that probably follow
 set_cmds = ("G17", "G18", "G19", "G20", "G21")
 startup = "G90"
+STATE_CONN = "Connected"
+STATE_NOT_CONN = "Not connected"
+# not following the alphabetic order as it contains the two variables above
+STATECOLOR = {
+    "Idle": "Yellow",
+    "Run": "LightGreen",
+    "Alarm": "Red",
+    "Jog": "Green",
+    "Home": "Green",
+    "Check": "Magenta2",
+    "Sleep": "LightBlue",
+    "Hold": "Orange",
+    "Hold:0": "Orange",
+    "Hold:1": "OrangeRed",
+    "Queue": "OrangeRed",
+    "Door": "Red",
+    "Door:0": "OrangeRed",
+    "Door:1": "Red",
+    "Door:2": "Red",
+    "Door:3": "OrangeRed",
+    STATE_CONN: "Yellow",
+    STATE_NOT_CONN: "OrangeRed",
+    "Default": "LightYellow"}
 stdexpr = False  # standard way of defining expressions with []
 step1 = 0.0
 step2 = 0.0
@@ -391,6 +371,8 @@ s_stop = None
 s_stop_req = None
 
 # T #
+TITLE_MSG = ""
+TOLERANCE = 1e-7
 toolPolicy = 1
 """
 Should be in sync with ProbePage
@@ -406,10 +388,11 @@ travel_x = 300
 travel_y = 300
 travel_z = 60
 
-
 # U #
-
 unit = 1.0
+UNITS = {
+    "G20": "inch",
+    "G21": "mm"}
 
 # Z #
 zstep1 = 0.0
@@ -418,6 +401,7 @@ zstep3 = 0.0
 zstep4 = 0.0
 
 # W #
+WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
 wcsvar = object
 
 WK_active_mems = []

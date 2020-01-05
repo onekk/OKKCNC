@@ -585,6 +585,19 @@ class TabRibbonFrame(Tk.Frame):
         but = LabelButton(
             frame,
             self,
+            "<<About>>",
+            image=OCV.icons["about"],
+            background=OCV.COLOR_BACKGROUND_DISABLE)
+
+        tkExtra.Balloon.set(but, _("Progam Info"))
+
+        but.pack(side=Tk.RIGHT, padx=2)
+
+
+
+        but = LabelButton(
+            frame,
+            self,
             "<<Help>>",
             image=OCV.icons["info"],
             background=OCV.COLOR_BACKGROUND_DISABLE)

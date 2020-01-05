@@ -44,6 +44,7 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     import configparser as ConfigParser
 
+import webbrowser
 
 try:
     import serial
@@ -362,6 +363,277 @@ def addException():
             print(OCV.errors)
     except:
         say(str(sys.exc_info()))
+
+
+def about_win(timer = None):
+    OCV.ABOUT = Tk.Toplevel(OCV.APP)
+    OCV.ABOUT.transient(OCV.APP)
+    OCV.ABOUT.title(_("About {0}").format(OCV.PRG_NAME))
+    if sys.platform == "win32":
+        OCV.APP.iconbitmap("OKKCNC.ico")
+    else:
+        OCV.APP.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
+
+    bg = "#707070"
+    fg = "#ffffff"
+
+    font1 = 'Helvetica -32 bold'
+    font2 = 'Helvetica -12'
+    font3 = 'Helvetica -10'
+
+    frame = Tk.Frame(
+        OCV.ABOUT,
+        borderwidth=2,
+        relief=Tk.SUNKEN,
+        background=bg)
+
+    frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
+
+    # -----
+    row = 0
+    
+    lab = Tk.Label(
+        frame,
+        image=OCV.icons["OKKCNC"],
+        foreground=fg,
+        background=bg,
+        relief=Tk.SUNKEN,
+        padx=0, pady=0)
+
+    lab.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text=_("OKKCNC/\tAn advanced fully featured\n" \
+              "\t\tg-code sender for GRBL. \n\n"\
+              "\t\tForked from bCNC"),
+        font=font3,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, columnspan=2, sticky=Tk.W, padx=10, pady=1)
+
+    # -----
+    row += 1
+    frm = Tk.Frame(
+        frame,
+        borderwidth=1,
+        relief=Tk.SUNKEN,
+        height=2,
+        background=bg)
+
+    frm.grid(row=row, column=0, columnspan=2, sticky=Tk.EW, padx=5, pady=5)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='www:',
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_SITE,
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        activeforeground="Blue",
+        cursor="hand1")
+
+    lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
+
+    lab.bind('<Button-1>', lambda e: webbrowser.open(OCV.PRG_SITE))
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='email:',
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.AUT_EMAIL,
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='author:',
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.AUTHOR,
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='contributors:',
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_CONTRIB,
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='translations:',
+        font=font2,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT)
+
+    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_TRANS,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='credits:',
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_CREDITS,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='version:',
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_VER,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    row += 1
+
+    lab = Tk.Label(
+        frame,
+        text='last change:',
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+
+    lab = Tk.Label(
+        frame,
+        text=OCV.PRG_DATE,
+        foreground=fg,
+        background=bg,
+        justify=Tk.LEFT,
+        font=font2)
+
+    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+
+    closeAbout = lambda e=None, t=OCV.ABOUT: t.destroy()
+
+    but = Tk.Button(OCV.ABOUT, text=_("Close"), command=closeAbout)
+    but.pack(pady=5)
+
+    frame.grid_columnconfigure(1, weight=1)
+
+    OCV.ABOUT.bind('<Escape>', closeAbout)
+    OCV.ABOUT.bind('<Return>', closeAbout)
+    OCV.ABOUT.bind('<KP_Enter>', closeAbout)
+
+    OCV.ABOUT.deiconify()
+    OCV.ABOUT.wait_visibility()
+    OCV.ABOUT.resizable(False, False)
+
+    try:
+        OCV.ABOUT.grab_set()
+    except:
+        pass
+
+    but.focus_set()
+    OCV.ABOUT.lift()
+
+    if timer:
+        OCV.ABOUT.after(timer, closeAbout)
+
+    OCV.ABOUT.wait_window()
 
 
 class CallWrapper(object):

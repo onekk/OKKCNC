@@ -132,7 +132,8 @@ class Application(Tk.Toplevel, Sender):
             self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
         else:
             self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
-        self.title("{0} {1} {2}".format(OCV.PRG_NAME, OCV.PRG_VER, OCV.PLATFORM))
+        self.title("{0} {1} {2} {3}".format(
+                OCV.PRG_NAME, OCV.PRG_VER, OCV.PLATFORM, OCV.TITLE_MSG))
         OCV.iface_widgets = []
 
         # Global variables
@@ -224,6 +225,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Recent8>>', self._loadRecent8)
         self.bind('<<Recent9>>', self._loadRecent9)
         self.bind('<<AlarmClear>>', self.alarmClear)
+        self.bind('<<About>>', self.about)
         self.bind('<<Help>>', self.help)
         self.bind('<<FeedHold>>', OCV.MCTRL.feedHold(None))
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
@@ -685,272 +687,8 @@ class Application(Tk.Toplevel, Sender):
         self.gcode.addUndo(undoinfo)
 
     def about(self, event=None, timer=None):
-        toplevel = Tk.Toplevel(self)
-        toplevel.transient(self)
-        toplevel.title(_("About {0} v{1}").format(OCV.PRG_NAME, OCV.PRG_VER))
-        if sys.platform == "win32":
-            self.iconbitmap("OKKCNC.ico")
-        else:
-            self.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
-
-        bg = "#707070"
-        fg = "#ffffff"
-
-        font1 = 'Helvetica -32 bold'
-        font2 = 'Helvetica -12'
-        font3 = 'Helvetica -10'
-
-        frame = Tk.Frame(
-            toplevel,
-            borderwidth=2,
-            relief=Tk.SUNKEN,
-            background=bg)
-
-        frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
-
-        # -----
-        row = 0
-        lab = Tk.Label(
-            frame,
-            image=OCV.icons["OKKCNC"],
-            foreground=fg,
-            background=bg,
-            relief=Tk.RAISED,
-            padx=0, pady=0)
-
-        lab.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text=_("OKKCNC/\tAn advanced fully featured\n" \
-                  "\t\tg-code sender for GRBL. \n\n"\
-                  "\t\tForked from bCNC"),
-            font=font3,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, columnspan=2, sticky=Tk.W, padx=10, pady=1)
-
-        # -----
-        row += 1
-        frm = Tk.Frame(
-            frame,
-            borderwidth=1,
-            relief=Tk.SUNKEN,
-            height=2,
-            background=bg)
-
-        frm.grid(row=row, column=0, columnspan=2, sticky=Tk.EW, padx=5, pady=5)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='www:',
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_SITE,
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            activeforeground="Blue",
-            cursor="hand1")
-
-        lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
-
-        lab.bind('<Button-1>', lambda e: webbrowser.open(OCV.PRG_SITE))
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='email:',
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.email,
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='author:',
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.author,
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='contributors:',
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_CONTRIB,
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='translations:',
-            font=font2,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT)
-
-        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_TRANS,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='credits:',
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_CREDITS,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='version:',
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_VER,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        row += 1
-
-        lab = Tk.Label(
-            frame,
-            text='last change:',
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-        lab = Tk.Label(
-            frame,
-            text=OCV.PRG_DATE,
-            foreground=fg,
-            background=bg,
-            justify=Tk.LEFT,
-            font=font2)
-
-        lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-        but = Tk.Button(toplevel, text=_("Close"), command=self.closeFunc)
-        but.pack(pady=5)
-
-        frame.grid_columnconfigure(1, weight=1)
-
-        toplevel.bind('<Escape>', self.closeFunc)
-        toplevel.bind('<Return>', self.closeFunc)
-        toplevel.bind('<KP_Enter>', self.closeFunc)
-
-        toplevel.deiconify()
-        toplevel.wait_visibility()
-        toplevel.resizable(False, False)
-
-        try:
-            toplevel.grab_set()
-        except:
-            pass
-
-        but.focus_set()
-        toplevel.lift()
-
-        if timer:
-            toplevel.after(timer, self.closeFunc)
-
-        toplevel.wait_window()
-
+        Utils.about_win(timer)    
+        
     def closeFunc(self, event=None):
         OCV.APP.destroy()
 
@@ -1382,9 +1120,7 @@ class Application(Tk.Toplevel, Sender):
             self.commandExecute(False)
 
     def commandExecute(self, addHistory=True):
-        """
-        Execute command from command line
-        """
+        """Execute command from command line"""
         self._historyPos = None
         self._historySearch = None
 
@@ -2642,7 +2378,7 @@ def usage(ret_code):
     """Print on console the usage message"""
     sys.stdout.write(
         "{0} V{1} [{2}]\n".format(OCV.PRG_NAME, OCV.PRG_VER, OCV.PRG_DATE))
-    sys.stdout.write("{0} <{1}>\n\n".format(OCV.author, OCV.email))
+    sys.stdout.write("{0} <{1}>\n\n".format(OCV.AUTHOR, OCV.AUT_EMAIL))
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
     sys.stdout.write("\t-b # | --baud #\t\tSet the baud rate\n")
@@ -2672,30 +2408,40 @@ def main(args=None):
     OCV.root.withdraw()
 
     if sys.version_info[0] == 3:
-        warn_mess = "WARNING:\n"
-        warn_mess += "OKKCNC Python v3.x version is experimental.\n"
-        warn_mess += "Please report any error through github page {0}\n"
+        OCV.init_msg.append("WARNING:\n")
+        OCV.init_msg.append("OKKCNC Python v3.x version is experimental.\n")
+        OCV.init_msg.append(
+            "Please report any error through github page {0}\n".format(
+                OCV.PRG_DEV_HOME))
+
+        warn_msg = "".join(OCV.init_msg)
 
         sys.stdout.write("="*80+"\n")
-        sys.stdout.write(warn_mess.format(OCV.PRG_DEV_HOME))
+        sys.stdout.write(warn_msg)
         sys.stdout.write("="*80+"\n")
 
-        tkMessageBox.showwarning(
-            "WARNING !", warn_mess.format(OCV.PRG_DEV_HOME))
-
+        OCV.TITLE_MSG = "experimental"
         OCV.IS_PY3 = True
     else:
-        warn_mess = "WARNING:\n"
-        warn_mess += "OKKCNC Python v2.x version is at his end of life.\n"
-        warn_mess += "As python 2.x is deprecated and no longer mantained:\n"
-        warn_mess += "see {0} for more info \n"
+        OCV.init_msg.append("END OF LIFE WARNING!!!\n")
+        OCV.init_msg.append("OKKCNC Python v2.x version ")
+        OCV.init_msg.append("is at his end of life.\n")
+        OCV.init_msg.append("As python 2.x is offcially")
+        OCV.init_msg.append("no longer mantained.\n")
+        OCV.init_msg.append("see: \n{0} \nfor more info \n".format(OCV.PRG_DEV_HOME))
 
+        warn_msg = "".join(OCV.init_msg)
+        
         sys.stdout.write("="*80+"\n")
-        sys.stdout.write(warn_mess.format(OCV.PRG_DEV_HOME))
+        sys.stdout.write(warn_msg)
         sys.stdout.write("="*80+"\n")
 
+        # need two end of line to make the messagebox readable
+        warn_msg = "\n".join(OCV.init_msg)
         tkMessageBox.showwarning(
-            "WARNING !", warn_mess.format(OCV.PRG_DEV_HOME))
+            "WARNING !", warn_msg)
+        
+        OCV.TITLE_MSG = "end of life"
         OCV.IS_PY3 = False           
 
     Tk.CallWrapper = Utils.CallWrapper
