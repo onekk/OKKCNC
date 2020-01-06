@@ -28,7 +28,6 @@ try:
     import __builtin__
 except:
     import builtins as __builtin__
-#    __builtin__.unicode = str        # dirty hack for python3
 
 from lib.log import say
 
@@ -44,7 +43,7 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     import configparser as ConfigParser
 
-import webbrowser
+# import webbrowser
 
 try:
     import serial
@@ -377,9 +376,18 @@ def about_win(timer = None):
     bg = "#707070"
     fg = "#ffffff"
 
-    font1 = 'Helvetica -32 bold'
-    font2 = 'Helvetica -12'
-    font3 = 'Helvetica -10'
+    text_items = [
+        ("", _("An advanced fully featured g-code sender for GRBL. \n"\
+                   "Forked from bCNC")),
+        ("www: ", OCV.PRG_SITE),
+        ("author: ", OCV.AUTHOR),
+        ("e-mail: ", OCV.AUT_EMAIL),
+        ("contributors: ", OCV.PRG_CONTRIB),
+        ("translations: ", OCV.PRG_TRANS),
+        ("credits: ", OCV.PRG_CREDITS),
+        ("version: ", OCV.PRG_VER),
+        ("last change: ", OCV.PRG_DATE)
+        ]
 
     frame = Tk.Frame(
         OCV.ABOUT,
@@ -387,11 +395,12 @@ def about_win(timer = None):
         relief=Tk.SUNKEN,
         background=bg)
 
+
     frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
 
     # -----
     row = 0
-    
+
     lab = Tk.Label(
         frame,
         image=OCV.icons["OKKCNC"],
@@ -404,215 +413,51 @@ def about_win(timer = None):
 
     row += 1
 
-    lab = Tk.Label(
-        frame,
-        text=_("OKKCNC/\tAn advanced fully featured\n" \
-              "\t\tg-code sender for GRBL. \n\n"\
-              "\t\tForked from bCNC"),
-        font=font3,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
+    m_txt = Tk.Text(frame, wrap=Tk.WORD, font=OCV.FONT_ABOUT_TEXT)
 
-    lab.grid(row=row, column=0, columnspan=2, sticky=Tk.W, padx=10, pady=1)
+    m_txt.tag_config(
+        "title",
+        font=OCV.FONT_ABOUT_TITLE,
+        background="white",
+        foreground="black")
 
-    # -----
-    row += 1
-    frm = Tk.Frame(
-        frame,
-        borderwidth=1,
-        relief=Tk.SUNKEN,
-        height=2,
-        background=bg)
+    m_txt.tag_config(
+        "desc",
+        font=OCV.FONT_ABOUT_DESC)
 
-    frm.grid(row=row, column=0, columnspan=2, sticky=Tk.EW, padx=5, pady=5)
+    m_txt.tag_config(
+        "text",
+        lmargin1=20,
+        lmargin2=20,
+        font=OCV.FONT_ABOUT_TEXT)
 
-    row += 1
+    # reset the text fields
+    m_txt.configure(state=Tk.NORMAL)
+    m_txt.delete(1.0, Tk.END)
+    
+    m_txt.insert(Tk.END, "{0}".format(OCV.PRG_NAME), ('title'))
 
-    lab = Tk.Label(
-        frame,
-        text='www:',
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
+    for val in text_items:
+        m_txt.insert(Tk.END, "{0} \n".format(val[0]), ('desc'))
+        m_txt.insert(Tk.END, "{0} \n\n".format(val[1]) , ('text'))
 
-    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
+    # we need to disable the text field to make it not editable
+    m_txt.configure(state=Tk.DISABLED)
 
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_SITE,
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        activeforeground="Blue",
-        cursor="hand1")
+    m_txt.grid(row=row, column=0, columnspan=3, padx=0, pady=2)
 
-    lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
-
-    lab.bind('<Button-1>', lambda e: webbrowser.open(OCV.PRG_SITE))
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='email:',
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.AUT_EMAIL,
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=1, sticky=Tk.W, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='author:',
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.AUTHOR,
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='contributors:',
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_CONTRIB,
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='translations:',
-        font=font2,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT)
-
-    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_TRANS,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='credits:',
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=0, sticky=Tk.NE, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_CREDITS,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='version:',
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_VER,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
-
-    row += 1
-
-    lab = Tk.Label(
-        frame,
-        text='last change:',
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=0, sticky=Tk.E, padx=10, pady=2)
-
-    lab = Tk.Label(
-        frame,
-        text=OCV.PRG_DATE,
-        foreground=fg,
-        background=bg,
-        justify=Tk.LEFT,
-        font=font2)
-
-    lab.grid(row=row, column=1, sticky=Tk.NW, padx=2, pady=2)
+    scrollb = Tk.Scrollbar(frame, orient=Tk.VERTICAL, command=m_txt.yview)
+    scrollb.grid(row=row, column=3, sticky= Tk.NSEW, padx=0, pady=0)
+    m_txt['yscrollcommand'] = scrollb.set
 
     closeAbout = lambda e=None, t=OCV.ABOUT: t.destroy()
 
-    but = Tk.Button(OCV.ABOUT, text=_("Close"), command=closeAbout)
-    but.pack(pady=5)
+    row += 1
 
-    frame.grid_columnconfigure(1, weight=1)
+    but = Tk.Button(frame, text=_("Close"), command=closeAbout)
+    but.grid(row=row, column=1, sticky= Tk.NS, padx=5, pady=5)
+
+    frame.grid_columnconfigure(0, weight=1)
 
     OCV.ABOUT.bind('<Escape>', closeAbout)
     OCV.ABOUT.bind('<Return>', closeAbout)

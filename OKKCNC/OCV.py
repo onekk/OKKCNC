@@ -262,6 +262,11 @@ FEED_MODE = {
 first_move_detect = False
 # INTERFACE FONTS
 FONT = ("Sans", "-10")
+# About text font
+FONT_ABOUT_DESC = ('Helvetica', '-15', 'bold')
+FONT_ABOUT_TEXT = ('Helvetica', '-12', 'normal')
+FONT_ABOUT_TITLE = ('Helvetica', '-17', 'bold')
+#---
 FONT_DRO_ZERO = ("Sans", "-11")
 FONT_EXE = ("Helvetica", 12, "bold")
 FONT_RIBBON_TAB = ("Sans", "-14", "bold")
