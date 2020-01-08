@@ -221,6 +221,18 @@ appendFeed = False
 
 # B #
 blocks = []  # Gcode blocks, here to be shared
+""" blocks_info is used in GCode.process_block indes is given by block_pos
+    list items:
+    0 > block start line (the line in OCV.gcodlines)
+    1 > number of added lines to keep in sync with OCV.gcodelines
+"""
+blocks_info = []
+#  to keep tracks on which block we are working
+blocks_pos = 0
+# to keep tracks of adde line in the block during event processing
+block_add_l = 0
+# #
+
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
 # ':' is used to quiclky separate string from values
 b_mdata_sp = "(B_MD SP: X{0} Y{1} Z{2})"
@@ -232,7 +244,7 @@ b_mdata_pz = "(B_MD PZ: Z{0})"
 comment = ""  # last parsed comment
 config = None
 c_state = ""  # controller state to determine the state
-CTL_ERRORS = [] # controllers errors (only for GBRL for now)
+CTL_ERRORS = []  # controllers errors (only for GBRL for now)
 
 # D #
 DRAW_TIME = 5  # Maximum draw time permitted
@@ -266,7 +278,7 @@ FONT = ("Sans", "-10")
 FONT_ABOUT_DESC = ('Helvetica', '-15', 'bold')
 FONT_ABOUT_TEXT = ('Helvetica', '-12', 'normal')
 FONT_ABOUT_TITLE = ('Helvetica', '-17', 'bold')
-#---
+# ---
 FONT_DRO_ZERO = ("Sans", "-11")
 FONT_EXE = ("Helvetica", 12, "bold")
 FONT_RIBBON_TAB = ("Sans", "-14", "bold")
@@ -294,7 +306,7 @@ g_code_precision = 4
 g_code_pp = "Generic"
 
 # H #
-HAS_SERIAL = None # flag
+HAS_SERIAL = None  # flag
 history = []
 
 # I #
@@ -306,7 +318,7 @@ inch = False
 init_msg = []
 # hold infos used to display values
 infos = []
-IS_PY3 = False # flag
+IS_PY3 = False  # flag
 
 # L #
 language = ""

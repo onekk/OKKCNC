@@ -340,7 +340,8 @@ def comports(include_links=True):
 
 def q_round(value, prec=2, base=.05):
     """round a number specifing the decimal digits
-    and a quantization factor"""
+    and a quantization factor
+    """
     return round(base * round(float(value)/base), prec)
 
 
@@ -520,7 +521,6 @@ class UserButton(Ribbon.LabelButton):
         self.cnc = cnc
         self.button = button
         self.get()
-#        self.bind("<Control-Button-1>", self.edit)
         self.bind("<Button-3>", self.edit)
         self.bind("<Control-Button-1>", self.edit)
         self["command"] = self.execute

@@ -212,12 +212,12 @@ class Block(list):
                     line.replace('(', '[').replace(')', ']')))
 
     def dump(self):
-        """Return a dump object for pickler"""
+        """Return a dump object for json"""
         return self.name(), self.enable, self.expand, self.color, self
 
     @staticmethod
     def load(obj):
-        """Create a block from a dump object from unpickler"""
+        """Create a block from a dump object from json"""
         name, enable, expand, color, code = obj
         block = Block(name)
         block.enable = enable

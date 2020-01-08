@@ -17,16 +17,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
-try:
     import Tkinter as Tk
     import tkFont
 except ImportError:
@@ -34,6 +24,7 @@ except ImportError:
     import tkinter.font as tkFont
 
 import re
+import json
 
 import OCV
 from CNC import CNC
@@ -157,16 +148,16 @@ class CNCListbox(Tk.Listbox):
 
     def copy(self, event=None):
         """Copy selected items to clipboard"""
-        sio = StringIO()
-        pickler = pickle.Pickler(sio)
-        # sio.write(_PLOT_CLIP)
+        jsonobj=[]
+
         for block, line in self.getCleanSelection():
             if line is None:
-                pickler.dump(OCV.blocks[block].dump())
+                jsonobj.append(OCV.blocks[block].dump())
             else:
-                pickler.dump(OCV.blocks[block][line])
+                jsonobj.append(OCV.blocks[block][line])
         self.clipboard_clear()
-        self.clipboard_append(sio.getvalue())
+        jsonstring=json.dumps(jsonobj)
+        self.clipboard_append(jsonstring)
         return "break"
 
     def cut(self, event=None):
@@ -222,27 +213,18 @@ class CNCListbox(Tk.Listbox):
                 undoinfo.append(self.gcode.insLineUndo(
                     self._bid, self._lid, line))
 
-        try:
-            # try to unpickle it
-            unpickler = pickle.Unpickler(StringIO(clipboard))
-            try:
-                while True:
-                    obj = unpickler.load()
-                    if isinstance(obj, tuple):
-                        block = Block.Block.load(obj)
-                        self._bid += 1
-                        undoinfo.append(self.gcode.addBlockUndo(
-                            self._bid, block))
-                        selitems.append((self._bid, None))
-                        self._lid = None
-                    else:
-                        add_lines(obj)
-            except EOFError:
-                pass
-        except pickle.UnpicklingError:
-            # Paste as text
-            add_lines(clipboard)
-
+        objs = json.loads(clipboard)
+        for obj in objs:
+            if isinstance(obj, list):
+                obj = tuple(obj)
+            if isinstance(obj, tuple):
+                block = Block.load(obj)
+                self._bid += 1
+                undoinfo.append(self.gcode.addBlockUndo(self._bid, block))
+                selitems.append((self._bid, None))
+                self._lid = None
+            else:
+                add_lines(obj)
         if not undoinfo:
             return
 

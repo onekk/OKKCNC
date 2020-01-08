@@ -25,7 +25,7 @@ import types
 from time import strftime, localtime
 
 import OCV
-import Block
+from Block import Block
 import Heuristic
 import Probe
 import bmath
@@ -177,21 +177,15 @@ class GCode(object):
             # Heuristic.adjust_mops()
 
     def pre_process_gcode(self):
-        """scan gcode lines and inject some metadata in the blocks
-        ideally this will create at least 3 blocks:
-            - "Header" block
-            - Command block
-            - "End Job" block with the end Gcode commands detected using
-                some heuristic, usually a G0 Z_max followed by:
-                    M5 (Spindle Stop) or M9 (Coolant Stop)
-                    M2 or M30 (Program End)
-        more blocks are created detecting the custom '(MOP Start:' supplied
-        by CamBam postprocessor modified by onekk.
+        """scan gcode lines and inject some metadata, creating only one Block.
+        This create also the self.b_event list used to hold some info to make
+        post_processing this Block and proper identify Machining Operations
+        MOP in CamBam terminology and the single shapes (Profiles and Pockets)
         See in Documentation for more infos.
         """
         # DEBUG_INFO
         # INT_DEBUG = OCV.DEBUG_PAR
-        INT_DEBUG = True
+        INT_DEBUG = False
         OCV.infos = []
 
         process = True
@@ -212,15 +206,15 @@ class GCode(object):
             if INT_DEBUG is True:
                 print("{0} Line > {1}".format(l_idx, line))
 
-            if l_idx == (len(OCV.gcodelines) - 1):
-                print("last line fo gcode")
+                if l_idx == (len(OCV.gcodelines) - 1):
+                    print("last line fo gcode")
 
             # discard the dummy first item
             if line.startswith("(-)"):
                 continue
 
             if not OCV.blocks:
-                OCV.blocks.append(Block.Block("Header"))
+                OCV.blocks.append(Block("Header"))
 
             # catch the MOP Start comment and create a new Block, if not
             # created by a MOP End istance
@@ -242,7 +236,6 @@ class GCode(object):
                       self.cnc.zval,
                       (self.cnc.dx, self.cnc.dy, self.cnc.dz))))
                 OCV.blocks[-1].append(line)
-
                 continue
 
             cmds = Heuristic.parse_line(line)
@@ -289,6 +282,10 @@ class GCode(object):
                     self.b_event.append(("G0", l_idx, line, move_c))
                     OCV.blocks[-1].append(line)
                     continue
+            elif move in OCV.end_cmds:
+                # catch the end commands
+                self.b_event.append((move, l_idx, line, move_c))
+                OCV.blocks[-1].append(line)
             else:
                 # other moves T or M
                 OCV.blocks[-1].append(line)
@@ -298,14 +295,37 @@ class GCode(object):
         self.process_event()
 
     def process_event(self):
-        """process event list and make the approrpiate actions like:
+        """process event list and make the appropriate actions like:
             block change
             inject metadata
-            add comments to the gcode"""
+            add comments to the gcode
+
+        ideally this will create at least 3 blocks:
+            - "Header" block
+            - Command block
+            - "End Job" block with the end Gcode commands detected using
+                some heuristic, usually a G0 Z_max followed by:
+                    M5 (Spindle Stop) or M9 (Coolant Stop)
+                    M2 or M30 (Program End)
+        more blocks are created detecting the custom '(MOP Start:' supplied
+        by CamBam postprocessor modified by onekk.
+        """
         INT_DEBUG = True
+        OCV.blocks_info = []
+        OCV.blocks_pos = 0  # only one block is created by pre_process_gcode
+        # index start from 1 as the first line is a dummy marker
+        OCV.blocks_info.append([1, 0])
+
+        self.print_block(0)
+
+        if INT_DEBUG is True:
+            print(OCV.blocks_info)
 
         process = True
         l_idx = 1
+
+        # process debug info
+        debug_cnt = 0
 
         while (process is True):
             if l_idx < (len(self.b_event) - 2):
@@ -315,26 +335,177 @@ class GCode(object):
                 # if not present last line is scanned again
                 process = False
                 continue
+            act_ev = self.b_event[l_idx]
+            pre_ev = self.b_event[l_idx - 1]
+            nex_ev = self.b_event[l_idx + 1]
+
+            if act_ev[0] == "MS":
+                if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
+                    # TODO add a proper name
+                    self.new_block(act_ev[1], "First MOP", INT_DEBUG)
+                else:
+                    self.new_block(act_ev[1], "Other MOP", INT_DEBUG)
+
+            elif act_ev[0] == "ME":
+                if nex_ev[0] == "MS":
+                    # this occur in the middle of file, no action needed
+                    pass
+                elif nex_ev[0] == "ZU":
+                    nex1_ev = self.b_event[l_idx + 2]
+                    if nex1_ev[0] in OCV.end_cmds:
+                        self.new_block(act_ev[1] + 1, "End Block", INT_DEBUG)
+                        # if this is the end block we have done
+                        process = False
+            elif act_ev[0] == "GM":
+                pass
+            elif act_ev[0] == "G0":
+                # pass
+                self.insert_mark(act_ev, "RAPID?")
+
+            elif act_ev[0] == "ZU":
+                #pass
+                self.insert_mark(act_ev, "Z_UP")
+            else:
+                # pass
+                if INT_DEBUG is True:
+                    self.print_ev(l_idx, "NO catch")
+
+    def print_ev(self, l_idx, ev_msg):
             print(OCV.str_sep)
+            print(l_idx, ev_msg)
             print("act ev", self.b_event[l_idx])
             print("prec ev", self.b_event[l_idx - 1])
             print("next ev", self.b_event[l_idx + 1])
 
-    def new_block(self, line, b_pos, DEBUG):
-        """Add a new block to the block list
-        b_pos = 0 >> line placed in new block
-        b_pos = 1 >> line placed in old block
+    def print_block(self, b_num):
+        print(OCV.str_sep)
+        print("Block number {0} dump".format(b_num))
+        print ("Block info ", OCV.blocks_info[b_num])
+        print(OCV.str_sep)
+        for l_idx, line in enumerate(OCV.blocks[b_num]):
+            print(l_idx, line)
+        print(OCV.str_sep)
+
+    def insert_mark(self, event, label):
+        block_num = OCV.blocks_pos
+        b_start = OCV.blocks_info[block_num][0]
+        ev_pos = event[1]
+        line_pos = ev_pos - b_start + OCV.block_add_l
+
+        """ DEVEL DEBUG
+        print(OCV.str_sep)
+        print("Insert Mark {0} in block".format(label))
+        print(event)
+        print("block start = {0} ev_pos = {1} OCV.block_add {2}".format(
+                b_start, ev_pos, OCV.block_add_l))
+        print("Line_pos = {0}".format(line_pos),
+          OCV.blocks[block_num][line_pos])
+
+        print(OCV.str_sep)
+        # /DEVEL DEBUG
         """
-        # print("new block")
 
-        if b_pos == 1:
-            OCV.blocks[-1].append(line)
-            OCV.blocks.append(Block.Block())
-            return
+        # add mark  line, we need to add 1 to position it after the event
+        OCV.blocks[-1].insert(line_pos, "(BMD: {0})".format(label))
+        # incrment the added lines counter
+        OCV.block_add_l += 1
+        # set the new block line count
+        OCV.blocks_info[block_num][1] = len(OCV.blocks[-1])
 
-        # line is moved to next block
-        OCV.blocks.append(Block.Block())
-        OCV.blocks[-1].append(line)
+    def new_block(self, ev_line, b_name, DEBUG):
+        """Add a new block to the block list
+        ev_line >> position in which the event occurs
+        """
+        # retain actual block_pos
+        old_block_num = OCV.blocks_pos
+
+        # calculate the block length
+        for b_idx in range(0, OCV.blocks_pos):
+            block = OCV.blocks[b_idx]
+            print(b_idx, len(block))
+
+        # increment block_pos
+        OCV.blocks_pos += 1
+        # retain new block_pos
+        new_block_num = OCV.blocks_pos
+
+        added_lines = OCV.block_add_l
+        # determine the start
+        line_num = ev_line - OCV.blocks_info[old_block_num][0] + added_lines
+
+        if DEBUG is True:
+            print(OCV.str_sep)
+            print("New Block {0}".format(b_name))
+            print(">> Event Line = {0} , added_lines {1}".format(
+                    ev_line, added_lines))
+            print(OCV.gcodelines[ev_line])
+            print("New Block: start at {0}\n".format(line_num))
+            self.print_block(old_block_num)
+
+        # a list is needed as we have to modify the values later
+        OCV.blocks_info.append([ev_line, added_lines])
+        OCV.blocks.append(Block(b_name))
+
+        # reset the added lines counter
+        OCV.block_add_l = 0
+
+        l_idx = 0
+        l2mov = len(OCV.blocks[old_block_num]) - line_num
+
+        while (l_idx < l2mov):
+            l_idx += 1
+            print(
+                "l2mov = {0} l_idx = {1} line_num {2}".format(
+                        l2mov, l_idx, line_num),
+                OCV.blocks[old_block_num][line_num])
+
+            line = OCV.blocks[old_block_num].pop(line_num)
+            OCV.blocks[new_block_num].append(line)
+
+    def new_block_old(self, ev_line, b_name, DEBUG):
+        """Add a new block to the block list
+        old code here if something go wrong
+        line >> position in which the event occurs
+        """
+        # retain actual block_pos
+        old_block_num = OCV.blocks_pos
+        # increment block_pos
+        OCV.blocks_pos += 1
+        # retain new block_pos
+        new_block_num = OCV.blocks_pos
+
+        # determine the start and ending point of the blocks
+        b_start = ev_line
+        b_end = OCV.blocks_info[old_block_num][1]
+        ob_start = OCV.blocks_info[old_block_num][0]
+        ob_end = b_start
+
+        if DEBUG is True:
+            print(OCV.str_sep)
+            print(
+                "New Block: {0} {1}\nOld Block {2} {3}".format(
+                    b_start, b_end, ob_start, ob_end))
+            print(OCV.str_sep)
+
+        # a list is needed as we have to modify the values later
+        OCV.blocks_info.append([b_start, b_end])
+        OCV.blocks.append(Block(b_name))
+        block_lines = []
+
+        for line in range(b_start, b_end):
+            block_lines.append(OCV.gcodelines[line])
+
+        # add lines to the new block
+        OCV.blocks[new_block_num].extend(block_lines)
+
+        block_lines = []
+        # delete lines from the old block
+        del OCV.blocks[old_block_num][:]
+
+        for line in range(ob_start, ob_end):
+            block_lines.append(OCV.gcodelines[line])
+
+        OCV.blocks[old_block_num].extend(block_lines)
 
     def add_line(self, line):
         """plain addLine method from bCNC

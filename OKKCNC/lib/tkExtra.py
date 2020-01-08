@@ -39,6 +39,7 @@ __email__  = "Vasilis.Vlachoudis@cern.ch"
 
 GLOBAL_CONTROL_BACKGROUND = "White"
 
+import sys
 import re
 import time
 import Unicode
@@ -3075,8 +3076,14 @@ class Combobox(Frame):
     # Public methods
     # ----------------------------------------------------------------------
     def get(self, first=None, last=None):
+        PY2 = sys.version_info[0] == 2
         if first is None:
             if isinstance(self._text, Label):
+                tmpstr = self._text.cget("text")
+                if PY2 and isinstance(tmpstr, basestring):
+                    return tmpstr.encode("utf-8")
+                else :
+                    return tmpstr
                 return self._text.cget("text")
             else:
                 return self._text.get()
