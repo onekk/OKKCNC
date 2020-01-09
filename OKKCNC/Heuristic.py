@@ -92,6 +92,113 @@ def adjust_mops():
         print(OCV.str_sep)
 
 
+def print_ev(l_idx, ev_msg):
+    print(OCV.str_sep)
+    print(l_idx, ev_msg)
+    print("act ev", OCV.blocks_ev[l_idx])
+    print("prec ev", OCV.blocks_ev[l_idx - 1])
+    print("next ev", OCV.blocks_ev[l_idx + 1])
+
+
+def print_block(b_num):
+    print(OCV.str_sep)
+    print("Block number {0} dump".format(b_num))
+    print("Block info ", OCV.blocks_info[b_num])
+    print(OCV.str_sep)
+    for l_idx, line in enumerate(OCV.blocks[b_num]):
+        print(l_idx, line)
+    print(OCV.str_sep)
+
+def insert_mark(event, label):
+    block_num = OCV.blocks_pos
+    b_start = OCV.blocks_info[block_num][0]
+    ev_pos = event[1]
+    line_pos = ev_pos - b_start + OCV.block_add_l
+
+    # process Mark
+    st_pos = event[3][0]
+    in_pos = event[3][2]
+    z_abs = event[3][1]
+    z_move = in_pos[2]
+    rm_lab = " RAPID MOVE from "
+    rm_lab += "X:{0:.3f} Y:{1:.3f} to X:{2:.3f} Y:{3:.3f} at quote {4:.3f}"
+    en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
+
+    if label in ("RAPID", "Z_UP"):
+        print("RAPID Event Mark", event)
+        if z_move > 0:
+            label = " Z_RAISE {0:.3f} at quote {1:.3f}".format(
+                z_move, z_abs)
+        elif z_move < 0:
+            label = " Z_DOWN {0:.3f} at quote {1:.3f}".format(
+                z_move, z_abs)
+        else:
+            label = rm_lab.format(
+                st_pos[0], st_pos[1],
+                en_pos[0], en_pos[1],
+                z_abs)
+
+    # add mark  line, we need to add 1 to position it after the event
+    OCV.blocks[-1].insert(line_pos + 1, "(BMD: {0})".format(label))
+    # incrment the added lines counter
+    OCV.block_add_l += 1
+    # set the new block line count
+    OCV.blocks_info[block_num][1] = len(OCV.blocks[-1])
+
+
+def pe_new_block(self, ev_line, b_name, DEBUG):
+    """Add a new block to the block list during a process_event run
+    ev_line >> position in which the event occurs
+    b_name  >> block name
+    DEBUG   >> used to print some useful infos on console
+    """
+    # retain actual block_pos
+    old_block_num = OCV.blocks_pos
+
+    # calculate the block length
+    for b_idx in range(0, OCV.blocks_pos):
+        block = OCV.blocks[b_idx]
+        print(b_idx, len(block))
+
+    # increment block_pos
+    OCV.blocks_pos += 1
+    # retain new block_pos
+    new_block_num = OCV.blocks_pos
+
+    added_lines = OCV.block_add_l
+    # determine the start
+    line_num = ev_line - OCV.blocks_info[old_block_num][0] + added_lines
+
+    if DEBUG is True:
+        print(OCV.str_sep)
+        print("New Block {0}".format(b_name))
+        print(">> Event Line = {0} , added_lines {1}".format(
+            ev_line, added_lines))
+        print(OCV.gcodelines[ev_line])
+        print("New Block: start at {0}\n".format(line_num))
+        print_block(old_block_num)
+
+    # a list is needed as we have to modify the values later
+    OCV.blocks_info.append([ev_line, added_lines])
+    OCV.blocks.append(Block(b_name))
+
+    # reset the added lines counter
+    OCV.block_add_l = 0
+
+    l_idx = 0
+    l2mov = len(OCV.blocks[old_block_num]) - line_num
+
+    while l_idx < l2mov:
+        l_idx += 1
+        print(
+            "l2mov = {0} l_idx = {1} line_num {2}".format(
+                l2mov, l_idx, line_num),
+            OCV.blocks[old_block_num][line_num])
+
+        line = OCV.blocks[old_block_num].pop(line_num)
+        OCV.blocks[new_block_num].append(line)
+
+
 class CodeAnalizer(object):
     """Analyze for Z raise and XY pos of  actual and peceding blocks
     to detect the consecutive paths,

@@ -39,7 +39,7 @@ class Block(list):
         if isinstance(name, Block):
             self.copy(name)
             return
-        self._name = name
+        self.b_name = name
         self.enable = True      # Enabled/Visible in drawing
         self.expand = False     # Expand in editor
         self.color = None       # Custom color for path
@@ -52,7 +52,7 @@ class Block(list):
 
     def copy(self, src):
         """Copy a Block"""
-        self._name = src._name
+        self.b_name = src.b_name
         self.enable = src.enable
         self.expand = src.expand
         self.color = src.color
@@ -67,7 +67,7 @@ class Block(list):
 
     def name(self):
         """return Block Name or None"""
-        return self._name is None and "block" or self._name
+        return self.b_name is None and "block" or self.b_name
 
     def nameNop(self):
         """@return name without the operation"""
@@ -109,8 +109,7 @@ class Block(list):
         return None
 
     def operationSide(self, name=None):
-        """
-        Tests if block contains operation on
+        """Tests if block contains operation on
         inside of the part (-1), outside (1), or can't decide (0)
         """
         # if self.operationTest('pocket', name): return -1
@@ -169,7 +168,7 @@ class Block(list):
 
     def addOperation(self, operation, remove=None):
         """Add a new operation to the block's name"""
-        self._name = Block.operationName(self.name(), operation, remove)
+        self.b_name = Block.operationName(self.name(), operation, remove)
 
     def header(self):
         e = self.expand and Unicode.BLACK_DOWN_POINTING_TRIANGLE \
@@ -234,7 +233,7 @@ class Block(list):
                 value = value.strip()
 
                 if name == "name":
-                    self._name = value
+                    self.b_name = value
                     return
                 elif name == "expand":
                     self.expand = bool(int(value))
@@ -254,11 +253,11 @@ class Block(list):
                         value.replace('[', '(').replace(']', ')'))
                     return
 
-        if self._name is None and ("id:" in line) and ("End" not in line):
+        if self.b_name is None and ("id:" in line) and ("End" not in line):
             pat = OCV.IDPAT.match(line)
 
             if pat:
-                self._name = pat.group(1)
+                self.b_name = pat.group(1)
 
         list.append(self, line)
 

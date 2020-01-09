@@ -946,7 +946,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
     def recordAppend(self, line):
         hasblock = None
         for bid,block in enumerate(OCV.APP.gcode):
-            if block._name == 'recording':
+            if block.b_name == 'recording':
                 hasblock = bid
                 eblock = block
 
@@ -998,13 +998,13 @@ class ProbeFrame(CNCRibbon.PageFrame):
         if self.recz.get() == 1:
             coords += " Z%s"%(z)
 
-        #self.recordAppend('G0 %s R%s'%(coords, r))
+        # self.recordAppend('G0 %s R%s'%(coords, r))
         self.recordAppend('G0 %s'%(coords))
         self.recordAppend('G02 %s I%s'%(coords, r))
 
     def recordFinishAll(self):
         for bid,block in enumerate(OCV.APP.gcode):
-            if block._name == 'recording':
+            if block.b_name == 'recording':
                 OCV.APP.gcode.setBlockNameUndo(bid, 'recorded')
         OCV.APP.refresh()
         OCV.APP.setStatus(_("Finished recording"))

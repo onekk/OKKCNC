@@ -84,9 +84,9 @@ def padFloat(decimals, value):
 
 def get_errors(ctl):
     err_list = []
-    
-    print(ERROR_CODES)
-    
+
+    # print(ERROR_CODES)
+
     if ctl == "GRBL0":
         pattern = r'\b' + re.escape("error:") + r'\b'
         int_list = [
@@ -96,9 +96,9 @@ def get_errors(ctl):
     else:
         pattern = r'\b' + re.escape("error: ") + r'\b'
         int_list = [
-            "{0} {1}".format(key, value) 
+            "{0} {1}".format(key, value)
             for key, value in ERROR_CODES.items()
             if re.search(pattern, key)]
 
-    err_list = sorted(int_list)    
+    err_list = sorted(int_list)
     OCV.CTL_ERRORS = err_list

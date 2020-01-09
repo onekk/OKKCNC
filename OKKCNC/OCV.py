@@ -226,6 +226,7 @@ blocks = []  # Gcode blocks, here to be shared
     0 > block start line (the line in OCV.gcodlines)
     1 > number of added lines to keep in sync with OCV.gcodelines
 """
+blocks_ev = [] # blocks events, used by pre_process_gcode
 blocks_info = []
 #  to keep tracks on which block we are working
 blocks_pos = 0
