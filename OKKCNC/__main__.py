@@ -205,7 +205,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Paste>>', self.paste)
 
         self.bind('<<Connect>>', self.openClose)
-        self.bind('<<Analyze>>', self.analyze_z_height)
 
         self.bind('<<New>>', self.newFile)
         self.bind('<<Open>>', self.loadDialog)
@@ -1046,16 +1045,6 @@ class Application(Tk.Toplevel, Sender):
     def canvasFocus(self, event=None):
         OCV.CANVAS_F.canvas.focus_set()
         return "break"
-
-    def analyze_z_height(self, event=None):
-        print("analyze reached", event)
-        if event is not None:
-            print("analyze fired")
-            # fire analyze actions
-            # it has to detect z min and select all the path for adding a
-            # z-height override for cutting the remaining material.
-            ana_code = Heuristic.CodeAnalizer()
-            ana_code.detect_profiles()
 
     def selectAll(self, event=None):
         focus = self.focus_get()

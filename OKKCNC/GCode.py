@@ -166,20 +166,6 @@ class GCode(object):
         if OCV.DEBUG_PAR is True:
             OCV.printout_header("{0}", "END SCAN")
 
-        # if the file nedd some other post_processing action are taken here
-        # adv_heur is set (for now in GCode.load method) statically
-        # TODO add some means to specify if adv_heur is needed or wanted
-        # via checkbox, or menu item and a corresponding IniFile item
-        if OCV.g_code_pp in ("CamBam-OKK",) and adv_heur is True:
-            # if pre_process_gcode has injected metadats in file, take some
-            # more action to arrange the blocks.
-            g_parse = Heuristic.CodeAnalizer()
-            #g_parse.detect_profiles()
-
-            # g_parse.parse_blocks()
-            OCV.printout_header("{0}", "PARSING FINISHED")
-
-            # Heuristic.adjust_mops()
 
     def pre_process_gcode(self):
         """scan gcode lines and inject some metadata, creating only one Block.
@@ -298,83 +284,8 @@ class GCode(object):
 
             self.cnc.motionEnd()
 
-        self.process_event()
-        # self.process_marks()
-
-    def process_event(self):
-        """process event list and make the appropriate actions like:
-            block change
-            inject metadata
-            add comments to the gcode
-
-        ideally this will create at least 3 blocks:
-            - "Header" block
-            - Command block
-            - "End Job" block with the end Gcode commands detected using
-                some heuristic, usually a G0 Z_max followed by:
-                    M5 (Spindle Stop) or M9 (Coolant Stop)
-                    M2 or M30 (Program End)
-        more blocks are created detecting the custom '(MOP Start:' supplied
-        by CamBam postprocessor modified by onekk.
-        """
-        INT_DEBUG = True
-        OCV.blocks_info = []
-        OCV.blocks_pos = 0  # only one block is created by pre_process_gcode
-        # index start from 1 as the first line is a dummy marker
-        OCV.blocks_info.append([1, 0])
-
-        Heuristic.print_block(0)
-
-        if INT_DEBUG is True:
-            print(OCV.blocks_info)
-
-        process = True
-        l_idx = 1
-
-        while process is True:
-            if l_idx < (len(OCV.blocks_ev) - 2):
-                l_idx += 1
-            else:
-                # continue here is to force the loop to terminate here
-                # if not present last line is scanned again
-                process = False
-                continue
-            act_ev = OCV.blocks_ev[l_idx]
-            pre_ev = OCV.blocks_ev[l_idx - 1]
-            nex_ev = OCV.blocks_ev[l_idx + 1]
-
-            if act_ev[0] == "MS":
-                if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
-                    # TODO add a proper name
-                    Heuristic.pe_new_block(
-                        act_ev[1], "First MOP", INT_DEBUG)
-                else:
-                    Heuristic.pe_new_block(
-                        act_ev[1], "Other MOP", INT_DEBUG)
-
-            elif act_ev[0] == "ME":
-                if nex_ev[0] == "MS":
-                    # this occur in the middle of file, no action needed
-                    pass
-                elif nex_ev[0] == "ZU":
-                    nex1_ev = OCV.blocks_ev[l_idx + 2]
-                    if nex1_ev[0] in OCV.end_cmds:
-                        Heuristic.pe_new_block(
-                            act_ev[1] + 1, "End Block", INT_DEBUG)
-                        # if this is the end block we have done
-                        process = False
-            elif act_ev[0] == "GM":
-                pass
-            elif act_ev[0] == "G0":
-                Heuristic.insert_mark(act_ev, "RAPID")
-
-            elif act_ev[0] == "ZU":
-                Heuristic.insert_mark(act_ev, "Z_UP")
-            else:
-                if INT_DEBUG is True:
-                    Heuristic.print_ev(l_idx, "NO catch")
-
-
+        # one line to pass the work to Heuristic module
+        Heuristic.process_blocks()
 
     def add_line(self, line):
         """plain addLine method from bCNC

@@ -236,10 +236,9 @@ block_add_l = 0
 
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
 # ':' is used to quiclky separate string from values
-b_mdata_sp = "(B_MD SP: X{0} Y{1} Z{2})"
-b_mdata_ep = "(B_MD EP: X{0} Y{1} Z{2})"
-b_mdata_zp = "(B_MD ZP: X{0} Y{1} Z{2})"
-b_mdata_pz = "(B_MD PZ: Z{0})"
+b_mdata_h = "(BMD:"
+b_mdata_rm = "RAPMOV from"
+
 
 # C #
 comment = ""  # last parsed comment

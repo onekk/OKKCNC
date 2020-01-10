@@ -204,8 +204,6 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             app,
             [(_("Autolevel"), "level",
               lambda a=app: a.insertCommand("AUTOLEVEL", True)),
-            (_("Analyze"), "island",
-              lambda a=app: a.event_generate("<<Analyze>>")),
              (_("Color"), "color",
               lambda a=app: a.event_generate("<<ChangeColor>>")),
              (_("Import"), "load",
