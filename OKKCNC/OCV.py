@@ -55,16 +55,6 @@ COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
     DEBUG_INFO in the code permit to decomment the line to show the relevant
     code, this for not having to define too many DEBUG_XXX "flags"
 """
-# General unspecified debug flag
-DEBUG = False
-# Debug graphical part
-DEBUG_GRAPH = False
-# Debug Interface
-DEBUG_INT = False
-# Debug Comunications
-DEBUG_COM = False
-# debug GCode parsing
-DEBUG_PAR = True
 
 # String related to About window
 PRG_CREDITS = \
@@ -237,7 +227,9 @@ block_add_l = 0
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
 # ':' is used to quiclky separate string from values
 b_mdata_h = "(BMD:"
+b_mdata_gm = "CUTMOV from"
 b_mdata_rm = "RAPMOV from"
+b_mdata_ss = "[{0}][{1}]"
 
 
 # C #
@@ -247,6 +239,19 @@ c_state = ""  # controller state to determine the state
 CTL_ERRORS = []  # controllers errors (only for GBRL for now)
 
 # D #
+# General unspecified debug flag
+DEBUG = False
+# Debug graphical part
+DEBUG_GRAPH = False
+# Debug Interface
+DEBUG_INT = False
+# Debug Comunications
+DEBUG_COM = False
+# debug GCode parsing
+DEBUG_PAR = True
+# set level of info displayed in Heuristic, 0 - 4
+DEBUG_HEUR = 3
+#
 DRAW_TIME = 5  # Maximum draw time permitted
 developer = False
 digits = 4

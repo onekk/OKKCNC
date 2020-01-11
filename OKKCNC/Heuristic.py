@@ -70,13 +70,13 @@ def process_blocks():
     process_events()
     # now we have some blocks, see the comments in process_events
     # try to detect the G0 moves between the MOPS
-    process_rapids(True)
+    process_rapids()
 
     # refresh block in editor
     OCV.APP.event_generate("<<Modified>>")
 
 
-def print_ev(l_idx, ev_msg):
+def print_events(l_idx, ev_msg):
     print(OCV.str_sep)
     print(l_idx, ev_msg)
     print("act ev", OCV.blocks_ev[l_idx])
@@ -94,6 +94,18 @@ def print_block(b_num):
     print(OCV.str_sep)
 
 
+def print_blocks_debug_info(b_idx):
+    print(OCV.str_sep)
+    print("block prior", OCV.blocks[b_idx - 1])
+    print("\n", OCV.str_sep)
+    print("block actual", OCV.blocks[b_idx])
+    print("\n", OCV.str_sep)
+    print("block next", OCV.blocks[b_idx + 1])
+    print("\n", OCV.str_sep)
+
+    OCV.APP.event_generate("<<Modified>>")
+
+
 def insert_mark(event, label):
     block_num = OCV.blocks_pos
     b_start = OCV.blocks_info[block_num][0]
@@ -105,28 +117,44 @@ def insert_mark(event, label):
     in_pos = event[3][2]
     z_abs = event[3][1]
     z_move = in_pos[2]
-    rm_lab = OCV.b_mdata_rm
-    rm_lab += " X{0:.{5}f} Y{1:.{5}f}"
-    rm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
-    rm_lab += " at Z{4:.{5}f}"
-    en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
+    ev_label = "empty label"
 
     if label in ("RAPID", "Z_UP"):
-        print("RAPID Event Mark", event)
+
+        rm_lab = OCV.b_mdata_rm
+        rm_lab += " X{0:.{5}f} Y{1:.{5}f}"
+        rm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
+        rm_lab += " at Z{4:.{5}f}"
+        en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
+
+        if OCV.DEBUG_HEUR > 2:
+            print("RAPID Event Mark", event)
+
         if z_move > 0:
-            label = " Z_RAISE {0:.{2}f} Z_Q {1:.{2}f}".format(
+            ev_label = "Z_RS {0:.{2}f} ABS_Z {1:.{2}f}".format(
                 z_move, z_abs, OCV.digits)
         elif z_move < 0:
-            label = " Z_DOWN {0:.{2}f} Z_Q {1:.{2}f}".format(
+            ev_label = "Z_DW {0:.{2}f} ABS_Z {1:.{2}f}".format(
                 z_move, z_abs, OCV.digits)
         else:
-            label = rm_lab.format(
+            ev_label = rm_lab.format(
                 st_pos[0], st_pos[1],
                 en_pos[0], en_pos[1],
                 z_abs, OCV.digits)
 
+    if label[:2] == "GM":
+        gm_lab = OCV.b_mdata_gm
+        gm_lab += " X{0:.{5}f} Y{1:.{5}f}"
+        gm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
+        gm_lab += " at Z{4:.{5}f} <{6}>"
+        en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
+        ev_label = gm_lab.format(
+                st_pos[0], st_pos[1],
+                en_pos[0], en_pos[1],
+                z_abs, OCV.digits, label)
+
     # add mark  line, we need to add 1 to position it after the event
-    OCV.blocks[-1].insert(line_pos + 1, OCV.b_mdata_h + " " + label)
+    OCV.blocks[-1].insert(line_pos + 1, OCV.b_mdata_h + " " + ev_label)
     # incrment the added lines counter
     OCV.block_add_l += 1
     # set the new block line count
@@ -149,7 +177,6 @@ def process_events():
     more blocks are created detecting the custom '(MOP Start:' supplied
     by CamBam postprocessor modified by onekk.
     """
-    INT_DEBUG = True
     OCV.blocks_info = []
     OCV.blocks_pos = 0  # only one block is created by pre_process_gcode
     # index start from 1 as the first line is a dummy marker
@@ -157,7 +184,7 @@ def process_events():
 
     print_block(0)
 
-    if INT_DEBUG is True:
+    if OCV.DEBUG_HEUR > 2:
         print(OCV.blocks_info)
 
     process = True
@@ -175,14 +202,17 @@ def process_events():
         pre_ev = OCV.blocks_ev[l_idx - 1]
         nex_ev = OCV.blocks_ev[l_idx + 1]
 
+        if OCV.DEBUG_HEUR > 2:
+            print("Processing event >> ", act_ev)
+
         if act_ev[0] == "MS":
             if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
-                # TODO add a proper name
+                # proper names are added in the process_rapids method
                 pe_new_block(
-                    act_ev[1], "First MOP", INT_DEBUG)
+                    act_ev[1], "First MOP")
             else:
                 pe_new_block(
-                    act_ev[1], "Other MOP", INT_DEBUG)
+                    act_ev[1], "Other MOP")
 
         elif act_ev[0] == "ME":
             if nex_ev[0] == "MS":
@@ -192,22 +222,22 @@ def process_events():
                 nex1_ev = OCV.blocks_ev[l_idx + 2]
                 if nex1_ev[0] in OCV.end_cmds:
                     pe_new_block(
-                        act_ev[1] + 1, "End Block", INT_DEBUG)
+                        act_ev[1] + 1, "End Block")
                     # if this is the end block we have done
                     process = False
-        elif act_ev[0] == "GM":
-            pass
+        elif act_ev[0][:2] == "GM":
+            insert_mark(act_ev, act_ev[0])
         elif act_ev[0] == "G0":
             insert_mark(act_ev, "RAPID")
 
         elif act_ev[0] == "ZU":
             insert_mark(act_ev, "Z_UP")
         else:
-            if INT_DEBUG is True:
-                print_ev(l_idx, "NO catch")
+            if OCV.DEBUG_HEUR > 1:
+                print_events(l_idx, "NO catch")
 
 
-def pe_new_block(ev_line, b_name, DEBUG):
+def pe_new_block(ev_line, b_name):
     """Add a new block to the block list during a process_event run
     ev_line >> position in which the event occurs
     b_name  >> block name
@@ -230,7 +260,7 @@ def pe_new_block(ev_line, b_name, DEBUG):
     # determine the start
     line_num = ev_line - OCV.blocks_info[old_block_num][0] + added_lines
 
-    if DEBUG is True:
+    if OCV.DEBUG_HEUR > 3:
         print(OCV.str_sep)
         print("New Block {0}".format(b_name))
         print(">> Event Line = {0} , added_lines {1}".format(
@@ -251,16 +281,18 @@ def pe_new_block(ev_line, b_name, DEBUG):
 
     while l_idx < l2mov:
         l_idx += 1
-        print(
-            "l2mov = {0} l_idx = {1} line_num {2}".format(
-                l2mov, l_idx, line_num),
-            OCV.blocks[old_block_num][line_num])
+
+        if OCV.DEBUG_HEUR > 3:
+            print(
+                "l2mov = {0} l_idx = {1} line_num {2}".format(
+                    l2mov, l_idx, line_num),
+                        OCV.blocks[old_block_num][line_num])
 
         line = OCV.blocks[old_block_num].pop(line_num)
         OCV.blocks[new_block_num].append(line)
 
 
-def process_rapids(DEBUG=False):
+def process_rapids():
     """This has to identify the rapids between the MOPs and eventually those
     between shapes (profiles or pockets) in each MOP"""
 
@@ -268,8 +300,9 @@ def process_rapids(DEBUG=False):
     b_idx = 0
     # process control while flow if set to True will end the loop
     process = True
-    match = False
     # Not using a for loop due to OCV.Blocks in-place modifications
+    md_mkl = len(OCV.b_mdata_h)
+    md_mk_rm = md_mkl + len(OCV.b_mdata_rm) + 1  # space between the markers
 
     while process is True:
         l_idx = 0  # reset line counter
@@ -288,13 +321,14 @@ def process_rapids(DEBUG=False):
         # get the mop_name if there is any
         if cur_head[1:11] == "MOP Start:":
             mop_name = cur_head.split(":")[1].lstrip().rstrip(" )")
+        # elif cur_head[md_mkl:11] == "":
 
         if cur_foot[1:9] == "MOP End:":
             if mop_name != "":
                 wf_block = True
                 cur_block.b_name = mop_name
 
-        if DEBUG is True:
+        if OCV.DEBUG_HEUR > 2:
             print(OCV.str_sep)
             print("Block {0} = ".format(b_idx))
             if wf_block is True:
@@ -305,17 +339,16 @@ def process_rapids(DEBUG=False):
         while process2 is True:
             line = cur_block[l_idx]
 
-            if DEBUG is True:
+            if OCV.DEBUG_HEUR > 2:
                 print("Block {0} - Line {1} >>".format(b_idx, l_idx), line)
 
-            if line[:5] == OCV.b_mdata_h:
-                if line[6:17] == OCV.b_mdata_rm:
+            # detect rapid move marker and split the block if present
+            if line[:md_mkl] == OCV.b_mdata_h:
+                if line[md_mkl + 1:md_mk_rm] == OCV.b_mdata_rm:
                     mv_d = extract_rapid_move_value(line)
-                    if DEBUG is True:
-                        print("BMD RM Det")
-                        print(mv_d)
-                    split_block(b_idx, l_idx, "TM", [mv_d[1]], DEBUG)
-                    b_idx += 1
+                    split_block(b_idx, l_idx, "TM", [mv_d[1]], mop_name)
+                    # as following lines are now in new block
+                    # exit from lines loop
                     process2 = False
                     continue
 
@@ -330,16 +363,17 @@ def process_rapids(DEBUG=False):
             process = False
 
     else:
-        if DEBUG is True:
+        if OCV.DEBUG_HEUR > 0:
             OCV.printout_header("{0}", "END PROCESS_RAPIDS")
 
 
-def split_block(b_idx, l_idx, action, ac_data, DEBUG):
+def split_block(b_idx, l_idx, action, ac_data, mop_name):
     cur_block = OCV.blocks[b_idx]
-    print("Split {0} Block = {1} at Line {2}".format(
-        cur_block.b_name, b_idx, l_idx))
-
     old_name = cur_block.b_name
+
+    if OCV.DEBUG_HEUR > 3:
+        print("Split {0} Block = {1} at Line {2}".format(
+                old_name, b_idx, l_idx))
 
     if action == "TM":  # Travel move between blocks
         new_name = old_name + " init move"
@@ -352,9 +386,9 @@ def split_block(b_idx, l_idx, action, ac_data, DEBUG):
 
     while l_cnt < l2mov:
 
-        # only for troubleshooting split
-        # print("l2mov = {0} l_cnt = {1} l_idx {2}".format(
-        #        l2mov, l_cnt, l_idx), OCV.blocks[b_idx][l_idx])
+        if OCV.DEBUG_HEUR > 4:  # only for troubleshooting split idx > 4
+            print("l2mov = {0} l_cnt = {1} l_idx {2}".format(
+                    l2mov, l_cnt, l_idx), OCV.blocks[b_idx][l_idx])
 
         line = OCV.blocks[b_idx].pop(l_idx)
         new_block.append(line)
@@ -368,7 +402,8 @@ def split_block(b_idx, l_idx, action, ac_data, DEBUG):
     if action == "TM":
         head_line = added_block[0]
         cur_block.append(head_line)
-        label = " Shape Start: X{0:.{2}f} Y{1:.{2}f} )".format(
+        label = OCV.b_mdata_ss.format(mop_name, str(1))
+        label += " SP: X{0:.{2}f} Y{1:.{2}f}".format(
             ac_data[0][0], ac_data[0][1], OCV.digits)
         added_block[0] = OCV.b_mdata_h + " " + label
 
@@ -384,7 +419,7 @@ def extract_rapid_move_value(md_string):
     to_p = md_string.find(' to ')  # to position
     at_p = md_string.find(' at ')  # at position
 
-    f_val = parse_line(md_string[from_p + 6:to_p]) # from is st
+    f_val = parse_line(md_string[from_p + 6:to_p])
     t_val = parse_line(md_string[to_p + 4:at_p])
     a_val = parse_line(md_string[at_p + 4:].rstrip(")"))
 
@@ -413,307 +448,3 @@ def extract_value(cmds):
             z_val = value*OCV.unit
 
     return (x_val, y_val, z_val)
-
-
-# Here for now to reuse some code, it is intended to be deleted
-# ASA refactoring is finished
-
-class CodeAnalizer(object):
-    """Analyze for Z raise and XY pos of  actual and peceding blocks
-    to detect the consecutive paths,
-    If preceding path end and actual path start have the same XY position
-    they belongs to the same shape the z raises could be the tabs,
-    if they are not at the maximum Z
-    This euristics works, at least for "profiles"
-
-    Some assumptions are made:
-        First move serve to place the gantry at the path starts, and generally
-            is done at Z max-height, maybe if there are some auto z adjust,
-            or tool lenght probe some code has to be added to cope with this
-            case
-
-        Subsequent moves aren't higher than this first move Z, generally is
-            true as the endmill is lowered at Z safe_height at the beginning
-            of the work
-
-        Moves that aren't at Z safe_height are generally tabs or pecks_heights
-            maybe defining some Z values for the race cases would be a good
-            approach
-
-        Actually it seems that pockets are not correctly detected, some more
-        deep analisys is needed
-        """
-
-    def __init__(self):
-        self.z_min = 1000.0
-        self.z_max = 1000.0
-        self.first_z = 10000.0
-        self.block_moved = False
-
-    def detect_profiles(self):
-        """analyze start and ending points to 'detect' the shapes at least
-        profile """
-        z_pass = self.pre_process_md()
-
-        if z_pass == []:
-            print("empty z_pass")
-
-        process = True
-
-        zp_cnt = 0
-        p_bl_id = -1
-        block = []
-
-        while (process is True):
-            bl_id = z_pass[zp_cnt][0]
-            print(bl_id, zp_cnt, z_pass[zp_cnt])
-
-            if bl_id == p_bl_id:
-                pass
-            else:
-                block = OCV.blocks[bl_id]
-                print(block[0], bl_id, zp_cnt)
-
-            print(block[z_pass[zp_cnt][1]])
-
-            print(OCV.str_sep)
-            if zp_cnt < (len(z_pass) - 1):
-                p_bl_id = bl_id
-                zp_cnt += 1
-            else:
-                process = False
-
-
-    def joinblocks(self, index):
-        """perfrom a join of the two block, the actual and the preceding
-        rearranging metadata"""
-        # delete last line with end position
-        OCV.blocks[index-1][-1] = "( End Z  pass ? )"
-        for line in OCV.blocks[index]:
-            if line.startswith(OCV.b_mdata_sp[:8]):
-                # match block start point no write
-                pass
-            else:
-                # no match of start, end or pass z_height
-                OCV.blocks[index-1].append(line)
-
-        del OCV.blocks[index]
-
-        # print("JoinBlock >>", OCV.blocks[index - 1])
-
-    def parse_blocks(self):
-        """perform a block analisys and track all the detection"""
-        al_cnt = 0
-        self.first_z = 10000.0  # dummy height in hobby machine may be enough
-        process = True
-        b_idx = 0
-        self.block_head_mod = False
-        self.block_advance = False
-        # we are not using loops as the Block count could be modified
-        while (process is True):
-            print(OCV.str_sep)
-            print("Scanning Block {0} adv = {1} h_mod = {2}".format(
-                    b_idx,
-                    self.block_advance, self.block_head_mod))
-
-            l_cnt = 0
-            block = OCV.blocks[b_idx]
-            # avoid the recheck of the first (moved) line of new block
-            # as it generate a loop that end in a AttributeError for
-            # OCV.blocks
-            if self.block_advance is True:
-                if self.block_head_mod is True:
-                    l_cnt += 1
-                    self.block_head_mod = False
-
-                l_cnt += 1
-                self.block_advance = False
-
-            process2 = True
-            while (process2 is True):
-
-                line = block[l_cnt]
-                msg = []
-                print(l_cnt, line)
-                cmds = parse_line(line)
-
-                # print(cmds)
-                if cmds is not None and self.first_z > 9999 \
-                        and cmds[0] == "G0" and cmds[1][:1] == "Z":
-                    self.first_z = self.extract_value(cmds)[2]
-                    msg.append("--- first z_detected {0}".format(self.first_z))
-
-                if cmds is not None and self.first_z < 9999 \
-                        and cmds[0] == "G0" and cmds[1][:1] == "Z":
-                    other_z = self.extract_value(cmds)[2]
-                    if other_z == self.first_z:
-                        msg.append(
-                            "--- z_safe {0} detected ?".format(other_z))
-                    else:
-                        msg.append(
-                            "--- GO single z_move {0}".format(other_z))
-
-                if cmds is None:
-                    if line[:8] == "(B_MD SP":
-                        msg.append("--- Block metadata START")
-                    elif line[:8] == "(B_MD EP":
-                        msg.append("--- Block metadata END")
-                    elif line[:10] == "(MOP Start":
-                        mop_desc = line[11:].rstrip(" )").lstrip()
-                        #print("MOP name >{0}<".format(mop_desc))
-                        self.process_mop(mop_desc, b_idx, l_cnt)
-                        process2 = False
-                    else:
-                        msg.append("--- comment detected?")
-
-                print(al_cnt, l_cnt, line)
-                if msg is not []:
-                    print("\n".join(msg))
-
-                if l_cnt < (len(block) - 1):
-                    l_cnt += 1
-                    al_cnt += 1
-                else:
-                    process2 = False
-
-            # Check all blocks are scanned
-            if b_idx < (len(OCV.blocks) - 1):
-                b_idx += 1
-            else:
-                process = False
-
-        # rearrange blocks
-        OCV.APP.event_generate("<<Modified>>")
-
-    def process_mop(self, mop_desc, b_idx, boundary):
-        shape_end = False
-        INT_DEBUG = True
-        proc_block = OCV.blocks[b_idx]
-        # print("Proc_Block 0", proc_block[0])
-        s_part = proc_block[:boundary]
-        e_part = proc_block[boundary:]
-
-        if INT_DEBUG is True:
-            print(OCV.str_sep)
-            print("Block {0} \n".format(b_idx))
-            print(OCV.str_sep)
-            print("Boundary {0} S_part\n".format(b_idx),
-                  OCV.str_sep, "\n", s_part)
-            print("Boundary {0} E_part\n".format(b_idx),
-                  OCV.str_sep, "\n", e_part)
-            print(OCV.str_sep)
-            print("Next block {0} \n".format(b_idx + 1))
-            print(OCV.blocks[b_idx + 1], "\n", OCV.str_sep)
-
-        # create an empty block for the new block
-        block = Block()
-        # place the lines after MOP Start: in the block
-        block.extend(e_part)
-
-        # check if the first line of the processed block contains shape start
-        if proc_block[0][:8] == "(B_MD SP":
-            # extract the line from the block and place it after "MOP Start:"
-            b_sp = proc_block.pop(0)
-
-            print(OCV.str_sep)
-            print("DEBUG ARRANGE SHAPE START END \n{0}".format(b_sp))
-            print("-- Following line", proc_block[0])
-            print("-- Following line", proc_block[1])
-            print("-- Following line", proc_block[2])
-            print("block", block)
-            print(OCV.str_sep)
-
-            # delete it also from s_part
-            del s_part[0]
-            # decrement the boundary variable
-            boundary -= 1
-            block.insert(1, "( Shape Start )")
-            block.insert(1, b_sp)
-            self.block_head_mod = True
-
-        if block[-1][:8] == "(B_MD EP":
-            shape_end = True
-            block.append("( Shape End )")
-
-        # create and empty block for the intial part
-        cur_block = Block()
-
-        if s_part[0][:8] == "(B_MD SP":
-            if shape_end is True:
-                cur_block.append("( Shape Start )")
-
-        cur_block.extend(s_part)
-
-        self.sanitize_block(block, cur_block)
-
-        # check if line before boundary is a MOP End
-        if s_part[-1][:8] == "(MOP End":
-            # if is MOP End we should leave the block with the relevant info
-            OCV.blocks[b_idx] = cur_block
-            OCV.blocks.insert(b_idx + 1, block)
-            self.block_advance = True
-        else:
-            # if is not MOP End, the prior part is appended
-            # to the preceding block
-            OCV.blocks[b_idx - 1].extend(cur_block)
-            OCV.blocks[b_idx] = block
-
-        # self.debug_blocks(self, b_idx)
-
-    def debug_blocks(self, b_idx):
-        print(OCV.str_sep)
-        print("block prior", OCV.blocks[b_idx - 1])
-        print("\n", OCV.str_sep)
-        print("block actual", OCV.blocks[b_idx])
-        print("\n", OCV.str_sep)
-        print("block next", OCV.blocks[b_idx + 1])
-        print("\n", OCV.str_sep)
-
-        OCV.APP.event_generate("<<Modified>>")
-
-    def sanitize_block(self, block, cur_block):
-        # scan the block for commands or comments not relevant for MOP
-        # like Spindle start and stop and Spindle Speed,  Tool change
-        # commands plus tooltable comments and others...
-        # move them to the to preceding block for clarity
-
-        l_cnt = 0
-        b_scan = True
-
-        while (b_scan is True):
-            line = block[l_cnt]
-            cmds = parse_line(line)
-            detection = False
-
-            if cmds is not None:
-                # print("BA >> ", line, cmds)
-
-                if cmds[0] in ("G17", "M3", "M4", "M8"):
-                    detection = True
-                elif cmds[0][:1] in ("T", "S"):
-                    detection = True
-                else:
-                    detection = False
-            else:
-                # print("BA COMMENT > ", line)
-                if line[:3] in ("( T",):
-                    detection = True
-
-            if detection is True:
-                # print("Match {0}".format(line))
-                cur_block.append(line)
-                del block[l_cnt]
-                # rearrange counter
-                l_cnt -= 1
-
-            # If the command is relevant for the MOP terminate the scan
-            if cmds is not None:
-                if cmds[0] in ("G0", "G1", "G2", "G3"):
-                    b_scan = False
-
-            # end of block check to avoid Errors
-            if l_cnt < (len(block) - 1):
-                l_cnt += 1
-            else:
-                b_scan = False
-

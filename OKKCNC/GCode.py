@@ -249,7 +249,8 @@ class GCode(object):
             if move in ("G1", "G2", "G3"):
                 # 'cut move' with feedrate
                 if cmds[1][:1] == "F":
-                    OCV.blocks_ev.append(("GM", l_idx, line, move_c))
+                    OCV.blocks_ev.append(
+                            ("GM{0}".format(move[1]), l_idx, line, move_c))
                     OCV.blocks[-1].append(line)
                     continue
                 else:
@@ -263,7 +264,8 @@ class GCode(object):
                 # 4, 10, 53, 17 ,18 , 19, 20, 21, 80, 90, 91, 93, 94, 95,
                 # 98, 99 - so other checks are needed to detectd the "cause"
                 # of this z_move
-                if self.cnc.gcode == 0 and self.cnc.dz > 0.0:
+                if cmds[1][0] == "Z" and self.cnc.dz > 0.0:
+                    print("ZU",cmds)
                     # rapid Z move up detected
                     OCV.blocks_ev.append(("ZU", l_idx, line, move_c))
                     OCV.blocks[-1].append(line)
