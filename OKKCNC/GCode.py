@@ -166,7 +166,6 @@ class GCode(object):
         if OCV.DEBUG_PAR is True:
             OCV.printout_header("{0}", "END SCAN")
 
-
     def pre_process_gcode(self):
         """scan gcode lines and inject some metadata, creating only one Block.
         This create also the OCV.blocks_ev list used to hold some info to make
@@ -230,6 +229,8 @@ class GCode(object):
                 continue
 
             cmds = Heuristic.parse_line(line)
+            # Debug infos do not delete
+            # print(cmds)
 
             if cmds is None:
                 # the line contains comments or no valid commands
@@ -245,12 +246,16 @@ class GCode(object):
             OCV.min_z = min(OCV.min_z, self.cnc.z)
             OCV.max_z = max(OCV.max_z, self.cnc.z)
 
-            # analyze 'cut moves'
+            # analyze moves
             if move in ("G1", "G2", "G3"):
                 # 'cut move' with feedrate
-                if cmds[1][:1] == "F":
+                if cmds[1][0] == "F":
+                    if cmds[2][0] == "Z":
+                        ev_label = "GMZ"
+                    else:
+                        ev_label = "GMXY"
                     OCV.blocks_ev.append(
-                            ("GM{0}".format(move[1]), l_idx, line, move_c))
+                            (ev_label, l_idx, line, move_c, cmds))
                     OCV.blocks[-1].append(line)
                     continue
                 else:
@@ -258,22 +263,22 @@ class GCode(object):
                     # event to process
                     OCV.blocks[-1].append(line)
             elif move == "G0":
-                # NOTE: self.cnc.gcode is not always holding the content of
-                # current move commands CNC.motionStart method don't modify
-                # self.cnc.gcode for the following commands
-                # 4, 10, 53, 17 ,18 , 19, 20, 21, 80, 90, 91, 93, 94, 95,
-                # 98, 99 - so other checks are needed to detectd the "cause"
-                # of this z_move
+                # original code using self.cnc.gcode == 0
+                # will also detect come G0 move that don't contains Z value
+                # leading to some 'false' positive
                 if cmds[1][0] == "Z" and self.cnc.dz > 0.0:
-                    print("ZU",cmds)
                     # rapid Z move up detected
                     OCV.blocks_ev.append(("ZU", l_idx, line, move_c))
                     OCV.blocks[-1].append(line)
                     continue
+                elif cmds[1][0] == "Z" and self.cnc.dz <= 0:
+                    # rapid Z move down detected
+                    OCV.blocks_ev.append(("ZD", l_idx, line, move_c))
+                    OCV.blocks[-1].append(line)
                 else:
                     # a normal G0 move is detected
-                    # this could catch also some "G0 Zxx" moves
-                    OCV.blocks_ev.append(("G0", l_idx, line, move_c))
+                    # this could catch "G0 Zxx" moves
+                    OCV.blocks_ev.append(("G0", l_idx, line, move_c, cmds))
                     OCV.blocks[-1].append(line)
                     continue
             elif move in OCV.end_cmds:

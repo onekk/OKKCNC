@@ -69,6 +69,9 @@ class Block(list):
         """return Block Name or None"""
         return self.b_name is None and "block" or self.b_name
 
+    def set_name(self, new_name):
+        self.b_name = new_name
+
     def nameNop(self):
         """@return name without the operation"""
         name = self.name()

@@ -216,7 +216,7 @@ blocks = []  # Gcode blocks, here to be shared
     0 > block start line (the line in OCV.gcodlines)
     1 > number of added lines to keep in sync with OCV.gcodelines
 """
-blocks_ev = [] # blocks events, used by pre_process_gcode
+blocks_ev = []  # blocks events, used by pre_process_gcode
 blocks_info = []
 #  to keep tracks on which block we are working
 blocks_pos = 0
@@ -227,8 +227,9 @@ block_add_l = 0
 # b_mdata_xx variables holds Block metedata used in heuristic analisys
 # ':' is used to quiclky separate string from values
 b_mdata_h = "(BMD:"
-b_mdata_gm = "CUTMOV from"
-b_mdata_rm = "RAPMOV from"
+b_mdata_mc = "CUTMOV from"
+b_mdata_mcz = "CUT_Z at"
+b_mdata_mr = "RAPMOV from"
 b_mdata_ss = "[{0}][{1}]"
 
 
@@ -565,6 +566,7 @@ def printout_infos(messages):
 
 def showC(x_val, y_val, z_val):
     return sh_coord.format(x_val, y_val, z_val, digits)
+
 
 # TODO uniform the metadata in CAMGen with those used by heuristic
 # gcodeCC is used only in CAMGen
