@@ -228,7 +228,9 @@ block_add_l = 0
 # ':' is used to quiclky separate string from values
 b_mdata_h = "(BMD:"
 b_mdata_mc = "CUTMOV from"
+b_mdata_mczf = "CUTZF from"
 b_mdata_mcz = "CUT_Z at"
+b_mdata_mcxy = "CUTXY at"
 b_mdata_mr = "RAPMOV from"
 b_mdata_ss = "[{0}][{1}]"
 

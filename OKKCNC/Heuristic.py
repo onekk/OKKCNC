@@ -72,8 +72,8 @@ def process_blocks():
     # try to detect the G0 moves between the MOPS
     # reset the events, we reuse the variable for other event detection.
     process_rapids()
-    # OCV.blocks_ev = []
-    # process_shapes()
+    OCV.blocks_ev = []
+    process_shapes()
     # refresh block in editor
     OCV.APP.event_generate("<<Modified>>")
 
@@ -135,14 +135,18 @@ def insert_mark(event, label):
             z_abs, OCV.digits)
 
     elif label == "Z_UP":
-        ev_label = "Z_RS {0:.{2}f} ABS_Z {1:.{2}f}".format(
-            z_move, z_abs, OCV.digits)
+        ev_label = "Z_RS {0:.{1}f} ".format(
+            z_abs, OCV.digits)
     elif label == "Z_DW":
-        ev_label = "Z_DW {0:.{2}f} ABS_Z {1:.{2}f}".format(
-            z_move, z_abs, OCV.digits)
+        ev_label = "Z_DW {0:.{1}f}".format(
+            z_abs, OCV.digits)
 
     elif label in ("GMZ", "GMXY"):
-        gm_lab = OCV.b_mdata_mc
+        if label == "GMZ":
+            gm_lab = OCV.b_mdata_mczf
+        else:
+            gm_lab = OCV.b_mdata_mc
+
         gm_lab += " X{0:.{5}f} Y{1:.{5}f}"
         gm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
         gm_lab += " at Z{4:.{5}f} <{6}>"
@@ -151,15 +155,18 @@ def insert_mark(event, label):
                 st_pos[0], st_pos[1],
                 en_pos[0], en_pos[1],
                 z_abs, OCV.digits, label)
+
     elif label == "GCZM":
+        # this rarely occurs
         zm_lab = OCV.b_mdata_mcz
         zm_lab += " X{0:.{3}f} Y{1:.{3}f}"
         zm_lab += " at Z{2:.{3}f} <{4}>"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
                 z_abs, OCV.digits, label)
-    elif label == "GCXYM":
-        zm_lab = OCV.b_mdata_mcz
+
+    elif label == "GCXYM0":
+        zm_lab = OCV.b_mdata_mcxy
         zm_lab += " X{0:.{3}f} Y{1:.{3}f}"
         zm_lab += " at Z{2:.{3}f} <{4}>"
         ev_label = zm_lab.format(
@@ -276,7 +283,7 @@ def process_events():
 
         elif ev_label == "ZD":
             insert_mark(act_ev, "Z_DW")
-            
+
         elif ev_label == "ZU":
             insert_mark(act_ev, "Z_UP")
 
@@ -538,9 +545,8 @@ def process_shapes():
     """The scope of this method is to identify:
     shapes (profiles or pockets) in each MOP
     """
-    return
     md_mkl = len(OCV.b_mdata_h)
-    md_mk_rm = md_mkl + len(OCV.b_mdata_mr) + 1  # space between the markers
+    # md_mk_rm = md_mkl + len(OCV.b_mdata_mr) + 1  # space between the markers
 
     #  Blocks loop counter
     b_idx = 0
@@ -560,7 +566,12 @@ def process_shapes():
                 print("Block {0} - Line {1} >>".format(b_idx, l_idx), line)
 
             if line[:md_mkl] == OCV.b_mdata_h:
-                print("Match")
+                event = line.split(":")
+                print("Event Match")
+                if event[1][-2:] == "SP":
+                    print("Event Start Shape ", event)
+                print(OCV.str_sep)
+                #OCV.blocks_ev.append()
 
             if l_idx < (len(cur_block) - 1):
                 l_idx += 1
