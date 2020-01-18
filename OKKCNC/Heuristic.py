@@ -108,7 +108,7 @@ def print_blocks_debug_info(b_idx):
     OCV.APP.event_generate("<<Modified>>")
 
 
-def insert_mark(event, label):
+def insert_mark(event, label, ev_seq):
     block_num = OCV.blocks_pos
     b_start = OCV.blocks_info[block_num][0]
     ev_pos = event[1]
@@ -120,6 +120,11 @@ def insert_mark(event, label):
     z_abs = event[3][1]
     z_move = in_pos[2]
     ev_label = "empty label"
+
+    if len(ev_seq) > 3:
+        str_seq = "{0} >> {1} >> [{2}] >> {3}".format(*ev_seq)
+    else:
+        str_seq = "{0} >> [{1}] >> {2}".format(*ev_seq)
 
     if label == "RAPID":
 
@@ -135,11 +140,9 @@ def insert_mark(event, label):
             z_abs, OCV.digits)
 
     elif label == "Z_UP":
-        ev_label = "Z_RS {0:.{1}f} ".format(
-            z_abs, OCV.digits)
+        ev_label = "Z_RS {0:.{1}f}".format(z_abs, OCV.digits)
     elif label == "Z_DW":
-        ev_label = "Z_DW {0:.{1}f}".format(
-            z_abs, OCV.digits)
+        ev_label = "Z_DW {0:.{1}f}".format(z_abs, OCV.digits)
 
     elif label in ("GMZ", "GMXY"):
         if label == "GMZ":
@@ -149,31 +152,39 @@ def insert_mark(event, label):
 
         gm_lab += " X{0:.{5}f} Y{1:.{5}f}"
         gm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
-        gm_lab += " at Z{4:.{5}f} <{6}>"
+        gm_lab += " at Z{4:.{5}f}"
         en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
         ev_label = gm_lab.format(
                 st_pos[0], st_pos[1],
                 en_pos[0], en_pos[1],
-                z_abs, OCV.digits, label)
+                z_abs, OCV.digits)
 
-    elif label == "GCZM":
-        # this rarely occurs
+    elif label == "GCZP":
         zm_lab = OCV.b_mdata_mcz
         zm_lab += " X{0:.{3}f} Y{1:.{3}f}"
-        zm_lab += " at Z{2:.{3}f} <{4}>"
+        zm_lab += " Z{2:.{3}f}"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
-                z_abs, OCV.digits, label)
+                z_abs, OCV.digits)
+
+    elif label == "GCFZP":
+        zm_lab = OCV.b_mdata_mcfz
+        zm_lab += " X{0:.{3}f} Y{1:.{3}f}"
+        zm_lab += " Z{2:.{3}f}"
+        ev_label = zm_lab.format(
+                st_pos[0], st_pos[1],
+                z_abs, OCV.digits)
 
     elif label == "GCXYM0":
+        # probably not needed
         zm_lab = OCV.b_mdata_mcxy
         zm_lab += " X{0:.{3}f} Y{1:.{3}f}"
-        zm_lab += " at Z{2:.{3}f} <{4}>"
+        zm_lab += " at Z{2:.{3}f}>"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
-                z_abs, OCV.digits, label)
+                z_abs, OCV.digits)
 
-    print("Add_Mark", label, ev_label)
+    print("Add_Mark", label, ev_label, str_seq)
 
     # add mark  line, we need to add 1 to position it after the event
     OCV.blocks[-1].insert(line_pos + 1, OCV.b_mdata_h + " " + ev_label + ")")
@@ -204,10 +215,9 @@ def process_events():
     # index start from 1 as the first line is a dummy marker
     OCV.blocks_info.append([1, 0])
 
-    print_block(0)
-
     if OCV.DEBUG_HEUR > 2:
-        print(OCV.blocks_info)
+        print_block(0)
+        print(OCV.str_sep)
 
     process = True
     l_idx = 1
@@ -220,14 +230,41 @@ def process_events():
             # if not present last line is scanned again
             process = False
             continue
+
         act_ev = OCV.blocks_ev[l_idx]
         pre_ev = OCV.blocks_ev[l_idx - 1]
         nex_ev = OCV.blocks_ev[l_idx + 1]
         ev_label = act_ev[0]
+
+        if l_idx > 3:
+            pre_pre_ev = OCV.blocks_ev[l_idx - 2]
+            ev_seq = (pre_pre_ev[0], pre_ev[0], act_ev[0], nex_ev[0])
+        else:
+            ev_seq = (pre_ev[0], act_ev[0], nex_ev[0])
+
         ev_info = []
 
         if OCV.DEBUG_HEUR > 2:
-            print("Processing event >> ", act_ev)
+            print("Processing event [{0}] >> \n".format(l_idx), act_ev)
+
+            if l_idx > 3:
+                pre_pre_ev = OCV.blocks_ev[l_idx - 2]
+                ev_info.append(
+                    "Ev sequence {0} >> {1} >> [{2}] >> {3}".format(
+                        pre_pre_ev[0], pre_ev[0], act_ev[0], nex_ev[0]))
+            else:
+                ev_info.append(
+                    "Ev sequence {0} >> [{1}] >> {2}".format(*ev_seq))
+
+            # theese lines are for testing event sequences
+            # keep here for future use
+            if len(ev_seq) > 3:
+                if ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
+                    pass
+                    # print(">>>>  <<<<")
+                elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
+                    pass
+                    # print(">>>>  <<<<")
 
         if ev_label == "MS":
             if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
@@ -249,47 +286,44 @@ def process_events():
                         act_ev[1] + 1, "End Block")
                     # if this is the end block we have done
                     process = False
+
         elif ev_label == "GMZ":
-            ev_info.append("GMZ {0}".format(act_ev))
-            ev_info.append("{0}".format(act_ev[4]))
+            # check if we are in presence of a distinctive events sequence
+            if len(ev_seq) > 3:
+                if ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
+                    ev_label = "GCZP"
+                elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
+                    ev_label = "GCFZP"
+            else:
+                # this seems to happens very rarely
+                ev_label = "GMZ"
+                ev_info.append("Generic GMZ event -- {0}".format(act_ev))
 
-            if pre_ev[0] == "G0":
-                ev_info.append("Precedent event is G0")
-                pre_fm_xy = (pre_ev[3][2][0], pre_ev[3][2][1])
-                act_fm_xy = (act_ev[3][2][0], act_ev[3][2][1])
-
-                if pre_fm_xy == act_fm_xy:
-                    ev_info.append(" Coordinates Match")
-                    if pre_fm_xy != (0, 0):
-                        ev_info.append("GM_pe {0}".format(act_ev))
-                        ev_info.append("{0} >> {1}".format(
-                                pre_fm_xy, act_fm_xy))
-                        ev_info.append("Created GCXYM mark")
-                        ev_label = "GCXYM0"
-                    else:
-                        ev_info.append("Created GCZM mark")
-                        ev_label = "GCZM"
-
-            insert_mark(act_ev, ev_label)
+            insert_mark(act_ev, ev_label, ev_seq)
 
         elif ev_label == "GMXY":
-            ev_info.append("GMXY {0}".format(act_ev))
-            ev_info.append("{0}".format(act_ev[4]))
-
-            insert_mark(act_ev, "GMXY")
+            insert_mark(act_ev, "GMXY", ev_seq)
 
         elif ev_label == "G0":
-            insert_mark(act_ev, "RAPID")
+            insert_mark(act_ev, "RAPID", ev_seq)
 
         elif ev_label == "ZD":
-            insert_mark(act_ev, "Z_DW")
+            insert_mark(act_ev, "Z_DW", ev_seq)
 
         elif ev_label == "ZU":
-            insert_mark(act_ev, "Z_UP")
+            if act_ev[3][1] > (OCV.max_z - 0.00001):
+                ev_info.append(">>>> Z_MAX_UP >> {0}".format(act_ev))
+            else:
+                ev_info.append(">>>> ZUP >> {0}".format(act_ev))
+
+            if pre_ev[0] == "MS":
+                pass
+            else:
+                insert_mark(act_ev, "Z_UP", ev_seq)
 
         else:
-            if OCV.DEBUG_HEUR > 1:
-                print_events(l_idx, "NO catch")
+            ev_info.append("No Catch >> {0}".format(act_ev))
+            ev_info.append("{0}".format(act_ev[4]))
 
         if OCV.DEBUG_HEUR > 2:
             if len(ev_info) >= 1:
@@ -428,7 +462,7 @@ def process_rapids():
                         shape_num += 1
 
                     mv_d = extract_rapid_move_value(line)
-                    split_block(
+                    modify_block(
                         b_idx, l_idx,
                         split_type, [mv_d[1]],
                         mop_name, shape_num)
@@ -461,6 +495,7 @@ def detect_names(head_line, dt):
     dt is used to determine return values:
         0 - only the MOP NAME and SHAPE NAME
         1 - MOP NAME, SHAPE NAME, XY coordinate of the Shape Start Point
+        2 - MOP NAME, Shape number as string
     """
 
     mop_name = ""
@@ -481,13 +516,16 @@ def detect_names(head_line, dt):
         ret_val = (mop_name, shape_name)
     elif dt == 1:
         ret_val = (mop_name, shape_name, coords)
+    elif dt == 2:
+        shape_num = shape_name.split()[1].strip()
+        ret_val = (mop_name, shape_num)
     else:
         ret_val = (mop_name, shape_name)
 
     return ret_val
 
 
-def split_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
+def modify_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
     """Split blocks based on block number and position"""
     cur_block = OCV.blocks[b_idx]
     old_name = cur_block.b_name
@@ -498,35 +536,61 @@ def split_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
         print("Split {0} Shape {1} Block = {2} at Line {3}".format(
                 old_name, shape_num, b_idx, l_idx))
 
-    new_block = create_new_block(b_idx, l_idx, new_block_name + " cut")
+    if action in ("TM", "TMBP"):
+        new_block = create_new_block(b_idx, l_idx, new_block_name + " cut")
 
-    OCV.blocks.insert(b_idx + 1, new_block)
-    added_block = OCV.blocks[b_idx + 1]
+        OCV.blocks.insert(b_idx + 1, new_block)
+        added_block = OCV.blocks[b_idx + 1]
 
-    # arrange block metadata if needed
+        if action == "TM":
+            label = new_block_name
+            label += " SP: X{0:.{2}f} Y{1:.{2}f}".format(
+                ac_data[0][0], ac_data[0][1], OCV.digits)
+            added_block[0] = OCV.b_mdata_h + " " + label + ")"
+            cur_block.set_name(new_block_name + " - init move")
+            added_block.set_name(new_block_name + " - cut")
 
-    if action == "TM":
-        label = new_block_name
-        label += " SP: X{0:.{2}f} Y{1:.{2}f}".format(
-            ac_data[0][0], ac_data[0][1], OCV.digits)
-        added_block[0] = OCV.b_mdata_h + " " + label + ")"
-        cur_block.set_name(new_block_name + " - init move")
-        added_block.set_name(new_block_name + " - cut")
+        elif action == "TMBP":
+            label = new_block_name
+            label += " SP: X{0:.{2}f} Y{1:.{2}f}".format(
+                ac_data[0][0], ac_data[0][1], OCV.digits)
+            added_block[0] = OCV.b_mdata_h + " " + label + ")"
+            added_block.set_name(new_block_name + " - cut")
 
-    elif action == "TMBP":
-        label = new_block_name
-        label += " SP: X{0:.{2}f} Y{1:.{2}f}".format(
-            ac_data[0][0], ac_data[0][1], OCV.digits)
-        added_block[0] = OCV.b_mdata_h + " " + label + ")"
-        added_block.set_name(new_block_name + " - cut")
+    elif action == "SP":
+        new_block = create_new_block(b_idx, l_idx - 1, new_block_name + " -ZP")
+
+        OCV.blocks.insert(b_idx + 1, new_block)
+        added_block = OCV.blocks[b_idx + 1]
+
+        label = " Z{0:.{1}f}".format(ac_data[2], OCV.digits)
+        block_new_name = new_block_name + " pass at " + label
+        added_block.insert(0, OCV.b_mdata_h + " " + label + ")")
+        added_block.set_name(block_new_name)
+
+    elif action == "FP":
+        label = " Z{0:.{1}f}".format(ac_data[2], OCV.digits)
+        block_new_name = new_block_name + " first pass at " + label
+
+        move_lines2block(b_idx, l_idx, 0, block_new_name)
+        # remove Block Metadata line after the event line
+        del cur_block[1]
+        # place a comment that don't contain Block Metadata marker
+        # at the first line of the "modified" block
+        cur_block.insert(0, "( First pass at " + label + ")")
+        cur_block.set_name(block_new_name)
 
     OCV.APP.event_generate("<<Modified>>")
 
 
 def create_new_block(b_idx, l_idx, block_name):
+    """Create a new block and move the line starting from l_idx on it"""
     new_block = Block(block_name)
     l_cnt = 0
     l2mov = len(OCV.blocks[b_idx]) - l_idx
+
+    if OCV.DEBUG_HEUR > 2:
+        print("New Block Event at Block {0} line {1}".format(b_idx, l_idx))
 
     while l_cnt < l2mov:
 
@@ -541,10 +605,35 @@ def create_new_block(b_idx, l_idx, block_name):
     return new_block
 
 
+def move_lines2block(b_idx, l_idx, move2, block_new_name):
+    """move lines to another block
+     lines are moved from the present block to the block selected according
+     to move2 value as follows:
+         0 >> moved to the preceding block
+         1 >> to the next block (NOT IMPLEMENTED YET)
+    """
+    if move2 == 0:
+        l_cnt = 0
+        l2mov = l_idx
+        block = OCV.blocks[b_idx - 1]
+
+        while l_cnt < l2mov:
+            if OCV.DEBUG_HEUR > 4:  # only for troubleshooting split idx > 4
+                print("l2mov = {0} l_cnt = {1} l_idx {2}".format(
+                        l2mov, l_cnt, l_idx), OCV.blocks[b_idx][l_idx])
+            line = OCV.blocks[b_idx].pop(0)
+            block.append(line)
+            l_cnt += 1
+    else:
+        # for no no action
+        return
+
+
 def process_shapes():
     """The scope of this method is to identify:
     shapes (profiles or pockets) in each MOP
     """
+    # TODO: Catch the z_pass of the second shape
     md_mkl = len(OCV.b_mdata_h)
     # md_mk_rm = md_mkl + len(OCV.b_mdata_mr) + 1  # space between the markers
 
@@ -552,6 +641,7 @@ def process_shapes():
     b_idx = 0
     # process control while flow if set to True will end the loop
     process = True
+    ms_name = ""
 
     # Not using a for loop due to OCV.Blocks in-place modifications
     while process is True:
@@ -567,11 +657,43 @@ def process_shapes():
 
             if line[:md_mkl] == OCV.b_mdata_h:
                 event = line.split(":")
-                print("Event Match")
+
+                if OCV.DEBUG_HEUR > 2:
+                    print("BMD Match", event)
+                    print("Mop and Shape == >{0}<".format(ms_name))
+                    print("EV1 >{0}<".format(event[1]))
+
                 if event[1][-2:] == "SP":
-                    print("Event Start Shape ", event)
+                    ms_name = event[1][:-3].strip()
+
+                if OCV.DEBUG_HEUR > 2:
+                    print("Shape Name == >{0}<".format(ms_name))
+
+                if event[1].strip() == "FZ_PASS":
+                    ev_data = parse_line(event[2][2:].strip("at<)"))
+                    mv_d = extract_value(ev_data)
+                    mop_name, shape_num = detect_names(ms_name, 2)
+                    modify_block(
+                        b_idx, l_idx - 1,
+                        "FP", mv_d, mop_name, shape_num)
+                    # lines are passed to the old block so reset the counter
+                    # to start scanning from the beginning of the block
+                    l_idx = 0
+
+                if event[1].strip() == "Z_PASS":
+                    ev_data = parse_line(event[2][2:].strip("at<)"))
+                    mv_d = extract_value(ev_data)
+                    mop_name, shape_num = detect_names(ms_name, 2)
+                    modify_block(
+                        b_idx, l_idx - 1,
+                        "SP", mv_d, mop_name, shape_num)
+                    # lines are passed to a new block
+                    # advance the block counter
+                    b_idx += 1
+                    process2 = False
+
+            if OCV.DEBUG_HEUR > 2:
                 print(OCV.str_sep)
-                #OCV.blocks_ev.append()
 
             if l_idx < (len(cur_block) - 1):
                 l_idx += 1
@@ -619,7 +741,7 @@ def extract_value(cmds):
         except ValueError:
             value = float('-inf')
 
-        # print("EV > ",cmd, c, value)
+        # print("EV > ", cmd, c, value)
         if c == "X":
             x_val = value*OCV.unit
         elif c == "Y":
