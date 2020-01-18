@@ -239,12 +239,38 @@ class GCode(object):
 
             self.cnc.motionStart(cmds)
             move = cmds[0]
-            move_c = ((self.cnc.x, self.cnc.y, self.cnc.z),
-                      self.cnc.zval,
-                      (self.cnc.dx, self.cnc.dy, self.cnc.dz))
+            move_s = (self.cnc.x, self.cnc.y, self.cnc.z)
+            move_s_dz = self.cnc.dz
 
-            OCV.min_z = min(OCV.min_z, self.cnc.z)
-            OCV.max_z = max(OCV.max_z, self.cnc.z)
+            self.cnc.motionEnd()
+            move_f = (self.cnc.x, self.cnc.y, self.cnc.z)
+
+            delta_z = move_f[2] - move_s[2]
+            move_c = ((move_s[0], move_s[1], move_s[2]), delta_z,
+                      (move_f[0], move_f[1], move_f[2]))
+
+            OCV.min_z = min(OCV.min_z, move_f[2])
+            OCV.max_z = max(OCV.max_z, move_f[2])
+
+            print(line)
+
+            if (move_s[0], move_s[1]) != (move_f[0], move_f[1]):
+                print("Motion {} Move start = {} \nMove end = {}".format(
+                        move, move_s, move_f))
+                print("Delta Z = ", delta_z)
+            else:
+                if delta_z > 0:
+                    print("Z_UP Move from {} to {} at X{} Y{}".format(
+                            move_s[2], move_f[2], move_s[0], move_s[1]))
+                    print("Delta Z = {}".format(delta_z))
+                elif delta_z < 0:
+                    print("Z_DOWN Move from {} to {} at X{} Y{}".format(
+                            move_s[2], move_f[2], move_s[0], move_s[1]))
+                    print("Delta Z = {}".format(delta_z))
+                else:
+                    print("Stationary Move at Point {}".format(move_s))
+
+            print(OCV.str_sep)
 
             # analyze moves
             if move in ("G1", "G2", "G3"):
@@ -266,14 +292,20 @@ class GCode(object):
                 # original code using self.cnc.gcode == 0
                 # will also detect come G0 move that don't contains Z value
                 # leading to some 'false' positive
-                if cmds[1][0] == "Z" and self.cnc.dz > 0.0:
+                if cmds[1][0] == "Z" and move_s_dz > 0.0:
                     # rapid Z move up detected
                     OCV.blocks_ev.append(("ZU", l_idx, line, move_c))
                     OCV.blocks[-1].append(line)
                     continue
-                elif cmds[1][0] == "Z" and self.cnc.dz <= 0:
+                elif cmds[1][0] == "Z" and move_s_dz < 0:
                     # rapid Z move down detected
                     OCV.blocks_ev.append(("ZD", l_idx, line, move_c))
+                    OCV.blocks[-1].append(line)
+                elif cmds[1][0] == "Z" and move_s_dz == 0:
+                    # Z neutral move this catch G0 Z(same level of prior move)
+                    # that sometimes could appear
+                    OCV.blocks_ev.append(("ZN", l_idx, line, move_c))
+                    # maybe could be simply discarded
                     OCV.blocks[-1].append(line)
                 else:
                     # a normal G0 move is detected
@@ -288,8 +320,6 @@ class GCode(object):
             else:
                 # other moves T or M
                 OCV.blocks[-1].append(line)
-
-            self.cnc.motionEnd()
 
         # one line to pass the work to Heuristic module
         Heuristic.process_blocks()

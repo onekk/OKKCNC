@@ -116,9 +116,7 @@ def insert_mark(event, label, ev_seq):
 
     # process Mark
     st_pos = event[3][0]
-    in_pos = event[3][2]
-    z_abs = event[3][1]
-    z_move = in_pos[2]
+    en_pos = event[3][2]
     ev_label = "empty label"
 
     if len(ev_seq) > 3:
@@ -132,32 +130,47 @@ def insert_mark(event, label, ev_seq):
         rm_lab += " X{0:.{5}f} Y{1:.{5}f}"
         rm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
         rm_lab += " at Z{4:.{5}f}"
-        en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
 
         ev_label = rm_lab.format(
             st_pos[0], st_pos[1],
             en_pos[0], en_pos[1],
-            z_abs, OCV.digits)
+            en_pos[2], OCV.digits)
 
     elif label == "Z_UP":
-        ev_label = "Z_RS {0:.{1}f}".format(z_abs, OCV.digits)
+        ev_label = "Z_RS {0:.{1}f}".format(st_pos[2], OCV.digits)
     elif label == "Z_DW":
-        ev_label = "Z_DW {0:.{1}f}".format(z_abs, OCV.digits)
+        ev_label = "Z_DW {0:.{1}f}".format(st_pos[2], OCV.digits)
 
-    elif label in ("GMZ", "GMXY"):
-        if label == "GMZ":
-            gm_lab = OCV.b_mdata_mczf
-        else:
-            gm_lab = OCV.b_mdata_mc
+    elif label == "GMXY":
+        gm_lab = OCV.b_mdata_mc
 
         gm_lab += " X{0:.{5}f} Y{1:.{5}f}"
         gm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
         gm_lab += " at Z{4:.{5}f}"
-        en_pos = (st_pos[0] + in_pos[0], st_pos[1] + in_pos[1])
         ev_label = gm_lab.format(
                 st_pos[0], st_pos[1],
                 en_pos[0], en_pos[1],
-                z_abs, OCV.digits)
+                en_pos[2], OCV.digits)
+
+    elif label == "GMZ":
+        gm_lab = OCV.b_mdata_mczf
+
+        if en_pos[0] == st_pos[0] and en_pos[1] == st_pos[1]:
+            gm_lab += " X{0:.{3}f} Y{1:.{3}f}"
+            gm_lab += " at Z{2:.{3}f}"
+            ev_label = gm_lab.format(
+                    st_pos[0], st_pos[1],
+                    en_pos[2], OCV.digits)
+
+        else:
+            print("-->> Strange GMZ with position mismatch")
+            gm_lab += " X{0:.{5}f} Y{1:.{5}f}"
+            gm_lab += " to X{2:.{5}f} Y{3:.{5}f}"
+            gm_lab += " at Z{4:.{5}f}"
+            ev_label = gm_lab.format(
+                    st_pos[0], st_pos[1],
+                    en_pos[0], en_pos[1],
+                    en_pos[2], OCV.digits)
 
     elif label == "GCZP":
         zm_lab = OCV.b_mdata_mcz
@@ -165,7 +178,7 @@ def insert_mark(event, label, ev_seq):
         zm_lab += " Z{2:.{3}f}"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
-                z_abs, OCV.digits)
+                en_pos[2], OCV.digits)
 
     elif label == "GCFZP":
         zm_lab = OCV.b_mdata_mcfz
@@ -173,7 +186,7 @@ def insert_mark(event, label, ev_seq):
         zm_lab += " Z{2:.{3}f}"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
-                z_abs, OCV.digits)
+                en_pos[2], OCV.digits)
 
     elif label == "GCXYM0":
         # probably not needed
@@ -182,9 +195,9 @@ def insert_mark(event, label, ev_seq):
         zm_lab += " at Z{2:.{3}f}>"
         ev_label = zm_lab.format(
                 st_pos[0], st_pos[1],
-                z_abs, OCV.digits)
+                en_pos[2], OCV.digits)
 
-    print("Add_Mark", label, ev_label, str_seq)
+    print("ISM - Mark", label, ev_label, str_seq)
 
     # add mark  line, we need to add 1 to position it after the event
     OCV.blocks[-1].insert(line_pos + 1, OCV.b_mdata_h + " " + ev_label + ")")
@@ -259,12 +272,12 @@ def process_events():
             # theese lines are for testing event sequences
             # keep here for future use
             if len(ev_seq) > 3:
-                if ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
-                    pass
-                    # print(">>>>  <<<<")
+                if ev_seq == ("GMZ", "GMXY", "GMZ", "GMXY"):
+                    print(">>>> Final Z Pass <<<<")
                 elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
-                    pass
-                    # print(">>>>  <<<<")
+                    print(">>>> First Z Pass <<<<")
+                elif ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
+                    print(">>>> Inter Z Pass <<<<")
 
         if ev_label == "MS":
             if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
@@ -320,10 +333,11 @@ def process_events():
                 pass
             else:
                 insert_mark(act_ev, "Z_UP", ev_seq)
+        elif ev_label == "ZN":
+            ev_info.append(">>>> ZN >> {0}".format(act_ev))
 
         else:
             ev_info.append("No Catch >> {0}".format(act_ev))
-            ev_info.append("{0}".format(act_ev[4]))
 
         if OCV.DEBUG_HEUR > 2:
             if len(ev_info) >= 1:
@@ -633,7 +647,7 @@ def process_shapes():
     """The scope of this method is to identify:
     shapes (profiles or pockets) in each MOP
     """
-    # TODO: Catch the z_pass of the second shape
+    # TODO: Catch the z_pass in second shape
     md_mkl = len(OCV.b_mdata_h)
     # md_mk_rm = md_mkl + len(OCV.b_mdata_mr) + 1  # space between the markers
 
