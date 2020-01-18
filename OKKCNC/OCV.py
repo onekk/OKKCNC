@@ -28,8 +28,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.2.15-dev"
-PRG_DATE = "05 Jan 2020"
+PRG_VER = "0.2.50-dev"
+PRG_DATE = "18 Jan 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
