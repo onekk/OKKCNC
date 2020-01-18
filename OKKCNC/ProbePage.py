@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -26,13 +26,15 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
 
 import OCV
-from CNC import CNC, Block
-import Utils
+from CNC import CNC
+import CNCRibbon
+import Block
 import Camera
+import IniFile
 import Ribbon
 import tkExtra
+import Utils
 
-import CNCRibbon
 
 PROBE_CMD = [
     _("G38.2 stop on contact else error"),
@@ -92,12 +94,12 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         col, row = 0, 0
         b = Ribbon.LabelRadiobutton(
                 self.frame,
-                image=Utils.icons["probe32"],
+                image=OCV.icons["probe32"],
                 text=_("Probe"),
                 compound=TOP,
                 variable=self.tab,
                 value="Probe",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Simple probing along a direction"))
 
@@ -105,24 +107,24 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         col += 1
         b = Ribbon.LabelRadiobutton(
                 self.frame,
-                image=Utils.icons["level32"],
+                image=OCV.icons["level32"],
                 text=_("Autolevel"),
                 compound=TOP,
                 variable=self.tab,
                 value="Autolevel",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Autolevel Z surface"))
 
         # ---
         col += 1
         b = Ribbon.LabelRadiobutton(self.frame,
-                image=Utils.icons["camera32"],
+                image=OCV.icons["camera32"],
                 text=_("Camera"),
                 compound=TOP,
                 variable=self.tab,
                 value="Camera",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Work surface camera view and alignment"))
         if Camera.cv is None: b.config(state=DISABLED)
@@ -130,12 +132,12 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
         # ---
         col += 1
         b = Ribbon.LabelRadiobutton(self.frame,
-                image=Utils.icons["endmill32"],
+                image=OCV.icons["endmill32"],
                 text=_("Tool"),
                 compound=TOP,
                 variable=self.tab,
                 value="Tool",
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Setup probing for manual tool change"))
 
@@ -148,17 +150,17 @@ class ProbeTabGroup(CNCRibbon.ButtonGroup):
 class AutolevelGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Autolevel", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
         self.grid3rows()
 
         # ---
         col,row=0,0
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelMargins>>",
-                image=Utils.icons["margins"],
+                image=OCV.icons["margins"],
                 text=_("Margins"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Get margins from gcode file"))
         self.addWidget(b)
@@ -166,11 +168,11 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         row += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelZero>>",
-                image=Utils.icons["origin"],
+                image=OCV.icons["origin"],
                 text=_("Zero"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Set current XY location as autoleveling Z-zero (recalculate probed data to be relative to this XY origin point)"))
         self.addWidget(b)
@@ -178,11 +180,11 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         row += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelClear>>",
-                image=Utils.icons["clear"],
+                image=OCV.icons["clear"],
                 text=_("Clear"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Clear probe data"))
         self.addWidget(b)
@@ -191,23 +193,23 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         row = 0
         col += 1
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelScanMargins>>",
-                image=Utils.icons["margins"],
+                image=OCV.icons["margins"],
                 text=_("Scan"),
                 compound=LEFT,
                 anchor=W,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Scan Autolevel Margins"))
         self.addWidget(b)
 
         row += 1
         b = Ribbon.LabelButton(self.frame,
-                image=Utils.icons["level"],
+                image=OCV.icons["level"],
                 text=_("Autolevel"),
                 compound=LEFT,
                 anchor=W,
                 command=lambda a=app:a.insertCommand("AUTOLEVEL",True),
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Modify selected G-Code to match autolevel"))
         self.addWidget(b)
@@ -215,12 +217,12 @@ class AutolevelGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=2,0
         b = Ribbon.LabelButton(self.frame, self, "<<AutolevelScan>>",
-                image=Utils.icons["gear32"],
+                image=OCV.icons["gear32"],
                 text=_("Scan"),
                 compound=TOP,
                 justify=CENTER,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Scan probed area for level information on Z plane"))
@@ -318,7 +320,7 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
             self.sendGCode(cmd)
         except:
             pass
-        OCV.mcontrol.viewParameters()
+        OCV.MCTRL.viewParameters()
 
     @staticmethod
     def probeUpdate():
@@ -346,27 +348,25 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
-        Utils.setFloat("Probe", "feed", ProbeCommonFrame.probeFeed.get())
-        Utils.setFloat("Probe", "tlo",  ProbeCommonFrame.tlo.get())
-        Utils.setFloat("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
+        IniFile.set_value("Probe", "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
+        IniFile.set_value("Probe", "feed", ProbeCommonFrame.probeFeed.get())
+        IniFile.set_value("Probe", "tlo",  ProbeCommonFrame.tlo.get())
+        IniFile.set_value("Probe", "cmd",  ProbeCommonFrame.probeCmd.get().split()[0])
 
-    #-----------------------------------------------------------------------
     def loadConfig(self):
-        ProbeCommonFrame.fastProbeFeed.set(Utils.getFloat("Probe","fastfeed"))
-        ProbeCommonFrame.probeFeed.set(Utils.getFloat("Probe","feed"))
-        ProbeCommonFrame.tlo.set(      Utils.getFloat("Probe","tlo"))
-        cmd = Utils.getStr("Probe","cmd")
+        ProbeCommonFrame.fastProbeFeed.set(IniFile.get_float(
+                "Probe", "fastfeed"))
+        ProbeCommonFrame.probeFeed.set(IniFile.get_float("Probe", "feed"))
+        ProbeCommonFrame.tlo.set(      IniFile.get_float("Probe", "tlo"))
+        cmd = IniFile.get_str("Probe", "cmd")
         for p in PROBE_CMD:
             if p.split()[0] == cmd:
                 ProbeCommonFrame.probeCmd.set(p)
                 break
 
 
-#===============================================================================
-# Probe Frame
-#===============================================================================
 class ProbeFrame(CNCRibbon.PageFrame):
+    """Probe Frame"""
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "Probe:Probe", app)
 
@@ -469,7 +469,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # ---
         col += 1
         b = Button(lframe(),
-                image=Utils.icons["rapid"],
+                image=OCV.icons["rapid"],
                 text=_("Goto"),
                 compound=LEFT,
                 command=self.goto2Probe,
@@ -504,7 +504,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # ---
         col += 2
         b = Button(lframe(), #"<<Probe>>",
-                image=Utils.icons["probe32"],
+                image=OCV.icons["probe32"],
                 text=_("Probe"),
                 compound=LEFT,
                 command=self.probe,
@@ -533,7 +533,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
         # ---
         b = Button(lframe(),
-                image=Utils.icons["target32"],
+                image=OCV.icons["target32"],
                 text=_("Center"),
                 compound=TOP,
                 command=self.probeCenter,
@@ -567,7 +567,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Add new point
         col += 2
         b = Button(lframe(), text=_("Add"),
-                image=Utils.icons["add"],
+                image=OCV.icons["add"],
                 compound=LEFT,
                 command=lambda s=self: s.event_generate("<<AddMarker>>"),
                 padx = 1,
@@ -601,7 +601,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 1
         b = Button(lframe(), text=_("Delete"),
-                image=Utils.icons["x"],
+                image=OCV.icons["x"],
                 compound=LEFT,
                 command = self.orientDelete,
                 padx = 1,
@@ -634,7 +634,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 1
         b = Button(lframe(), text=_("Clear"),
-                image=Utils.icons["clear"],
+                image=OCV.icons["clear"],
                 compound=LEFT,
                 command = self.orientClear,
                 padx = 1,
@@ -655,7 +655,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         # Buttons
         col += 2
         b = Button(lframe(), text=_("Orient"),
-                image=Utils.icons["setsquare32"],
+                image=OCV.icons["setsquare32"],
                 compound=TOP,
                 command = lambda a=app:a.insertCommand("ORIENT",True),
                 padx = 1,
@@ -694,19 +694,19 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXdir.set(Utils.getStr("Probe", "x"))
-        self.probeYdir.set(Utils.getStr("Probe", "y"))
-        self.probeZdir.set(Utils.getStr("Probe", "z"))
-        self.diameter.set(Utils.getStr("Probe",  "center"))
-        self.warn = Utils.getBool("Warning", "probe", self.warn)
+        self.probeXdir.set(IniFile.get_str("Probe", "x"))
+        self.probeYdir.set(IniFile.get_str("Probe", "y"))
+        self.probeZdir.set(IniFile.get_str("Probe", "z"))
+        self.diameter.set(IniFile.get_str("Probe", "center"))
+        self.warn = IniFile.get_bool("Warning", "probe", self.warn)
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe", "x",      self.probeXdir.get())
-        Utils.setFloat("Probe", "y",      self.probeYdir.get())
-        Utils.setFloat("Probe", "z",      self.probeZdir.get())
-        Utils.setFloat("Probe", "center", self.diameter.get())
-        Utils.setBool("Warning","probe",  self.warn)
+        IniFile.set_value("Probe", "x", self.probeXdir.get())
+        IniFile.set_value("Probe", "y", self.probeYdir.get())
+        IniFile.set_value("Probe", "z", self.probeZdir.get())
+        IniFile.set_value("Probe", "center", self.diameter.get())
+        IniFile.set_value("Warning","probe",  self.warn)
 
     #-----------------------------------------------------------------------
     def updateProbe(self):
@@ -946,7 +946,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
     def recordAppend(self, line):
         hasblock = None
         for bid,block in enumerate(OCV.APP.gcode):
-            if block._name == 'recording':
+            if block.b_name == 'recording':
                 hasblock = bid
                 eblock = block
 
@@ -998,13 +998,13 @@ class ProbeFrame(CNCRibbon.PageFrame):
         if self.recz.get() == 1:
             coords += " Z%s"%(z)
 
-        #self.recordAppend('G0 %s R%s'%(coords, r))
+        # self.recordAppend('G0 %s R%s'%(coords, r))
         self.recordAppend('G0 %s'%(coords))
         self.recordAppend('G02 %s I%s'%(coords, r))
 
     def recordFinishAll(self):
         for bid,block in enumerate(OCV.APP.gcode):
-            if block._name == 'recording':
+            if block.b_name == 'recording':
                 OCV.APP.gcode.setBlockNameUndo(bid, 'recorded')
         OCV.APP.refresh()
         OCV.APP.setStatus(_("Finished recording"))
@@ -1118,7 +1118,6 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         self.loadConfig()
 
-    #-----------------------------------------------------------------------
     def setValues(self):
         probe = OCV.APP.gcode.probe
         self.probeXmin.set(str(probe.xmin))
@@ -1136,31 +1135,30 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         self.probeZmin.set(str(probe.zmin))
         self.probeZmax.set(str(probe.zmax))
 
-    #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe", "xmin", self.probeXmin.get())
-        Utils.setFloat("Probe", "xmax", self.probeXmax.get())
-        Utils.setInt(  "Probe", "xn",   self.probeXbins.get())
-        Utils.setFloat("Probe", "ymin", self.probeYmin.get())
-        Utils.setFloat("Probe", "ymax", self.probeYmax.get())
-        Utils.setInt(  "Probe", "yn",   self.probeYbins.get())
-        Utils.setFloat("Probe", "zmin", self.probeZmin.get())
-        Utils.setFloat("Probe", "zmax", self.probeZmax.get())
+        IniFile.set_value("Probe", "xmin", self.probeXmin.get())
+        IniFile.set_value("Probe", "xmax", self.probeXmax.get())
+        IniFile.set_value("Probe", "xn", self.probeXbins.get())
+        IniFile.set_value("Probe", "ymin", self.probeYmin.get())
+        IniFile.set_value("Probe", "ymax", self.probeYmax.get())
+        IniFile.set_value("Probe", "yn", self.probeYbins.get())
+        IniFile.set_value("Probe", "zmin", self.probeZmin.get())
+        IniFile.set_value("Probe", "zmax", self.probeZmax.get())
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXmin.set(Utils.getFloat("Probe","xmin"))
-        self.probeXmax.set(Utils.getFloat("Probe","xmax"))
-        self.probeYmin.set(Utils.getFloat("Probe","ymin"))
-        self.probeYmax.set(Utils.getFloat("Probe","ymax"))
-        self.probeZmin.set(Utils.getFloat("Probe","zmin"))
-        self.probeZmax.set(Utils.getFloat("Probe","zmax"))
+        self.probeXmin.set(IniFile.get_float("Probe","xmin"))
+        self.probeXmax.set(IniFile.get_float("Probe","xmax"))
+        self.probeYmin.set(IniFile.get_float("Probe","ymin"))
+        self.probeYmax.set(IniFile.get_float("Probe","ymax"))
+        self.probeZmin.set(IniFile.get_float("Probe","zmin"))
+        self.probeZmax.set(IniFile.get_float("Probe","zmax"))
 
         self.probeXbins.delete(0,END)
-        self.probeXbins.insert(0,max(2,Utils.getInt("Probe","xn",5)))
+        self.probeXbins.insert(0,max(2,IniFile.get_int("Probe","xn",5)))
 
         self.probeYbins.delete(0,END)
-        self.probeYbins.insert(0,max(2,Utils.getInt("Probe","yn",5)))
+        self.probeYbins.insert(0,max(2,IniFile.get_int("Probe","yn",5)))
         self.change(False)
 
     #-----------------------------------------------------------------------
@@ -1285,7 +1283,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 class CameraGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Camera", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
         self.grid3rows()
 
         self.switch = BooleanVar()
@@ -1295,38 +1293,38 @@ class CameraGroup(CNCRibbon.ButtonGroup):
         # ---
         col,row=0,0
         self.switchButton = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["camera32"],
+                image=OCV.icons["camera32"],
                 text=_("Switch To"),
                 compound=TOP,
                 variable=self.switch,
                 command=self.switchCommand,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         self.switchButton.grid(row=row, column=col, rowspan=3, padx=5, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(self.switchButton, _("Switch between camera and spindle"))
 
         # ---
         col,row=1,0
         b = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["edge"],
+                image=OCV.icons["edge"],
                 text=_("Edge Detection"),
                 compound=LEFT,
                 variable=self.edge,
                 anchor=W,
                 command=self.edgeDetection,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Turn on/off edge detection"))
 
         # ---
         row += 1
         b = Ribbon.LabelCheckbutton(self.frame,
-                image=Utils.icons["freeze"],
+                image=OCV.icons["freeze"],
                 text=_("Freeze"),
                 compound=LEFT,
                 variable=self.freeze,
                 anchor=W,
                 command=self.freezeImage,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.grid(row=row, column=col, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Turn on/off freeze image"))
 
@@ -1337,17 +1335,17 @@ class CameraGroup(CNCRibbon.ButtonGroup):
     def switchCommand(self, event=None):
         wx = OCV.CD["wx"]
         wy = OCV.CD["wy"]
-        dx = OCV.APP.canvasFrame.canvas.cameraDx
-        dy = OCV.APP.canvasFrame.canvas.cameraDy
-        z  = OCV.APP.canvasFrame.canvas.cameraZ
+        dx = OCV.CANVAS_F.canvas.cameraDx
+        dy = OCV.CANVAS_F.canvas.cameraDy
+        z  = OCV.CANVAS_F.canvas.cameraZ
         if self.switch.get():
-            self.switchButton.config(image=Utils.icons["endmill32"])
+            self.switchButton.config(image=OCV.icons["endmill32"])
             self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-            OCV.APP.canvasFrame.canvas.cameraSwitch = True
+            OCV.CANVAS_F.canvas.cameraSwitch = True
         else:
-            self.switchButton.config(image=Utils.icons["camera32"])
+            self.switchButton.config(image=OCV.icons["camera32"])
             self.sendGCode("G92.1")
-            OCV.APP.canvasFrame.canvas.cameraSwitch = False
+            OCV.CANVAS_F.canvas.cameraSwitch = False
         if z is None:
             self.sendGCode("G0X%gY%g"%(wx,wy))
         else:
@@ -1360,11 +1358,11 @@ class CameraGroup(CNCRibbon.ButtonGroup):
 
     #-----------------------------------------------------------------------
     def edgeDetection(self):
-        OCV.APP.canvasFrame.canvas.cameraEdge = self.edge.get()
+        OCV.CANVAS_F.canvas.cameraEdge = self.edge.get()
 
     #-----------------------------------------------------------------------
     def freezeImage(self):
-        OCV.APP.canvasFrame.canvas.cameraFreeze(self.freeze.get())
+        OCV.CANVAS_F.canvas.cameraFreeze(self.freeze.get())
 
 
 #===============================================================================
@@ -1487,38 +1485,33 @@ class CameraFrame(CNCRibbon.PageFrame):
         self.spindleX = None
         self.spindleY = None
 
-    #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setStr(  "Camera", "aligncam_anchor",self.location.get())
-        Utils.setFloat("Camera", "aligncam_d",     self.diameter.get())
-        Utils.setFloat("Camera", "aligncam_scale", self.scale.get())
-        Utils.setFloat("Camera", "aligncam_dx",    self.dx.get())
-        Utils.setFloat("Camera", "aligncam_dy",    self.dy.get())
-        Utils.setFloat("Camera", "aligncam_z",     self.z.get())
-        Utils.setFloat("Camera", "aligncam_rotation",     self.rotation.get())
-        Utils.setFloat("Camera", "aligncam_xcenter",     self.xcenter.get())
-        Utils.setFloat("Camera", "aligncam_ycenter",     self.ycenter.get())
+        IniFile.set_value("Camera", "aligncam_anchor", self.location.get())
+        IniFile.set_value("Camera", "aligncam_d", self.diameter.get())
+        IniFile.set_value("Camera", "aligncam_scale", self.scale.get())
+        IniFile.set_value("Camera", "aligncam_dx", self.dx.get())
+        IniFile.set_value("Camera", "aligncam_dy", self.dy.get())
+        IniFile.set_value("Camera", "aligncam_z", self.z.get())
+        IniFile.set_value("Camera", "aligncam_rotation", self.rotation.get())
+        IniFile.set_value("Camera", "aligncam_xcenter", self.xcenter.get())
+        IniFile.set_value("Camera", "aligncam_ycenter", self.ycenter.get())
 
-    #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.location.set(Utils.getStr("Camera",  "aligncam_anchor"))
-        self.diameter.set(Utils.getFloat("Camera","aligncam_d"))
-        self.scale.set( Utils.getFloat("Camera",  "aligncam_scale"))
-        self.dx.set(    Utils.getFloat("Camera",  "aligncam_dx"))
-        self.dy.set(    Utils.getFloat("Camera",  "aligncam_dy"))
-        self.z.set(     Utils.getFloat("Camera",  "aligncam_z", ""))
-        self.rotation.set(Utils.getFloat("Camera","aligncam_rotation"))
-        self.xcenter.set(Utils.getFloat("Camera", "aligncam_xcenter"))
-        self.ycenter.set(Utils.getFloat("Camera", "aligncam_ycenter"))
+        self.location.set(IniFile.get_str("Camera",  "aligncam_anchor"))
+        self.diameter.set(IniFile.get_float("Camera", "aligncam_d"))
+        self.scale.set(IniFile.get_float("Camera", "aligncam_scale"))
+        self.dx.set(IniFile.get_float("Camera", "aligncam_dx"))
+        self.dy.set(IniFile.get_float("Camera", "aligncam_dy"))
+        self.z.set(IniFile.get_float("Camera", "aligncam_z", ""))
+        self.rotation.set(IniFile.get_float("Camera", "aligncam_rotation"))
+        self.xcenter.set(IniFile.get_float("Camera", "aligncam_xcenter"))
+        self.ycenter.set(IniFile.get_float("Camera", "aligncam_ycenter"))
         self.updateValues()
 
-    #-----------------------------------------------------------------------
-    # Return camera Anchor
-    #-----------------------------------------------------------------------
     def cameraAnchor(self):
+        """Return camera Anchor"""
         return CAMERA_LOCATION.get(self.location.get(),CENTER)
 
-    #-----------------------------------------------------------------------
     def getDiameter(self):
         self.diameter.set(OCV.CD["diameter"])
         self.updateValues()
@@ -1527,26 +1520,26 @@ class CameraFrame(CNCRibbon.PageFrame):
     # Update canvas with values
     #-----------------------------------------------------------------------
     def updateValues(self, *args):
-        OCV.APP.canvasFrame.canvas.cameraAnchor = self.cameraAnchor()
-        try: OCV.APP.canvasFrame.canvas.cameraRotation = float(self.rotation.get())
+        OCV.CANVAS_F.canvas.cameraAnchor = self.cameraAnchor()
+        try: OCV.CANVAS_F.canvas.cameraRotation = float(self.rotation.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraXCenter = float(self.xcenter.get())
+        try: OCV.CANVAS_F.canvas.cameraXCenter = float(self.xcenter.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraYCenter = float(self.ycenter.get())
+        try: OCV.CANVAS_F.canvas.cameraYCenter = float(self.ycenter.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraScale = max(0.0001, float(self.scale.get()))
+        try: OCV.CANVAS_F.canvas.cameraScale = max(0.0001, float(self.scale.get()))
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraR = float(self.diameter.get())/2.0
+        try: OCV.CANVAS_F.canvas.cameraR = float(self.diameter.get())/2.0
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraDx = float(self.dx.get())
+        try: OCV.CANVAS_F.canvas.cameraDx = float(self.dx.get())
         except ValueError: pass
-        try: OCV.APP.canvasFrame.canvas.cameraDy = float(self.dy.get())
+        try: OCV.CANVAS_F.canvas.cameraDy = float(self.dy.get())
         except ValueError: pass
         try:
-            OCV.APP.canvasFrame.canvas.cameraZ  = float(self.z.get())
+            OCV.CANVAS_F.canvas.cameraZ  = float(self.z.get())
         except ValueError:
-            OCV.APP.canvasFrame.canvas.cameraZ  = None
-        OCV.APP.canvasFrame.canvas.cameraUpdate()
+            OCV.CANVAS_F.canvas.cameraZ  = None
+        OCV.CANVAS_F.canvas.cameraUpdate()
 
     #-----------------------------------------------------------------------
     # Register spindle position
@@ -1574,32 +1567,32 @@ class CameraFrame(CNCRibbon.PageFrame):
 #    #-----------------------------------------------------------------------
 #    def findScale(self):
 #        return
-#        OCV.APP.canvasFrame.canvas.cameraMakeTemplate(30)
+#        OCV.CANVAS_F.canvas.cameraMakeTemplate(30)
 #
-#        OCV.APP.control.moveXup()
+#        OCV.APP.control.jog_x_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # right
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # right
 #
-#        OCV.APP.control.moveXdown()
-#        OCV.APP.control.moveXdown()
+#        OCV.APP.control.jog_x_down()
+#        OCV.APP.control.jog_x_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # left
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # left
 #
-#        OCV.APP.control.moveXup()
-#        OCV.APP.control.moveYup()
+#        OCV.APP.control.jog_x_up()
+#        OCV.APP.control.jog_y_up()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # top
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # top
 #
-#        OCV.APP.control.moveYdown()
-#        OCV.APP.control.moveYdown()
+#        OCV.APP.control.jog_y_down()
+#        OCV.APP.control.jog_y_down()
 #        #OCV.APP.wait4Idle()
 #        time.sleep(2)
-#        dx,dy = OCV.APP.canvasFrame.canvas.cameraMatchTemplate()    # down
+#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # down
 #
-#        OCV.APP.control.moveYup()
+#        OCV.APP.control.jog_y_up()
 
     #-----------------------------------------------------------------------
     # Move camera to spindle location and change coordinates to relative
@@ -1624,24 +1617,24 @@ class CameraFrame(CNCRibbon.PageFrame):
 class ToolGroup(CNCRibbon.ButtonGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Probe:Tool", app)
-        self.label["background"] = OCV.BACKGROUND_GROUP2
+        self.label["background"] = OCV.COLOR_GROUP_BACKGROUND2
 
         b = Ribbon.LabelButton(self.frame, self, "<<ToolCalibrate>>",
-                image=Utils.icons["calibrate32"],
+                image=OCV.icons["calibrate32"],
                 text=_("Calibrate"),
                 compound=TOP,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.pack(side=LEFT, fill=BOTH, expand=YES)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Perform a single a tool change cycle to set the calibration field"))
 
         b = Ribbon.LabelButton(self.frame, self, "<<ToolChange>>",
-                image=Utils.icons["endmill32"],
+                image=OCV.icons["endmill32"],
                 text=_("Change"),
                 compound=TOP,
                 width=48,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
         b.pack(side=LEFT, fill=BOTH, expand=YES)
         self.addWidget(b)
         tkExtra.Balloon.set(b, _("Perform a tool change cycle"))
@@ -1805,39 +1798,39 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setInt(
+        IniFile.set_value(
                 "Probe", "toolpolicy",
                 TOOL_POLICY.index(self.toolPolicy.get()))
-        Utils.setInt(
+        IniFile.set_value(
                 "Probe", "toolwait",
                 TOOL_WAIT.index(self.toolWait.get()))
-        Utils.setFloat("Probe", "toolchangex", self.changeX.get())
-        Utils.setFloat("Probe", "toolchangey", self.changeY.get())
-        Utils.setFloat("Probe", "toolchangez", self.changeZ.get())
+        IniFile.set_value("Probe", "toolchangex", self.changeX.get())
+        IniFile.set_value("Probe", "toolchangey", self.changeY.get())
+        IniFile.set_value("Probe", "toolchangez", self.changeZ.get())
 
-        Utils.setFloat("Probe", "toolprobex", self.probeX.get())
-        Utils.setFloat("Probe", "toolprobey", self.probeY.get())
-        Utils.setFloat("Probe", "toolprobez", self.probeZ.get())
+        IniFile.set_value("Probe", "toolprobex", self.probeX.get())
+        IniFile.set_value("Probe", "toolprobey", self.probeY.get())
+        IniFile.set_value("Probe", "toolprobez", self.probeZ.get())
 
-        Utils.setFloat("Probe", "tooldistance",self.probeDistance.get())
-        Utils.setFloat("Probe", "toolheight",  self.toolHeight.get())
-        Utils.setFloat("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
+        IniFile.set_value("Probe", "tooldistance",self.probeDistance.get())
+        IniFile.set_value("Probe", "toolheight",  self.toolHeight.get())
+        IniFile.set_value("Probe", "toolmz",      OCV.CD.get("toolmz",0.))
 
     #-----------------------------------------------------------------------
     def loadConfig(self):
-        self.changeX.set(Utils.getFloat("Probe","toolchangex"))
-        self.changeY.set(Utils.getFloat("Probe","toolchangey"))
-        self.changeZ.set(Utils.getFloat("Probe","toolchangez"))
+        self.changeX.set(IniFile.get_float("Probe","toolchangex"))
+        self.changeY.set(IniFile.get_float("Probe","toolchangey"))
+        self.changeZ.set(IniFile.get_float("Probe","toolchangez"))
 
-        self.probeX.set(Utils.getFloat("Probe","toolprobex"))
-        self.probeY.set(Utils.getFloat("Probe","toolprobey"))
-        self.probeZ.set(Utils.getFloat("Probe","toolprobez"))
+        self.probeX.set(IniFile.get_float("Probe","toolprobex"))
+        self.probeY.set(IniFile.get_float("Probe","toolprobey"))
+        self.probeZ.set(IniFile.get_float("Probe","toolprobez"))
 
-        self.probeDistance.set(Utils.getFloat("Probe","tooldistance"))
-        self.toolHeight.set(   Utils.getFloat("Probe","toolheight"))
-        self.toolPolicy.set(TOOL_POLICY[Utils.getInt("Probe","toolpolicy",0)])
-        self.toolWait.set(TOOL_WAIT[Utils.getInt("Probe","toolwait",1)])
-        OCV.CD["toolmz"] = Utils.getFloat("Probe","toolmz")
+        self.probeDistance.set(IniFile.get_float("Probe","tooldistance"))
+        self.toolHeight.set(   IniFile.get_float("Probe","toolheight"))
+        self.toolPolicy.set(TOOL_POLICY[IniFile.get_int("Probe","toolpolicy",0)])
+        self.toolWait.set(TOOL_WAIT[IniFile.get_int("Probe","toolwait",1)])
+        OCV.CD["toolmz"] = IniFile.get_float("Probe","toolmz")
         self.set()
 
     #-----------------------------------------------------------------------
@@ -1930,7 +1923,6 @@ class ToolFrame(CNCRibbon.PageFrame):
         self.toolHeight.set(OCV.CD["toolheight"])
         self.toolHeight.config(state=state)
 
-    #-----------------------------------------------------------------------
     def calibrate(self, event=None):
         self.set()
         if self.check4Errors(): return
@@ -1942,15 +1934,16 @@ class ToolFrame(CNCRibbon.PageFrame):
         if OCV.CD["fastprbfeed"]:
             prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
             OCV.CD["prbcmdreverse"] = (OCV.CD["prbcmd"][:-1] +
-                        prb_reverse[OCV.CD["prbcmd"][-1]])
+                  prb_reverse[OCV.CD["prbcmd"][-1]])
             currentFeedrate = OCV.CD["fastprbfeed"]
             while currentFeedrate > OCV.CD["prbfeed"]:
                 lines.append("%wait")
-                lines.append("g91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
-                        CNC.fmt('f',currentFeedrate)))
+                lines.append(
+                    "g91 [prbcmd] {0} z[toolprobez-mz-tooldistance]".format(
+                        OCV.fmt('f', currentFeedrate)))
                 lines.append("%wait")
                 lines.append("[prbcmdreverse] {0} z[toolprobez-mz]".format(
-                        CNC.fmt('f',currentFeedrate)))
+                        OCV.fmt('f', currentFeedrate)))
                 currentFeedrate /= 10
         lines.append("%wait")
         lines.append("g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")
@@ -1986,7 +1979,7 @@ class ToolFrame(CNCRibbon.PageFrame):
 #
 #        self.text = Label(frame,
 #                text="One\nTwo\nThree",
-#                image=Utils.icons["gear32"],
+#                image=OCV.icons["gear32"],
 #                compound=TOP,
 #                anchor=W,
 #                justify=LEFT)

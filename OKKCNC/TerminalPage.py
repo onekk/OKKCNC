@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -21,7 +21,6 @@ except ImportError:
     import tkinter as Tk
 
 import OCV
-import Utils
 import Ribbon
 import tkExtra
 
@@ -36,10 +35,10 @@ class TerminalGroup(CNCRibbon.ButtonGroup):
         but = Ribbon.LabelButton(
             self.frame,
             self, "<<TerminalClear>>",
-            image=Utils.icons["clean32"],
+            image=OCV.icons["clean32"],
             text=_("Clear"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.pack(fill=Tk.BOTH, expand=Tk.YES)
 
@@ -52,9 +51,9 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         CNCRibbon.ButtonMenuGroup.__init__(
             self, master,
             N_("Commands"), app,
-            [(_("Restore Settings"), "grbl_settings", OCV.mcontrol.grblRestoreSettings),
-             (_("Restore Workspace"), "grbl_params", OCV.mcontrol.grblRestoreWCS),
-             (_("Restore All"), "reset", OCV.mcontrol.grblRestoreAll),
+            [(_("Restore Settings"), "grbl_settings", OCV.MCTRL.grblRestoreSettings),
+             (_("Restore Workspace"), "grbl_params", OCV.MCTRL.grblRestoreWCS),
+             (_("Restore All"), "reset", OCV.MCTRL.grblRestoreAll),
             ])
 
         self.grid3rows()
@@ -66,13 +65,13 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         col, row = 0, 0
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_settings"],
+            image=OCV.icons["grbl_settings"],
             text=_("Settings"),
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.viewSettings,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.viewSettings,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(but, _("$$ Display settings of Grbl"))
@@ -83,12 +82,12 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         row += 1
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_params"],
+            image=OCV.icons["grbl_params"],
             text=_("Parameters"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewParameters,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.viewParameters,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -98,12 +97,12 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         row += 1
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_state"],
+            image=OCV.icons["grbl_state"],
             text=_("State"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewState,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.viewState,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -117,12 +116,12 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_build"],
+            image=OCV.icons["grbl_build"],
             text=_("Build"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.viewBuild,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.viewBuild,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -134,13 +133,13 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_startup"],
+            image=OCV.icons["grbl_startup"],
             text=_("Startup"),
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.viewStartup,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.viewStartup,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -153,13 +152,13 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         # FIXME Checkbutton!!!!!
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_check"],
+            image=OCV.icons["grbl_check"],
             text=_("Check gcode"),
             compound=Tk.LEFT,
             anchor=Tk.W,
             state=state,
-            command=OCV.mcontrol.checkGcode,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.checkGcode,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -174,12 +173,12 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Ribbon.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_help"],
+            image=OCV.icons["grbl_help"],
             text=_("Help"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.mcontrol.grblHelp,
-            background=OCV.BACKGROUND)
+            command=OCV.MCTRL.grblHelp,
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -196,7 +195,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Error Help"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 

@@ -7,7 +7,7 @@ This module contains some helper functions:
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -23,6 +23,12 @@ import os
 import sys
 import glob
 import traceback
+import gettext
+try:
+    import __builtin__
+except:
+    import builtins as __builtin__
+
 from lib.log import say
 
 try:
@@ -37,12 +43,7 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     import configparser as ConfigParser
 
-import gettext
-try:
-    import __builtin__
-except:
-    import builtins as __builtin__
-#    __builtin__.unicode = str        # dirty hack for python3
+# import webbrowser
 
 try:
     import serial
@@ -51,343 +52,68 @@ except:
 
 import OCV
 
-__prg__ = "OKKCNC"
-prgpath = os.path.abspath(os.path.dirname(__file__))
-
-if getattr(sys, 'frozen', False):
-    # When being bundled by pyinstaller, paths are different
-    print("Running as pyinstaller bundle!", sys.argv[0])
-    prgpath = os.path.abspath(os.path.dirname(sys.argv[0]))
-
-iniSystem = os.path.join(prgpath, "{0}.ini".format(__prg__))
-iniUser = os.path.expanduser("~/.{0}".format(__prg__))
-hisFile = os.path.expanduser("~/.{0}.history".format(__prg__))
-
-# dirty way of substituting the "_" on the builtin namespace
-# __builtin__.__dict__["_"] = gettext.translation(
-# 'OKKCNC',
-# 'locale',
-# fallback=True).ugettext
-
 __builtin__._ = gettext.translation(
     'OKKCNC',
-    os.path.join(prgpath, 'locale'),
+    os.path.join(OCV.PRG_PATH, 'locale'),
     fallback=True).gettext
 
 __builtin__.N_ = lambda message: message
 
+import IniFile
 import Ribbon
 import tkExtra
 
-__www__ = "https://github.com/onekk/OKKCNC"
-__contribute__ = ""
 
-__credits__ = \
-        "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
-        "@effer Filippo Rivato , " \
-        "@harvie Tomas Mudrunka\n\n" \
-        "And all the contributors of bCNC"
-__translations__ = \
-        "Italian - @onekk\n" \
-
-LANGUAGES = {
-    "": "<system>",
-    "en": "English",
-    "it": "Italiano",
-    }
-
-icons = {}
-images = {}
-config = ConfigParser.ConfigParser()
-# This is here to debug the fact that config is sometimes instantiated twice
-print("new-config", __name__, config)
-language = ""
-
-_errorReport = True
-errors = []
-_maxRecent = 10
-
-# FIXME: create single instance of this and pass it to all parts of application
-
-
+'''
 class Config(object):
     """New class to provide config for everyone"""
     def greet(self, who=__name__):
         """print on console the """
         print("Config class loaded in {0}".format(who))
+'''
 
 
-def loadIcons():
-    global icons
-    icons = {}
-    for img in glob.glob("{0}{1}icons{1}*.gif".format(prgpath, os.sep)):
+def load_icons():
+    """load icons and images in internal dictionaries"""
+    OCV.icons = {}
+    for img in glob.glob("{0}{1}icons{1}*.gif".format(OCV.PRG_PATH, os.sep)):
         name, ext = os.path.splitext(os.path.basename(img))
         try:
-            icons[name] = Tk.PhotoImage(file=img)
-            if getBool("CNC", "doublesizeicon"):
-                icons[name] = icons[name].zoom(2, 2)
+            OCV.icons[name] = Tk.PhotoImage(file=img)
+            if IniFile.get_bool("CNC", "doublesizeicon"):
+                OCV.icons[name] = OCV.icons[name].zoom(2, 2)
         except Tk.TclError:
             pass
 
     # Images
-    global images
-    images = {}
-    for img in glob.glob("{0}{1}images{1}*.gif".format(prgpath, os.sep)):
+    OCV.images = {}
+    for img in glob.glob("{0}{1}images{1}*.gif".format(OCV.PRG_PATH, os.sep)):
         name, ext = os.path.splitext(os.path.basename(img))
         try:
-            images[name] = Tk.PhotoImage(file=img)
-            if getBool("CNC", "doublesizeicon"):
-                images[name] = images[name].zoom(2, 2)
+            OCV.images[name] = Tk.PhotoImage(file=img)
+            if IniFile.get_bool("CNC", "doublesizeicon"):
+                OCV.images[name] = OCV.images[name].zoom(2, 2)
         except Tk.TclError:
             pass
 
 
-def delIcons():
-    global icons
-    if len(icons) > 0:
-        for i in icons.values():
+def del_icons():
+    """empty icons and images dictionaries"""
+    if len(OCV.icons) > 0:
+        for i in OCV.icons.values():
             del i
-        icons = {}    # needed otherwise it complains on deleting the icons
+        # needed otherwise it complains on deleting the icons
+        OCV.icons = {}
 
-    global images
-    if len(images) > 0:
-        for i in images.values():
+    if len(OCV.images) > 0:
+        for i in OCV.images.values():
             del i
-        images = {}    # needed otherwise it complains on deleting the icons
+        # needed otherwise it complains on deleting the icons
+        OCV.images = {}
 
 
-def loadConfiguration(systemOnly=False):
-    """Load configuration"""
-    global config, _errorReport, language
-    if systemOnly:
-        config.read(iniSystem)
-    else:
-        config.read([iniSystem, iniUser])
-        _errorReport = getInt("Connection", "errorreport", 1)
-
-        language = getStr(__prg__, "language")
-        if language:
-            # replace language
-            __builtin__._ = gettext.translation(
-                'OKKCNC',
-                os.path.join(prgpath, 'locale'),
-                fallback=True,
-                languages=[language]).gettext
-
-
-def saveConfiguration():
-    """Save configuration file"""
-    global config
-    cleanConfiguration()
-    f = open(iniUser, "w")
-    config.write(f)
-    f.close()
-    delIcons()
-
-
-def cleanConfiguration():
-    """Remove items that are the same as in the default ini"""
-    global config
-    newconfig = config    # Remember config
-    config = ConfigParser.ConfigParser()
-
-    loadConfiguration(True)
-
-    # Compare items
-    for section in config.sections():
-        for item, value in config.items(section):
-            try:
-                new = newconfig.get(section, item)
-                if value == new:
-                    newconfig.remove_option(section, item)
-            except ConfigParser.NoOptionError:
-                pass
-    config = newconfig
-
-
-def addSection(section):
-    """add section if it doesn't exist"""
-    global config
-    if not config.has_section(section):
-        config.add_section(section)
-
-
-def getStr(section, name, default=""):
-    global config
-    try:
-        return config.get(section, name)
-    except Exception:
-        return default
-
-
-def getUtf(section, name, default=""):
-    global config
-    try:
-        return config.get(section, name)
-    except Exception:
-        return default
-
-
-def getInt(section, name, default=0):
-    global config
-    try:
-        return int(config.get(section, name))
-    except Exception:
-        return default
-
-
-def getFloat(section, name, default=0.0):
-    global config
-    try:
-        return float(config.get(section, name))
-    except Exception:
-        return default
-
-
-def getBool(section, name, default=False):
-    global config
-    try:
-        return bool(int(config.get(section, name)))
-    except Exception:
-        return default
-
-
-def removeValue(section, name):
-    global config
-    if config.has_option(section, name):
-        config.remove_option(section, name)
-
-
-def SetSteps():
-    """set the steps used in ControlPage"""
-    # Default steppings
-    try:
-        OCV.step1 = getFloat("Control", "step1")
-    except Exception:
-        OCV.step1 = 1.0
-
-    try:
-        OCV.step2 = getFloat("Control", "step2")
-    except Exception:
-        OCV.step2 = 1.0
-
-    try:
-        OCV.step3 = getFloat("Control", "step3")
-    except Exception:
-        OCV.step3 = 10.0
-
-    # Default z-steppings
-    try:
-        OCV.zstep1 = getFloat("Control", "zstep1")
-    except Exception:
-        OCV.zstep1 = 0.1
-
-    try:
-        OCV.zstep2 = getFloat("Control", "zstep2")
-    except Exception:
-        OCV.zstep2 = 1.0
-
-    try:
-        OCV.zstep3 = getFloat("Control", "zstep3")
-    except Exception:
-        OCV.zstep3 = 5.0
-
-    try:
-        OCV.zstep4 = getFloat("Control", "zstep4")
-    except Exception:
-        OCV.zstep4 = 10.0
-
-
-def InputValue(app, caller):
-    title_d = _("Enter A Value")
-    title_p = _("Enter Value for {0} :")
-    title_c = ""
-    c_t = 0
-    if caller in ("S1", "S2", "S3"):
-        if caller == "S1":
-            title_c = title_p.format("Step1")
-        elif caller == "S2":
-            title_c = title_p.format("Step2")
-        elif caller == "S3":
-            title_c = title_p.format("Step3")
-        else:
-            return
-        min_value = 0.001
-        max_value = 100.0
-
-    elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
-        if caller == "ZS1":
-            title_c = title_p.format("Z Step1")
-        elif caller == "ZS2":
-            title_c = title_p.format("Z Step2")
-        elif caller == "ZS3":
-            title_c = title_p.format("Z Step3")
-        elif caller == "ZS4":
-            title_c = title_p.format("Z Step3")
-        else:
-            return
-        min_value = 0.001
-        max_value = 10.0
-
-    elif caller == "TD":
-        title_c = _("Enter Target Depth :")
-        min_value = -35.0
-        max_value = 0.0
-
-    elif caller == "MN":
-        title_c = _("Enter Memory Number :")
-        min_value = 2
-        max_value = OCV.WK_mem_num
-        c_t = 1
-
-    elif caller == "ME":
-        title_p = _("Enter Memory {0} Description :")
-        title_c = title_p.format(OCV.WK_mem)
-        c_t = 2
-
-    else:
-        title_c = _("Enter a float Value :")
-        min_value = 0.001
-        max_value = 100.0
-
-    if c_t == 0:
-        prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(
-            title_c,
-            min_value,
-            max_value)
-
-        retval = tkSimpleDialog.askfloat(
-            title_d, prompt, parent=app,
-            minvalue=min_value,
-            maxvalue=max_value)
-    elif c_t == 1:
-        prompt = "{0}\n (min: {1:d} max: {2:d})".format(
-            title_c,
-            min_value,
-            max_value)
-
-        retval = tkSimpleDialog.askinteger(
-            title_d, prompt, parent=app,
-            minvalue=min_value,
-            maxvalue=max_value)
-    elif c_t == 2:
-        prompt = title_c
-        retval = tkSimpleDialog.askstring(title_d, prompt, parent=app)
-
-    # early check for null value
-
-    if retval is None:
-        return None
-    else:
-        return retval
-
-
-def do_nothing():
-    pass
-
-
-def makeFont(name, value=None):
-    """Return a font from a string"""
+def font_from_string(name, value=None):
+    """Return a proper tkFont from a string"""
     try:
         font = tkFont.Font(name=name, exists=True)
     except Tk.TclError:
@@ -419,122 +145,168 @@ def makeFont(name, value=None):
     return font
 
 
-def fontString(font):
-    """Create a font string"""
+def string_from_font(font):
+    """Create a font string front tKFont"""
     name = str(font[0])
     size = str(font[1])
 
     if name.find(' ') >= 0:
-        s = '"{0}" {1}'.format(name, size)
+        font_string = '"{0}" {1}'.format(name, size)
     else:
-        s = '{0}, {1}'.format(name, size)
+        font_string = '{0}, {1}'.format(name, size)
 
     try:
         if font[2] == tkFont.BOLD:
-            s += " bold"
+            font_string += " bold"
     except:
         pass
     try:
         if font[3] == tkFont.ITALIC:
-            s += " italic"
+            font_string += " italic"
     except:
         pass
-    return s
+    return font_string
 
 
-def getFont(name, default=None):
+def get_font(name, default=None):
     """Get font from configuration"""
-
     try:
-        value = config.get(OCV.FONT_SECTION, name)
+        value = OCV.config.get(OCV.FONT_SEC_NAME, name)
     except:
         value = None
 
     if not value:
-        font = makeFont(name, default)
-        setFont(name, font)
+        font = font_from_string(name, default)
+        set_font(name, font)
         return font
 
     if isinstance(value, str):
         value = tuple(value.split(','))
 
     if isinstance(value, tuple):
-        font = makeFont(name, value)
+        font = font_from_string(name, value)
 
         if font is not None:
             return font
     return value
 
 
-def setFont(name, font):
+def set_font(name, font):
     """Set font in configuration"""
     if font is None:
         return
 
     if isinstance(font, str):
-        config.set(OCV.FONT_SECTION, name, font)
+        OCV.config.set(OCV.FONT_SEC_NAME, name, font)
     elif isinstance(font, tuple):
-        config.set(OCV.FONT_SECTION, name, ",".join(map(str, font)))
+        OCV.config.set(OCV.FONT_SEC_NAME, name, ",".join(map(str, font)))
     else:
-        config.set(OCV.FONT_SECTION, name, "{0},{1},{2}".format(
+        OCV.config.set(OCV.FONT_SEC_NAME, name, "{0},{1},{2}".format(
             font.cget("family"),
             font.cget("size"),
             font.cget("weight")))
 
 
-def setBool(section, name, value):
-    global config
-    config.set(section, name, str(int(value)))
-
-
-def setStr(section, name, value):
-    global config
-    config.set(section, name, str(value))
-
-
-def setUtf(section, name, value):
-    global config
+def set_predefined_steps():
+    """set pre defined steps used in ControlPage"""
+    # Predefined XY steppings
     try:
-        s = str(value)
-    except:
-        s = str(value)
-    config.set(section, name, s)
+        OCV.step1 = IniFile.get_float("Control", "step1")
+    except Exception:
+        OCV.step1 = 1.0
 
-
-setInt = setStr
-setFloat = setStr
-
-
-def addRecent(filename):
-    """Add Recent"""
     try:
-        sfn = str(os.path.abspath(filename))
-    except UnicodeEncodeError:
-        sfn = filename
+        OCV.step2 = IniFile.get_float("Control", "step2")
+    except Exception:
+        OCV.step2 = 1.0
 
-    last = _maxRecent - 1
-    for i in range(_maxRecent):
-        rfn = getRecent(i)
-        if rfn is None:
-            last = i - 1
-            break
-        if rfn == sfn:
-            if i == 0:
-                return
-            last = i - 1
-            break
-
-    # Shift everything by one
-    for i in range(last, -1, -1):
-        config.set("File", "recent.{0}".format(i + 1), getRecent(i))
-    config.set("File", "recent.0", sfn)
-
-
-def getRecent(recent):
     try:
-        return config.get("File", "recent.{0}".format(recent))
-    except ConfigParser.NoOptionError:
+        OCV.step3 = IniFile.get_float("Control", "step3")
+    except Exception:
+        OCV.step3 = 10.0
+
+    # Predefined Z steppings
+    try:
+        OCV.zstep1 = IniFile.get_float("Control", "zstep1")
+    except Exception:
+        OCV.zstep1 = 0.1
+
+    try:
+        OCV.zstep2 = IniFile.get_float("Control", "zstep2")
+    except Exception:
+        OCV.zstep2 = 1.0
+
+    try:
+        OCV.zstep3 = IniFile.get_float("Control", "zstep3")
+    except Exception:
+        OCV.zstep3 = 5.0
+
+    try:
+        OCV.zstep4 = IniFile.get_float("Control", "zstep4")
+    except Exception:
+        OCV.zstep4 = 10.0
+
+
+def ask_for_value(app, caller):
+    """Show an input windows asking for a value
+    uses tkSimpleDialog
+    """
+    title_d = _("Enter A Value")
+    switch = {
+        "S1": ("Step1", "step", 0.001, 100.0),
+        "S2": ("Step2", "step", 0.001, 100.0),
+        "S3": ("Step3", "step", 0.001, 100.0),
+        "ZS1": ("Z Step1", "step", 0.001, 25.0),
+        "ZS2": ("Z Step2", "step", 0.001, 25.0),
+        "ZS3": ("Z Step3", "step", 0.001, 25.0),
+        "ZS4": ("Z Step4", "step", 0.001, 25.0),
+        "ZS4": ("Z Step4", "step", 0.001, 25.0),
+        "TD": (_("Enter Target Depth :"), "depth", -35.0, 0.0),
+        "MN": (_("Enter Memory Number :"), "mem_num", 2, OCV.WK_mem_num),
+        "ME": (_("Enter Memory {0} Description :"), "mem_desc", 0, 0),
+        }
+
+    choiche = switch.get(
+        caller, (_("Enter a float Value :"), "gen_float", 0.001, 100.0))
+
+    if choiche[1] in ("step", "depth", "gen_float"):
+        if choiche[1] == "step":
+            title_c = _("Enter Value for {0} :").format(choiche[0])
+        else:
+            title_c = choiche[0]
+
+        prompt = "{0}\n (min: {1:.04f} max: {2:.04f})".format(
+            title_c,
+            choiche[2],
+            choiche[3])
+
+        retval = tkSimpleDialog.askfloat(
+            title_d, prompt, parent=app,
+            minvalue=choiche[2],
+            maxvalue=choiche[3])
+
+    elif choiche[1] == "mem_num":
+        prompt = "{0}\n (min: {1:d} max: {2:d})".format(
+            choiche[0],
+            choiche[2],
+            choiche[3])
+
+        retval = tkSimpleDialog.askinteger(
+            title_d, prompt, parent=app,
+            minvalue=choiche[2],
+            maxvalue=choiche[3])
+
+    elif choiche[1] == "mem_desc":
+        prompt = choiche[0].format(OCV.WK_mem)
+        retval = tkSimpleDialog.askstring(title_d, prompt, parent=app)
+
+    else:
+        retval = None
+
+    if retval is None:
         return None
+    else:
+        return retval
 
 
 def comports(include_links=True):
@@ -558,39 +330,159 @@ def comports(include_links=True):
 
             # Detects windows XP serial ports
             try:
-                s = serial.Serial(device)
-                s.close()
+                ser_dev = serial.Serial(device)
+                ser_dev.close()
                 comports.append((device, None, None))
             except:
                 pass
     return comports
 
-def q_round(x, prec=2, base=.05):
+
+def q_round(value, prec=2, base=.05):
     """round a number specifing the decimal digits
-    and a quantization factor"""
-    return round(base * round(float(x)/base), prec)
+    and a quantization factor
+    """
+    return round(base * round(float(value)/base), prec)
+
 
 def addException():
-    global errors
-#    self.widget._report_exception()
+    """collect and report exceptions"""
+    # self.widget._report_exception()
     try:
         typ, val, tb = sys.exc_info()
         traceback.print_exception(typ, val, tb)
 
-        if errors:
-            errors.append("")
+        if OCV.errors:
+            OCV.errors.append("")
 
         exception = traceback.format_exception(typ, val, tb)
-        errors.extend(exception)
+        OCV.errors.extend(exception)
 
-        if len(errors) > 100:
+        if len(OCV.errors) > 100:
             # do nothing for now
-            print(errors)
+            print(OCV.errors)
     except:
         say(str(sys.exc_info()))
 
 
-class CallWrapper:
+def about_win(timer = None):
+    OCV.ABOUT = Tk.Toplevel(OCV.APP)
+    OCV.ABOUT.transient(OCV.APP)
+    OCV.ABOUT.title(_("About {0}").format(OCV.PRG_NAME))
+    if sys.platform == "win32":
+        OCV.APP.iconbitmap("OKKCNC.ico")
+    else:
+        OCV.APP.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
+
+    bg = "#707070"
+    fg = "#ffffff"
+
+    text_items = [
+        ("", _("An advanced fully featured g-code sender for GRBL. \n"\
+                   "Forked from bCNC")),
+        ("www: ", OCV.PRG_SITE),
+        ("author: ", OCV.AUTHOR),
+        ("e-mail: ", OCV.AUT_EMAIL),
+        ("contributors: ", OCV.PRG_CONTRIB),
+        ("translations: ", OCV.PRG_TRANS),
+        ("credits: ", OCV.PRG_CREDITS),
+        ("version: ", OCV.PRG_VER),
+        ("last change: ", OCV.PRG_DATE)
+        ]
+
+    frame = Tk.Frame(
+        OCV.ABOUT,
+        borderwidth=2,
+        relief=Tk.SUNKEN,
+        background=bg)
+
+
+    frame.pack(side=Tk.TOP, expand=Tk.TRUE, fill=Tk.BOTH, padx=5, pady=5)
+
+    # -----
+    row = 0
+
+    lab = Tk.Label(
+        frame,
+        image=OCV.icons["OKKCNC"],
+        foreground=fg,
+        background=bg,
+        relief=Tk.SUNKEN,
+        padx=0, pady=0)
+
+    lab.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
+
+    row += 1
+
+    m_txt = Tk.Text(frame, wrap=Tk.WORD, font=OCV.FONT_ABOUT_TEXT)
+
+    m_txt.tag_config(
+        "title",
+        font=OCV.FONT_ABOUT_TITLE,
+        background="white",
+        foreground="black")
+
+    m_txt.tag_config(
+        "desc",
+        font=OCV.FONT_ABOUT_DESC)
+
+    m_txt.tag_config(
+        "text",
+        lmargin1=20,
+        lmargin2=20,
+        font=OCV.FONT_ABOUT_TEXT)
+
+    # reset the text fields
+    m_txt.configure(state=Tk.NORMAL)
+    m_txt.delete(1.0, Tk.END)
+    
+    m_txt.insert(Tk.END, "{0}".format(OCV.PRG_NAME), ('title'))
+
+    for val in text_items:
+        m_txt.insert(Tk.END, "{0} \n".format(val[0]), ('desc'))
+        m_txt.insert(Tk.END, "{0} \n\n".format(val[1]) , ('text'))
+
+    # we need to disable the text field to make it not editable
+    m_txt.configure(state=Tk.DISABLED)
+
+    m_txt.grid(row=row, column=0, columnspan=3, padx=0, pady=2)
+
+    scrollb = Tk.Scrollbar(frame, orient=Tk.VERTICAL, command=m_txt.yview)
+    scrollb.grid(row=row, column=3, sticky= Tk.NSEW, padx=0, pady=0)
+    m_txt['yscrollcommand'] = scrollb.set
+
+    closeAbout = lambda e=None, t=OCV.ABOUT: t.destroy()
+
+    row += 1
+
+    but = Tk.Button(frame, text=_("Close"), command=closeAbout)
+    but.grid(row=row, column=1, sticky= Tk.NS, padx=5, pady=5)
+
+    frame.grid_columnconfigure(0, weight=1)
+
+    OCV.ABOUT.bind('<Escape>', closeAbout)
+    OCV.ABOUT.bind('<Return>', closeAbout)
+    OCV.ABOUT.bind('<KP_Enter>', closeAbout)
+
+    OCV.ABOUT.deiconify()
+    OCV.ABOUT.wait_visibility()
+    OCV.ABOUT.resizable(False, False)
+
+    try:
+        OCV.ABOUT.grab_set()
+    except:
+        pass
+
+    but.focus_set()
+    OCV.ABOUT.lift()
+
+    if timer:
+        OCV.ABOUT.after(timer, closeAbout)
+
+    OCV.ABOUT.wait_window()
+
+
+class CallWrapper(object):
     """Replaces the Tkinter.CallWrapper with extra functionality"""
     def __init__(self, func, subst, widget):
         """Store FUNC, SUBST and WIDGET as members."""
@@ -629,7 +521,6 @@ class UserButton(Ribbon.LabelButton):
         self.cnc = cnc
         self.button = button
         self.get()
-#        self.bind("<Control-Button-1>", self.edit)
         self.bind("<Button-3>", self.edit)
         self.bind("<Control-Button-1>", self.edit)
         self["command"] = self.execute
@@ -641,7 +532,7 @@ class UserButton(Ribbon.LabelButton):
             return
         name = self.name()
         self["text"] = name
-        self["image"] = icons.get(self.icon(), icons["material"])
+        self["image"] = OCV.icons.get(self.icon(), OCV.icons["material"])
         self["compound"] = Tk.LEFT
         tooltip = self.tooltip()
 
@@ -652,25 +543,25 @@ class UserButton(Ribbon.LabelButton):
 
     def name(self):
         try:
-            return config.get("Buttons", "name.{0}".format(self.button))
+            return OCV.config.get("Buttons", "name.{0}".format(self.button))
         except:
             return str(self.button)
 
     def icon(self):
         try:
-            return config.get("Buttons", "icon.{0}".format(self.button))
+            return OCV.config.get("Buttons", "icon.{0}".format(self.button))
         except:
             return None
 
     def tooltip(self):
         try:
-            return config.get("Buttons", "tooltip.{0}".format(self.button))
+            return OCV.config.get("Buttons", "tooltip.{0}".format(self.button))
         except:
             return ""
 
     def command(self):
         try:
-            return config.get("Buttons", "command.{0}".format(self.button))
+            return OCV.config.get("Buttons", "command.{0}".format(self.button))
         except:
             return ""
 
@@ -726,7 +617,7 @@ class UserButtonDialog(Tk.Toplevel):
             width=5,
             command=self.iconChange)
 
-        lst = list(sorted(icons.keys()))
+        lst = list(sorted(OCV.icons.keys()))
 
         lst.insert(0, UserButtonDialog.NONE)
 
@@ -786,7 +677,7 @@ class UserButtonDialog(Tk.Toplevel):
             self.iconCombo.set(UserButtonDialog.NONE)
         else:
             self.iconCombo.set(icon)
-        self.icon["image"] = icons.get(icon, "")
+        self.icon["image"] = OCV.icons.get(icon, "")
         self.command.insert("1.0", self.button.command())
 
         # Wait action
@@ -797,18 +688,22 @@ class UserButtonDialog(Tk.Toplevel):
 
     def ok(self, event=None):
         n = self.button.button
-        config.set("Buttons", "name.{0}".format(n), self.name.get().strip())
+        OCV.config.set(
+            "Buttons",
+            "name.{0}".format(n),
+            self.name.get().strip())
+
         icon = self.iconCombo.get()
 
         if icon == UserButtonDialog.NONE:
             icon = ""
 
-        config.set("Buttons", "icon.{0}".format(n), icon)
-        config.set(
+        OCV.config.set("Buttons", "icon.{0}".format(n), icon)
+        OCV.config.set(
             "Buttons", "tooltip.{0}".format(n),
             self.tooltip.get().strip())
 
-        config.set(
+        OCV.config.set(
             "Buttons", "command.{0}".format(n),
             self.command.get("1.0", Tk.END).strip())
 
@@ -818,16 +713,22 @@ class UserButtonDialog(Tk.Toplevel):
         self.destroy()
 
     def iconChange(self):
-        self.icon["image"] = icons.get(self.iconCombo.get(), "")
+        self.icon["image"] = OCV.icons.get(self.iconCombo.get(), "")
 
 
 class ErrorWindow(Tk.Toplevel):
 
     def __init__(self, master):
         Tk.Toplevel.__init__(self, master, name="error_panel")
-        self.title(_("User configurable Dialog"))
+        self.title(_("Error Dialog"))
         self.transient(master)
-        self.msg = "message"
+        frame = Tk.Frame(self, width=100, height=100)
+        self.m_txt = Tk.Text(frame, wrap=Tk.WORD)
+        frame.pack(fill=Tk.BOTH, expand=1)
 
-    def show_message(self):
-        print(self.winfo_name)
+    def show_message(self, msg):
+        self.m_txt.configure(state=Tk.NORMAL)
+        self.m_txt.delete(1.0, Tk.END)
+        self.m_txt.insert(Tk.END, msg)
+        self.m_txt.configure(state=Tk.DISABLED)
+        self.m_txt.pack()

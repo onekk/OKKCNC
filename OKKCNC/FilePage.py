@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -23,11 +23,10 @@ except ImportError:
     import tkinter as Tk
 
 import OCV
-
-import tkExtra
-import Utils
-import Ribbon
 import CNCRibbon
+import IniFile
+import Ribbon
+import tkExtra
 
 try:
     from serial.tools.list_ports import comports
@@ -37,13 +36,12 @@ except:
 
 BAUDS = [2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400]
 
-
 class _RecentMenuButton(Ribbon.MenuButton):
     """Recent Menu button"""
     def createMenu(self):
-        menu = Tk.Menu(self, tearoff=0, activebackground=OCV.ACTIVE_COLOR)
-        for i in range(Utils._maxRecent):
-            filename = Utils.getRecent(i)
+        menu = Tk.Menu(self, tearoff=0, activebackground=OCV.COLOR_ACTIVE)
+        for i in range(OCV.maxRecent):
+            filename = IniFile.get_recent_file(i)
 
             if filename is None:
                 break
@@ -54,7 +52,7 @@ class _RecentMenuButton(Ribbon.MenuButton):
             menu.add_command(
                 label="{0:d} {1}".format(i+1, fn),
                 compound=Tk.LEFT,
-                image=Utils.icons["new"],
+                image=OCV.icons["new"],
                 accelerator=path,  # Show as accelerator in order to be aligned
                 command=lambda s=self, i=i: s.event_generate(
                         "<<Recent{0:d}>>".format(i)))
@@ -80,10 +78,10 @@ class FileGroup(CNCRibbon.ButtonGroup):
 
         b = Ribbon.LabelButton(
             self.frame, self, "<<New>>",
-            image=Utils.icons["new32"],
+            image=OCV.icons["new32"],
             text=_("New"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -98,8 +96,8 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Open>>",
-            image=Utils.icons["open32"],
-            background=OCV.BACKGROUND)
+            image=OCV.icons["open32"],
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -113,9 +111,9 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             None,
             text=_("Open"),
-            image=Utils.icons["triangle_down"],
+            image=OCV.icons["triangle_down"],
             compound=Tk.RIGHT,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -129,10 +127,10 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Import>>",
-            image=Utils.icons["import32"],
+            image=OCV.icons["import32"],
             text=_("Import"),
             compound=Tk.TOP,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -146,9 +144,9 @@ class FileGroup(CNCRibbon.ButtonGroup):
             self.frame,
             self,
             "<<Save>>",
-            image=Utils.icons["save32"],
+            image=OCV.icons["save32"],
             command=OCV.APP.save,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -163,9 +161,9 @@ class FileGroup(CNCRibbon.ButtonGroup):
                 self,
                 "<<SaveAs>>",
                 text=_("Save"),
-                image=Utils.icons["triangle_down"],
+                image=OCV.icons["triangle_down"],
                 compound=Tk.RIGHT,
-                background=OCV.BACKGROUND)
+                background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -189,12 +187,12 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=0,0
 #        b = Ribbon.LabelButton(self.frame, #self.page, "<<Config>>",
 #                text=_("Config"),
-#                image=Utils.icons["config32"],
+#                image=OCV.icons["config32"],
 #                command=OCV.APP.preferences,
 #                state=DISABLED,
 #                compound=TOP,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NS)
 #        tkExtra.Balloon.set(b, _("Open configuration dialog"))
 
@@ -202,11 +200,11 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=1,0
 #        b = Ribbon.LabelButton(self.frame,
 #                text=_("Report"),
-#                image=Utils.icons["debug"],
+#                image=OCV.icons["debug"],
 #                compound=LEFT,
 #                command=Utils.ReportDialog.sendErrorReport,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #        tkExtra.Balloon.set(b, _("Send Error Report"))
 #
@@ -214,11 +212,11 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
 #        col,row=1,1
 #        b = Ribbon.LabelButton(self.frame,
 #                text=_("Updates"),
-#                image=Utils.icons["global"],
+#                image=OCV.icons["global"],
 #                compound=LEFT,
 #                command=OCV.APP.checkUpdates,
 #                anchor=W,
-#                background=OCV.BACKGROUND)
+#                background=OCV.COLOR_BACKGROUND)
 #        b.grid(row=row, column=col, padx=0, pady=0, sticky=EW)
 #        tkExtra.Balloon.set(b, _("Check Updates"))
 
@@ -227,11 +225,11 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("About"),
-            image=Utils.icons["about"],
+            image=OCV.icons["about"],
             compound=Tk.LEFT,
             command=OCV.APP.about,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
 
@@ -253,11 +251,11 @@ class PendantGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Start"),
-            image=Utils.icons["start_pendant"],
+            image=OCV.icons["start_pendant"],
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.startPendant,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -268,11 +266,11 @@ class PendantGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Stop"),
-            image=Utils.icons["stop_pendant"],
+            image=OCV.icons["stop_pendant"],
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.APP.stopPendant,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -292,11 +290,11 @@ class CloseGroup(CNCRibbon.ButtonGroup):
         b = Ribbon.LabelButton(
             self.frame,
             text=_("Exit"),
-            image=Utils.icons["exit32"],
+            image=OCV.icons["exit32"],
             compound=Tk.TOP,
             command=OCV.APP.quit,
             anchor=Tk.W,
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         b.pack(fill=Tk.BOTH, expand=Tk.YES)
 
@@ -335,7 +333,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
                 self.portCombo,
                 _("Select (or manual enter) port to connect"))
 
-        self.portCombo.set(Utils.getStr("Connection","port"))
+        self.portCombo.set(IniFile.get_str("Connection","port"))
 
         self.addWidget(self.portCombo)
 
@@ -358,7 +356,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.baudCombo.fill(BAUDS)
 
-        self.baudCombo.set(Utils.getStr("Connection","baud","115200"))
+        self.baudCombo.set(IniFile.get_str("Connection","baud","115200"))
 
         self.addWidget(self.baudCombo)
 
@@ -397,7 +395,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
             b,
             _("Connect to serial on startup of the program"))
 
-        self.autostart.set(Utils.getBool("Connection","openserial"))
+        self.autostart.set(IniFile.get_bool("Connection","openserial"))
 
         self.addWidget(b)
 
@@ -405,11 +403,11 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.comrefBtn = Ribbon.LabelButton(
             self,
-            image=Utils.icons["refresh"],
+            image=OCV.icons["refresh"],
             text=_("Refresh"),
             compound=Tk.TOP,
             command=lambda s=self: s.comportRefresh(True),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         self.comrefBtn.grid(
             row=row,
@@ -424,11 +422,11 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
         self.connectBtn = Ribbon.LabelButton(
             self,
-            image=Utils.icons["serial48"],
+            image=OCV.icons["serial48"],
             text=_("Open"),
             compound=Tk.TOP,
             command=lambda s=self: s.event_generate("<<Connect>>"),
-            background=OCV.BACKGROUND)
+            background=OCV.COLOR_BACKGROUND)
 
         self.connectBtn.grid(
             row=row,
@@ -506,10 +504,10 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     def saveConfig(self):
         # Connection
-        Utils.setStr("Connection", "controller", OCV.APP.controller)
-        Utils.setStr("Connection", "port", self.portCombo.get().split("\t")[0])
-        Utils.setStr("Connection", "baud", self.baudCombo.get())
-        Utils.setBool("Connection", "openserial", self.autostart.get())
+        IniFile.set_value("Connection", "controller", OCV.APP.controller)
+        IniFile.set_value("Connection", "port", self.portCombo.get().split("\t")[0])
+        IniFile.set_value("Connection", "baud", self.baudCombo.get())
+        IniFile.set_value("Connection", "openserial", self.autostart.get())
 
 
 class FilePage(CNCRibbon.Page):

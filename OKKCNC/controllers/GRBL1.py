@@ -8,7 +8,7 @@ from _GenericGRBL import _GenericGRBL
 from _GenericController import STATUSPAT, POSPAT, TLOPAT, DOLLARPAT, SPLITPAT, VARPAT
 
 from CNC import CNC
-import time
+# import time
 
 # Extended override commands
 OV_FEED_100 = b'\x90'
@@ -31,6 +31,8 @@ OV_SPINDLE_STOP = b'0x9E'
 
 OV_FLOOD_TOGGLE = b'0xA0'
 OV_MIST_TOGGLE = b'0xA1'
+
+W_MSG1 = "Garbage receive {0}: {1}"
 
 
 class Controller(_GenericGRBL):
@@ -120,30 +122,30 @@ class Controller(_GenericGRBL):
                     OCV.CD["wz"] = round(OCV.CD["mz"]-OCV.CD["wcoz"], OCV.digits)
                     self.master._posUpdate = True
                 except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                    OCV.c_state = W_MSG1.format(word[0], line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "F":
                 try:
                     OCV.CD["curfeed"] = float(word[1])
-                except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                except (ValueError, IndexError):
+                    OCV.c_state = W_MSG1.format(word[0], line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "FS":
                 try:
                     OCV.CD["curfeed"]    = float(word[1])
                     OCV.CD["curspindle"] = float(word[2])
-                except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                except (ValueError, IndexError):
+                    OCV.c_state = W_MSG1.format(word[0], line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Bf":
                 try:
                     OCV.CD["planner"] = int(word[1])
                     OCV.CD["rxbytes"] = int(word[2])
-                except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0], line)
+                except (ValueError, IndexError):
+                    OCV.c_state = W_MSG1.format(word[0], line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Ov":
@@ -151,8 +153,8 @@ class Controller(_GenericGRBL):
                     OCV.CD["OvFeed"]    = int(word[1])
                     OCV.CD["OvRapid"]   = int(word[2])
                     OCV.CD["OvSpindle"] = int(word[3])
-                except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                except (ValueError, IndexError):
+                    OCV.c_state = W_MSG1.format(word[0], line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "WCO":
@@ -161,7 +163,7 @@ class Controller(_GenericGRBL):
                     OCV.CD["wcoy"] = float(word[2])
                     OCV.CD["wcoz"] = float(word[3])
                 except (ValueError,IndexError):
-                    OCV.c_state = "Garbage receive {0}: {1}".format(word[0],line)
+                    OCV.c_state = W_MSG1.format(word[0],line)
                     self.master.log.put((self.master.MSG_RECEIVE, OCV.c_state))
                     break
             elif word[0] == "Pn":

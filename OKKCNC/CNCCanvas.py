@@ -3,7 +3,7 @@
 
 
 Credits:
-    this module code is based on bCNC
+    this module code is based on bCNC code
     https://github.com/vlachoudis/bCNC
 
 @author: carlo.dormeletti@gmail.com
@@ -27,6 +27,7 @@ except ImportError:
 import OCV
 from CNC import CNC
 import Commands as cmd
+import IniFile
 import Utils
 import Camera
 import tkExtra
@@ -38,7 +39,7 @@ try:
     # Resampling image based on PIL library and converting to RGB.
     # options possible: NEAREST, BILINEAR, BICUBIC, ANTIALIAS
     RESAMPLE = Image.NEAREST    # resize type
-    #RESAMPLE = Image.BILINEAR    # resize type
+    # RESAMPLE = Image.BILINEAR    # resize type
 except:
     HAS_NUMPY = None
     RESAMPLE = None
@@ -55,9 +56,9 @@ VIEWS = ["X-Y", "X-Z", "Y-Z", "ISO1", "ISO2", "ISO3"]
 
 INSERT_WIDTH2 = 3
 GANTRY_R = 4
-GANTRY_X = GANTRY_R*2 # 10
-GANTRY_Y = GANTRY_R # 5
-GANTRY_H = GANTRY_R*5 # 20
+GANTRY_X = GANTRY_R*2  # 10
+GANTRY_Y = GANTRY_R  # 5
+GANTRY_H = GANTRY_R*5  # 20
 
 SELECTION_TAGS = ("sel", "sel2", "sel3", "sel4")
 
@@ -89,35 +90,39 @@ S60 = math.sin(math.radians(60))
 C60 = math.cos(math.radians(60))
 
 DEF_CURSOR = ""
+
 MOUSE_CURSOR = {
-    ACTION_SELECT : DEF_CURSOR,
-    ACTION_SELECT_AREA : "right_ptr",
+    ACTION_SELECT: DEF_CURSOR,
+    ACTION_SELECT_AREA: "right_ptr",
 
-    ACTION_PAN : "fleur",
-    ACTION_ORIGIN : "cross",
-    #ACTION_ORBIT : "exchange",
-    #ACTION_ZOOM_IN : "sizing",
-    #ACTION_ZOOM_OUT : "sizing",
-    #ACTION_ZOOM_ON : "sizing",
+    ACTION_PAN: "fleur",
+    ACTION_ORIGIN: "cross",
+    # ACTION_ORBIT: "exchange",
+    # ACTION_ZOOM_IN: "sizing",
+    # ACTION_ZOOM_OUT: "sizing",
+    # ACTION_ZOOM_ON: "sizing",
 
-    #ACTION_VIEW_CENTER : "cross",
-    #ACTION_VIEW_MOVE : "fleur",
-    #ACTION_VIEW_ROTATE : "exchange",
+    # ACTION_VIEW_CENTER: "cross",
+    # ACTION_VIEW_MOVE: "fleur",
+    # ACTION_VIEW_ROTATE: "exchange",
 
-    ACTION_MOVE : "hand1",
-    ACTION_ROTATE : "exchange",
-    #ACTION_GANTRY : "target", # no  proper cursor
-    ACTION_GANTRY : "crosshair",
-    ACTION_WPOS : "diamond_cross",
+    ACTION_MOVE: "hand1",
+    ACTION_ROTATE: "exchange",
+    # ACTION_GANTRY: "target", # no  proper cursor
+    ACTION_GANTRY: "crosshair",
+    ACTION_WPOS: "diamond_cross",
 
-    ACTION_RULER : "tcross",
-    ACTION_ADDORIENT : "tcross",
+    ACTION_RULER: "tcross",
+    ACTION_ADDORIENT: "tcross",
 
-    #ACTION_EDIT : "pencil",
+    # ACTION_EDIT: "pencil",
 }
 
+
 def mouseCursor(action):
+    """Return MOUSE_CURSOR"""
     return MOUSE_CURSOR.get(action, DEF_CURSOR)
+
 
 class AlarmException(Exception):
     """Raise an alarm exception"""
@@ -129,7 +134,7 @@ class CNCCanvas(Tk.Canvas, object):
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
-        OCV.canvas = self
+        OCV.CANVAS = self
 
         # Global variables
         self.view = 0
@@ -163,18 +168,18 @@ class CNCCanvas(Tk.Canvas, object):
         self.bind('<Control-Key-Down>', self.panDown)
 
         self.bind('<Escape>', self.actionCancel)
-        #        self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
-        #        self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
-        #        self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
-        #        self.bind('<Key-f>', self.fit2Screen)
-        #        self.bind('<Key-g>', self.setActionGantry)
-        #        self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
-        #        self.bind('<Key-m>', self.setActionMove)
-        #        self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
-        #        self.bind('<Key-o>', self.setActionOrigin)
-        #        self.bind('<Key-r>', self.setActionRuler)
-        #        self.bind('<Key-s>', self.setActionSelect)
-        #        self.bind('<Key-x>', self.setActionPan)
+        # self.bind('<Key-a>', lambda e,s=self : s.event_generate("<<SelectAll>>"))
+        # self.bind('<Key-A>', lambda e,s=self : s.event_generate("<<SelectNone>>"))
+        # self.bind('<Key-e>', lambda e,s=self : s.event_generate("<<Expand>>"))
+        # self.bind('<Key-f>', self.fit2Screen)
+        # self.bind('<Key-g>', self.setActionGantry)
+        # self.bind('<Key-l>', lambda e,s=self : s.event_generate("<<EnableToggle>>"))
+        # self.bind('<Key-m>', self.setActionMove)
+        # self.bind('<Key-n>', lambda e,s=self : s.event_generate("<<ShowInfo>>"))
+        # self.bind('<Key-o>', self.setActionOrigin)
+        # self.bind('<Key-r>', self.setActionRuler)
+        # self.bind('<Key-s>', self.setActionSelect)
+        # self.bind('<Key-x>', self.setActionPan)
         self.bind('<Key>', self.handleKey)
 
         self.bind('<Control-Key-S>', self.cameraSave)
@@ -183,13 +188,13 @@ class CNCCanvas(Tk.Canvas, object):
         self.bind('<Control-Key-equal>', self.menuZoomIn)
         self.bind('<Control-Key-minus>', self.menuZoomOut)
 
-        #        self.bind('<Control-Key-x>', self.cut)
-        #        self.bind('<Control-Key-c>', self.copy)
-        #        self.bind('<Control-Key-v>', self.paste)
+        # self.bind('<Control-Key-x>', self.cut)
+        # self.bind('<Control-Key-c>', self.copy)
+        # self.bind('<Control-Key-v>', self.paste)
 
-        #        self.bind('<Key-space>', self.commandFocus)
-        #        self.bind('<Control-Key-space>', self.commandFocus)
-        #        self.bind('<Control-Key-a>', self.selectAll)
+        # self.bind('<Key-space>', self.commandFocus)
+        # self.bind('<Control-Key-space>', self.commandFocus)
+        # self.bind('<Control-Key-a>', self.selectAll)
 
         self.x0 = 0.0
         self.y0 = 0.0
@@ -229,7 +234,8 @@ class CNCCanvas(Tk.Canvas, object):
         self.cameraR = 1.5875  # circle radius in units (mm/inched)
         self.cameraDx = 0  # camera shift vs gantry
         self.cameraDy = 0
-        self.cameraZ = None  # if None it will not make any Z movement for the camera
+        # if None it will not make any Z movement for the camera
+        self.cameraZ = None
         self.cameraSwitch = False  # Look at spindle(False) or camera(True)
         self._cameraAfter = None  # Camera anchor location "" for gantry
         self._cameraMaxWidth = 640  # on zoom over this size crop the image
@@ -246,45 +252,42 @@ class CNCCanvas(Tk.Canvas, object):
         self.draw_probe = True
         self.draw_workarea = True
         self.draw_paths = True
-        self.draw_rapid = True # draw rapid motions
-        self._wx = self._wy = self._wz = 0.0 # work position
-        self._dx = self._dy = self._dz = 0.0 # work-machine position
+        self.draw_rapid = True  # draw rapid motions
+        self._wx = self._wy = self._wz = 0.0  # work position
+        self._dx = self._dy = self._dz = 0.0  # work-machine position
 
-        self._vx0 = self._vy0 = self._vz0 = 0 # vector move coordinates
-        self._vx1 = self._vy1 = self._vz1 = 0 # vector move coordinates
+        self._vx0 = self._vy0 = self._vz0 = 0  # vector move coordinates
+        self._vx1 = self._vy1 = self._vz1 = 0  # vector move coordinates
 
         self._orientSelected = None
         self.tooltips = []
 
-        #self.config(xscrollincrement=1, yscrollincrement=1)
+        # self.config(xscrollincrement=1, yscrollincrement=1)
         self.reset()
         self.initPosition()
 
-
     def antialias_args(self, args, winc=0.5, cw=2):
-        """
-            Calculate arguments for antialiasing
-        """
+        """Calculate arguments for antialiasing"""
 
         nargs = {}
 
-        #set defaults
+        # set defaults
         nargs['width'] = 1
         nargs['fill'] = "#000"
 
-        #get original args
+        # get original args
         for arg in args:
             nargs[arg] = args[arg]
         if nargs['width'] == 0:
             nargs['width'] = 1
 
-        #calculate width
+        # calculate width
         nargs['width'] += winc
 
-        #calculate color
+        # calculate color
         cbg = self.winfo_rgb(self.cget("bg"))
         cfg = list(self.winfo_rgb(nargs['fill']))
-        #print cbg, cfg
+        # print cbg, cfg
         cfg[0] = (cfg[0] + cbg[0]*cw)/(cw+1)
         cfg[1] = (cfg[1] + cbg[1]*cw)/(cw+1)
         cfg[2] = (cfg[2] + cbg[2]*cw)/(cw+1)
@@ -295,22 +298,19 @@ class CNCCanvas(Tk.Canvas, object):
 
         return nargs
 
-    #Override alias method if antialiasing enabled:
+    # Override alias method if antialiasing enabled:
     if ANTIALIAS_CHEAP:
         def create_line(self, *args, **kwargs):
             nkwargs = self.antialias_args(kwargs)
             super(CNCCanvas, self).create_line(*args, **nkwargs)
             return super(CNCCanvas, self).create_line(*args, **kwargs)
 
-
     def reset(self):
         self.zoom = 1.0
-
 
     def status(self, msg):
         """Set status message"""
         self.event_generate("<<Status>>", data=msg)
-
 
     def setMouseStatus(self, event):
         data = "{0:.4f} {1:.4f} {2:.4f}".format(
@@ -318,11 +318,11 @@ class CNCCanvas(Tk.Canvas, object):
 
         self.event_generate("<<Coords>>", data=data)
 
-
     def _updateScrollBars(self):
         """Update scroll region for new size"""
         bb = self.bbox('all')
-        if bb is None: return
+        if bb is None:
+            return
         x1, y1, x2, y2 = bb
         dx = x2-x1
         dy = y2-y1
@@ -330,9 +330,8 @@ class CNCCanvas(Tk.Canvas, object):
         # so when we zoom in/out we don't touch the borders
         self.configure(scrollregion=(x1-dx, y1-dy, x2+dx, y2+dy))
 
-
     def handleKey(self, event):
-        #ctrl = event.state & CONTROL_MASK
+        # ctrl = event.state & CONTROL_MASK
         if event.char == "a":
             self.event_generate("<<SelectAll>>")
         elif event.char == "A":
@@ -362,67 +361,56 @@ class CNCCanvas(Tk.Canvas, object):
         elif event.char == "Z":
             self.menuZoomOut()
 
-
     def setAction(self, action):
         self.action = action
         self.actionVar.set(action)
         self._mouseAction = None
         self.config(cursor=mouseCursor(self.action), background="White")
 
-
     def actionCancel(self, event=None):
         if self.action != ACTION_SELECT or \
-           (self._mouseAction != ACTION_SELECT and self._mouseAction is not None):
+               (self._mouseAction != ACTION_SELECT and
+                self._mouseAction is not None):
             self.setAction(ACTION_SELECT)
             return "break"
-        #self.draw()
-
+        # self.draw()
 
     def setActionSelect(self, event=None):
         self.setAction(ACTION_SELECT)
         self.status(_("Select objects with mouse"))
 
-
     def setActionPan(self, event=None):
         self.setAction(ACTION_PAN)
         self.status(_("Pan viewport"))
-
 
     def setActionOrigin(self, event=None):
         self.setAction(ACTION_ORIGIN)
         self.status(_("Click to set the origin (zero)"))
 
-
     def setActionMove(self, event=None):
         self.setAction(ACTION_MOVE)
         self.status(_("Move graphically objects"))
-
 
     def setActionGantry(self, event=None):
         self.setAction(ACTION_GANTRY)
         self.config(background="seashell")
         self.status(_("Move CNC gantry to mouse location"))
 
-
     def setActionWPOS(self, event=None):
         self.setAction(ACTION_WPOS)
         self.config(background="ivory")
         self.status(_("Set mouse location as current machine position (X/Y only)"))
 
-
     def setActionRuler(self, event=None):
         self.setAction(ACTION_RULER)
         self.status(_("Drag a ruler to measure distances"))
-
 
     def setActionAddMarker(self, event=None):
         self.setAction(ACTION_ADDORIENT)
         self.status(_("Add an orientation marker"))
 
-
-    # Convert canvas cx,cy coordinates to machine space
-
     def canvas2Machine(self, cx, cy):
+        """Convert canvas cx,cy coordinates to machine space"""
         u = cx / self.zoom
         v = cy / self.zoom
 
@@ -444,38 +432,37 @@ class CNCCanvas(Tk.Canvas, object):
         elif self.view == VIEW_ISO3:
             return -0.5*(u/S60+v/C60), -0.5*(u/S60-v/C60), None
 
-    # Image (pixel) coordinates to machine
-
     def image2Machine(self, x, y):
+        """Image (pixel) coordinates to machine"""
         return self.canvas2Machine(self.canvasx(x), self.canvasy(y))
 
-    # Move gantry to mouse location
-
     def actionGantry(self, x, y):
+        """Move gantry to mouse location"""
         u, v, w = self.image2Machine(x, y)
-        OCV.mcontrol.goto(u, v, w)
+        OCV.MCTRL.goto(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionWPOS(self, x, y):
         """Set the work coordinates to mouse location"""
         u, v, w = self.image2Machine(x, y)
         # print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
-        OCV.mcontrol.wcs_set(u, v, w)
+        OCV.MCTRL.wcs_set(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionAddOrient(self, x, y):
         """Add an orientation marker at mouse location"""
         cx, cy = self.snapPoint(self.canvasx(x), self.canvasy(y))
         u, v, w = self.canvas2Machine(cx, cy)
+
         if u is None or v is None:
             self.status(_("ERROR: Cannot set X-Y marker  with the current view"))
             return
+
         self._orientSelected = len(self.gcode.orient)
         self.gcode.orient.add(OCV.CD["wx"], OCV.CD["wy"], u, v)
         self.event_generate("<<OrientSelect>>", data=self._orientSelected)
-        #self.drawOrient()
+        # self.drawOrient()
         self.setAction(ACTION_SELECT)
-
 
     def click(self, event):
         """Find item selected"""
@@ -488,9 +475,10 @@ class CNCCanvas(Tk.Canvas, object):
             return
 
         elif self.action == ACTION_SELECT:
-            #if event.state & CONTROLSHIFT_MASK == CONTROLSHIFT_MASK:
-            #self._mouseAction = ACTION_SELECT
-            #else:
+
+            # if event.state & CONTROLSHIFT_MASK == CONTROLSHIFT_MASK:
+            #     self._mouseAction = ACTION_SELECT
+            #     else:
             self._mouseAction = ACTION_SELECT_SINGLE
 
         elif self.action in (ACTION_MOVE, ACTION_RULER):
@@ -499,19 +487,24 @@ class CNCCanvas(Tk.Canvas, object):
             if self.action == ACTION_RULER and self._vector is not None:
                 # Check if we hit the existing ruler
                 coords = self.coords(self._vector)
-                if abs(coords[0]-i) <= CLOSE_DISTANCE and abs(coords[1]-j <= CLOSE_DISTANCE):
+                if (abs(coords[0]-i) <= CLOSE_DISTANCE and
+                        abs(coords[1]-j <= CLOSE_DISTANCE)):
                     # swap coordinates
                     coords[0], coords[2] = coords[2], coords[0]
                     coords[1], coords[3] = coords[3], coords[1]
                     self.coords(self._vector, *coords)
-                    self._vx0, self._vy0, self._vz0 = self.canvas2xyz(coords[0], coords[1])
+                    self._vx0, self._vy0, self._vz0 = self.canvas2xyz(
+                        coords[0], coords[1])
                     self._mouseAction = self.action
                     return
-                elif abs(coords[2]-i) <= CLOSE_DISTANCE and abs(coords[3]-j <= CLOSE_DISTANCE):
+                elif (abs(coords[2]-i) <= CLOSE_DISTANCE and
+                      abs(coords[3]-j <= CLOSE_DISTANCE)):
                     self._mouseAction = self.action
                     return
 
-            if self._vector: self.delete(self._vector)
+            if self._vector:
+                self.delete(self._vector)
+
             if self.action == ACTION_MOVE:
                 # Check if we clicked on a selected item
                 try:
@@ -521,7 +514,7 @@ class CNCCanvas(Tk.Canvas, object):
 
                         tags = self.gettags(item)
 
-                        if "sel"  in tags or "sel2" in tags or \
+                        if "sel" in tags or "sel2" in tags or \
                            "sel3" in tags or "sel4" in tags:
 
                             break
@@ -529,16 +522,17 @@ class CNCCanvas(Tk.Canvas, object):
                         self._mouseAction = ACTION_SELECT_SINGLE
                         return
 
-                    fill = OCV.MOVE_COLOR
+                    fill = OCV.COLOR_MOVE
                     arrow = Tk.LAST
 
                 except:
                     self._mouseAction = ACTION_SELECT_SINGLE
                     return
             else:
-                fill = OCV.RULER_COLOR
+                fill = OCV.COLOR_RULER
                 arrow = Tk.BOTH
-            self._vector = self.create_line((i, j, i, j), fill=fill, arrow=arrow)
+            self._vector = self.create_line(
+                (i, j, i, j), fill=fill, arrow=arrow)
             self._vx0, self._vy0, self._vz0 = self.canvas2xyz(i, j)
             self._mouseAction = self.action
 
@@ -568,11 +562,8 @@ class CNCCanvas(Tk.Canvas, object):
         elif self.action == ACTION_PAN:
             self.pan(event)
 
-
     def buttonMotion(self, event):
-        """
-            Canvas motion button 1
-        """
+        """Canvas motion button 1"""
         if self._mouseAction == ACTION_SELECT_AREA:
             self.coords(
                 self._select,
@@ -589,7 +580,7 @@ class CNCCanvas(Tk.Canvas, object):
                     self.canvasy(self._y),
                     self.canvasx(event.x),
                     self.canvasy(event.y),
-                    outline=OCV.BOX_SELECT)
+                    outline=OCV.COLOR_SELECT_BOX)
 
         elif self._mouseAction in (ACTION_MOVE, ACTION_RULER):
             coords = self.coords(self._vector)
@@ -626,24 +617,22 @@ class CNCCanvas(Tk.Canvas, object):
 
         self.setMouseStatus(event)
 
-
-    # Canvas release button1. Select area
-
     def release(self, event):
+        """Canvas release button1. Select area"""
         if self._mouseAction in (
                 ACTION_SELECT_SINGLE,
                 ACTION_SELECT_DOUBLE,
                 ACTION_SELECT_AREA):
 
             if self._mouseAction == ACTION_SELECT_AREA:
-                #if event.state & SHIFT_MASK == 0:
-                if self._x < event.x:    # From left->right enclosed
+                # if event.state & SHIFT_MASK == 0:
+                if self._x < event.x:  # From left->right enclosed
                     closest = self.find_enclosed(
                         self.canvasx(self._x),
                         self.canvasy(self._y),
                         self.canvasx(event.x),
                         self.canvasy(event.y))
-                else:            # From right->left overlapping
+                else:  # From right->left overlapping
                     closest = self.find_overlapping(
                         self.canvasx(self._x),
                         self.canvasy(self._y),
@@ -660,7 +649,8 @@ class CNCCanvas(Tk.Canvas, object):
                     except:
                         pass
 
-            elif self._mouseAction in (ACTION_SELECT_SINGLE, ACTION_SELECT_DOUBLE):
+            elif self._mouseAction in (
+                    ACTION_SELECT_SINGLE, ACTION_SELECT_DOUBLE):
                 closest = self.find_closest(
                     self.canvasx(event.x),
                     self.canvasy(event.y),
@@ -671,13 +661,13 @@ class CNCCanvas(Tk.Canvas, object):
                 for i in closest:
                     try:
                         items.append(self._items[i])
-                        #i = None
+                        # i = None
                     except KeyError:
                         tags = self.gettags(i)
                         if "Orient" in tags:
                             self.selectMarker(i)
                             return
-                        #i = self.find_below(i)
+                        # i = self.find_below(i)
                         pass
 
             if not items:
@@ -711,8 +701,8 @@ class CNCCanvas(Tk.Canvas, object):
     def motion(self, event):
         self.setMouseStatus(event)
 
-    # Testing routine
     def _test(self, event):
+        """Testing routine"""
         i = self.canvasx(event.x)
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
@@ -727,9 +717,7 @@ class CNCCanvas(Tk.Canvas, object):
 #                print path.isInside(P)
 
     def snapPoint(self, cx, cy):
-        """
-            Snap to the closest point if any
-        """
+        """Snap to the closest point if any"""
         xs, ys = None, None
 
         if OCV.inch:
@@ -770,13 +758,11 @@ class CNCCanvas(Tk.Canvas, object):
         else:
             return cx, cy
 
-
     def getMargins(self):
-        """
-            Get margins of selected items
-        """
+        """Get margins of selected items"""
         bbox = self.bbox("sel")
-        if not bbox: return None
+        if not bbox:
+            return None
         x1, y1, x2, y2 = bbox
         dx = (x2-x1-1)/self.zoom
         dy = (y2-y1-1)/self.zoom
@@ -784,12 +770,14 @@ class CNCCanvas(Tk.Canvas, object):
 
     def xview(self, *args):
         ret = Tk.Canvas.xview(self, *args)
-        if args: self.cameraPosition()
+        if args:
+            self.cameraPosition()
         return ret
 
     def yview(self, *args):
         ret = Tk.Canvas.yview(self, *args)
-        if args: self.cameraPosition()
+        if args:
+            self.cameraPosition()
         return ret
 
     def configureEvent(self, event):
@@ -837,7 +825,7 @@ class CNCCanvas(Tk.Canvas, object):
         y = self._ty
         zoom = self.__tzoom
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.DEBUG_GRAPH is True:
             print("--- _zoomCanvas ---")
             print("ACTUAL_ZOOM", self.zoom)
 
@@ -846,6 +834,14 @@ class CNCCanvas(Tk.Canvas, object):
         c_zoom = self.zoom
 
         c_zoom *= zoom
+
+        # limits the zoom factor as problems could arise if zoom is:
+        # too high 300000 is giving error
+        # too low led to division by zero or NaN
+        if c_zoom > 30000:
+            c_zoom = 30000
+        elif c_zoom < 0.1:
+            c_zoom = 0.1
 
         self.zoom = Utils.q_round(c_zoom, 4, 0.005)
 
@@ -870,7 +866,7 @@ class CNCCanvas(Tk.Canvas, object):
         dx = self.canvasx(x) * (1.0 - zoom)
         dy = self.canvasy(y) * (1.0 - zoom)
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.DEBUG_GRAPH is True:
             print("FACTOR ", zoom)
             print("x0 y0 ", x0, y0)
             print("dx, dy ", dx, dy)
@@ -890,14 +886,15 @@ class CNCCanvas(Tk.Canvas, object):
 
     def selBbox(self):
         """Return selected objects bounding box"""
-
         x1 = None
         for tag in ("sel", "sel2", "sel3", "sel4"):
             bb = self.bbox(tag)
+
             if bb is None:
                 continue
             elif x1 is None:
                 x1, y1, x2, y2 = bb
+                print("TAG {0}, bb{1}".format(tag, bb))
             else:
                 x1 = min(x1, bb[0])
                 y1 = min(y1, bb[1])
@@ -906,6 +903,7 @@ class CNCCanvas(Tk.Canvas, object):
 
         if x1 is None:
             return self.bbox('all')
+
         return x1, y1, x2, y2
 
     def fit2Screen(self, event=None):
@@ -942,7 +940,7 @@ class CNCCanvas(Tk.Canvas, object):
         else:
             self.__tzoom = 0.5
 
-        if OCV.GRAP_DEBUG is True:
+        if OCV.DEBUG_GRAPH is True:
             print("--- fit2Screen ---")
             print("OLD ZOOM ", self.zoom)
             print("BB", bb)
@@ -963,9 +961,14 @@ class CNCCanvas(Tk.Canvas, object):
         midx = float((xm-sx1) / (sx2-sx1))
         midy = float((ym-sy1) / (sy2-sy1))
 
+        print("xm {0} ym{1} sx1{2} sy1{3} sx2{4} sy2{5}".format(
+            xm, ym, sx1, sy1, sx2, sy2))
+
         a, b = self.xview()
         d = (b-a)/2.0
-        self.xview_moveto(midx-d)
+        print(a, b, d)
+
+        self.xview_moveto(midx - d)
 
         a, b = self.yview()
         d = (b-a)/2.0
@@ -1064,16 +1067,16 @@ class CNCCanvas(Tk.Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = OCV.ENABLE_COLOR
+                        fill = OCV.COLOR_ENABLE
                 except IndexError:
-                    fill = OCV.ENABLE_COLOR
+                    fill = OCV.COLOR_ENABLE
             else:
-                    fill = OCV.ENABLE_COLOR
+                    fill = OCV.COLOR_ENABLE
             self.itemconfig(i, width=1, fill=fill)
 
-        self.itemconfig("sel2", width=1, fill=OCV.DISABLE_COLOR)
-        self.itemconfig("sel3", width=1, fill=OCV.TAB_COLOR)
-        self.itemconfig("sel4", width=1, fill=OCV.DISABLE_COLOR)
+        self.itemconfig("sel2", width=1, fill=OCV.COLOR_DISABLE)
+        self.itemconfig("sel3", width=1, fill=OCV.COLOR_TAB)
+        self.itemconfig("sel4", width=1, fill=OCV.COLOR_DISABLE)
 
         for i in SELECTION_TAGS:
             self.dtag(i)
@@ -1097,10 +1100,10 @@ class CNCCanvas(Tk.Canvas, object):
                     sel = block.enable and "sel" or "sel2"
                     self.addtag_withtag(sel, path)
 
-        self.itemconfig("sel", width=2, fill=OCV.SELECT_COLOR)
-        self.itemconfig("sel2", width=2, fill=OCV.SELECT2_COLOR)
-        self.itemconfig("sel3", width=2, fill=OCV.TAB_COLOR)
-        self.itemconfig("sel4", width=2, fill=OCV.TABS_COLOR)
+        self.itemconfig("sel", width=2, fill=OCV.COLOR_SELECT)
+        self.itemconfig("sel2", width=2, fill=OCV.COLOR_SELECT2)
+        self.itemconfig("sel3", width=2, fill=OCV.COLOR_TAB)
+        self.itemconfig("sel4", width=2, fill=OCV.COLOR_TABS)
 
         for i in SELECTION_TAGS:
             self.tag_raise(i)
@@ -1135,21 +1138,26 @@ class CNCCanvas(Tk.Canvas, object):
     def showInfo(self, blocks):
         """Display graphical information on selected blocks"""
         self.delete("info")    # clear any previous information
+
         for bid in blocks:
-            block = self.gcode.blocks[bid]
+            block = OCV.blocks[bid]
             xyz = [(block.xmin, block.ymin, 0.),
                    (block.xmax, block.ymin, 0.),
                    (block.xmax, block.ymax, 0.),
                    (block.xmin, block.ymax, 0.),
                    (block.xmin, block.ymin, 0.)]
+
             self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.INFO_COLOR,
+                fill=OCV.COLOR_INFO,
                 tag="info")
             xc = (block.xmin + block.xmax)/2.0
             yc = (block.ymin + block.ymax)/2.0
             r = min(block.xmax-xc, block.ymax-yc)
+
             closed, direction = self.gcode.info(bid)
+
+            print("ShowInfo >> ", closed, direction)
 
             if closed == 0:  # open path
                 if direction == 1:
@@ -1177,9 +1185,10 @@ class CNCCanvas(Tk.Canvas, object):
                 # towards up
                 xyz.append((xc+r*math.sin(f), yc+r*math.cos(f), 0.))
                 f += df
+
             self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.INFO_COLOR,
+                fill=OCV.COLOR_INFO,
                 width=5,
                 arrow=Tk.LAST,
                 arrowshape=(32, 40, 12),
@@ -1233,22 +1242,22 @@ class CNCCanvas(Tk.Canvas, object):
             # create cross hair at dummy location we will correct latter
             self._cameraHori = self.create_line(
                 0, 0, 1, 0,
-                fill=OCV.CAMERA_COLOR,
+                fill=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraVert = self.create_line(
                 0, 0, 0, 1,
-                fill=OCV.CAMERA_COLOR,
+                fill=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraCircle = self.create_oval(
                 0, 0, 1, 1,
-                outline=OCV.CAMERA_COLOR,
+                outline=OCV.COLOR_CAMERA,
                 tag="CrossHair")
 
             self._cameraCircle2 = self.create_oval(
                 0, 0, 1, 1,
-                outline=OCV.CAMERA_COLOR,
+                outline=OCV.COLOR_CAMERA,
                 dash=(3, 3),
                 tag="CrossHair")
 
@@ -1367,7 +1376,7 @@ class CNCCanvas(Tk.Canvas, object):
     def initPosition(self):
         """Initialize gantry position"""
 
-        self.configure(background=OCV.CANVAS_COLOR)
+        self.configure(background=OCV.COLOR_CANVAS)
         self.delete(Tk.ALL)
         self._cameraImage = None
         gr = max(3, int(OCV.CD["diameter"]/2.0*self.zoom))
@@ -1377,7 +1386,7 @@ class CNCCanvas(Tk.Canvas, object):
             self._gantry1 = self.create_oval(
                 (-gr, -gr), (gr, gr),
                 width=2,
-                outline=OCV.GANTRY_COLOR)
+                outline=OCV.COLOR_GANTRY)
 
             self._gantry2 = None
 
@@ -1390,17 +1399,17 @@ class CNCCanvas(Tk.Canvas, object):
                 self._gantry2 = self.create_line(
                     (-gx, -gh, 0, 0, gx, -gh, -gx, -gh),
                     width=2,
-                    fill=OCV.GANTRY_COLOR)
+                    fill=OCV.COLOR_GANTRY)
             else:
                 self._gantry1 = self.create_oval(
                     (-gx, -gh-gy, gx, -gh+gy),
                     width=2,
-                    outline=OCV.GANTRY_COLOR)
+                    outline=OCV.COLOR_GANTRY)
 
                 self._gantry2 = self.create_line(
                     (-gx, -gh, 0, 0, gx, -gh),
                     width=2,
-                    fill=OCV.GANTRY_COLOR)
+                    fill=OCV.COLOR_GANTRY)
 
         self._lastInsert = None
         self._lastActive = None
@@ -1436,11 +1445,11 @@ class CNCCanvas(Tk.Canvas, object):
         wc = c_dim // 2
         hc = c_dim // 2
 
-        objA = self.create_line(0, 0, c_dim, 0, fill=OCV.MEM_COLOR,
+        objA = self.create_line(0, 0, c_dim, 0, fill=OCV.COLOR_MEM,
                                 tag=mem_cross_h)
-        objB = self.create_line(0, 0, 0, c_dim, fill=OCV.MEM_COLOR,
+        objB = self.create_line(0, 0, 0, c_dim, fill=OCV.COLOR_MEM,
                                 tag=mem_cross_v)
-        objC = self.create_oval(0, 0, r_dim, r_dim, outline=OCV.MEM_COLOR,
+        objC = self.create_oval(0, 0, r_dim, r_dim, outline=OCV.COLOR_MEM,
                                 tag=mem_cross_c)
         if mem_num == 0:
             mem_id = "mem_A"
@@ -1615,7 +1624,7 @@ class CNCCanvas(Tk.Canvas, object):
 
             self._margin = self.create_line(
                 self.plotCoords(xyz),
-                fill=OCV.MARGIN_COLOR)
+                fill=OCV.COLOR_MARGIN)
 
             self.tag_lower(self._margin)
 
@@ -1631,7 +1640,7 @@ class CNCCanvas(Tk.Canvas, object):
         self._amargin = self.create_line(
             self.plotCoords(xyz),
             dash=(3, 2),
-            fill=OCV.MARGIN_COLOR)
+            fill=OCV.COLOR_MARGIN)
 
         self.tag_lower(self._amargin)
 
@@ -1706,7 +1715,7 @@ class CNCCanvas(Tk.Canvas, object):
         self._workarea = self._drawRect(
             xmin, ymin, xmax, ymax,
             0.,
-            fill=OCV.WORK_COLOR,
+            fill=OCV.COLOR_WORK,
             dash=(3, 2))
 
         self.tag_lower(self._workarea)
@@ -1732,7 +1741,7 @@ class CNCCanvas(Tk.Canvas, object):
                 item = self.create_line(
                     self.plotCoords(xyz),
                     tag="Grid",
-                    fill=OCV.GRID_COLOR,
+                    fill=OCV.COLOR_GRID,
                     dash=(1, 3))
 
                 self.tag_lower(item)
@@ -1743,7 +1752,7 @@ class CNCCanvas(Tk.Canvas, object):
 
                 item = self.create_line(
                     self.plotCoords(xyz),
-                    fill=OCV.GRID_COLOR,
+                    fill=OCV.COLOR_GRID,
                     tag="Grid",
                     dash=(1, 3))
 
@@ -1900,7 +1909,7 @@ class CNCCanvas(Tk.Canvas, object):
                 text="{0:.{1}f}".format(probe.points[i][2], OCV.digits),
                 tag="Probe",
                 justify=Tk.CENTER,
-                fill=OCV.PROBE_TEXT_COLOR)
+                fill=OCV.COLOR_PROBE_TEXT)
 
             self.tag_lower(item)
 
@@ -2035,7 +2044,7 @@ class CNCCanvas(Tk.Canvas, object):
         """
 
         if not self.draw_paths:
-            for block in self.gcode.blocks:
+            for block in OCV.blocks:
                 block.resetPath()
             return
 
@@ -2046,7 +2055,7 @@ class CNCCanvas(Tk.Canvas, object):
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
             bid = OCV.APP.editor.getSelectedBlocks()
 
-            for i, block in enumerate(self.gcode.blocks):
+            for i, block in enumerate(OCV.blocks):
 
                 if i in bid:
                     selected = True
@@ -2101,8 +2110,7 @@ class CNCCanvas(Tk.Canvas, object):
 
 
     def drawPath(self, block, cmds):
-        """
-            Create path for one g command
+        """Create path for one g command
         """
 
         self.cnc.motionStart(cmds)
@@ -2126,9 +2134,9 @@ class CNCCanvas(Tk.Canvas, object):
                     if block.color:
                         fill = block.color
                     else:
-                        fill = OCV.ENABLE_COLOR
+                        fill = OCV.COLOR_ENABLE
                 else:
-                    fill = OCV.DISABLE_COLOR
+                    fill = OCV.COLOR_DISABLE
 
                 if self.cnc.gcode == 0:
 
@@ -2299,7 +2307,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_in"],
+            image=OCV.icons["zoom_in"],
             command=self.canvas.menuZoomIn)
 
         tkExtra.Balloon.set(but, _("Zoom In [Ctrl-=]"))
@@ -2308,7 +2316,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_out"],
+            image=OCV.icons["zoom_out"],
             command=self.canvas.menuZoomOut)
 
         tkExtra.Balloon.set(but, _("Zoom Out [Ctrl--]"))
@@ -2317,7 +2325,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["zoom_on"],
+            image=OCV.icons["zoom_on"],
             command=self.canvas.fit2Screen)
 
         tkExtra.Balloon.set(but, _("Fit to screen [F]"))
@@ -2327,7 +2335,7 @@ class CanvasFrame(Tk.Frame):
         lab = Tk.Label(
             toolbar,
             text=_("Tool:"),
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             compound=Tk.LEFT)
 
         lab.pack(side=Tk.LEFT, padx=2)
@@ -2336,7 +2344,7 @@ class CanvasFrame(Tk.Frame):
         # -----
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["select"],
+            image=OCV.icons["select"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_SELECT,
@@ -2350,7 +2358,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["pan"],
+            image=OCV.icons["pan"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_PAN,
@@ -2362,7 +2370,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Radiobutton(
             toolbar,
-            image=Utils.icons["ruler"],
+            image=OCV.icons["ruler"],
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_RULER,
@@ -2378,14 +2386,14 @@ class CanvasFrame(Tk.Frame):
         lab = Tk.Label(
             toolbar,
             text=_("Draw:"),
-            image=Utils.icons["sep"],
+            image=OCV.icons["sep"],
             compound=Tk.LEFT)
 
         lab.pack(side=Tk.LEFT, padx=2)
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["axes"],
+            image=OCV.icons["axes"],
             indicatoron=0,
             variable=self.draw_axes,
             command=self.drawAxes)
@@ -2396,7 +2404,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["grid"],
+            image=OCV.icons["grid"],
             indicatoron=0,
             variable=self.draw_grid,
             command=self.drawGrid)
@@ -2407,7 +2415,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["margins"],
+            image=OCV.icons["margins"],
             indicatoron=0,
             variable=self.draw_margin,
             command=self.drawMargin)
@@ -2419,7 +2427,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Checkbutton(
             toolbar,
             text="P",
-            image=Utils.icons["measure"],
+            image=OCV.icons["measure"],
             indicatoron=0,
             variable=self.draw_probe,
             command=self.drawProbe)
@@ -2430,7 +2438,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["endmill"],
+            image=OCV.icons["endmill"],
             indicatoron=0,
             variable=self.draw_paths,
             command=self.toggleDrawFlag)
@@ -2441,7 +2449,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["rapid"],
+            image=OCV.icons["rapid"],
             indicatoron=0,
             variable=self.draw_rapid,
             command=self.toggleDrawFlag)
@@ -2452,7 +2460,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["workspace"],
+            image=OCV.icons["workspace"],
             indicatoron=0,
             variable=self.draw_workarea,
             command=self.drawWorkarea)
@@ -2463,7 +2471,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
-            image=Utils.icons["camera"],
+            image=OCV.icons["camera"],
             indicatoron=0,
             variable=self.draw_camera,
             command=self.drawCamera)
@@ -2476,7 +2484,7 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Button(
             toolbar,
-            image=Utils.icons["refresh"],
+            image=OCV.icons["refresh"],
             command=self.viewChange)
 
         tkExtra.Balloon.set(but, _("Redraw display [Ctrl-R]"))
@@ -2503,36 +2511,40 @@ class CanvasFrame(Tk.Frame):
         lab.pack(side=Tk.RIGHT)
 
     def addWidget(self, widget):
-        OCV.APP.widgets.append(widget)
-
+        OCV.iface_widgets.append(widget)
 
     def loadConfig(self):
 
-        self.draw_axes.set(bool(int(Utils.getBool("Canvas", "axes", True))))
-        self.draw_grid.set(bool(int(Utils.getBool("Canvas", "grid", True))))
-        self.draw_margin.set(bool(int(Utils.getBool("Canvas", "margin", True))))
-        #self.draw_probe.set(bool(int(Utils.getBool("Canvas", "probe",   False))))
-        self.draw_paths.set(bool(int(Utils.getBool("Canvas", "paths", True))))
-        self.draw_rapid.set(bool(int(Utils.getBool("Canvas", "rapid", True))))
-        self.draw_workarea.set(bool(int(Utils.getBool("Canvas", "workarea", True))))
-        #self.draw_camera.set(bool(int(Utils.getBool("Canvas", "camera",  False))))
+        self.draw_axes.set(bool(int(IniFile.get_bool("Canvas", "axes", True))))
+        self.draw_grid.set(bool(int(IniFile.get_bool("Canvas", "grid", True))))
+        self.draw_margin.set(
+            bool(int(IniFile.get_bool("Canvas", "margin", True))))
+        # self.draw_probe.set(bool(int(
+        #       IniFile.get_bool("Canvas", "probe",   False))))
+        self.draw_paths.set(
+            bool(int(IniFile.get_bool("Canvas", "paths", True))))
+        self.draw_rapid.set(
+            bool(int(IniFile.get_bool("Canvas", "rapid", True))))
+        self.draw_workarea.set(
+            bool(int(IniFile.get_bool("Canvas", "workarea", True))))
+        # self.draw_camera.set(bool(int(
+        #        IniFile.get_bool("Canvas", "camera",  False))))
 
-        self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
+        self.view.set(IniFile.get_str("Canvas", "view", VIEWS[0]))
 
-        OCV.DRAW_TIME = Utils.getInt("Canvas", "drawtime", OCV.DRAW_TIME)
-
+        OCV.DRAW_TIME = IniFile.get_int("Canvas", "drawtime", OCV.DRAW_TIME)
 
     def saveConfig(self):
-        Utils.setInt("Canvas", "drawtime", OCV.DRAW_TIME)
-        Utils.setStr("Canvas", "view", self.view.get())
-        Utils.setBool("Canvas", "axes", self.draw_axes.get())
-        Utils.setBool("Canvas", "grid", self.draw_grid.get())
-        Utils.setBool("Canvas", "margin", self.draw_margin.get())
-        Utils.setBool("Canvas", "probe", self.draw_probe.get())
-        Utils.setBool("Canvas", "paths", self.draw_paths.get())
-        Utils.setBool("Canvas", "rapid", self.draw_rapid.get())
-        Utils.setBool("Canvas", "workarea", self.draw_workarea.get())
-        #Utils.setBool("Canvas", "camera",  self.draw_camera.get())
+        IniFile.set_value("Canvas", "drawtime", OCV.DRAW_TIME)
+        IniFile.set_value("Canvas", "view", self.view.get())
+        IniFile.set_value("Canvas", "axes", self.draw_axes.get())
+        IniFile.set_value("Canvas", "grid", self.draw_grid.get())
+        IniFile.set_value("Canvas", "margin", self.draw_margin.get())
+        IniFile.set_value("Canvas", "probe", self.draw_probe.get())
+        IniFile.set_value("Canvas", "paths", self.draw_paths.get())
+        IniFile.set_value("Canvas", "rapid", self.draw_rapid.get())
+        IniFile.set_value("Canvas", "workarea", self.draw_workarea.get())
+        #IniFile.set_value("Canvas", "camera",  self.draw_camera.get())
 
 
     def redraw(self, event=None):
