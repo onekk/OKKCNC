@@ -166,15 +166,35 @@ class GCode(object):
         if OCV.DEBUG_PAR is True:
             OCV.printout_header("{0}", "END SCAN")
 
+    def debug_info(self, line, move, move_s, move_f, delta_z):
+
+        print(line)
+
+        if (move_s[0], move_s[1]) != (move_f[0], move_f[1]):
+            print("Motion {} Move start = {} \nMove end = {}".format(
+                    move, move_s, move_f))
+            print("Delta Z = ", delta_z)
+        else:
+            if delta_z > 0:
+                print("Z_UP Move from {} to {} at X{} Y{}".format(
+                        move_s[2], move_f[2], move_s[0], move_s[1]))
+                print("Delta Z = {}".format(delta_z))
+            elif delta_z < 0:
+                print("Z_DOWN Move from {} to {} at X{} Y{}".format(
+                        move_s[2], move_f[2], move_s[0], move_s[1]))
+                print("Delta Z = {}".format(delta_z))
+            else:
+                print("Stationary Move at Point {}".format(move_s))
+
+        print(OCV.str_sep)
+
     def pre_process_gcode(self):
-        """scan gcode lines and inject some metadata, creating only one Block.
-        This create also the OCV.blocks_ev list used to hold some info to make
-        post_processing this Block and proper identify Machining Operations
-        MOP in CamBam terminology and the single shapes (Profiles and Pockets)
-        See in Documentation for more infos.
+        """scan gcode lines and inject some metadata, it create only one Block.
+        The main scope is to populate OCV.blocks_ev list used in later
+        elaboration done by Heuristic.process_blocks().
+        See the Documentation in Heuristic.process_blocks() for more info.
         """
-        # DEBUG_INFO
-        # INT_DEBUG = OCV.DEBUG_PAR
+        # DEBUG_INFO activation only for this method
         INT_DEBUG = False
         OCV.infos = []
 
@@ -206,8 +226,7 @@ class GCode(object):
             if not OCV.blocks:
                 OCV.blocks.append(Block("Header"))
 
-            # catch the MOP Start comment and create a new Block, if not
-            # created by a MOP End istance
+            # events are processes later
 
             if line[:10] == "(MOP Start":
                 OCV.blocks_ev.append(
@@ -237,6 +256,14 @@ class GCode(object):
                 OCV.blocks[-1].append(line)
                 continue
 
+            # self.cnc.motionStart(cmds), analyze the move and populate the
+            # positions, but the action is ended by sel.cnc.motionEnd(cmds)
+            # in some condition the self.cnc.x(yz) variables hold a different
+            # value at the start and at the end of operation, theese values
+            # are both significative for the event, so this block of code
+            # take care to "generate" the start value and the end value for
+            # each line
+
             self.cnc.motionStart(cmds)
             move = cmds[0]
             move_s = (self.cnc.x, self.cnc.y, self.cnc.z)
@@ -245,6 +272,9 @@ class GCode(object):
             self.cnc.motionEnd()
             move_f = (self.cnc.x, self.cnc.y, self.cnc.z)
 
+            # at this point we have all the motion infos neede to generate
+            # properly an event
+
             delta_z = move_f[2] - move_s[2]
             move_c = ((move_s[0], move_s[1], move_s[2]), delta_z,
                       (move_f[0], move_f[1], move_f[2]))
@@ -252,25 +282,8 @@ class GCode(object):
             OCV.min_z = min(OCV.min_z, move_f[2])
             OCV.max_z = max(OCV.max_z, move_f[2])
 
-            print(line)
-
-            if (move_s[0], move_s[1]) != (move_f[0], move_f[1]):
-                print("Motion {} Move start = {} \nMove end = {}".format(
-                        move, move_s, move_f))
-                print("Delta Z = ", delta_z)
-            else:
-                if delta_z > 0:
-                    print("Z_UP Move from {} to {} at X{} Y{}".format(
-                            move_s[2], move_f[2], move_s[0], move_s[1]))
-                    print("Delta Z = {}".format(delta_z))
-                elif delta_z < 0:
-                    print("Z_DOWN Move from {} to {} at X{} Y{}".format(
-                            move_s[2], move_f[2], move_s[0], move_s[1]))
-                    print("Delta Z = {}".format(delta_z))
-                else:
-                    print("Stationary Move at Point {}".format(move_s))
-
-            print(OCV.str_sep)
+            # debug info useful only for development
+            self.debug_info(line, move, move_s, move_f, delta_z)
 
             # analyze moves
             if move in ("G1", "G2", "G3"):
@@ -303,9 +316,8 @@ class GCode(object):
                     OCV.blocks[-1].append(line)
                 elif cmds[1][0] == "Z" and move_s_dz == 0:
                     # Z neutral move this catch G0 Z(same level of prior move)
-                    # that sometimes could appear
+                    # that sometimes could appear in code
                     OCV.blocks_ev.append(("ZN", l_idx, line, move_c))
-                    # maybe could be simply discarded
                     OCV.blocks[-1].append(line)
                 else:
                     # a normal G0 move is detected
@@ -318,10 +330,11 @@ class GCode(object):
                 OCV.blocks_ev.append((move, l_idx, line, move_c))
                 OCV.blocks[-1].append(line)
             else:
-                # other moves T or M
+                # other 'moves' T, M () not catched as end_cmds and S
                 OCV.blocks[-1].append(line)
 
-        # one line to pass the work to Heuristic module
+        # one line to pass the work to Heuristic module single that take care
+        # of susbsequent work on parsing and block splitting
         Heuristic.process_blocks()
 
     def add_line(self, line):

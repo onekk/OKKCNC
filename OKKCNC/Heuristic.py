@@ -73,7 +73,7 @@ def process_blocks():
     # reset the events, we reuse the variable for other event detection.
     process_rapids()
     OCV.blocks_ev = []
-    process_shapes()
+    process_z_pass()
     # refresh block in editor
     OCV.APP.event_generate("<<Modified>>")
 
@@ -104,8 +104,6 @@ def print_blocks_debug_info(b_idx):
     print("\n", OCV.str_sep)
     print("block next", OCV.blocks[b_idx + 1])
     print("\n", OCV.str_sep)
-
-    OCV.APP.event_generate("<<Modified>>")
 
 
 def insert_mark(event, label, ev_seq):
@@ -273,11 +271,11 @@ def process_events():
             # keep here for future use
             if len(ev_seq) > 3:
                 if ev_seq == ("GMZ", "GMXY", "GMZ", "GMXY"):
-                    print(">>>> Final Z Pass <<<<")
+                    print(">>>> Other Z Pass <<<<")
                 elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
                     print(">>>> First Z Pass <<<<")
                 elif ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
-                    print(">>>> Inter Z Pass <<<<")
+                    print(">>>> Inter Z Pass (pt2)<<<<")
 
         if ev_label == "MS":
             if pre_ev[0] == "ZU" and nex_ev[0] == "G0":
@@ -303,7 +301,7 @@ def process_events():
         elif ev_label == "GMZ":
             # check if we are in presence of a distinctive events sequence
             if len(ev_seq) > 3:
-                if ev_seq == ("ZU", "ZD", "GMZ", "GMXY"):
+                if ev_seq == ("GMZ", "GMXY", "GMZ", "GMXY"):
                     ev_label = "GCZP"
                 elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
                     ev_label = "GCFZP"
@@ -579,8 +577,12 @@ def modify_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
 
         label = " Z{0:.{1}f}".format(ac_data[2], OCV.digits)
         block_new_name = new_block_name + " pass at " + label
-        added_block.insert(0, OCV.b_mdata_h + " " + label + ")")
+        label2 = " X{0:.{2}f} Y{1:.{2}f}".format(
+                ac_data[0], ac_data[1], OCV.digits)
+        added_block.insert(0, "( ZP at " + label + " pos " + label2 + ")")
         added_block.set_name(block_new_name)
+        # discard the Z_PASS line of the new block
+        del added_block[2]
 
     elif action == "FP":
         label = " Z{0:.{1}f}".format(ac_data[2], OCV.digits)
@@ -591,7 +593,9 @@ def modify_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
         del cur_block[1]
         # place a comment that don't contain Block Metadata marker
         # at the first line of the "modified" block
-        cur_block.insert(0, "( First pass at " + label + ")")
+        label2 = " X{0:.{2}f} Y{1:.{2}f}".format(
+                ac_data[0], ac_data[1], OCV.digits)
+        cur_block.insert(0, "( FZP at " + label + " pos " + label2 + ")")
         cur_block.set_name(block_new_name)
 
     OCV.APP.event_generate("<<Modified>>")
@@ -643,45 +647,59 @@ def move_lines2block(b_idx, l_idx, move2, block_new_name):
         return
 
 
-def process_shapes():
-    """The scope of this method is to identify:
-    shapes (profiles or pockets) in each MOP
+def process_z_pass():
+    """The scope of this method is to identify z_pass, using the marks added
+    in process_events.
     """
-    # TODO: Catch the z_pass in second shape
     md_mkl = len(OCV.b_mdata_h)
     # md_mk_rm = md_mkl + len(OCV.b_mdata_mr) + 1  # space between the markers
 
     #  Blocks loop counter
     b_idx = 0
-    # process control while flow if set to True will end the loop
+    # block loop flag, False to exit the block loop
     process = True
     ms_name = ""
 
     # Not using a for loop due to OCV.Blocks in-place modifications
+    # modification could:
+    # move lines to the preceding block and rescan the remaining lines
+    # move lines to a new block and advance block counter
     while process is True:
-        l_idx = 0  # reset line counter
-        process2 = True  # reset internal loop exit flag
+        # the logic of the line loop advance the line counter at start
+        # so the counter is -1 to start processing from 0
+        l_idx = -1
+        process2 = True  # line loop flag, False to exit line loop
 
         cur_block = OCV.blocks[b_idx]
+
         while process2 is True:
+            # line advance here to clean end the loop when block counter is
+            # advanced due to a new block creation
+            if l_idx < (len(cur_block) - 1):
+                l_idx += 1
+            else:
+                process2 = False
+
             line = cur_block[l_idx]
 
             if OCV.DEBUG_HEUR > 2:
                 print("Block {0} - Line {1} >>".format(b_idx, l_idx), line)
 
+            # detect Block Metadata start, kept generic using the md_mkl
+            # length, modifying OCV.b_mdata_h will modify all the match
             if line[:md_mkl] == OCV.b_mdata_h:
                 event = line.split(":")
+
+                # detect mop and shape name in Block Metadata matching 'SP'
+                # at the end of the second block in 
+                # BMD: [Profile][Shape] SP: Xpos Ypos)
+                if event[1][-2:] == "SP":
+                    ms_name = event[1][:-3].strip()
 
                 if OCV.DEBUG_HEUR > 2:
                     print("BMD Match", event)
                     print("Mop and Shape == >{0}<".format(ms_name))
                     print("EV1 >{0}<".format(event[1]))
-
-                if event[1][-2:] == "SP":
-                    ms_name = event[1][:-3].strip()
-
-                if OCV.DEBUG_HEUR > 2:
-                    print("Shape Name == >{0}<".format(ms_name))
 
                 if event[1].strip() == "FZ_PASS":
                     ev_data = parse_line(event[2][2:].strip("at<)"))
@@ -690,29 +708,24 @@ def process_shapes():
                     modify_block(
                         b_idx, l_idx - 1,
                         "FP", mv_d, mop_name, shape_num)
-                    # lines are passed to the old block so reset the counter
-                    # to start scanning from the beginning of the block
-                    l_idx = 0
+                    # lines are moved to the old block, reset line counter
+                    # to (re)start scanning from (new) first block line
+                    l_idx = -1
 
                 if event[1].strip() == "Z_PASS":
                     ev_data = parse_line(event[2][2:].strip("at<)"))
                     mv_d = extract_value(ev_data)
                     mop_name, shape_num = detect_names(ms_name, 2)
                     modify_block(
-                        b_idx, l_idx - 1,
+                        b_idx, l_idx,
                         "SP", mv_d, mop_name, shape_num)
-                    # lines are passed to a new block
-                    # advance the block counter
-                    b_idx += 1
+                    # lines are passed to a new block, force line scan loop
+                    # so block loop counter is advanced
                     process2 = False
+                    continue
 
             if OCV.DEBUG_HEUR > 2:
                 print(OCV.str_sep)
-
-            if l_idx < (len(cur_block) - 1):
-                l_idx += 1
-            else:
-                process2 = False
 
         if b_idx < (len(OCV.blocks) - 1):
             b_idx += 1
@@ -722,6 +735,8 @@ def process_shapes():
     else:
         if OCV.DEBUG_HEUR > 0:
             OCV.printout_header("{0}", "END PROCESS_SHAPES")
+
+    OCV.APP.event_generate("<<Modified>>")
 
 
 def extract_rapid_move_value(md_string):
