@@ -28,8 +28,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.2.50-dev"
-PRG_DATE = "18 Jan 2020"
+PRG_VER = "0.2.51-dev"
+PRG_DATE = "23 Jan 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -40,9 +40,20 @@ if getattr(sys, 'frozen', False):
     PRG_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 HOME_DIR = os.path.expanduser("~/")
+CONF_DIR = os.path.expanduser("~/.config/{0}".format(PRG_NAME))
+
+if os.path.isdir(CONF_DIR):
+    U_CONF_NAME = "config.ini"
+    U_HIST_NAME = "history"
+else:
+    CONF_DIR = HOME_DIR
+    U_CONF_NAME = ".{0}".format(PRG_NAME)
+    U_HIST_NAME = ".{0}.history".format(PRG_NAME)
+
+
 SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
-USER_CONFIG = os.path.expanduser("~/.{0}".format(PRG_NAME))
-COM_HIST_FILE = os.path.expanduser("~/.{0}.history".format(PRG_NAME))
+USER_CONFIG = os.path.join(CONF_DIR, U_CONF_NAME)
+COM_HIST_FILE = os.path.join(CONF_DIR, U_HIST_NAME)
 
 """Debug flags. used across the interface to print debug info on terminal
     the debug comment

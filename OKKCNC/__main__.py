@@ -578,8 +578,7 @@ class Application(Tk.Toplevel, Sender):
 
     @staticmethod
     def showUserFile(self):
-        webbrowser.open(Utils.USER_CONFIG)
-        # os.startfile(Utils.USER_CONFIG)
+        webbrowser.open(OCV.USER_CONFIG)
 
     def load_main_config(self):
         """Load initial config parameters from ini file"""
@@ -2456,7 +2455,7 @@ def main(args=None):
         if opt in ("-h", "-?", "--help"):
             usage(0)
         elif opt in ("-i", "--ini"):
-            Utils.USER_CONFIG = val
+            OCV.USER_CONFIG = val
             IniFile.conf_file_load()
         elif opt == "-d":
             OCV.developer = True

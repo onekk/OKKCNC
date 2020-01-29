@@ -122,7 +122,7 @@ def insert_mark(event, label, ev_seq):
     else:
         str_seq = "{0} >> [{1}] >> {2}".format(*ev_seq)
 
-    if label == "RAPID":
+    if label == "G0M":
 
         rm_lab = OCV.b_mdata_mr
         rm_lab += " X{0:.{5}f} Y{1:.{5}f}"
@@ -299,14 +299,14 @@ def process_events():
                     process = False
 
         elif ev_label == "GMZ":
-            # check if we are in presence of a distinctive events sequence
+            # check if there is a distinctive events sequence
             if len(ev_seq) > 3:
                 if ev_seq == ("GMZ", "GMXY", "GMZ", "GMXY"):
                     ev_label = "GCZP"
                 elif ev_seq == ("G0", "ZD", "GMZ", "GMXY"):
                     ev_label = "GCFZP"
             else:
-                # this seems to happens very rarely
+                # to catch all GMZ event, default stanzas
                 ev_label = "GMZ"
                 ev_info.append("Generic GMZ event -- {0}".format(act_ev))
 
@@ -316,7 +316,7 @@ def process_events():
             insert_mark(act_ev, "GMXY", ev_seq)
 
         elif ev_label == "G0":
-            insert_mark(act_ev, "RAPID", ev_seq)
+            insert_mark(act_ev, "G0M", ev_seq)
 
         elif ev_label == "ZD":
             insert_mark(act_ev, "Z_DW", ev_seq)
