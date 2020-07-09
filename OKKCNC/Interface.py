@@ -201,9 +201,9 @@ def main_interface(self):
 
 class DROFrame(CNCRibbon.PageFrame):
     """DRO Frame"""
-    dro_status = ('Helvetica', 12, 'bold')
-    dro_wpos = ('Helvetica', 12, 'bold')
-    dro_mpos = ('Helvetica', 12)
+    dro_status = ('Helvetica', 11, 'bold')
+    dro_wpos = ('Helvetica', 11, 'bold')
+    dro_mpos = ('Helvetica', 11)
 
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "DRO", app)
@@ -217,7 +217,10 @@ class DROFrame(CNCRibbon.PageFrame):
         row = 0
         col = 0
         Tk.Label(
-            self, text=_("Status:")).grid(row=row, column=col, sticky=Tk.E)
+            self,
+            font=DROFrame.dro_status,
+            text=_("Status:")
+            ).grid(row=row, column=col, sticky=Tk.E)
 
         col += 1
 
@@ -324,6 +327,27 @@ class DROFrame(CNCRibbon.PageFrame):
 
         # Set buttons
         row += 1
+       
+        col = 0
+
+        but = Tk.Button(
+            self,
+            text=_("WPOS"),
+            font=OCV.FONT_DRO_ZERO,
+            image=OCV.icons["origin"],
+            compound=Tk.LEFT,
+            activebackground="LightYellow",
+            command=lambda s=self: s.event_generate("<<SetWPOS>>"),
+            padx=2, pady=1)
+
+        but.grid(row=row, column=col, pady=0, sticky=Tk.EW)
+        #but.pack(side=Tk.LEFT, fill=Tk.X, expand=Tk.YES)
+
+        tkExtra.Balloon.set(but, _("Set WPOS to mouse location"))
+
+        self.addWidget(but)
+        
+        
         col = 1
 
         self.xzero = Tk.Button(
@@ -375,6 +399,27 @@ class DROFrame(CNCRibbon.PageFrame):
 
         # Set buttons
         row += 1
+
+
+        col = 0
+        but = Tk.Button(
+            self,
+            text=_("MoGa"),
+            font=OCV.FONT_DRO_ZERO,
+            image=OCV.icons["gantry"],
+            compound=Tk.LEFT,
+            activebackground="LightYellow",
+            command=lambda s=self: s.event_generate("<<MoveGantry>>"),
+            padx=2, pady=1)
+        but.grid(row=row, column=col, pady=0, sticky=Tk.EW)
+        #but.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
+
+        tkExtra.Balloon.set(but, _("Move gantry to mouse location [g]"))
+
+        self.addWidget(but)
+
+
+        
         col = 1
         self.xyzero = Tk.Button(
             self,
@@ -407,45 +452,6 @@ class DROFrame(CNCRibbon.PageFrame):
             _("Set XYZ coordinate to zero (or to typed coordinate in WPos)"))
 
         self.addWidget(self.xyzzero)
-
-        # Set buttons
-        row += 1
-        col = 1
-        frame = Tk.Frame(self)
-        frame.grid(row=row, column=col, columnspan=3, pady=0, sticky=Tk.EW)
-
-        but = Tk.Button(
-            frame,
-            text=_("Set WPOS"),
-            font=OCV.FONT_DRO_ZERO,
-            image=OCV.icons["origin"],
-            compound=Tk.LEFT,
-            activebackground="LightYellow",
-            command=lambda s=self: s.event_generate("<<SetWPOS>>"),
-            padx=2, pady=1)
-
-        but.pack(side=Tk.LEFT, fill=Tk.X, expand=Tk.YES)
-
-        tkExtra.Balloon.set(but, _("Set WPOS to mouse location"))
-
-        self.addWidget(but)
-
-        #col += 2
-        but = Tk.Button(
-            frame,
-            text=_("Move Gantry"),
-            font=OCV.FONT_DRO_ZERO,
-            image=OCV.icons["gantry"],
-            compound=Tk.LEFT,
-            activebackground="LightYellow",
-            command=lambda s=self: s.event_generate("<<MoveGantry>>"),
-            padx=2, pady=1)
-        #b.grid(row=row, column=col, pady=0, sticky=Tk.EW)
-        but.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
-
-        tkExtra.Balloon.set(but, _("Move gantry to mouse location [g]"))
-
-        self.addWidget(but)
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
@@ -641,7 +647,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Home"),
             compound=Tk.TOP,
             anchor=Tk.W,
-            command=OCV.MCTRL.home(),
+            command=lambda s=self: s.event_generate("<<Home>>"),
             background=OCV.COLOR_BACKGROUND)
 
         but.grid(
@@ -662,7 +668,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Unlock"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.MCTRL.unlock(True),
+            command=lambda s=self: s.event_generate("<<Unlock>>"),
             background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
@@ -694,7 +700,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Reset"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            command=OCV.MCTRL.softReset(True),
+            command=lambda s=self: s.event_generate("<<SoftReset>>"),
             background=OCV.COLOR_BACKGROUND)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)

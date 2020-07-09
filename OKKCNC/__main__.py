@@ -140,7 +140,7 @@ class Application(Tk.Toplevel, Sender):
         self.tools = Tools(self.gcode)
         self.controller = None
         self.load_main_config()
-
+        print(OCV.MCTRL)
         # many widget for main interface are definited in Interface.py
         Interface.main_interface(OCV.APP)
 
@@ -226,7 +226,14 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<AlarmClear>>', self.alarmClear)
         self.bind('<<About>>', self.about)
         self.bind('<<Help>>', self.help)
-        self.bind('<<FeedHold>>', OCV.MCTRL.feedHold(None))
+        
+        # Machine controls    
+        self.bind('<<Home>>', self.ctrl_home)
+        self.bind('<<FeedHold>>', self.ctrl_feedhold)
+        self.bind('<<SoftReset>>', self.ctrl_softreset)
+        self.bind('<<Unlock>>', self.ctrl_unlock)
+        # END machine control
+
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
         self.bind('<<Run>>', lambda e, s=self: s.run())
         self.bind('<<Stop>>', self.stopRun)
@@ -466,6 +473,21 @@ class Application(Tk.Toplevel, Sender):
 
     def saveMems(self, event=None):
         IniFile.save_memories()
+
+    #----- CTRL COMMANDS HERE to make them work
+
+    def ctrl_home(self, event=None):
+        OCV.MCTRL.home()
+        
+    def ctrl_feedhold(self, event=None):
+        OCV.MCTRL.feedHold(None)
+
+    def ctrl_softreset(self, event=None):
+        OCV.MCTRL.softReset(True)
+
+    def ctrl_unlock(self, event=None):
+        OCV.MCTRL.unlock(True)
+    #----- END CTRL COMMANDS
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):

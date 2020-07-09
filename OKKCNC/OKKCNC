@@ -3,21 +3,16 @@
 echo "###########################################
 WARNING! THIS IS LEGACY MODE!
 DO NOT USE THIS IF YOU ARE A OKKCNC DEVELOPER
-GO TO REPOSITORY ROOT AND LAUNCH BCNC USING
+GO TO REPOSITORY ROOT AND LAUNCH OKKCNC USING
 FOLLOWING COMMAND:
 
-python2 -m OKKCNC
+python3 -m OKKCNC
 ###########################################
 "
-
 
 DIR=`dirname $0`
 PYTHONPATH=${DIR}:${DIR}/lib:${DIR}/plugins:${DIR}/controllers
 export DIR PYTHONPATH
 
-#Autodetect python version
-[ .$PYTHON = . ] && PYTHON=`which python2`
-[ .$PYTHON = . ] && PYTHON=python
-
-${PYTHON} ${DIR}/__main__.py $*
+python3 ${DIR}/__main__.py $*
 #python -m cProfile -o OKKCNC.out ${DIR}/__main__.py $*
