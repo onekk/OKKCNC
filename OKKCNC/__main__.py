@@ -234,8 +234,19 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Unlock>>', self.ctrl_unlock)
         self.bind('<<Unlock>>', self.ctrl_unlock)
 
-        self.bind('<<ZmoveUp>>', self.jog_z_up)
-        self.bind('<<ZmoveDown>>', self.jog_z_down)
+        self.bind('<<JOG-XUP>>', self.jog_x_up)
+        self.bind('<<JOG-XDW>>', self.jog_x_down)
+        self.bind('<<JOG-YUP>>', self.jog_y_up)
+        self.bind('<<JOG-YDW>>', self.jog_y_down)
+        self.bind('<<JOG-ZUP>>', self.jog_z_up)
+        self.bind('<<JOG-ZDW>>', self.jog_z_down)
+
+
+        self.bind('<<JOG-XYUP>>', self.jog_x_up_y_up)
+        self.bind('<<JOG-XUPYDW>>', self.jog_x_up_y_down)
+        self.bind('<<JOG-XYDW>>', self.jog_x_down_y_down)
+        self.bind('<<JOG-XDWYUP>>', self.jog_x_down_y_up)
+
 
         # END machine control
 
@@ -492,7 +503,6 @@ class Application(Tk.Toplevel, Sender):
         OCV.MCTRL.unlock(True)
 
     #----- END CTRL COMMANDS
-
 
     #---- JOGGING
 

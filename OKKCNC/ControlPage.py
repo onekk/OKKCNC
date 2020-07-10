@@ -192,7 +192,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-            command=self.jog_z_up,
+            command=self.event_generate('<<JOG-ZUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -202,7 +202,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.UPPER_LEFT_TRIANGLE,
-            command=self.jog_x_down_y_up,
+            command=self.event_generate('<<JOG-XDWYUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -213,7 +213,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-            command=self.jog_y_up,
+            command=self.event_generate('<<JOG-YUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -223,7 +223,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.UPPER_RIGHT_TRIANGLE,
-            command=self.jog_x_up_y_up,
+            command=self.event_generate('<<JOG-XYUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -263,7 +263,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
-            command=self.jog_x_down,
+            command=self.event_generate('<<JOG-XDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -290,7 +290,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
-            command=self.jog_x_up,
+            command=self.event_generate('<<JOG-XUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -340,7 +340,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-            command=self.jog_z_down,
+            command=self.event_generate('<<JOG-ZDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -350,7 +350,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.LOWER_LEFT_TRIANGLE,
-            command=self.jog_x_down_y_down,
+            command=self.event_generate('<<JOG-XYDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -361,7 +361,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-            command=self.jog_y_down,
+            command=self.event_generate('<<JOG-YDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -372,7 +372,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.LOWER_RIGHT_TRIANGLE,
-            command=self.jog_x_up_y_down,
+            command=self.event_generate('<<JOG-XUPYDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 

@@ -462,7 +462,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         hwgrep = []
         com_ports = self.comportsGet()
 
-#        print("comportRefresh scg > ", com_ports)
+        print("comportRefresh scg > ", com_ports)
 
         for i in com_ports:
             if dbg:
@@ -472,8 +472,10 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
                     comport += j + "\t"
                 print(comport)
 
-            for hw in i[2].split(' '):
-                hwgrep += ["hwgrep://{0}\t{1}".format(hw, i[1])]
+            if i[2] is not None:
+
+                for hw in i[2].split(' '):
+                    hwgrep += ["hwgrep://{0}\t{1}".format(hw, i[1])]
 
         # Populate combobox
         devices = sorted(["{0}\t {1}".format(*x) for x in com_ports])

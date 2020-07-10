@@ -1564,52 +1564,6 @@ class CameraFrame(CNCRibbon.PageFrame):
         self.event_generate("<<Status>>", data=_("Camera offset is updated"))
         self.updateValues()
 
-#    #-----------------------------------------------------------------------
-#    def findScale(self):
-#        return
-#        OCV.CANVAS_F.canvas.cameraMakeTemplate(30)
-#
-#        OCV.APP.control.jog_x_up()
-#        #OCV.APP.wait4Idle()
-#        time.sleep(2)
-#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # right
-#
-#        OCV.APP.control.jog_x_down()
-#        OCV.APP.control.jog_x_down()
-#        #OCV.APP.wait4Idle()
-#        time.sleep(2)
-#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # left
-#
-#        OCV.APP.control.jog_x_up()
-#        OCV.APP.control.jog_y_up()
-#        #OCV.APP.wait4Idle()
-#        time.sleep(2)
-#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # top
-#
-#        OCV.APP.control.jog_y_down()
-#        OCV.APP.control.jog_y_down()
-#        #OCV.APP.wait4Idle()
-#        time.sleep(2)
-#        dx,dy = OCV.CANVAS_F.canvas.cameraMatchTemplate()    # down
-#
-#        OCV.APP.control.jog_y_up()
-
-    #-----------------------------------------------------------------------
-    # Move camera to spindle location and change coordinates to relative
-    # to camera via g92
-    #-----------------------------------------------------------------------
-#    def switch2Camera(self, event=None):
-#        print "Switch to camera"
-#        wx = OCV.CD["wx"]
-#        wy = OCV.CD["wy"]
-#        dx = float(self.dx.get())
-#        dy = float(self.dy.get())
-#        if self.switchVar.get():
-#            self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-#        else:
-#            self.sendGCode("G92.1")
-#        self.sendGCode("G0X%gY%g"%(wx,wy))
-
 
 #===============================================================================
 # Tool Group
