@@ -67,6 +67,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         b_width = 2
         b_height = 2
 
+        OCV.stepxy = OCV.config.get("Control", "step")
+        OCV.stepz = OCV.config.get("Control", "zstep")
+
         z_step_font = Utils.get_font("z_step.font", ControlFrame.z_step_font)
 
         Utils.set_predefined_steps()
@@ -162,7 +165,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.step = tkExtra.Combobox(self, width=6, background="White")
         self.step.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
-        self.step.set(OCV.config.get("Control", "step"))
+        self.step.set(OCV.stepxy)
         self.step.fill(
             map(float, OCV.config.get("Control", "steplist").split()))
         tkExtra.Balloon.set(self.step, _("Step for coarse move operation"))
@@ -192,7 +195,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-ZUP>>'),
+            command=lambda s=self: s.event_generate('<<JOG-ZUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -202,7 +205,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.UPPER_LEFT_TRIANGLE,
-            command=self.event_generate('<<JOG-XDWYUP>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XDWYUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -213,7 +216,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-YUP>>'),
+            command=lambda s=self: s.event_generate('<<JOG-YUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -223,7 +226,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.UPPER_RIGHT_TRIANGLE,
-            command=self.event_generate('<<JOG-XYUP>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XYUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -263,7 +266,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-XDW>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -290,7 +293,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-XUP>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -340,7 +343,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-ZDW>>'),
+            command=lambda s=self: s.event_generate('<<JOG-ZDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
@@ -350,7 +353,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.LOWER_LEFT_TRIANGLE,
-            command=self.event_generate('<<JOG-XYDW>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XYDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -361,7 +364,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-            command=self.event_generate('<<JOG-YDW>>'),
+            command=lambda s=self: s.event_generate('<<JOG-YDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -372,7 +375,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self,
             text=Unicode.LOWER_RIGHT_TRIANGLE,
-            command=self.event_generate('<<JOG-XUPYDW>>'),
+            command=lambda s=self: s.event_generate('<<JOG-XUPYDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
@@ -665,6 +668,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tg_step = step + power
 
         self.set_step_view(tg_step, None)
+        OCV.stepxy = tg_step
 
     def inc_z_step(self, event=None):
         """increment Z step using _step_power"""
@@ -676,7 +680,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tgz_step = step + power
 
         self.set_step_view(tg_step, tgz_step)
-
+        OCV.stepz = tgz_step
+        
     def dec_xy_step(self, event=None):
         """decrement XY step using _step_power"""
         if event is not None and not self.acceptKey():
@@ -686,6 +691,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tg_step = step - power
 
         self.set_step_view(tg_step, None)
+        OCV.stepxy = tg_step
 
     def dec_z_step(self, event=None):
         """decrement Z step using _step_power"""
@@ -698,6 +704,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tgz_step = step - power
 
         self.set_step_view(tg_step, tgz_step)
+        OCV.stepz = tgz_step
 
     def mul_step(self, event=None):
         """multiply xy step by 5"""
@@ -712,6 +719,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             tg_step = _HIGHSTEP
 
         self.set_step_view(tg_step, None)
+        OCV.stepxy = tg_step
 
     def div_step(self, event=None):
         """divide xy step by 5"""
@@ -726,6 +734,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             tg_step = _HIGHSTEP
 
         self.set_step_view(tg_step, None)
+        OCV.stepxy = tg_step
 
     def apply_pres_z_step1(self, event=None):
         """apply preselected Z step 1"""
@@ -733,6 +742,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep1)
+        OCV.stepz = OCV.zstep1
 
     def apply_pres_z_step2(self, event=None):
         """apply preselected Z step 2"""
@@ -740,6 +750,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep2)
+        OCV.stepz = OCV.zstep2
 
     def apply_pres_z_step3(self, event=None):
         """apply preselected Z step 3"""
@@ -747,6 +758,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep3)
+        OCV.stepz = OCV.zstep3
 
     def apply_pres_z_step4(self, event=None):
         """apply preselected Z step 4"""
@@ -754,6 +766,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(float(self.step.get()), OCV.zstep4)
+        OCV.stepz = OCV.zstep4
 
     def apply_pres_xy_step1(self, event=None):
         """apply preselected XY step 1"""
@@ -761,6 +774,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(OCV.step1, float(self.zstep.get()))
+        OCV.stepxy = OCV.step1
 
     def apply_pres_xy_step2(self, event=None):
         """apply preselected XY step 2"""
@@ -768,6 +782,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(OCV.step2, float(self.zstep.get()))
+        OCV.stepxy = OCV.step2
 
     def apply_pres_xy_step3(self, event=None):
         """apply preselected XY step 3"""
@@ -775,6 +790,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(OCV.step3, float(self.zstep.get()))
+        OCV.stepxy = OCV.step2
 
     def edit_pre_step(self, caller):
         """edit a preselected step value

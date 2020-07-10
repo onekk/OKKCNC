@@ -86,7 +86,7 @@ import Utils
 from CNCRibbon import Page
 from ToolsPage import Tools, ToolsPage
 from FilePage import FilePage
-from ControlPage import ControlPage
+from ControlPage import ControlPage, ControlFrame
 from TerminalPage import TerminalPage
 from ProbePage import ProbePage
 from EditorPage import EditorPage
@@ -409,24 +409,24 @@ class Application(Tk.Toplevel, Sender):
         except Tk.TclError:
             pass
 
-        self.bind('<Key-plus>', self.control.inc_xy_step)
-        self.bind('<Key-equal>', self.control.inc_xy_step)
-        self.bind('<KP_Add>', self.control.inc_xy_step)
-        self.bind('<Key-minus>', self.control.dec_xy_step)
-        self.bind('<Key-underscore>', self.control.dec_xy_step)
-        self.bind('<KP_Subtract>', self.control.dec_xy_step)
+        self.bind('<Key-plus>', self.set_step_xy)
+        #self.bind('<Key-equal>', self.cntrf.inc_xy_step)
+        #self.bind('<KP_Add>', self.cntrf.inc_xy_step)
+        #self.bind('<Key-minus>', self.cntrf.dec_xy_step)
+        #self.bind('<Key-underscore>', self.cntrf.dec_xy_step)
+        #self.bind('<KP_Subtract>', self.cntrf.dec_xy_step)
 
-        self.bind('<Key-asterisk>', self.control.mul_step)
-        self.bind('<KP_Multiply>', self.control.mul_step)
-        self.bind('<Key-slash>', self.control.div_step)
-        self.bind('<KP_Divide>', self.control.div_step)
+        #self.bind('<Key-asterisk>', self.cntrf.mul_step)
+        #self.bind('<KP_Multiply>', self.cntrf.mul_step)
+        #self.bind('<Key-slash>', self.cntrf.div_step)
+        #self.bind('<KP_Divide>', self.cntrf.div_step)
 
-        self.bind('<Key-1>', self.control.apply_pres_xy_step1)
-        self.bind('<Key-2>', self.control.apply_pres_xy_step2)
-        self.bind('<Key-3>', self.control.apply_pres_xy_step3)
+        #self.bind('<Key-1>', self.apply_pres_xy_step1)
+        #self.bind('<Key-2>', self.apply_pres_xy_step2)
+        #self.bind('<Key-3>', self.apply_pres_xy_step3)
 
-        self.bind('<Key-exclam>', OCV.MCTRL.feedHold(None))
-        self.bind('<Key-asciitilde>', self.resume)
+        #self.bind('<Key-exclam>', OCV.MCTRL.feedHold(None))
+        #self.bind('<Key-asciitilde>', self.resume)
 
         for x in OCV.iface_widgets:
             if isinstance(x, Tk.Entry):
@@ -510,25 +510,25 @@ class Application(Tk.Toplevel, Sender):
         """jog X axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("X", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("X", float(OCV.stepxy)))
 
     def jog_x_down(self, event=None):
         """jog X axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("X-", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("X-", float(OCV.stepxy)))
 
     def jog_y_up(self, event=None):
         """jog Y axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("Y", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Y", float(OCV.stepxy)))
 
     def jog_y_down(self, event=None):
         """jog Y axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("Y-", float(self.step.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Y-", float(OCV.stepxy)))
 
     def jog_x_down_y_up(self, event=None):
         """jog X axis down and Y axis up by defined step"""
@@ -536,8 +536,8 @@ class Application(Tk.Toplevel, Sender):
             return
         OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
-                "X-", float(self.step.get()),
-                "Y", float(self.step.get())))
+                "X-", float(OCV.stepxy),
+                "Y", float(OCV.stepxy)))
 
     def jog_x_up_y_up(self, event=None):
         """jog X axis up and Y axis up by defined step"""
@@ -545,8 +545,8 @@ class Application(Tk.Toplevel, Sender):
             return
         OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
-                "X", float(self.step.get()),
-                "Y", float(self.step.get())))
+                "X", float(OCV.stepxy),
+                "Y", float(OCV.stepxy)))
 
     def jog_x_down_y_down(self, event=None):
         """jog X axis down and Y axis down by defined step"""
@@ -554,8 +554,8 @@ class Application(Tk.Toplevel, Sender):
             return
         OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
-                "X-", float(self.step.get()),
-                "Y-", float(self.step.get())))
+                "X-", float(OCV.stepxy),
+                "Y-", float(OCV.stepxy)))
 
     def jog_x_up_y_down(self, event=None):
         """jog X axis up and Y axis down by defined step"""
@@ -563,22 +563,32 @@ class Application(Tk.Toplevel, Sender):
             return
         OCV.MCTRL.jog(
             "{0}{1:f} {2}{3:f}".format(
-                "X", float(self.step.get()),
-                "Y-", float(self.step.get())))
+                "X", float(OCV.stepxy),
+                "Y-", float(OCV.stepxy)))
 
     def jog_z_up(self, event=None):
         """jog Z axis up by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Z", float(OCV.stepz)))
 
     def jog_z_down(self, event=None):
         """jog Z axis down by defined step"""
         if event is not None and not self.acceptKey():
             return
-        OCV.MCTRL.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
+        OCV.MCTRL.jog("{0}{1:f}".format("Z-", float(OCV.stepz)))
 
     #---- END jogging
+
+
+    #---- STEP CONTROL
+    def set_step_xy(self, event=None):
+        if event is not None and not self.acceptKey():
+            return
+        pass
+
+    #----
+
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
