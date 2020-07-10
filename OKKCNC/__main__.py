@@ -232,6 +232,11 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<FeedHold>>', self.ctrl_feedhold)
         self.bind('<<SoftReset>>', self.ctrl_softreset)
         self.bind('<<Unlock>>', self.ctrl_unlock)
+        self.bind('<<Unlock>>', self.ctrl_unlock)
+
+        self.bind('<<ZmoveUp>>', self.jog_z_up)
+        self.bind('<<ZmoveDown>>', self.jog_z_down)
+
         # END machine control
 
         self.bind('<<Resume>>', lambda e, s=self: s.resume())
@@ -257,8 +262,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<ShowInfo>>', self.showInfo)
         self.bind('<<ShowStats>>', self.showStats)
 
-        self.bind('<<ZmoveUp>>', self.control.jog_z_up)
-        self.bind('<<ZmoveDown>>', self.control.jog_z_down)
 
         self.bind("<<ERR_HELP>>", self.show_error_panel)
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
@@ -354,44 +357,44 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<ToolClone>>', tools.clone)
         self.bind('<<ToolRename>>', tools.rename)
 
-        self.bind('<Prior>', self.control.jog_z_up)
-        self.bind('<Next>', self.control.jog_z_down)
+        self.bind('<Prior>', self.jog_z_up)
+        self.bind('<Next>', self.jog_z_down)
 
         if self._swapKeyboard == 1:
-            self.bind('<Right>', self.control.jog_y_up)
-            self.bind('<Left>', self.control.jog_y_down)
-            self.bind('<Up>', self.control.jog_x_down)
-            self.bind('<Down>', self.control.jog_x_up)
+            self.bind('<Right>', self.jog_y_up)
+            self.bind('<Left>', self.jog_y_down)
+            self.bind('<Up>', self.jog_x_down)
+            self.bind('<Down>', self.jog_x_up)
         elif self._swapKeyboard == -1:
-            self.bind('<Right>', self.control.jog_y_down)
-            self.bind('<Left>', self.control.jog_y_up)
-            self.bind('<Up>', self.control.jog_x_up)
-            self.bind('<Down>', self.control.jog_x_down)
+            self.bind('<Right>', self.jog_y_down)
+            self.bind('<Left>', self.jog_y_up)
+            self.bind('<Up>', self.jog_x_up)
+            self.bind('<Down>', self.jog_x_down)
         else:
-            self.bind('<Right>', self.control.jog_x_up)
-            self.bind('<Left>', self.control.jog_x_down)
-            self.bind('<Up>', self.control.jog_y_up)
-            self.bind('<Down>', self.control.jog_y_down)
+            self.bind('<Right>', self.jog_x_up)
+            self.bind('<Left>', self.jog_x_down)
+            self.bind('<Up>', self.jog_y_up)
+            self.bind('<Down>', self.jog_y_down)
 
         try:
-            self.bind('<KP_Prior>', self.control.jog_z_up)
-            self.bind('<KP_Next>', self.control.jog_z_down)
+            self.bind('<KP_Prior>', self.jog_z_up)
+            self.bind('<KP_Next>', self.jog_z_down)
 
             if self._swapKeyboard == 1:
-                self.bind('<KP_Right>', self.control.jog_y_up)
-                self.bind('<KP_Left>', self.control.jog_y_down)
-                self.bind('<KP_Up>', self.control.jog_x_down)
-                self.bind('<KP_Down>', self.control.jog_x_up)
+                self.bind('<KP_Right>', self.jog_y_up)
+                self.bind('<KP_Left>', self.jog_y_down)
+                self.bind('<KP_Up>', self.jog_x_down)
+                self.bind('<KP_Down>', self.jog_x_up)
             elif self._swapKeyboard == -1:
-                self.bind('<KP_Right>', self.control.jog_y_down)
-                self.bind('<KP_Left>', self.control.jog_y_up)
-                self.bind('<KP_Up>', self.control.jog_x_up)
-                self.bind('<KP_Down>', self.control.jog_x_down)
+                self.bind('<KP_Right>', self.jog_y_down)
+                self.bind('<KP_Left>', self.jog_y_up)
+                self.bind('<KP_Up>', self.jog_x_up)
+                self.bind('<KP_Down>', self.jog_x_down)
             else:
-                self.bind('<KP_Right>', self.control.jog_x_up)
-                self.bind('<KP_Left>', self.control.jog_x_down)
-                self.bind('<KP_Up>', self.control.jog_y_up)
-                self.bind('<KP_Down>', self.control.jog_y_down)
+                self.bind('<KP_Right>', self.jog_x_up)
+                self.bind('<KP_Left>', self.jog_x_down)
+                self.bind('<KP_Up>', self.jog_y_up)
+                self.bind('<KP_Down>', self.jog_y_down)
         except Tk.TclError:
             pass
 
@@ -487,7 +490,85 @@ class Application(Tk.Toplevel, Sender):
 
     def ctrl_unlock(self, event=None):
         OCV.MCTRL.unlock(True)
+
     #----- END CTRL COMMANDS
+
+
+    #---- JOGGING
+
+    def jog_x_up(self, event=None):
+        """jog X axis up by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("X", float(self.step.get())))
+
+    def jog_x_down(self, event=None):
+        """jog X axis down by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("X-", float(self.step.get())))
+
+    def jog_y_up(self, event=None):
+        """jog Y axis up by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("Y", float(self.step.get())))
+
+    def jog_y_down(self, event=None):
+        """jog Y axis down by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("Y-", float(self.step.get())))
+
+    def jog_x_down_y_up(self, event=None):
+        """jog X axis down and Y axis up by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog(
+            "{0}{1:f} {2}{3:f}".format(
+                "X-", float(self.step.get()),
+                "Y", float(self.step.get())))
+
+    def jog_x_up_y_up(self, event=None):
+        """jog X axis up and Y axis up by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog(
+            "{0}{1:f} {2}{3:f}".format(
+                "X", float(self.step.get()),
+                "Y", float(self.step.get())))
+
+    def jog_x_down_y_down(self, event=None):
+        """jog X axis down and Y axis down by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog(
+            "{0}{1:f} {2}{3:f}".format(
+                "X-", float(self.step.get()),
+                "Y-", float(self.step.get())))
+
+    def jog_x_up_y_down(self, event=None):
+        """jog X axis up and Y axis down by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog(
+            "{0}{1:f} {2}{3:f}".format(
+                "X", float(self.step.get()),
+                "Y-", float(self.step.get())))
+
+    def jog_z_up(self, event=None):
+        """jog Z axis up by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("Z", float(self.zstep.get())))
+
+    def jog_z_down(self, event=None):
+        """jog Z axis down by defined step"""
+        if event is not None and not self.acceptKey():
+            return
+        OCV.MCTRL.jog("{0}{1:f}".format("Z-", float(self.zstep.get())))
+
+    #---- END jogging
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
