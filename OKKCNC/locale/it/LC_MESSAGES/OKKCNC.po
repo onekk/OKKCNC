@@ -5,18 +5,19 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: OKKCNC\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-01 18:59+0100\n"
-"PO-Revision-Date: 2019-12-01 19:01+0100\n"
+"PO-Revision-Date: 2020-07-10 11:57+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: OKKCNC/Sender.py:362
 msgid "unknown command"
@@ -33,51 +34,51 @@ msgstr "Esecuzione finita"
 
 #: OKKCNC/ToolsPage.py:557 OKKCNC/ToolsPage.py:569 OKKCNC/ToolsPage.py:581
 msgid "F1"
-msgstr ""
+msgstr "F1"
 
 #: OKKCNC/ToolsPage.py:558 OKKCNC/ToolsPage.py:570 OKKCNC/ToolsPage.py:582
 msgid "F2"
-msgstr ""
+msgstr "F2"
 
 #: OKKCNC/ToolsPage.py:559 OKKCNC/ToolsPage.py:571 OKKCNC/ToolsPage.py:583
 msgid "F3"
-msgstr ""
+msgstr "F3"
 
 #: OKKCNC/ToolsPage.py:560 OKKCNC/ToolsPage.py:572 OKKCNC/ToolsPage.py:584
 msgid "F4"
-msgstr ""
+msgstr "F4"
 
 #: OKKCNC/ToolsPage.py:561 OKKCNC/ToolsPage.py:573 OKKCNC/ToolsPage.py:585
 msgid "F5"
-msgstr ""
+msgstr "F5"
 
 #: OKKCNC/ToolsPage.py:562 OKKCNC/ToolsPage.py:574 OKKCNC/ToolsPage.py:586
 msgid "F6"
-msgstr ""
+msgstr "F6"
 
 #: OKKCNC/ToolsPage.py:563 OKKCNC/ToolsPage.py:575 OKKCNC/ToolsPage.py:587
 msgid "F7"
-msgstr ""
+msgstr "F7"
 
 #: OKKCNC/ToolsPage.py:564 OKKCNC/ToolsPage.py:576 OKKCNC/ToolsPage.py:588
 msgid "F8"
-msgstr ""
+msgstr "F8"
 
 #: OKKCNC/ToolsPage.py:565 OKKCNC/ToolsPage.py:577 OKKCNC/ToolsPage.py:589
 msgid "F9"
-msgstr ""
+msgstr "F9"
 
 #: OKKCNC/ToolsPage.py:566 OKKCNC/ToolsPage.py:578 OKKCNC/ToolsPage.py:590
 msgid "F10"
-msgstr ""
+msgstr "F10"
 
 #: OKKCNC/ToolsPage.py:567 OKKCNC/ToolsPage.py:579 OKKCNC/ToolsPage.py:591
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: OKKCNC/ToolsPage.py:568 OKKCNC/ToolsPage.py:580 OKKCNC/ToolsPage.py:592
 msgid "F12"
-msgstr ""
+msgstr "F12"
 
 #: OKKCNC/ToolsPage.py:569 OKKCNC/ToolsPage.py:570 OKKCNC/ToolsPage.py:571
 #: OKKCNC/ToolsPage.py:572 OKKCNC/ToolsPage.py:573 OKKCNC/ToolsPage.py:574
@@ -3320,21 +3321,3 @@ msgstr ""
 #: OKKCNC/lib/bFileDialog.py:909
 msgid "Choose Directory"
 msgstr ""
-
-#~ msgid "Import Gcode/DXF file"
-#~ msgstr "Importa File GCode"
-
-#~ msgid "New gcode/dxf file"
-#~ msgstr "Nuovo file GCode"
-
-#~ msgid "Open existing gcode/dxf file [Ctrl-O]"
-#~ msgstr "Apri file GCode esistente"
-
-#~ msgid "Import gcode/dxf file"
-#~ msgstr "Importa file GCode "
-
-#~ msgid "Save gcode/dxf file [Ctrl-S]"
-#~ msgstr "Salva file GCode"
-
-#~ msgid "Save gcode/dxf AS"
-#~ msgstr "Salva file GCode come"

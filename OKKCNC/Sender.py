@@ -426,7 +426,7 @@ class Sender(object):
 
     def serial_write(self, data):
         """Serial write"""
-
+        ret = ""
         try:
             ret = self.serial.write(data.encode('ascii'))
         except UnicodeEncodeError:

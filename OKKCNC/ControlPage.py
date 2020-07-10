@@ -62,9 +62,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         print("OCV.APP > ", OCV.APP)
         """
 
-        Tk.Label(self, text="Y").grid(row=6, column=3)
-
-        Tk.Label(self, "", width=1).grid(row=1, column=10)
+        Tk.Label(self, text="", width=1).grid(row=1, column=10)
 
         b_width = 2
         b_height = 2
@@ -126,6 +124,23 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         row = 1
 
         but = Tk.Button(
+            self, text="-",
+            command=self.dec_z_step,
+            padx=1, pady=1)
+        but.grid(row=row, column=0, sticky=Tk.EW)
+        tkExtra.Balloon.set(but, _("Decrease zstep"))
+        self.addWidget(but)
+
+        but = Tk.Button(
+            self, text="+",
+            command=self.inc_z_step,
+            padx=1, pady=1)
+        but.grid(row=row, column=1, sticky=Tk.EW)
+        tkExtra.Balloon.set(but, _("Increase zstep"))
+        self.addWidget(but)
+
+
+        but = Tk.Button(
             self,
             text=u"\u00F75",
             command=self.div_step,
@@ -172,48 +187,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(but, _("Increase step"))
         self.addWidget(but)
 
-        row = 2
-
-        but = Tk.Button(
-            self, text="-",
-            command=self.dec_z_step,
-            padx=1, pady=1)
-        but.grid(row=row, column=0, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Decrease zstep"))
-        self.addWidget(but)
-
-        but = Tk.Button(
-            self, text="+",
-            command=self.inc_z_step,
-            padx=1, pady=1)
-        but.grid(row=row, column=1, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Increase zstep"))
-        self.addWidget(but)
-
-        but = Tk.Button(
-            self, text="-",
-            command=self.dec_xy_step_fine,
-            width=3,
-            padx=1, pady=1)
-        but.grid(row=row, column=8, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Decrease step fine"))
-        self.addWidget(but)
-
-        but = Tk.Button(
-            self, text="+",
-            command=self.inc_xy_step_fine,
-            width=3,
-            padx=1, pady=1)
-        but.grid(row=row, column=9, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Increase step fine"))
-        self.addWidget(but)
-
         row = 3
-
-        Tk.Label(self, text="Z").grid(row=3, column=0, columnspan=2)
-        Tk.Label(self, text="X").grid(row=3, column=6, columnspan=2)
-
-        row = 4
 
         but = Tk.Button(
             self,
@@ -256,7 +230,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(but, _("Move +X +Y"))
         self.addWidget(but)
 
-        row = 6
+        row = 5
 
         but = Tk.Button(
             self,
@@ -326,7 +300,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.addWidget(but)
 
-        row = 7
+        row = 6
 
         but = Tk.Button(
             self,
@@ -361,7 +335,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
-        row = 8
+        row = 7
 
         but = Tk.Button(
             self,
@@ -765,16 +739,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.set_step_view(tg_step, None)
 
-    def inc_xy_step_fine(self, event=None):
-        """increment XY step using fine step"""
-        if event is not None and not self.acceptKey():
-            return
-
-        step, power = ControlFrame._step_power(OCV.step1)
-        tg_step = float(self.step.get()) + power
-
-        self.set_step_view(tg_step, None)
-
     def inc_z_step(self, event=None):
         """increment Z step using _step_power"""
         if event is not None and not self.acceptKey():
@@ -793,16 +757,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         step, power = ControlFrame._step_power(self.step.get())
         tg_step = step - power
-
-        self.set_step_view(tg_step, None)
-
-    def dec_xy_step_fine(self, event=None):
-        """decrement XY step using fine step"""
-        if event is not None and not self.acceptKey():
-            return
-
-        step, power = ControlFrame._step_power(OCV.step1)
-        tg_step = float(self.step.get()) - power
 
         self.set_step_view(tg_step, None)
 

@@ -40,6 +40,7 @@ try:
 except ImportError:
     import tkinter as Tk
     import tkinter.font as tkFont
+    import tkinter.simpledialog as tkSimpleDialog
     import tkinter.messagebox as tkMessageBox
     import configparser as ConfigParser
 
