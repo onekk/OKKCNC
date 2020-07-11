@@ -84,21 +84,28 @@ def padFloat(decimals, value):
 
 def get_errors(ctl):
     err_list = []
+    
+    # debug code not to delete
+    #print(ctl, ERROR_CODES)
 
-    # print(ERROR_CODES)
-
-    if ctl == "GRBL0":
+    if ctl in ("GRBL0", "GRBL1"):
         pattern = r'\b' + re.escape("error:") + r'\b'
         int_list = [
-            "error:{0:02d} {1}".format(int(key[6:]), value)
+            "error:{0:02d} >> {1}".format(int(key[6:]), value)
             for key, value in ERROR_CODES.items()
             if re.search(pattern, key)]
     else:
-        pattern = r'\b' + re.escape("error: ") + r'\b'
+        # I don't know other controllers behaviour
+        # Maybe Wrong
+        pattern = r'\b' + re.escape("error:") + r'\b'
         int_list = [
-            "{0} {1}".format(key, value)
+            "{0} > {1}".format(key, value)
             for key, value in ERROR_CODES.items()
             if re.search(pattern, key)]
 
     err_list = sorted(int_list)
+    
+    # debug code not to delete
+    #print(int_list)
+
     OCV.CTL_ERRORS = err_list

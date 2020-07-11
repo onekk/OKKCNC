@@ -77,7 +77,7 @@ ERROR_CODES = {
 }
 
 
-# Convert Grbl V1.0 codes to Grbl V0.9
+# Convert poor explained Grbl V0.9 codes to Grbl V1.0 
 for e1, e0 in (
         ("error: Expected command letter", "error:1"),
         ("error: Bad number format", "error:2"),

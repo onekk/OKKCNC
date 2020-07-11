@@ -2417,6 +2417,7 @@ class Application(Tk.Toplevel, Sender):
                     OCV.CD["color"] = OCV.STATECOLOR["Alarm"]
                 else:
                     OCV.CD["color"] = OCV.STATECOLOR["Default"]
+            
             OCV.s_pause = ("Hold" in OCV.c_state)
             self.dro.update_state()
             self.dro.update_coords()
