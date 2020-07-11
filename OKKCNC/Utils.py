@@ -247,6 +247,11 @@ def set_predefined_steps():
     except Exception:
         OCV.zstep4 = 10.0
 
+def populate_cyclelist():
+    """populate steplists with OCV.step(n) values"""
+    # Predefined XY steppings
+    OCV.steplist_xy = [OCV.step1, OCV.step2, OCV.step3]
+    OCV.steplist_z = [OCV.zstep1, OCV.zstep2, OCV.zstep3, OCV.zstep4]
 
 def ask_for_value(app, caller):
     """Show an input windows asking for a value

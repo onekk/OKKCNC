@@ -67,19 +67,19 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         b_width = 2
         b_height = 2
 
-        OCV.stepxy = OCV.config.get("Control", "step")
-        OCV.stepz = OCV.config.get("Control", "zstep")
-
         z_step_font = Utils.get_font("z_step.font", ControlFrame.z_step_font)
 
         Utils.set_predefined_steps()
+        Utils.populate_cyclelist()
+        
+        OCV.stepxy = float(OCV.config.get("Control", "step"))
+        OCV.stepz = float(OCV.config.get("Control", "zstep"))
 
         row = 0
 
-        zstep = OCV.config.get("Control", "zstep")
         self.zstep = tkExtra.Combobox(self, width=4, background="White")
         self.zstep.grid(row=row, column=0, columnspan=4, sticky=Tk.EW)
-        self.zstep.set(zstep)
+        self.zstep.set(str(OCV.stepz))
         self.zstep.fill(
             map(float, OCV.config.get("Control", "zsteplist").split()))
         tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
@@ -616,14 +616,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # for safety no descend to Z0
         # self.sendGCode("G0Z0")
 
-    def set_step_view(self, xy_step, z_step=None, fine_xy_step=None):
+    def set_step_view(self, xy_step, z_step=None):
         """set step value shown on the interface"""
         self.step.set("{0:.4f}".format(float(xy_step)))
-
-        if fine_xy_step is not None:
-            # stepf is not defined, here to became fine step
-            # self.stepf.set("{0:.4f}".format(fs))
-            pass
 
         if self.zstep is self.step or z_step is None:
             self.event_generate(
@@ -664,7 +659,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         """increment XY step using _step_power"""
         if event is not None and not self.acceptKey():
             return
-        step, power = ControlFrame._step_power(self.step.get())
+        step, power = ControlFrame._step_power(OCV.stepxy)
         tg_step = step + power
 
         self.set_step_view(tg_step, None)
@@ -675,11 +670,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        step, power = ControlFrame._step_power(self.zstep.get())
-        tg_step = float(self.step.get())
+        step, power = ControlFrame._step_power(OCV.stepz)
         tgz_step = step + power
 
-        self.set_step_view(tg_step, tgz_step)
+        self.set_step_view(OCV.stepxy, tgz_step)
         OCV.stepz = tgz_step
         
     def dec_xy_step(self, event=None):
@@ -687,7 +681,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        step, power = ControlFrame._step_power(self.step.get())
+        step, power = ControlFrame._step_power(OCV.stepxy)
         tg_step = step - power
 
         self.set_step_view(tg_step, None)
@@ -698,12 +692,11 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        step, power = ControlFrame._step_power(self.zstep.get())
+        step, power = ControlFrame._step_power(OCV.stepz)
 
-        tg_step = float(self.step.get())
         tgz_step = step - power
 
-        self.set_step_view(tg_step, tgz_step)
+        self.set_step_view(OCV.stepxy, tgz_step)
         OCV.stepz = tgz_step
 
     def mul_step(self, event=None):
@@ -711,7 +704,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        tg_step = float(self.step.get()) * 5.0
+        tg_step = OCV.stepxy * 5.0
 
         if tg_step < _LOWSTEP:
             tg_step = _LOWSTEP
@@ -726,7 +719,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        tg_step = float(self.step.get()) / 5.0
+        tg_step = OCV.stepxy / 5.0
 
         if tg_step < _LOWSTEP:
             tg_step = _LOWSTEP
@@ -741,7 +734,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(float(self.step.get()), OCV.zstep1)
+        self.set_step_view(OCV.stepxy, OCV.zstep1)
         OCV.stepz = OCV.zstep1
 
     def apply_pres_z_step2(self, event=None):
@@ -749,7 +742,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(float(self.step.get()), OCV.zstep2)
+        self.set_step_view(OCV.stepxy, OCV.zstep2)
         OCV.stepz = OCV.zstep2
 
     def apply_pres_z_step3(self, event=None):
@@ -757,7 +750,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(float(self.step.get()), OCV.zstep3)
+        self.set_step_view(OCV.stepxy, OCV.zstep3)
         OCV.stepz = OCV.zstep3
 
     def apply_pres_z_step4(self, event=None):
@@ -765,7 +758,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(float(self.step.get()), OCV.zstep4)
+        self.set_step_view(OCV.stepxy, OCV.zstep4)
         OCV.stepz = OCV.zstep4
 
     def apply_pres_xy_step1(self, event=None):
@@ -773,7 +766,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(OCV.step1, float(self.zstep.get()))
+        self.set_step_view(OCV.step1, OCV.stepz)
         OCV.stepxy = OCV.step1
 
     def apply_pres_xy_step2(self, event=None):
@@ -781,7 +774,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(OCV.step2, float(self.zstep.get()))
+        self.set_step_view(OCV.step2, OCV.stepz)
         OCV.stepxy = OCV.step2
 
     def apply_pres_xy_step3(self, event=None):
@@ -789,7 +782,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        self.set_step_view(OCV.step3, float(self.zstep.get()))
+        self.set_step_view(OCV.step3, OCV.stepz)
         OCV.stepxy = OCV.step2
 
     def edit_pre_step(self, caller):
@@ -844,7 +837,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 OCV.zstep4 = retval
                 bal_text = "Zstep4 = {0}".format(OCV.zstep4)
                 IniFile.set_value("Control", "zstep4", retval)
-
+        
+        
+        Utils.populate_cyclelist()
+        
         if wid is not None:
             wid.configure(text=retval)
             tkExtra.Balloon.set(wid, bal_text)

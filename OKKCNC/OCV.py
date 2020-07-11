@@ -28,8 +28,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.2.51-dev"
-PRG_DATE = "23 Jan 2020"
+PRG_VER = "0.2.99-dev"
+PRG_DATE = "11 Jul 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -400,6 +400,13 @@ step3 = 0.0
 step4 = 0.0
 stepxy = 0.0
 stepz = 0.0
+# positional index for the step cycling xy
+step_pxy = 0
+# positional index for the step cycling z
+step_pz = 0
+steplist_xy = []
+steplist_z= []
+#
 str_sep = "-"*78
 str_pad = "-" + " "*76 + "-"
 s_alarm = None

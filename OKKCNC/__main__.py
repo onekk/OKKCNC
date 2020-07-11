@@ -82,7 +82,6 @@ import Pendant
 from Sender import Sender
 import Utils
 
-
 from CNCRibbon import Page
 from ToolsPage import Tools, ToolsPage
 from FilePage import FilePage
@@ -241,12 +240,10 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<JOG-ZUP>>', self.jog_z_up)
         self.bind('<<JOG-ZDW>>', self.jog_z_down)
 
-
         self.bind('<<JOG-XYUP>>', self.jog_x_up_y_up)
         self.bind('<<JOG-XUPYDW>>', self.jog_x_up_y_down)
         self.bind('<<JOG-XYDW>>', self.jog_x_down_y_down)
         self.bind('<<JOG-XDWYUP>>', self.jog_x_down_y_up)
-
 
         # END machine control
 
@@ -254,7 +251,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<Run>>', lambda e, s=self: s.run())
         self.bind('<<Stop>>', self.stopRun)
         self.bind('<<Pause>>', self.pause)
-#        self.bind('<<TabAdded>>',    self.tabAdded)
+
         self.bind('<<SetMem>>', self.setMem)
         self.bind('<<ClrMem>>', self.clrMem)
         self.bind('<<SaveMems>>', self.saveMems)
@@ -343,10 +340,6 @@ class Application(Tk.Toplevel, Sender):
                   lambda e, c=OCV.CANVAS_F: c.drawProbe(True))
         self.bind('<<DrawOrient>>', OCV.CANVAS_F.canvas.drawOrient)
 
-
-        # self.bind('<Control-Key-f>',    self.find)
-        # self.bind('<Control-Key-g>',    self.findNext)
-        # self.bind('<Control-Key-h>',    self.replace)
         self.bind('<Control-Key-e>', self.editor.toggleExpand)
         self.bind('<Control-Key-n>', self.showInfo)
         self.bind('<<ShowInfo>>', self.showInfo)
@@ -409,24 +402,17 @@ class Application(Tk.Toplevel, Sender):
         except Tk.TclError:
             pass
 
-        self.bind('<Key-plus>', self.set_step_xy)
-        #self.bind('<Key-equal>', self.cntrf.inc_xy_step)
-        #self.bind('<KP_Add>', self.cntrf.inc_xy_step)
-        #self.bind('<Key-minus>', self.cntrf.dec_xy_step)
-        #self.bind('<Key-underscore>', self.cntrf.dec_xy_step)
-        #self.bind('<KP_Subtract>', self.cntrf.dec_xy_step)
+        self.bind('<Key-plus>', self.cycle_up_step_xy)
+        self.bind('<KP_Add>', self.cycle_up_step_xy)        
 
-        #self.bind('<Key-asterisk>', self.cntrf.mul_step)
-        #self.bind('<KP_Multiply>', self.cntrf.mul_step)
-        #self.bind('<Key-slash>', self.cntrf.div_step)
-        #self.bind('<KP_Divide>', self.cntrf.div_step)
+        self.bind('<Key-minus>', self.cycle_dw_step_xy)
+        self.bind('<KP_Subtract>', self.cycle_dw_step_xy)
 
-        #self.bind('<Key-1>', self.apply_pres_xy_step1)
-        #self.bind('<Key-2>', self.apply_pres_xy_step2)
-        #self.bind('<Key-3>', self.apply_pres_xy_step3)
+        self.bind('<Key-asterisk>', self.cycle_up_step_z)
+        self.bind('<KP_Multiply>', self.cycle_up_step_z)
 
-        #self.bind('<Key-exclam>', OCV.MCTRL.feedHold(None))
-        #self.bind('<Key-asciitilde>', self.resume)
+        self.bind('<Key-slash>', self.cycle_dw_step_z)
+        self.bind('<KP_Divide>', self.cycle_dw_step_z)
 
         for x in OCV.iface_widgets:
             if isinstance(x, Tk.Entry):
@@ -582,11 +568,55 @@ class Application(Tk.Toplevel, Sender):
 
 
     #---- STEP CONTROL
-    def set_step_xy(self, event=None):
+    def cycle_up_step_xy(self, event=None):
         if event is not None and not self.acceptKey():
             return
-        pass
+            
+        OCV.step_pxy += 1
+        
+        if OCV.step_pxy > 2:
+            OCV.step_pxy =0
 
+        OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        self.control.step.set(OCV.stepxy)
+
+
+    def cycle_dw_step_xy(self, event=None):
+        if event is not None and not self.acceptKey():
+            return
+            
+        OCV.step_pxy -= 1    
+
+        if OCV.step_pxy < 0:
+            OCV.step_pxy = 2
+
+        OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        self.control.step.set(OCV.stepxy)
+
+    def cycle_up_step_z(self, event=None):
+        if event is not None and not self.acceptKey():
+            return
+            
+        OCV.step_pz += 1
+        
+        if OCV.step_pz > 3:
+            OCV.step_pz = 0
+
+        OCV.stepz = OCV.steplist_z[OCV.step_pz]
+        self.control.zstep.set(OCV.stepz)
+
+    def cycle_dw_step_z(self, event=None):
+        if event is not None and not self.acceptKey():
+            return
+            
+        OCV.step_pz -= 1
+        
+        if OCV.step_pz < 0:
+            OCV.step_pz = 3
+
+        OCV.stepz = OCV.steplist_z[OCV.step_pz]
+        self.control.zstep.set(OCV.stepz)
+    
     #----
 
 
