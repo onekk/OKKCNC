@@ -332,7 +332,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         but = Tk.Button(
             self,
-            text=_("WPOS"),
+            text=_("SWP"),
             font=OCV.FONT_DRO_ZERO,
             image=OCV.icons["origin"],
             compound=Tk.LEFT,
@@ -404,7 +404,7 @@ class DROFrame(CNCRibbon.PageFrame):
         col = 0
         but = Tk.Button(
             self,
-            text=_("MoGa"),
+            text=_("MG"),
             font=OCV.FONT_DRO_ZERO,
             image=OCV.icons["gantry"],
             compound=Tk.LEFT,
