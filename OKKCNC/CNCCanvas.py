@@ -1468,7 +1468,7 @@ class CNCCanvas(Tk.Canvas, object):
             text=text,
             anchor=Tk.N,
             justify=Tk.LEFT,
-            fill=OCV.MEM_COLOR, tag=mem_text)
+            fill=OCV.COLOR_MEM, tag=mem_text)
 
         CanvasTooltip(self, objD, text=ttext, tag=mem_tt)
 

@@ -578,6 +578,7 @@ class Application(Tk.Toplevel, Sender):
             OCV.step_pxy =0
 
         OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        print("csxy = {0:.4f}".format(OCV.stepxy))
         self.control.step.set(OCV.stepxy)
 
 
@@ -591,6 +592,7 @@ class Application(Tk.Toplevel, Sender):
             OCV.step_pxy = 2
 
         OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        print("csxy = {0:.4f}".format(OCV.stepxy))
         self.control.step.set(OCV.stepxy)
 
     def cycle_up_step_z(self, event=None):
