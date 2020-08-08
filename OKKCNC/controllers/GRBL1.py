@@ -42,8 +42,8 @@ class Controller(_GenericGRBL):
         self.master = master
         # print("grbl1 loaded")
 
-    def jog(self, dir):
-        self.master.sendGCode("$J=G91 {0} F100000".format(dir))
+    def jog(self, move):
+        self.master.sendGCode("$J=G91 {0} F100000".format(move))
 
     def overrideSet(self):
         OCV.CD["_OvChanged"] = False  # Temporary

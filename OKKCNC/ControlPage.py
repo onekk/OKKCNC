@@ -783,7 +783,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             return
 
         self.set_step_view(OCV.step3, OCV.stepz)
-        OCV.stepxy = OCV.step2
+        OCV.stepxy = OCV.step3
 
     def edit_pre_step(self, caller):
         """edit a preselected step value

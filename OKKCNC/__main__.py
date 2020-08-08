@@ -579,7 +579,7 @@ class Application(Tk.Toplevel, Sender):
 
         OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
         print("csxy = {0:.4f}".format(OCV.stepxy))
-        self.control.step.set(OCV.stepxy)
+        self.control.set_step_view(OCV.stepxy, OCV.stepz)
 
 
     def cycle_dw_step_xy(self, event=None):
@@ -593,8 +593,8 @@ class Application(Tk.Toplevel, Sender):
 
         OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
         print("csxy = {0:.4f}".format(OCV.stepxy))
-        self.control.step.set(OCV.stepxy)
-
+        self.control.set_step_view(OCV.stepxy, OCV.stepz)
+        
     def cycle_up_step_z(self, event=None):
         if event is not None and not self.acceptKey():
             return
@@ -605,7 +605,7 @@ class Application(Tk.Toplevel, Sender):
             OCV.step_pz = 0
 
         OCV.stepz = OCV.steplist_z[OCV.step_pz]
-        self.control.zstep.set(OCV.stepz)
+        self.control.set_step_view(OCV.stepxy, OCV.stepz)
 
     def cycle_dw_step_z(self, event=None):
         if event is not None and not self.acceptKey():
@@ -617,7 +617,7 @@ class Application(Tk.Toplevel, Sender):
             OCV.step_pz = 3
 
         OCV.stepz = OCV.steplist_z[OCV.step_pz]
-        self.control.zstep.set(OCV.stepz)
+        self.control.set_step_view(OCV.stepxy, OCV.stepz)
     
     #----
 
@@ -2239,7 +2239,7 @@ class Application(Tk.Toplevel, Sender):
                 self.runEnded()
                 tkMessageBox.showerror(
                     _("Empty gcode"),
-                    _("Not gcode file was loaded"),
+                    _("No gcode file was loaded"),
                     parent=self)
                 return
 
