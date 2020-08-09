@@ -1453,17 +1453,6 @@ class Application(Tk.Toplevel, Sender):
                 self.editor.selectAll()
             self.executeOnSelection("INKSCAPE", True)
 
-        # ISLAND set or toggle island tag
-        elif rexx.abbrev("ISLAND", cmd, 3):
-            if len(line) > 1:
-                if line[1].upper() == "1":
-                    isl = True
-                else:
-                    isl = False
-            else:
-                isl = None
-            self.executeOnSelection("ISLAND", True, isl)
-
         # ISO1: switch to ISO1 projection
         elif cmd == "ISO1":
             OCV.CANVAS_F.viewISO1()
@@ -1594,10 +1583,6 @@ class Application(Tk.Toplevel, Sender):
 
             self.editor.selectAll()
             self.executeOnSelection("MOVE", False, dx, dy, dz)
-
-        # REV*ERSE: reverse path direction
-        elif rexx.abbrev("REVERSE", cmd, 3):
-            self.executeOnSelection("REVERSE", True)
 
         # ROT*ATE [CCW|CW|FLIP|ang] [x0 [y0]]: rotate selected blocks
         # counter-clockwise(90) / clockwise(-90) / flip(180)
@@ -1794,8 +1779,6 @@ class Application(Tk.Toplevel, Sender):
             sel = self.gcode.cut(items, *args)
         elif cmd == "CLOSE":
             sel = self.gcode.close(items)
-        elif cmd == "DIRECTION":
-            sel = self.gcode.cutDirection(items, *args)
         elif cmd == "DRILL":
             sel = self.gcode.drill(items, *args)
         elif cmd == "ORDER":
@@ -1810,8 +1793,6 @@ class Application(Tk.Toplevel, Sender):
             self.gcode.optimize(items)
         elif cmd == "ORIENT":
             self.gcode.orientLines(items)
-        elif cmd == "REVERSE":
-            self.gcode.reverse(items, *args)
         elif cmd == "ROUND":
             self.gcode.roundLines(items, *args)
         elif cmd == "ROTATE":
@@ -1932,8 +1913,9 @@ class Application(Tk.Toplevel, Sender):
         inipos = os.path.join(
                 IniFile.get_str("File", "dir"),
                 IniFile.get_str("File", "file"))
-        
-        print(inipos)
+
+        # DEBUG info do not remove
+        # print(inipos)
 
         filename = bFileDialog.askopenfilename(
             master=self,
@@ -2131,7 +2113,7 @@ class Application(Tk.Toplevel, Sender):
             serialPage = Page.frames["Serial"]
             device = _device or serialPage.portCombo.get() #.split("\t")[0]
             baudrate = _baud   or serialPage.baudCombo.get()
-            if self.open(device, baudrate):
+            if self.device_open(device, baudrate):
                 OCV.serial_open = True
                 serialPage.connectBtn.config(
                     text=_("Close"),
@@ -2139,7 +2121,7 @@ class Application(Tk.Toplevel, Sender):
                     activebackground="LightGreen")
                 self.enable()
 
-    def open(self, device, baudrate):
+    def device_open(self, device, baudrate):
         """open serial device"""
         try:
             return Sender.open(self, device, baudrate)

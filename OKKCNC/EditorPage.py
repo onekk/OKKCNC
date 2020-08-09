@@ -671,101 +671,6 @@ class TransformGroup(CNCRibbon.ButtonGroup):
 #        submenu.add_command(label=_("Rotate command"), underline=0,
 #                    command=lambda s=self:s.insertCommand("ROTATE ang x0 y0", False))
 
-
-class RouteGroup(CNCRibbon.ButtonGroup):
-    """Route Group"""
-    def __init__(self, master, app):
-
-        CNCRibbon.ButtonGroup.__init__(self, master, N_("Route"), app)
-
-        self.grid3rows()
-
-        col, row = 0, 0
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["conventional"],
-            text=_("Conventional"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=app: s.insertCommand("DIRECTION CONVENTIONAL", True),
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Change cut direction to conventional for selected gcode blocks"))
-
-        self.addWidget(b)
-
-        row += 1
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["climb"],
-            text=_("Climb"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=app: s.insertCommand("DIRECTION CLIMB", True),
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Change cut direction to climb for selected gcode blocks"))
-
-        self.addWidget(b)
-
-        row += 1
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["reverse"],
-            text=_("Reverse"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=app: s.insertCommand("REVERSE", True),
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Reverse cut direction for selected gcode blocks"))
-
-        self.addWidget(b)
-
-        col, row = 1, 0
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["rotate_90"],
-            text=_("Cut CW"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=app: s.insertCommand("DIRECTION CW", True),
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Change cut direction to CW for selected gcode blocks"))
-
-        self.addWidget(b)
-
-        row += 1
-
-        b = Ribbon.LabelButton(
-            self.frame,
-            image=OCV.icons["rotate_270"],
-            text=_("Cut CCW"),
-            compound=Tk.LEFT,
-            anchor=Tk.W,
-            command=lambda s=app: s.insertCommand("DIRECTION CCW", True),
-            background=OCV.COLOR_BACKGROUND)
-
-        b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
-
-        tkExtra.Balloon.set(b, _("Change cut direction to CCW for selected gcode blocks"))
-
-        self.addWidget(b)
-
-
 class EditorFrame(CNCRibbon.PageFrame):
     """Main Frame of Editor"""
     def __init__(self, master, app):
@@ -798,5 +703,5 @@ class EditorPage(CNCRibbon.Page):
         """Add a widget in the widgets list to enable disable during the run"""
         self._register(
             (ClipboardGroup, SelectGroup, EditGroup, MoveGroup,
-             OrderGroup, TransformGroup, RouteGroup),
+             OrderGroup, TransformGroup),
             (EditorFrame,))

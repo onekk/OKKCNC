@@ -29,7 +29,7 @@ PRG_NAME = "OKKCNC"
 """version and date"""
 
 PRG_VER = "0.3.20-dev"
-PRG_DATE = "08 aug 2020"
+PRG_DATE = "09 aug 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
