@@ -28,7 +28,7 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.3.11-dev"
+PRG_VER = "0.3.20-dev"
 PRG_DATE = "08 aug 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 

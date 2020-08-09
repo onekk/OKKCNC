@@ -117,6 +117,13 @@ def add_recent_file(filename):
     OCV.config.set("File", "recent.0", sfn)
 
 
+def save_lastfile(filename):
+    OCV.config.set(
+            "File", "dir", os.path.dirname(os.path.abspath(filename)))
+    OCV.config.set(
+            "File", "file", os.path.basename(filename))
+
+
 def conf_file_load(only_from_system_ini=False):
     """Load configuration file(s)
     it load both the system config OKKCNC.ini file located in the program dir

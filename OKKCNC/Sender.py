@@ -42,7 +42,7 @@ except ImportError:
 import OCV
 from CNC import CNC
 import GCode
-import Heuristic
+#import Heuristic
 import IniFile
 import Pendant
 
@@ -363,10 +363,9 @@ class Sender(object):
     def _saveConfigFile(self, filename=None):
         if filename is None:
             filename = self.gcode.filename
-        IniFile.set_value(
-            "File", "dir", os.path.dirname(os.path.abspath(filename)))
-        IniFile.set_value(
-            "File", "file", os.path.basename(filename))
+        
+        IniFile.save_lastfile(filename)
+        
         IniFile.set_value(
             "File", "probe", os.path.basename(self.gcode.probe.filename))
 

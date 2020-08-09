@@ -474,7 +474,7 @@ class Application(Tk.Toplevel, Sender):
     def saveMems(self, event=None):
         IniFile.save_memories()
 
-    #----- CTRL COMMANDS HERE to make them work
+    #--- CTRL COMMANDS HERE to make them work
 
     def ctrl_home(self, event=None):
         OCV.MCTRL.home()
@@ -488,9 +488,7 @@ class Application(Tk.Toplevel, Sender):
     def ctrl_unlock(self, event=None):
         OCV.MCTRL.unlock(True)
 
-    #----- END CTRL COMMANDS
-
-    #---- JOGGING
+    #--- JOGGING
 
     def jog_x_up(self, event=None):
         """jog X axis up by defined step"""
@@ -564,10 +562,8 @@ class Application(Tk.Toplevel, Sender):
             return
         OCV.MCTRL.jog("{0}{1:f}".format("Z-", float(OCV.stepz)))
 
-    #---- END jogging
+    #--- STEP CONTROL
 
-
-    #---- STEP CONTROL
     def cycle_up_step_xy(self, event=None):
         if event is not None and not self.acceptKey():
             return
@@ -619,8 +615,7 @@ class Application(Tk.Toplevel, Sender):
         OCV.stepz = OCV.steplist_z[OCV.step_pz]
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
     
-    #----
-
+    #--- END JOG MOTION COMMANDS 
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
@@ -1933,17 +1928,22 @@ class Application(Tk.Toplevel, Sender):
         """load dialog"""
         if OCV.s_running:
             return
+        
+        inipos = os.path.join(
+                IniFile.get_str("File", "dir"),
+                IniFile.get_str("File", "file"))
+        
+        print(inipos)
 
         filename = bFileDialog.askopenfilename(
             master=self,
             title=_("Open file"),
-            initialfile=os.path.join(
-                IniFile.get_str("File", "dir"),
-                IniFile.get_str("File", "file")),
+            initialfile=inipos,
             filetypes=FILETYPES)
 
         if filename:
             self.load(filename)
+            IniFile.save_lastfile(filename)
 
         return "break"
 
