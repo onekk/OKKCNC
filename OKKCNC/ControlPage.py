@@ -165,7 +165,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         self.step = tkExtra.Combobox(self, width=6, background="White")
         self.step.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
-        self.step.set(OCV.stepxy)
+        self.step.set(str(OCV.stepxy))
         self.step.fill(
             map(float, OCV.config.get("Control", "steplist").split()))
         tkExtra.Balloon.set(self.step, _("Step for coarse move operation"))
