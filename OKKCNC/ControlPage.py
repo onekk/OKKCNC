@@ -37,8 +37,6 @@ import Utils
 _LOWSTEP = 0.0001
 _HIGHSTEP = 1000.0
 _HIGHZSTEP = 10.0
-_NOZSTEP = 'XY'
-
 
 class ControlFrame(CNCRibbon.PageLabelFrame):
     """ControlFrame
@@ -77,11 +75,12 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         row = 0
 
-        self.zstep = tkExtra.Combobox(self, width=4, background="White")
+        self.zstep = tkExtra.Combobox(
+            self, width=4, background="White", command=self.set_z_fromcb)
         self.zstep.grid(row=row, column=0, columnspan=4, sticky=Tk.EW)
-        self.zstep.set(str(OCV.stepz))
         self.zstep.fill(
             map(float, OCV.config.get("Control", "zsteplist").split()))
+        self.zstep.set(str(OCV.stepz))
         tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
         self.addWidget(self.zstep)
 
@@ -89,10 +88,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.step1),
             name="step_1",
-            command=self.apply_pres_xy_step1,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=4, columnspan=2, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("S1"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S1"))
         bal_text = _("Step1 = {0}").format(OCV.step1)
         tkExtra.Balloon.set(but, bal_text)
@@ -102,10 +101,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.step2),
             name="step_2",
-            command=self.apply_pres_xy_step2,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("S2"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S2"))
         bal_text = _("Step2 = {0}").format(OCV.step2)
         tkExtra.Balloon.set(but, bal_text)
@@ -115,10 +114,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.step3),
             name="step_3",
-            command=self.apply_pres_xy_step3,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=8, columnspan=2, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("S3"))        
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S3"))
         bal_text = _("Step3 = {0}").format(OCV.step3)
         tkExtra.Balloon.set(but, bal_text)
@@ -163,11 +162,12 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(but, _("Multiply step by 5"))
         self.addWidget(but)
 
-        self.step = tkExtra.Combobox(self, width=6, background="White")
+        self.step = tkExtra.Combobox(
+                self, width=6, background="White", command=self.set_xy_fromcb)
         self.step.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
-        self.step.set(OCV.stepxy)
         self.step.fill(
             map(float, OCV.config.get("Control", "steplist").split()))
+        self.step.set(OCV.stepxy)
         tkExtra.Balloon.set(self.step, _("Step for coarse move operation"))
         self.addWidget(self.step)
 
@@ -240,10 +240,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.zstep1),
             name="zstep_1",
             font=z_step_font,
-            command=self.apply_pres_z_step1,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=0, columnspan=1, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("ZS1"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS1"))
         bal_text = _("Z Step1 = {0}".format(OCV.zstep1))
         tkExtra.Balloon.set(but, bal_text)
@@ -254,10 +254,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.zstep2),
             name="zstep_2",
             font=z_step_font,
-            command=self.apply_pres_z_step2,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("ZS2"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS2"))
         bal_text = _("Z Step2 = {0}".format(OCV.zstep2))
         tkExtra.Balloon.set(but, bal_text)
@@ -310,12 +310,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.zstep3),
             name="zstep_3",
             font=z_step_font,
-            command=self.apply_pres_z_step3,
             width=2,
             padx=1, pady=1)
-
         but.grid(row=row, column=0, columnspan=1, sticky=Tk.EW)
-
+        but.bind("<Button-1>", lambda event: self.apply_preset("ZS3"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS3"))
 
         bal_text = _("Z Step3 = {0}".format(OCV.zstep3))
@@ -329,10 +327,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.zstep4),
             name="zstep_4",
             font=z_step_font,
-            command=self.apply_pres_z_step4,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("ZS4"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS4"))
         bal_text = _("Z Step4 = {0}".format(OCV.zstep4))
         tkExtra.Balloon.set(but, bal_text)
@@ -485,12 +483,12 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             pass
 
     def saveConfig(self):
-        IniFile.set_value("Control", "step", self.step.get())
-        IniFile.set_value("Control", "zstep", self.zstep.get())
+        IniFile.set_value("Control", "step", OCV.stepxy)
+        IniFile.set_value("Control", "zstep", OCV.stepz)
 
     def reset_all(self):
         """reset all thing related to cam operation and memory
-        This means to clear the editor and rest the mems
+        This means to clear the editor and reset memA and memB
         """
         self.event_generate("<<ClearEditor>>")
         wid = self.nametowidget("memA")
@@ -616,16 +614,32 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # for safety no descend to Z0
         # self.sendGCode("G0Z0")
 
+    
+    def set_xy_fromcb(self):
+        OCV.stepxy = self.step.get()
+        self.event_generate(
+                "<<Status>>",
+                data=_("Step: {0:.{2}f}    Zstep: {1:.{2}f} ").format(
+                    float(OCV.stepxy), float(OCV.stepz), OCV.digits))        
+
+    def set_z_fromcb(self):
+        OCV.stepz = self.zstep.get()
+        self.event_generate(
+                "<<Status>>",
+                data=_("Step: {0:.{2}f}    Zstep: {1:.{2}f} ").format(
+                    float(OCV.stepxy), float(OCV.stepz), OCV.digits))       
+
+
     def set_step_view(self, xy_step, z_step=None):
         """set step value shown on the interface"""
-        self.step.set("{0:.4f}".format(float(xy_step)))
+        self.step.set("{0:.{1}f}".format(float(xy_step), OCV.cb_dig))
 
         if self.zstep is self.step or z_step is None:
             self.event_generate(
                 "<<Status>>",
                 data=_("Step: {0:.{1}f}").format(float(xy_step), OCV.digits))
         else:
-            self.zstep.set("{0:.{1}f}".format(float(z_step), OCV.digits))
+            self.zstep.set("{0:.{1}f}".format(float(z_step), OCV.cb_dig))
             self.event_generate(
                 "<<Status>>",
                 data=_("Step: {0:.{2}f}    Zstep: {1:.{2}f} ").format(
@@ -729,75 +743,40 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.set_step_view(tg_step, None)
         OCV.stepxy = tg_step
 
-    def apply_pres_z_step1(self, event=None):
-        """apply preselected Z step 1"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.stepxy, OCV.zstep1)
-        OCV.stepz = OCV.zstep1
-
-    def apply_pres_z_step2(self, event=None):
-        """apply preselected Z step 2"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.stepxy, OCV.zstep2)
-        OCV.stepz = OCV.zstep2
-
-    def apply_pres_z_step3(self, event=None):
-        """apply preselected Z step 3"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.stepxy, OCV.zstep3)
-        OCV.stepz = OCV.zstep3
-
-    def apply_pres_z_step4(self, event=None):
-        """apply preselected Z step 4"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.stepxy, OCV.zstep4)
-        OCV.stepz = OCV.zstep4
-
-    def apply_pres_xy_step1(self, event=None):
-        """apply preselected XY step 1"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.step1, OCV.stepz)
-        OCV.stepxy = OCV.step1
-
-    def apply_pres_xy_step2(self, event=None):
-        """apply preselected XY step 2"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.step2, OCV.stepz)
-        OCV.stepxy = OCV.step2
-
-    def apply_pres_xy_step3(self, event=None):
-        """apply preselected XY step 3"""
-        if event is not None and not self.acceptKey():
-            return
-
-        self.set_step_view(OCV.step3, OCV.stepz)
-        OCV.stepxy = OCV.step3
+    def apply_preset(self, caller):
+        """apply preselected step"""
+        #print("event {0} preset triggered".format(caller))
+        if caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
+            if caller == "ZS1":            
+                self.set_step_view(OCV.stepxy, OCV.zstep1)
+            elif caller == "ZS2":            
+                self.set_step_view(OCV.stepxy, OCV.zstep2)
+            elif caller == "ZS3":            
+                self.set_step_view(OCV.stepxy, OCV.zstep3)
+            elif caller == "ZS4":            
+                self.set_step_view(OCV.stepxy, OCV.zstep4)
+        elif caller in ("S1", "S2", "S3"):
+            if caller == "S1":            
+                self.set_step_view(OCV.step1, OCV.stepz)
+            elif caller == "S2":            
+                self.set_step_view(OCV.step2, OCV.stepz)
+            elif caller == "S3":            
+                self.set_step_view(OCV.step3, OCV.stepz)
+                    
 
     def edit_pre_step(self, caller):
         """edit a preselected step value
         This method is valid for all the preselction buttons
         correct step is found using "caller" parameter
         """
-        print("edit_pre_step caller > ", caller)
+        #print("edit_pre_step caller > ", caller)
 
         retval = Utils.ask_for_value(self, caller)
 
         if retval is None:
             return
 
-        print("retval > ", retval)
+        #print("retval > ", retval)
 
         if caller in ("S1", "S2", "S3"):
             if caller == "S1":
