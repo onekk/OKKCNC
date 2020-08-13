@@ -28,8 +28,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 PRG_NAME = "OKKCNC"
 """version and date"""
 
-PRG_VER = "0.3.20-dev"
-PRG_DATE = "09 aug 2020"
+PRG_VER = "0.3.25-dev"
+PRG_DATE = "13 aug 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -252,6 +252,7 @@ comment = ""  # last parsed comment
 config = None
 c_state = ""  # controller state to determine the state
 CTL_ERRORS = []  # controllers errors (only for GBRL for now)
+cb_dig = 3 # number of decimal displayed in the controlframe comboboxes
 
 # D #
 # General unspecified debug flag
