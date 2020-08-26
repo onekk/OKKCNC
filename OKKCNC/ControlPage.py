@@ -718,7 +718,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        tg_step = OCV.stepxy * 5.0
+        tg_step = float(OCV.stepxy) * 5.0
 
         if tg_step < _LOWSTEP:
             tg_step = _LOWSTEP
@@ -733,7 +733,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         if event is not None and not self.acceptKey():
             return
 
-        tg_step = OCV.stepxy / 5.0
+        tg_step = float(OCV.stepxy) / 5.0
 
         if tg_step < _LOWSTEP:
             tg_step = _LOWSTEP
