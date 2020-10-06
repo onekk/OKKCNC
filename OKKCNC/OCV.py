@@ -27,9 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-
-PRG_VER = "0.3.26-dev"
-PRG_DATE = "26 aug 2020"
+PRG_VER = "0.3.32-test"
+PRG_DATE = "6 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -54,18 +53,6 @@ else:
 SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
 USER_CONFIG = os.path.join(CONF_DIR, U_CONF_NAME)
 COM_HIST_FILE = os.path.join(CONF_DIR, U_HIST_NAME)
-
-"""Debug flags. used across the interface to print debug info on terminal
-    the debug comment
-    # DEBUG_INFO
-    denote a place where a DEBUG info are relevant, in some methods
-    or functions there are a "dual level" mechanism, after DEBUG_INFO line
-    there is an assignement of INT_DEBUG "local" variable to one of the
-    DEBUG_XXX "flags" below, to have the relevant information shown only when
-    needed to debug the code in the development process, searching for
-    DEBUG_INFO in the code permit to decomment the line to show the relevant
-    code, this for not having to define too many DEBUG_XXX "flags"
-"""
 
 # String related to About window
 PRG_CREDITS = \
@@ -248,6 +235,75 @@ b_mdata_ss = "[{0}][{1}]"
 
 
 # C #
+CD = {
+    "prbx": 0.0,
+    "prby": 0.0,
+    "prbz": 0.0,
+    "prbcmd": "G38.2",
+    "prbfeed": 10.,
+    "errline": "",
+    "wx": 0.0,
+    "wy": 0.0,
+    "wz": 0.0,
+    "mx": 0.0,
+    "my": 0.0,
+    "mz": 0.0,
+    "wcox": 0.0,
+    "wcoy": 0.0,
+    "wcoz": 0.0,
+    "curfeed": 0.0,
+    "curspindle": 0.0,
+    "_camwx": 0.0,
+    "_camwy": 0.0,
+    "G": [],
+    "TLO": 0.0,
+    "motion": "G0",
+    "WCS": "G54",
+    "plane": "G17",
+    "feedmode": "G94",
+    "distance": "G90",
+    "arc": "G91.1",
+    "units": "G20",
+    "cutter": "",
+    "tlo": "",
+    "program": "M0",
+    "spindle": "M5",
+    "coolant": "M9",
+
+    "tool": 0,
+    "feed": 0.0,
+    "rpm": 0.0,
+
+    "planner": 0,
+    "rxbytes": 0,
+
+    "OvFeed": 100,    # Override status
+    "OvRapid": 100,
+    "OvSpindle": 100,
+    "_OvChanged": False,
+    "_OvFeed": 100,    # Override target values
+    "_OvRapid": 100,
+    "_OvSpindle": 100,
+
+    "diameter": 3.175,    # Tool diameter
+    "cutfeed": 1000.,    # Material feed for cutting
+    "cutfeedz": 500.,    # Material feed for cutting
+    "safe": 3.,
+    "state": "",
+    "pins": "",
+    "MSG": "",
+    "stepz": 1.,
+    "surface": 0.,
+    "thickness": 5.,
+    "stepover": 40.,
+
+    "PRB": None,
+
+    "version": "",
+    "controller": "",
+    "running": False,
+    }
+
 comment = ""  # last parsed comment
 config = None
 c_state = ""  # controller state to determine the state
@@ -255,6 +311,17 @@ CTL_ERRORS = []  # controllers errors (only for GBRL for now)
 cb_dig = 3 # number of decimal displayed in the controlframe comboboxes
 
 # D #
+"""Debug flags. used across the interface to print debug info on terminal
+    the debug comment
+    # DEBUG_INFO
+    denote a place where a DEBUG info are relevant, in some methods
+    or functions there are a "dual level" mechanism, after DEBUG_INFO line
+    there is an assignement of INT_DEBUG "local" variable to one of the
+    DEBUG_XXX "flags" below, to have the relevant information shown only when
+    needed to debug the code in the development process, searching for
+    DEBUG_INFO in the code permit to decomment the line to show the relevant
+    code, this for not having to define too many DEBUG_XXX "flags"
+"""
 # General unspecified debug flag
 DEBUG = False
 # Debug graphical part
@@ -263,6 +330,8 @@ DEBUG_GRAPH = False
 DEBUG_INT = False
 # Debug Comunications
 DEBUG_COM = False
+# Debug SerialIO
+DEBUG_SER = True
 # debug GCode parsing
 DEBUG_PAR = True
 # set level of info displayed in Heuristic, 0 - 4
@@ -485,76 +554,6 @@ WK_mem_name = ""  # pass memory name across the different program part
 """
 WK_mems = {}
 WK_mem_num = 0
-
-CD = {
-    "prbx": 0.0,
-    "prby": 0.0,
-    "prbz": 0.0,
-    "prbcmd": "G38.2",
-    "prbfeed": 10.,
-    "errline": "",
-    "wx": 0.0,
-    "wy": 0.0,
-    "wz": 0.0,
-    "mx": 0.0,
-    "my": 0.0,
-    "mz": 0.0,
-    "wcox": 0.0,
-    "wcoy": 0.0,
-    "wcoz": 0.0,
-    "curfeed": 0.0,
-    "curspindle": 0.0,
-    "_camwx": 0.0,
-    "_camwy": 0.0,
-    "G": [],
-    "TLO": 0.0,
-    "motion": "G0",
-    "WCS": "G54",
-    "plane": "G17",
-    "feedmode": "G94",
-    "distance": "G90",
-    "arc": "G91.1",
-    "units": "G20",
-    "cutter": "",
-    "tlo": "",
-    "program": "M0",
-    "spindle": "M5",
-    "coolant": "M9",
-
-    "tool": 0,
-    "feed": 0.0,
-    "rpm": 0.0,
-
-    "planner": 0,
-    "rxbytes": 0,
-
-    "OvFeed": 100,    # Override status
-    "OvRapid": 100,
-    "OvSpindle": 100,
-    "_OvChanged": False,
-    "_OvFeed": 100,    # Override target values
-    "_OvRapid": 100,
-    "_OvSpindle": 100,
-
-    "diameter": 3.175,    # Tool diameter
-    "cutfeed": 1000.,    # Material feed for cutting
-    "cutfeedz": 500.,    # Material feed for cutting
-    "safe": 3.,
-    "state": "",
-    "pins": "",
-    "msg": "",
-    "stepz": 1.,
-    "surface": 0.,
-    "thickness": 5.,
-    "stepover": 40.,
-
-    "PRB": None,
-
-    "version": "",
-    "controller": "",
-    "running": False,
-    }
-
 
 def printout_header(message, content):
     """printout a padded text using message with a {0} for the content"""

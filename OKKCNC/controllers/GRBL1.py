@@ -225,5 +225,11 @@ class Controller(_GenericGRBL):
             OCV.CD[word[0]] = word[1]
             self.master._probeUpdate = True
             self.master._gUpdate = True
+        elif word[0] == "MSG:":
+            if word[1:] == "Pgm End":
+                print("Program End Catched")
+                OCV.s_stop = True
+            else:
+                OCV.CD[word[0]] = word[1:]
         else:
             OCV.CD[word[0]] = word[1:]

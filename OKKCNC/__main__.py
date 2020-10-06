@@ -231,7 +231,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<FeedHold>>', self.ctrl_feedhold)
         self.bind('<<SoftReset>>', self.ctrl_softreset)
         self.bind('<<Unlock>>', self.ctrl_unlock)
-        self.bind('<<Unlock>>', self.ctrl_unlock)
 
         self.bind('<<JOG-XUP>>', self.jog_x_up)
         self.bind('<<JOG-XDW>>', self.jog_x_down)
@@ -571,7 +570,7 @@ class Application(Tk.Toplevel, Sender):
         OCV.step_pxy += 1
         
         if OCV.step_pxy > 2:
-            OCV.step_pxy =0
+            OCV.step_pxy = 0
 
         OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
         print("csxy = {0:.4f}".format(OCV.stepxy))
@@ -2159,7 +2158,7 @@ class Application(Tk.Toplevel, Sender):
         Send enabled gcode file to the CNC machine
         """
         self.cleanAfter = True  # Clean when this operation stops
-        print("Will clean after this operation")
+        print("RUN: Will clean after this operation")
 
         if OCV.HAS_SERIAL is False and not OCV.developer:
             tkMessageBox.showerror(
@@ -2218,7 +2217,7 @@ class Application(Tk.Toplevel, Sender):
                 OCV.MCTRL.purgeController()
                 return
             elif not self._paths:
-                self.runEnded()
+                self.runEnded("run CP1")
                 tkMessageBox.showerror(
                     _("Empty gcode"),
                     _("No gcode file was loaded"),
@@ -2445,7 +2444,7 @@ class Application(Tk.Toplevel, Sender):
                 self.proc_line_n,
                 self._gcount)
 
-            OCV.CD["msg"] = OCV.STATUSBAR.msg
+            OCV.CD["MSG"] = OCV.STATUSBAR.msg
 
             b_fill = Sender.getBufferFill(self)
             # print ("Buffer = ", b_fill)
@@ -2476,7 +2475,8 @@ class Application(Tk.Toplevel, Sender):
                     self._selectI += 1
 
             if self._gcount >= self._runLines:
-                self.runEnded()
+                print("_MonSer: _gcount >= _runLines")
+                self.runEnded("_SM")
 
     def monitorSerial(self):
         """'thread' timed function looking for messages in the serial thread

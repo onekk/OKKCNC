@@ -633,7 +633,9 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset)])
+            [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset),
+             (_("Toggle Sender Dbg"), "toggle", self.toggleSndDbg)
+            ])
 
         # print("ConnectionGroup app", app)
 
@@ -708,6 +710,13 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
         tkExtra.Balloon.set(but, _("Software reset of controller [ctrl-x]"))
 
         self.addWidget(but)
+
+    @staticmethod
+    def toggleSndDbg():
+        if OCV.DEBUG_SER is True:
+            OCV.DEBUG_SER = False
+        else:
+            OCV.DEBUG_SER = True
 
 
 class MemoryGroup(CNCRibbon.ButtonMenuGroup):

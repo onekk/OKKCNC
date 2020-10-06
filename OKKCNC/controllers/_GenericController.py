@@ -193,7 +193,7 @@ class _GenericController:
         TLO = OCV.CD["TLO"]
         self.softReset(False)  # reset controller
         self.purgeControllerExtra()
-        self.master.runEnded()
+        self.master.runEnded("purgeController")
         self.master.stopProbe()
 
         if G:
@@ -220,7 +220,6 @@ class _GenericController:
             print("Error: ", line)
             self.master.log.put((self.master.MSG_ERROR, line))
             self.master._gcount += 1
-            #print "gcount ERROR=",self._gcount
             if cline:
                 del cline[0]
 
@@ -236,7 +235,7 @@ class _GenericController:
 
             if OCV.s_running:
                 OCV.s_stop = True
-
+                
         elif line.find("ok")>=0:
             self.master.log.put((self.master.MSG_OK, line))
             self.master._gcount += 1

@@ -669,8 +669,9 @@ class CNC(object):
         if line[0] == '_':
             try:
                 return compile(line, "", "exec")
-            except Exception:
-                # FIXME show the error!!!!
+            except Exception as e:
+                print("Compile line error: \n")
+                print(e)
                 return None
 
         # commented line

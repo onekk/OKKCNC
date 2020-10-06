@@ -72,6 +72,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         
         OCV.stepxy = float(OCV.config.get("Control", "step"))
         OCV.stepz = float(OCV.config.get("Control", "zstep"))
+        OCV.step_pxy = int(OCV.config.get("Control", "pset_xy"))
+        OCV.step_pz = int(OCV.config.get("Control", "pset_z"))
+        
 
         row = 0
 
@@ -485,6 +488,9 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def saveConfig(self):
         IniFile.set_value("Control", "step", OCV.stepxy)
         IniFile.set_value("Control", "zstep", OCV.stepz)
+        IniFile.set_value("Control", "pset_xy", OCV.step_pxy)
+        IniFile.set_value("Control", "pset_z", OCV.step_pz)
+        
 
     def reset_all(self):
         """reset all thing related to cam operation and memory

@@ -550,17 +550,18 @@ class Sender(object):
         return self._sumcline * 100. / RX_BUFFER_SIZE
 
     def initRun(self):
-        """Init many variables to prepare program run"""
+        """Init variables to prepare program run"""
         self._quit = 0
         OCV.s_pause = False
-        self._paths = None
         OCV.s_running = True
+        self._paths = None
         OCV.APP.disable()
         self.emptyQueue()
         time.sleep(1)
 
-    def runEnded(self):
+    def runEnded(self, msg):
         """Called when run is finished"""
+        print("runEnded >> {}".format(msg))
         if OCV.s_running:
             self.log.put((Sender.MSG_RUNEND, _("Run ended")))
 
@@ -570,9 +571,6 @@ class Sender(object):
                     os.system(self._onStop)
                 except:
                     pass
-        self._runLines = 0
-        self._quit = 0
-        self._msg = None
 
         if OCV.s_pause is True:
             OCV.s_pause = False
@@ -583,24 +581,44 @@ class Sender(object):
             OCV.s_stop_req = False
             but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
             but.config(background=OCV.COLOR_BACKGROUND)
-
+        
+        self._runLines = 0
+        self._quit = 0
+        self._msg = None
         OCV.s_running = False
         OCV.CD["running"] = False
         OCV.s_stop = False
+        print("runEnded End")
+
 
     def stopRun(self, event=None):
         """Stop the current run"""
+        OCV.s_stop_req = True
         OCV.MCTRL.feedHold(None)
-        self.log.put((Sender.MSG_RUNEND, "Stop Requested: " + str(datetime.now())))
+
+        self.log.put(
+            (Sender.MSG_RUNEND,
+             "Stop Requested: " + str(datetime.now())))
+            
         but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
         but.config(background=OCV.STATECOLOR["Hold:0"])
-        OCV.s_stop_req = True
-        print("Controller state", OCV.c_state)
+
+        self.show_state()
+
         if OCV.c_state == "Hold:0":
             if OCV.s_stop_req is True:
                 OCV.s_running = False
-                self.runEnded()
+                self.runEnded("stopRun")
                 self.jobDone()
+        else:
+            print("Stop Requested but state {}".format(OCV.c_state))
+
+    def show_state(self):
+        print("DEBUG: Controller state {}".format(OCV.c_state))
+        print("DEBUG: stop {} stop_req {}, running {}".format(
+            OCV.s_stop, OCV.s_stop_req,OCV.s_running))
+        print("DEBUG: alarm {} pause {}".format(
+            OCV.s_alarm, OCV.s_pause))
 
     def jobDone(self):
         """
@@ -643,6 +661,7 @@ class Sender(object):
         self.sio_status = False
         cline = []  # length of pipeline commands
         sline = []  # pipeline commands
+        lrcvl = ""  # last received line to not clutter debug output
         tosend = None  # next string to send
         tr = tg = time.time()  # last time a ? or $G was send to grbl
 
@@ -670,8 +689,8 @@ class Sender(object):
                         if tosend[0] == OCV.WAIT:
                             # Don't count WAIT until we are idle!
                             self.sio_wait = True
-#                            print "+++ WAIT ON"
-#                            print "gcount=",self._gcount, self._runLines
+                            print ("+++ WAIT ON")
+                            # print ("gcount=",self._gcount, self._runLines)
                         elif tosend[0] == OCV.MSG:
                             # Count executed commands as well
                             self._gcount += 1
@@ -690,22 +709,23 @@ class Sender(object):
                     elif not isinstance(tosend, str):
                         try:
                             tosend = self.gcode.evaluate(tosend)
-#                            if isinstance(tosend, list):
-#                                cline.append(len(tosend[0]))
-#                                sline.append(tosend[0])
+                            # if isinstance(tosend, list):
+                            #    cline.append(len(tosend[0]))
+                            #    sline.append(tosend[0])
                             if isinstance(tosend, str):
                                 tosend += "\n"
                             else:
                                 # Count executed commands as well
                                 self._gcount += 1
-#                                print "gcount str=",self._gcount
-#                            print( "+++ eval=",repr(tosend),type(tosend))
+                                # print "gcount str=",self._gcount
+                                # print( "+++ eval=",repr(tosend),type(tosend))
                         except:
                             for s in str(sys.exc_info()[1]).splitlines():
                                 self.log.put((Sender.MSG_ERROR, s))
                             self._gcount += 1
                             tosend = None
                 except Empty:
+                    print("SIO: Empty queue: catched")    
                     break
 
                 if tosend is not None:
@@ -750,8 +770,12 @@ class Sender(object):
             if self.serial.inWaiting() or tosend is None:
                 try:
                     line = str(self.serial.readline().decode()).strip()
-#                    print("Received line > ", line)
+                    if OCV.DEBUG_SER is True:
+                        if line is not "" and line != lrcvl:
+                            print("SIO: Rec. line > ", line)
+                            lrcvl = line
                 except:
+                    print("SIO: serial read try failed: ")
                     self.log.put((Sender.MSG_RECEIVE, str(sys.exc_info()[1])))
                     self.emptyQueue()
                     self.close()
@@ -767,13 +791,15 @@ class Sender(object):
 
             # Received external message to stop
             if OCV.s_stop:
+                print("SIO: OCV.s_stop True")
                 self.emptyQueue()
                 tosend = None
                 self.log.put((Sender.MSG_CLEAR, ""))
                 # WARNING if runLines == maxint then it means we are
-                # still preparing/sending lines from from OKKCNC.run(),
+                # still preparing/sending lines from OKKCNC.run(),
                 # so don't stop
                 if self._runLines != sys.maxsize:
+                    print("SIO: OCV.s_stop and runlines != maxsize")
                     OCV.s_stop = False
 
 #            print "tosend='%s'"%(repr(tosend)),"stack=",sline,
@@ -792,10 +818,14 @@ class Sender(object):
                     tosend = tosend.lower()
 
                 self.serial_write(tosend)
+                
+                if OCV.DEBUG_SER is True:
+                    print("SIO: >> ", tosend)
 
                 self.log.put((Sender.MSG_BUFFER, tosend))
 
                 tosend = None
+
                 if not OCV.s_running and t-tg > G_POLL:
                     tosend = "$G\n"  # FIXME: move to controller specific class
                     sline.append(tosend)
