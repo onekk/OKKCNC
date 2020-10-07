@@ -77,7 +77,7 @@ ERROR_CODES = {
 }
 
 
-# Convert poor explained Grbl V0.9 codes to Grbl V1.0 
+# Convert poor explained Grbl V0.9 codes to Grbl V1.0
 for e1, e0 in (
         ("error: Expected command letter", "error:1"),
         ("error: Bad number format", "error:2"),
@@ -122,7 +122,45 @@ for e1, e0 in (
         ("ALARM: Homing fail", "ALARM:7"),
         ("ALARM: Homing fail", "ALARM:8"),
         ("ALARM: Homing fail", "ALARM:9")):
+    
     ERROR_CODES[e1] = ERROR_CODES[e0]
+
+SETTINGS_CODES = {
+    "0"  : "Step pulse time, microseconds",
+    "1"   : "Step idle delay, milliseconds",
+    "2"   : "Step pulse invert, mask",
+    "3"   : "Step direction invert, mask",
+    "4"   : "Invert step enable pin, boolean",
+    "5"   : "Invert limit pins, boolean",
+    "6"   : "Invert probe pin, boolean",
+    "10"  : "Status report options, mask",
+    "11"  : "Junction deviation, millimeters",
+    "12"  : "Arc tolerance, millimeters",
+    "13"  : "Report in inches, boolean",
+    "20"  : "Soft limits enable, boolean",
+    "21"  : "Hard limits enable, boolean",
+    "22"  : "Homing cycle enable, boolean",
+    "23"  : "Homing direction invert, mask",
+    "24"  : "Homing locate feed rate, mm/min",
+    "25"  : "Homing search seek rate, mm/min",
+    "26"  : "Homing switch debounce delay, milliseconds",
+    "27"  : "Homing switch pull-off distance, millimeters",
+    "30"  : "Maximum spindle speed, RPM",
+    "31"  : "Minimum spindle speed, RPM",
+    "32"  : "Laser-mode enable, boolean",
+    "100" : "X-axis steps per millimeter",
+    "101" : "Y-axis steps per millimeter",
+    "102" : "Z-axis steps per millimeter",
+    "110" : "X-axis maximum rate, mm/min",
+    "111" : "Y-axis maximum rate, mm/min",
+    "112" : "Z-axis maximum rate, mm/min",
+    "120" : "X-axis acceleration, mm/sec^2",
+    "121" : "Y-axis acceleration, mm/sec^2",
+    "122" : "Z-axis acceleration, mm/sec^2",
+    "130" : "X-axis maximum travel, millimeters",
+    "131" : "Y-axis maximum travel, millimeters",
+    "132" : "Z-axis maximum travel, millimeters"
+}
 
 
 class _GenericGRBL(_GenericController):
