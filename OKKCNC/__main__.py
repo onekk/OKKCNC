@@ -2217,7 +2217,7 @@ class Application(Tk.Toplevel, Sender):
                 OCV.MCTRL.purgeController()
                 return
             elif not self._paths:
-                self.runEnded("run CP1")
+                self.runEnded("run No GCode Loaded")
                 tkMessageBox.showerror(
                     _("Empty gcode"),
                     _("No gcode file was loaded"),
@@ -2444,7 +2444,7 @@ class Application(Tk.Toplevel, Sender):
                 self.proc_line_n,
                 self._gcount)
 
-            OCV.CD["MSG"] = OCV.STATUSBAR.msg
+            OCV.CD["msg"] = OCV.STATUSBAR.msg
 
             b_fill = Sender.getBufferFill(self)
             # print ("Buffer = ", b_fill)
@@ -2464,6 +2464,7 @@ class Application(Tk.Toplevel, Sender):
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and\
                         self._selectI < len(self._paths):
+                    
                     if self._paths[self._selectI]:
                         i, j = self._paths[self._selectI]
                         path = self.gcode[i].path(j)
@@ -2472,6 +2473,7 @@ class Application(Tk.Toplevel, Sender):
                                 path,
                                 width=2,
                                 fill=OCV.COLOR_PROCESS)
+                    
                     self._selectI += 1
 
             if self._gcount >= self._runLines:

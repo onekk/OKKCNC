@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.32-test"
-PRG_DATE = "6 oct 2020"
+PRG_VER = "0.3.33-test"
+PRG_DATE = "7 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -291,7 +291,7 @@ CD = {
     "safe": 3.,
     "state": "",
     "pins": "",
-    "MSG": "",
+    "msg": "",
     "stepz": 1.,
     "surface": 0.,
     "thickness": 5.,
