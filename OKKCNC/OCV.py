@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.33-test"
-PRG_DATE = "7 oct 2020"
+PRG_VER = "0.3.35-t4"
+PRG_DATE = "9 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -73,7 +73,6 @@ PRG_SITE = "https://github.com/onekk/OKKCNC"
 
 PRG_TRANS = \
     "Italian - @onekk\n" \
-
 # INTERFACE COLORS
 """See Inifile.py/load_colors()
 values with comments Above are the corresponding item names in IniFile
@@ -235,6 +234,7 @@ b_mdata_ss = "[{0}][{1}]"
 
 
 # C #
+cb_dig = 3  # number of decimal displayed in the controlframe comboboxes
 CD = {
     "prbx": 0.0,
     "prby": 0.0,
@@ -306,13 +306,15 @@ CD = {
 
 comment = ""  # last parsed comment
 config = None
+c_pgm_end = False
 c_state = ""  # controller state to determine the state
 CTL_ERRORS = []  # controllers errors (only for GBRL for now)
-cb_dig = 3 # number of decimal displayed in the controlframe comboboxes
+
 
 # D #
 """Debug flags. used across the interface to print debug info on terminal
     the debug comment
+    Debug Flags are set in config.ini and read at program start
     # DEBUG_INFO
     denote a place where a DEBUG info are relevant, in some methods
     or functions there are a "dual level" mechanism, after DEBUG_INFO line
@@ -331,9 +333,9 @@ DEBUG_INT = False
 # Debug Comunications
 DEBUG_COM = False
 # Debug SerialIO
-DEBUG_SER = True
+DEBUG_SER = False
 # debug GCode parsing
-DEBUG_PAR = True
+DEBUG_PAR = False
 # set level of info displayed in Heuristic, 0 - 4
 DEBUG_HEUR = 3
 #
@@ -434,6 +436,12 @@ PLANE = {
     "G19": "YZ"}
 post_proc = False
 post_temp_fname = ""
+# positional index for the step cycling xy
+pstep_xy = 0
+# positional index for the step cycling z
+pstep_z = 0
+pslist_xy = []
+pslist_z= []
 
 # S #
 serial_open = False
@@ -470,12 +478,6 @@ step3 = 0.0
 step4 = 0.0
 stepxy = 0.0
 stepz = 0.0
-# positional index for the step cycling xy
-step_pxy = 0
-# positional index for the step cycling z
-step_pz = 0
-steplist_xy = []
-steplist_z= []
 #
 str_sep = "-"*78
 str_pad = "-" + " "*76 + "-"

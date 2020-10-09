@@ -226,6 +226,11 @@ def set_predefined_steps():
     except Exception:
         OCV.step3 = 10.0
 
+    try:
+        OCV.step4 = IniFile.get_float("Control", "step4")
+    except Exception:
+        OCV.step4 = 90.0
+
     # Predefined Z steppings
     try:
         OCV.zstep1 = IniFile.get_float("Control", "zstep1")
@@ -247,11 +252,34 @@ def set_predefined_steps():
     except Exception:
         OCV.zstep4 = 10.0
 
+
 def populate_cyclelist():
     """populate steplists with OCV.step(n) values"""
     # Predefined XY steppings
-    OCV.steplist_xy = [OCV.step1, OCV.step2, OCV.step3]
-    OCV.steplist_z = [OCV.zstep1, OCV.zstep2, OCV.zstep3, OCV.zstep4]
+    OCV.pslist_xy = [OCV.step1, OCV.step2, OCV.step3, OCV.step4]
+    OCV.pslist_z = [OCV.zstep1, OCV.zstep2, OCV.zstep3, OCV.zstep4]
+
+
+def set_steps():
+    """Set steps and determine if steps are in predefined list
+    if a value is near a predefined step set the correposnding
+    steplist index else leave it to 0"""
+    set_predefined_steps()
+    populate_cyclelist()
+    # retrieve step from config file.
+    OCV.stepxy = float(OCV.config.get("Control", "step"))
+    OCV.stepz = float(OCV.config.get("Control", "zstep"))
+    
+    for idx, val in enumerate(OCV.pslist_xy):
+        distance = abs(OCV.stepxy - val)
+        if distance < 1:
+            OCV.pstep_xy = idx
+        
+    for idx, val in enumerate(OCV.pslist_z):
+        distance = abs(OCV.stepz - val)
+        if distance < 1:
+            OCV.pstep_z = idx
+   
 
 def ask_for_value(app, caller):
     """Show an input windows asking for a value
@@ -262,6 +290,7 @@ def ask_for_value(app, caller):
         "S1": ("Step1", "step", 0.001, 100.0),
         "S2": ("Step2", "step", 0.001, 100.0),
         "S3": ("Step3", "step", 0.001, 100.0),
+        "S4": ("Step4", "step", 0.001, 100.0),
         "ZS1": ("Z Step1", "step", 0.001, 25.0),
         "ZS2": ("Z Step2", "step", 0.001, 25.0),
         "ZS3": ("Z Step3", "step", 0.001, 25.0),

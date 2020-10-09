@@ -227,7 +227,7 @@ class Controller(_GenericGRBL):
             self.master._gUpdate = True
         elif word[0] == "MSG:" and word[1:] == "Pgm End":
             # Catch the program end message as sometimes it hangs in Run state.
-            print("Program End Catched")
-            OCV.s_stop = True
+            print("GRBL1: PE")
+            OCV.c_pgm_end = True
         else:
             OCV.CD[word[0]] = word[1:]

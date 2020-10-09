@@ -771,7 +771,7 @@ class Sender(object):
                 try:
                     line = str(self.serial.readline().decode()).strip()
                     if OCV.DEBUG_SER is True:
-                        if line is not "" and line != lrcvl:
+                        if line != "" and line != lrcvl:
                             print("SIO: Rec. line > ", line)
                             lrcvl = line
                 except:
@@ -791,7 +791,7 @@ class Sender(object):
 
             # Received external message to stop
             if OCV.s_stop:
-                print("SIO: OCV.s_stop True")
+                print("SIO: Stop Requested")
                 self.emptyQueue()
                 tosend = None
                 self.log.put((Sender.MSG_CLEAR, ""))

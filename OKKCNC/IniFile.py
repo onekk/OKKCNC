@@ -293,7 +293,7 @@ def save_memories():
         mem_data = OCV.WK_mems[mem_name]
         # Test the indicator and delete the memory from config if
         # indicator = 0
-        if mem_data[3] is not 0:
+        if mem_data[3] != 0:
             mem_value = "{0}, {1:.4f}, {2:.4f}, {3:.4f}, {4:d}".format(
                 mem_data[4], mem_data[0], mem_data[1], mem_data[2],
                 mem_data[3])

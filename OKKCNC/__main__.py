@@ -439,6 +439,25 @@ class Application(Tk.Toplevel, Sender):
         if IniFile.get_bool("Connection", "pendant"):
             self.startPendant(False)
 
+        if IniFile.get_bool("Debug", "generic"):
+             OCV.DEBUG = True
+             
+        if IniFile.get_bool("Debug", "graph"):
+             OCV.DEBUG_GRAPH = True
+
+        if IniFile.get_bool("Debug", "interface"):
+             OCV.DEBUG_INT = True
+
+        if IniFile.get_bool("Debug", "coms"):
+             OCV.DEBUG_COM = True
+
+        if IniFile.get_bool("Debug", "sio"):
+             OCV.DEBUG_SER = True
+
+        if IniFile.get_bool("Debug", "gpar"):
+             OCV.DEBUG_PAR = True
+             OCV.DEBUG_HEUR = IniFile.get_bool("Debug", "heur")
+
         if _openserial and IniFile.get_bool("Connection", "openserial"):
             self.openClose()
 
@@ -567,12 +586,12 @@ class Application(Tk.Toplevel, Sender):
         if event is not None and not self.acceptKey():
             return
             
-        OCV.step_pxy += 1
+        OCV.pstep_xy += 1
         
-        if OCV.step_pxy > 2:
-            OCV.step_pxy = 0
+        if OCV.pstep_xy > len(OCV.pslist_xy) - 1:
+            OCV.pstep_xy = 0
 
-        OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        OCV.stepxy = OCV.pslist_xy[OCV.pstep_xy]
         print("csxy = {0:.4f}".format(OCV.stepxy))
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
 
@@ -581,12 +600,12 @@ class Application(Tk.Toplevel, Sender):
         if event is not None and not self.acceptKey():
             return
             
-        OCV.step_pxy -= 1    
+        OCV.pstep_xy -= 1    
 
-        if OCV.step_pxy < 0:
-            OCV.step_pxy = 2
+        if OCV.pstep_xy < 0:
+            OCV.pstep_xy = len(OCV.pslist_xy) - 1
 
-        OCV.stepxy = OCV.steplist_xy[OCV.step_pxy]
+        OCV.stepxy = OCV.pslist_xy[OCV.pstep_xy]
         print("csxy = {0:.4f}".format(OCV.stepxy))
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
         
@@ -594,24 +613,24 @@ class Application(Tk.Toplevel, Sender):
         if event is not None and not self.acceptKey():
             return
             
-        OCV.step_pz += 1
+        OCV.pstep_z += 1
         
-        if OCV.step_pz > 3:
-            OCV.step_pz = 0
+        if OCV.pstep_z > len(OCV.pslist_z) - 1:
+            OCV.pstep_z = 0
 
-        OCV.stepz = OCV.steplist_z[OCV.step_pz]
+        OCV.stepz = OCV.pslist_z[OCV.pstep_z]
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
 
     def cycle_dw_step_z(self, event=None):
         if event is not None and not self.acceptKey():
             return
             
-        OCV.step_pz -= 1
+        OCV.pstep_z -= 1
         
-        if OCV.step_pz < 0:
-            OCV.step_pz = 3
+        if OCV.pstep_z < 0:
+            OCV.pstep_z = len(OCV.pslist_z) - 1
 
-        OCV.stepz = OCV.steplist_z[OCV.step_pz]
+        OCV.stepz = OCV.pslist_z[OCV.pstep_z]
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
     
     #--- END JOG MOTION COMMANDS 
@@ -2439,21 +2458,16 @@ class Application(Tk.Toplevel, Sender):
 
         if OCV.s_running:
             self.proc_line_n = self._runLines - self.queue.qsize()
-            # print(self.proc_line_n)
-            OCV.STATUSBAR.setProgress(
-                self.proc_line_n,
-                self._gcount)
-
+            print("M_MS: proc_line {}".format(self.proc_line_n))
+            OCV.STATUSBAR.setProgress(self.proc_line_n, self._gcount)
             OCV.CD["msg"] = OCV.STATUSBAR.msg
-
             b_fill = Sender.getBufferFill(self)
             # print ("Buffer = ", b_fill)
             OCV.BUFFERBAR.setProgress(b_fill)
             OCV.BUFFERBAR.setText("{0:02.2f}".format(b_fill))
             # print("Queue > ", self.queue.queue)
 
-            if self.proc_line_n > 0 and \
-                    self.proc_line_n < len(OCV.gcodelines):
+            if self.proc_line_n > 0 and self.proc_line_n < len(OCV.gcodelines):
 
                 displ_line = "{0} > {1} ".format(
                     self.proc_line_n,
@@ -2475,10 +2489,16 @@ class Application(Tk.Toplevel, Sender):
                                 fill=OCV.COLOR_PROCESS)
                     
                     self._selectI += 1
-
+            
+            print("M_MS: gc {} rL {}".format(self._gcount, self._runLines))        
+            
             if self._gcount >= self._runLines:
-                print("_MonSer: _gcount >= _runLines")
+                print("M_MS: _gcount >= _runLines")
                 self.runEnded("_SM")
+            
+            if OCV.c_pgm_end is True:
+                OCV.c_pg_end = False
+                self.runEnded("_PE")
 
     def monitorSerial(self):
         """'thread' timed function looking for messages in the serial thread
@@ -2537,7 +2557,7 @@ def main(args=None):
 
     if sys.version_info[0] == 3:
         OCV.init_msg.append("WARNING:\n")
-        OCV.init_msg.append("OKKCNC Python v3.x version is experimental.\n")
+        OCV.init_msg.append("OKKCNC Python v3.x version.\n")
         OCV.init_msg.append(
             "Please report any error through github page {0}\n".format(
                 OCV.PRG_DEV_HOME))
@@ -2548,7 +2568,7 @@ def main(args=None):
         sys.stdout.write(warn_msg)
         sys.stdout.write("="*80+"\n")
 
-        OCV.TITLE_MSG = "experimental"
+        OCV.TITLE_MSG = ""
         OCV.IS_PY3 = True
     else:
         OCV.init_msg.append("END OF LIFE WARNING!!!\n")

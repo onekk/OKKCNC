@@ -60,21 +60,15 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         print("OCV.APP > ", OCV.APP)
         """
 
-        Tk.Label(self, text="", width=1).grid(row=1, column=10)
+        Tk.Label(self, text="", width=1).grid(row=1, column=17)
 
-        b_width = 2
+        b_width = 4
         b_height = 2
 
         z_step_font = Utils.get_font("z_step.font", ControlFrame.z_step_font)
 
-        Utils.set_predefined_steps()
-        Utils.populate_cyclelist()
-        
-        OCV.stepxy = float(OCV.config.get("Control", "step"))
-        OCV.stepz = float(OCV.config.get("Control", "zstep"))
-        OCV.step_pxy = int(OCV.config.get("Control", "pset_xy"))
-        OCV.step_pz = int(OCV.config.get("Control", "pset_z"))
-        
+        Utils.set_steps()
+       
 
         row = 0
 
@@ -93,7 +87,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             name="step_1",
             width=2,
             padx=1, pady=1)
-        but.grid(row=row, column=4, columnspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=4, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S1"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S1"))
         bal_text = _("Step1 = {0}").format(OCV.step1)
@@ -106,7 +100,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             name="step_2",
             width=2,
             padx=1, pady=1)
-        but.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=7, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S2"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S2"))
         bal_text = _("Step2 = {0}").format(OCV.step2)
@@ -119,13 +113,25 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             name="step_3",
             width=2,
             padx=1, pady=1)
-        but.grid(row=row, column=8, columnspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=10, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S3"))        
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S3"))
         bal_text = _("Step3 = {0}").format(OCV.step3)
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
-
+ 
+        but = Tk.Button(
+            self,
+            text="{0}".format(OCV.step4),
+            name="step_4",
+            width=2,
+            padx=1, pady=1)
+        but.grid(row=row, column=13, columnspan=3, sticky=Tk.EW)
+        but.bind("<Button-1>", lambda event: self.apply_preset("S4"))        
+        but.bind("<Button-3>", lambda event: self.edit_pre_step("S4"))
+        bal_text = _("Step4 = {0}").format(OCV.step4)
+        tkExtra.Balloon.set(but, bal_text)
+        self.addWidget(but)
         row = 1
 
         but = Tk.Button(
@@ -151,7 +157,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.div_step,
             width=3,
             padx=1, pady=1)
-        but.grid(row=row, column=4, sticky=Tk.EW)
+        but.grid(row=row, column=4, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Divide step by 5"))
         self.addWidget(but)
 
@@ -161,13 +167,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.mul_step,
             width=3,
             padx=1, pady=1)
-        but.grid(row=row, column=5, sticky=Tk.EW)
+        but.grid(row=row, column=6,columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Multiply step by 5"))
         self.addWidget(but)
 
         self.step = tkExtra.Combobox(
                 self, width=6, background="White", command=self.set_xy_fromcb)
-        self.step.grid(row=row, column=6, columnspan=2, sticky=Tk.EW)
+        self.step.grid(row=row, column=8, columnspan=4, sticky=Tk.EW)
         self.step.fill(
             map(float, OCV.config.get("Control", "steplist").split()))
         self.step.set(OCV.stepxy)
@@ -180,7 +186,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.dec_xy_step,
             width=3,
             padx=1, pady=1)
-        but.grid(row=row, column=8, sticky=Tk.EW)
+        but.grid(row=row, column=12, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Decrease step"))
         self.addWidget(but)
 
@@ -189,7 +195,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.inc_xy_step,
             width=3,
             padx=1, pady=1)
-        but.grid(row=row, column=9, sticky=Tk.EW)
+        but.grid(row=row, column=14, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Increase step"))
         self.addWidget(but)
 
@@ -212,7 +218,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X +Y"))
         self.addWidget(but)
 
@@ -222,7 +228,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=lambda s=self: s.event_generate('<<JOG-YUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
-        but.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +Y"))
         self.addWidget(but)
 
@@ -232,7 +238,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=lambda s=self: s.event_generate('<<JOG-XYUP>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
-        but.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +X +Y"))
         self.addWidget(but)
 
@@ -272,7 +278,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=lambda s=self: s.event_generate('<<JOG-XDW>>'),
             width=b_width, height=b_height,
             activebackground="LightYellow")
-        but.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X"))
         self.addWidget(but)
 
@@ -285,7 +291,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
 
         tkExtra.Balloon.set(
             but,
@@ -300,7 +306,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
 
         tkExtra.Balloon.set(but, _("Move +X"))
 
@@ -358,7 +364,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=4, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X -Y"))
         self.addWidget(but)
 
@@ -369,7 +375,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=6, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -Y"))
         self.addWidget(but)
 
@@ -380,12 +386,12 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             width=b_width, height=b_height,
             activebackground="LightYellow")
 
-        but.grid(row=row, column=8, columnspan=2, rowspan=2, sticky=Tk.EW)
+        but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +X -Y"))
         self.addWidget(but)
 
         """CAM controls"""
-        column = 11
+        column = 18
         b_padx = 0
         b_pady = -1
 
@@ -488,10 +494,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def saveConfig(self):
         IniFile.set_value("Control", "step", OCV.stepxy)
         IniFile.set_value("Control", "zstep", OCV.stepz)
-        IniFile.set_value("Control", "pset_xy", OCV.step_pxy)
-        IniFile.set_value("Control", "pset_z", OCV.step_pz)
-        
-
+      
     def reset_all(self):
         """reset all thing related to cam operation and memory
         This means to clear the editor and reset memA and memB
@@ -761,13 +764,15 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 self.set_step_view(OCV.stepxy, OCV.zstep3)
             elif caller == "ZS4":            
                 self.set_step_view(OCV.stepxy, OCV.zstep4)
-        elif caller in ("S1", "S2", "S3"):
+        elif caller in ("S1", "S2", "S3", "S4"):
             if caller == "S1":            
                 self.set_step_view(OCV.step1, OCV.stepz)
             elif caller == "S2":            
                 self.set_step_view(OCV.step2, OCV.stepz)
             elif caller == "S3":            
                 self.set_step_view(OCV.step3, OCV.stepz)
+            elif caller == "S4":            
+                self.set_step_view(OCV.step4, OCV.stepz)
                     
 
     def edit_pre_step(self, caller):
@@ -784,7 +789,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         #print("retval > ", retval)
 
-        if caller in ("S1", "S2", "S3"):
+        if caller in ("S1", "S2", "S3", "S4"):
             if caller == "S1":
                 wid = self.nametowidget("step_1")
                 OCV.step1 = retval
@@ -799,7 +804,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 wid = self.nametowidget("step_3")
                 OCV.step3 = retval
                 IniFile.set_value("Control", "step3", retval)
-                bal_text = "Step2 = {0}".format(OCV.step3)
+                bal_text = "Step3 = {0}".format(OCV.step3)
+            elif caller == "S4":
+                wid = self.nametowidget("step_4")
+                OCV.step4 = retval
+                IniFile.set_value("Control", "step4", retval)
+                bal_text = "Step4 = {0}".format(OCV.step4)
+
 
         elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
             if caller == "ZS1":
@@ -822,7 +833,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                 OCV.zstep4 = retval
                 bal_text = "Zstep4 = {0}".format(OCV.zstep4)
                 IniFile.set_value("Control", "zstep4", retval)
-        
         
         Utils.populate_cyclelist()
         
