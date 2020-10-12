@@ -45,6 +45,7 @@ class Controller(_GenericGRBL):
                 self.master.sio_wait = False
                 #print "<<< NO MORE WAIT"
                 self.master._gcount += 1
+                # print("GC+ GRBL0")
             else:
                 self.master.log.put((self.master.MSG_RECEIVE, line))
 

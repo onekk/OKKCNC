@@ -146,8 +146,10 @@ class Application(Tk.Toplevel, Sender):
         ctl = OCV.CD["controller"]
         if ctl in ("GRBL1", "GRBL0"):
             cmd.get_errors(ctl)
+            cmd.get_settings(ctl)
         else:
             OCV.CTL_ERRORS = []
+            OCV.CTL_SHELP = [] 
 
         OCV.CMD_W.bind("<Return>", self.cmdExecute)
         OCV.CMD_W.bind("<Up>", self.commandHistoryUp)
@@ -271,6 +273,7 @@ class Application(Tk.Toplevel, Sender):
 
 
         self.bind("<<ERR_HELP>>", self.show_error_panel)
+        self.bind("<<SET_HELP>>", self.show_settings_panel)        
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
 
         tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
@@ -360,9 +363,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<ToolClone>>', tools.clone)
         self.bind('<<ToolRename>>', tools.rename)
 
-        self.bind('<Prior>', self.jog_z_up)
-        self.bind('<Next>', self.jog_z_down)
-
         if self._swapKeyboard == 1:
             self.bind('<Right>', self.jog_y_up)
             self.bind('<Left>', self.jog_y_down)
@@ -379,10 +379,16 @@ class Application(Tk.Toplevel, Sender):
             self.bind('<Up>', self.jog_y_up)
             self.bind('<Down>', self.jog_y_down)
 
-        try:
-            self.bind('<KP_Prior>', self.jog_z_up)
-            self.bind('<KP_Next>', self.jog_z_down)
+        self.bind('<Prior>', self.jog_z_up)
+        self.bind('<Next>', self.jog_z_down)
 
+        ## KEYPAD Controls 
+
+        self.bind('<KP_Prior>', self.jog_z_up)
+        self.bind('<KP_Next>', self.jog_z_down)
+
+
+        try:
             if self._swapKeyboard == 1:
                 self.bind('<KP_Right>', self.jog_y_up)
                 self.bind('<KP_Left>', self.jog_y_down)
@@ -634,6 +640,9 @@ class Application(Tk.Toplevel, Sender):
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
     
     #--- END JOG MOTION COMMANDS 
+
+
+    #--- Debug Panel
 
     def entry(self, message="Enter value", title="", prompt="", type_="str",
               from_=None, to_=None):
@@ -1182,9 +1191,19 @@ class Application(Tk.Toplevel, Sender):
         if len(OCV.CTL_ERRORS) > 1:
             msg = " \n\n".join(OCV.CTL_ERRORS)
         else:
-            msg = "This controllers has no error list"
+            msg = "This controller has no error list"
             
-        panel = Utils.ErrorWindow(OCV.APP)
+        panel = Utils.ErrorWindow(OCV.APP, _("Error Help"))
+        panel.show_message(msg)
+
+    def show_settings_panel(self, event=None):
+        msg = "Messages"
+        if len(OCV.CTL_SHELP) > 1:
+            msg = " \n\n".join(OCV.CTL_SHELP)
+        else:
+            msg = "This controller has no setting list yet"
+            
+        panel = Utils.ErrorWindow(OCV.APP, _("Settings Help"))
         panel.show_message(msg)
 
     def viewChange(self, event=None):
@@ -2208,6 +2227,7 @@ class Application(Tk.Toplevel, Sender):
         # are still sending or we finished
         self._runLines = sys.maxsize
         self._gcount = 0  # count executed lines
+        self.disp_line = -1 # reset display line counter
         self._selectI = 0  # last selection pointer in items
         self._paths = None  # temporary
         OCV.CD["running"] = True  # enable running status
@@ -2220,20 +2240,14 @@ class Application(Tk.Toplevel, Sender):
                 pass
 
         if lines is None:
-            # if not self.gcode.probe.isEmpty() and \
-            #        not self.gcode.probe.zeroed:
-            #    tkMessageBox.showerror(_("Probe is not zeroed"),
-            #        _("Please ZERO any location of the probe before
-            #           starting a run"),
-            #        parent=self)
-            #    return
             OCV.STATUSBAR.setLimits(0, 9999)
             OCV.STATUSBAR.setProgress(0, 0)
 
             self._paths = self.gcode.comp_level(self.queue, self.checkStop)
+            
             if self._paths is None:
                 self.emptyQueue()
-                OCV.MCTRL.purgeController()
+                self.jobDone("R")
                 return
             elif not self._paths:
                 self.runEnded("run No GCode Loaded")
@@ -2251,6 +2265,7 @@ class Application(Tk.Toplevel, Sender):
                     continue
 
                 path = self.gcode[ij[0]].path(ij[1])
+                
                 if path:
                     color = OCV.CANVAS_F.canvas.itemcget(path, "fill")
                     if color != OCV.COLOR_ENABLE:
@@ -2265,20 +2280,26 @@ class Application(Tk.Toplevel, Sender):
 
             # the buffer of the machine should be empty?
             self._runLines = len(self._paths) + 1  # plus the wait
+            #print("DBG: runlines assigned by path")
         else:
+            # empty the gctos value
+            OCV.gctos = []
             n = 1        # including one wait command
             for line in CNC.compile_pgm(lines):
                 if line is not None:
                     if isinstance(line, str):
-                        self.queue.put(line+"\n")
+                        self.queue.put(line + "\n")
+                        OCV.gctos.append(line)
                     else:
                         self.queue.put(line)
+                        OCV.gctos.append(line)
                     n += 1
             self._runLines = n  # set it at the end to be sure that all lines are queued
 
         self.queue.put((OCV.WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
+
         OCV.STATUSBAR.setLimits(0, self._runLines)
         OCV.STATUSBAR.configText(fill="White")
         OCV.STATUSBAR.config(background="DarkGray")
@@ -2326,10 +2347,10 @@ class Application(Tk.Toplevel, Sender):
 
         # dump in the terminal what ever you can in less than 0.1s
         inserted = False
+        
         while self.log.qsize() > 0 and time.time()-t < 0.1:
             try:
                 msg, line = self.log.get_nowait()
-                #line = line.rstrip("\n")
                 line = str(line).rstrip("\n")
                 inserted = True
                 #print "<<<",msg,line,"\n" in line
@@ -2458,22 +2479,20 @@ class Application(Tk.Toplevel, Sender):
 
         if OCV.s_running:
             self.proc_line_n = self._runLines - self.queue.qsize()
-            print("M_MS: proc_line {}".format(self.proc_line_n))
             OCV.STATUSBAR.setProgress(self.proc_line_n, self._gcount)
             OCV.CD["msg"] = OCV.STATUSBAR.msg
             b_fill = Sender.getBufferFill(self)
-            # print ("Buffer = ", b_fill)
             OCV.BUFFERBAR.setProgress(b_fill)
             OCV.BUFFERBAR.setText("{0:02.2f}".format(b_fill))
             # print("Queue > ", self.queue.queue)
 
-            if self.proc_line_n > 0 and self.proc_line_n < len(OCV.gcodelines):
-
+            if self.disp_line != self._gcount and self._gcount < len(OCV.gctos):
+                print("DBG DL {} GC >> {}".format(self.disp_line, self._gcount))
                 displ_line = "{0} > {1} ".format(
-                    self.proc_line_n,
-                    OCV.gcodelines[self.proc_line_n])
-
+                    self._gcount,
+                    OCV.gctos[self._gcount - 1])
                 self.proc_line.set(displ_line)
+                self.disp_line = self._gcount
 
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and\
@@ -2490,15 +2509,14 @@ class Application(Tk.Toplevel, Sender):
                     
                     self._selectI += 1
             
-            print("M_MS: gc {} rL {}".format(self._gcount, self._runLines))        
-            
             if self._gcount >= self._runLines:
-                print("M_MS: _gcount >= _runLines")
                 self.runEnded("_SM")
+                self.jobDone("_SM")
             
             if OCV.c_pgm_end is True:
                 OCV.c_pg_end = False
                 self.runEnded("_PE")
+                self.jobDone("_PE")
 
     def monitorSerial(self):
         """'thread' timed function looking for messages in the serial thread

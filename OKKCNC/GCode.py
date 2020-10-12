@@ -1349,13 +1349,17 @@ class GCode(object):
         """Use probe information to modify the g-code to autolevel"""
         # lines = [self.cnc.startup]
         paths = []
+        # empty the gctos value
+        OCV.gctos = []
 
         def add(line, path):
             if line is not None:
-                if isinstance(line, str) or isinstance(line, unicode):
+                if isinstance(line, str):
                     queue.put(line + "\n")
+                    OCV.gctos.append(line)
                 else:
                     queue.put(line)
+                    OCV.gctos.append(line)
 
             paths.append(path)
 

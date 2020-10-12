@@ -753,9 +753,9 @@ class UserButtonDialog(Tk.Toplevel):
 
 class ErrorWindow(Tk.Toplevel):
 
-    def __init__(self, master):
+    def __init__(self, master, title):
         Tk.Toplevel.__init__(self, master, name="error_panel")
-        self.title(_("Error Dialog"))
+        self.title(title)
         self.transient(master)
         frame = Tk.Frame(self, width=100, height=100)
         self.m_txt = Tk.Text(frame, wrap=Tk.WORD)

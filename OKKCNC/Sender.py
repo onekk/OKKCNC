@@ -608,8 +608,8 @@ class Sender(object):
         if OCV.c_state == "Hold:0":
             if OCV.s_stop_req is True:
                 OCV.s_running = False
-                self.runEnded("stopRun")
-                self.jobDone()
+                self.runEnded("SR")
+                self.jobDone("SR")
         else:
             print("Stop Requested but state {}".format(OCV.c_state))
 
@@ -620,7 +620,7 @@ class Sender(object):
         print("DEBUG: alarm {} pause {}".format(
             OCV.s_alarm, OCV.s_pause))
 
-    def jobDone(self):
+    def jobDone(self, msg):
         """
         This should be called everytime that milling of g-code file is finished
         So we can purge the controller for the next job
@@ -651,7 +651,7 @@ class Sender(object):
         if self.cleanAfter is True and OCV.s_running is False and \
                 state in ("Idle",):
             self.cleanAfter = False
-            self.jobDone()
+            self.jobDone("CSG")
 
     def serialIO(self):
         """thread performing I/O on serial line"""
@@ -694,6 +694,7 @@ class Sender(object):
                         elif tosend[0] == OCV.MSG:
                             # Count executed commands as well
                             self._gcount += 1
+                            print ("GC+ MSG")
                             if tosend[1] is not None:
                                 # show our message on machine status
                                 self._msg = tosend[1]
@@ -701,14 +702,17 @@ class Sender(object):
                             # Count executed commands as well
                             self._gcount += 1
                             self._update = tosend[1]
+                            print ("GC+ UPD")
                         else:
                             # Count executed commands as well
                             self._gcount += 1
+                            print ("GC+ ELSE")
                         tosend = None
 
                     elif not isinstance(tosend, str):
                         try:
                             tosend = self.gcode.evaluate(tosend)
+                            print("TS:NISstr")
                             # if isinstance(tosend, list):
                             #    cline.append(len(tosend[0]))
                             #    sline.append(tosend[0])
@@ -717,12 +721,14 @@ class Sender(object):
                             else:
                                 # Count executed commands as well
                                 self._gcount += 1
+                                print ("GC+ STR: ELSE")
                                 # print "gcount str=",self._gcount
                                 # print( "+++ eval=",repr(tosend),type(tosend))
                         except:
                             for s in str(sys.exc_info()[1]).splitlines():
                                 self.log.put((Sender.MSG_ERROR, s))
                             self._gcount += 1
+                            print ("GC+ STR:EXCEPT")
                             tosend = None
                 except Empty:
                     print("SIO: Empty queue: catched")    

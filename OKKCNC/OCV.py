@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.35-t4"
-PRG_DATE = "9 oct 2020"
+PRG_VER = "0.3.36-t0"
+PRG_DATE = "12 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -307,9 +307,12 @@ CD = {
 comment = ""  # last parsed comment
 config = None
 c_pgm_end = False
-c_state = ""  # controller state to determine the state
-CTL_ERRORS = []  # controllers errors (only for GBRL for now)
-
+# controller state to determine the state
+c_state = ""
+# controllers errors (only for GBRL for now)
+CTL_ERRORS = []
+# controllers errors (only for GBRL for now)
+CTL_SHELP = []
 
 # D #
 """Debug flags. used across the interface to print debug info on terminal
@@ -388,6 +391,10 @@ gcodelines = ["(-)",]
 gcp_mop_s = False  # 'MOP Start:' detection
 gcp_mop_e = False  # 'MOP End:' detection
 gcp_mop_name = ""
+
+# gctos hold the lines added to the queue to track the executed lines during
+# a program run
+gctos = []
 
 geometry = None
 g_code_precision = 4

@@ -169,7 +169,6 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         col += 1
-        row = 0
 
         but = Ribbon.LabelButton(
             self.frame,
@@ -180,13 +179,12 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             command=OCV.MCTRL.grblHelp,
             background=OCV.COLOR_BACKGROUND)
 
-        but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+        but.grid(row=0, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
         tkExtra.Balloon.set(but, _("$ Display build information of Grbl"))
 
         self.addWidget(but)
 
-        row = 1
 
         but = Ribbon.LabelButton(
             self.frame,
@@ -197,8 +195,18 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             background=OCV.COLOR_BACKGROUND)
 
-        but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+        but.grid(row=1, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
+        but = Ribbon.LabelButton(
+            self.frame,
+            self,
+            "<<SET_HELP>>",
+            text=_("Settings Help"),
+            compound=Tk.LEFT,
+            anchor=Tk.W,
+            background=OCV.COLOR_BACKGROUND)
+
+        but.grid(row=2, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
 class TerminalFrame(CNCRibbon.PageFrame):
     """TerminalFrame class"""

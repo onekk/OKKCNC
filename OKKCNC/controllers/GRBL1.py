@@ -184,6 +184,7 @@ class Controller(_GenericGRBL):
         if self.master.sio_wait and not cline and fields[0] not in ("Run", "Jog", "Hold"):
             self.master.sio_wait = False
             self.master._gcount += 1
+            print("GC+ GRBL1 buffer Idle")
 
     def parseBracketSquare(self, line):
         word = SPLITPAT.split(line[1:-1])

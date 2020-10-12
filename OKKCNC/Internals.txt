@@ -1,0 +1,9 @@
+The program flow when sending gcode to grbl is this:
+
+
+when __main__.run(self, lines=None): is invoked with no lines:
+    process queue using GCode.comp_level
+
+So the _gcount is not reflecting the line processed.
+
+

@@ -18,7 +18,7 @@ except ImportError:
 import re
 
 import OCV
-from _GenericGRBL import ERROR_CODES
+from _GenericGRBL import ERROR_CODES, SETTINGS_CODES
 
 def set_x0():
     OCV.MCTRL.wcs_set("0", None, None)
@@ -109,3 +109,23 @@ def get_errors(ctl):
     #print(int_list)
 
     OCV.CTL_ERRORS = err_list
+
+def get_settings(ctl):
+    settings_list = []
+    
+    # debug code not to delete
+    #print(ctl, ERROR_CODES)
+
+    if ctl in ("GRBL0", "GRBL1"):
+        int_list = [
+            "Setting: {0:03d} >> {1}".format(int(key), value)
+            for key, value in SETTINGS_CODES.items()]
+    else:
+        pass
+
+    setting_list = sorted(int_list)
+    
+    # debug code not to delete
+    #print(int_list)
+
+    OCV.CTL_SHELP = setting_list
