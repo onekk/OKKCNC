@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['Sender.py', '__main__.py', 'OCV.py', 'IniFile.py', 'EditorPage.py', 'ControlPage.py', 'Utils.py', '../../../../common/Remote/OKKCNC/OKKCNC/controllers/GRBL1.py', 'controllers/_GenericController.py', 'controllers/_GenericGRBL.py', 'FilePage.py', '../../../../common/Remote/OKKCNC/OKKCNC/Interface.py', 'TerminalPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/ProbePage.py', 'Ribbon.py']
+recent_files = ['OCV.py', 'Sender.py', '__main__.py', 'GCode.py', 'controllers/GRBL1.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNC.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNCRibbon.py', 'Interface.py', 'Utils.py']
 

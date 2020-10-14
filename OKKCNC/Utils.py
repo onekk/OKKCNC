@@ -380,6 +380,15 @@ def q_round(value, prec=2, base=.05):
     return round(base * round(float(value)/base), prec)
 
 
+def showState():
+    print("DEBUG: Controller state: {}".format(OCV.c_state))
+    print("DEBUG: stop: {} -- stop_req: {} -- running: {}".format(
+        OCV.s_stop, OCV.s_stop_req,OCV.s_running))
+    print("DEBUG: alarm: {} -- pause: {}".format(
+        OCV.s_alarm, OCV.s_pause))
+
+
+
 def addException():
     """collect and report exceptions"""
     # self.widget._report_exception()

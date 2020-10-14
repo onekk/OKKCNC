@@ -45,6 +45,7 @@ import GCode
 #import Heuristic
 import IniFile
 import Pendant
+import Utils
 
 
 # WIKI = "https://github.com/vlachoudis/bCNC/wiki"
@@ -603,7 +604,7 @@ class Sender(object):
         but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
         but.config(background=OCV.STATECOLOR["Hold:0"])
 
-        self.show_state()
+        Utils.showState()
 
         if OCV.c_state == "Hold:0":
             if OCV.s_stop_req is True:
@@ -612,13 +613,6 @@ class Sender(object):
                 self.jobDone("SR")
         else:
             print("Stop Requested but state {}".format(OCV.c_state))
-
-    def show_state(self):
-        print("DEBUG: Controller state {}".format(OCV.c_state))
-        print("DEBUG: stop {} stop_req {}, running {}".format(
-            OCV.s_stop, OCV.s_stop_req,OCV.s_running))
-        print("DEBUG: alarm {} pause {}".format(
-            OCV.s_alarm, OCV.s_pause))
 
     def jobDone(self, msg):
         """

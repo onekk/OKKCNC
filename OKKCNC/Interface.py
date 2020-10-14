@@ -635,7 +635,8 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             app,
             [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset),
              (_("Toggle Sender Dbg"), "toggle", self.toggleDbgSnd),
-             (_("Toggle Com Dbg"), "toggle", self.toggleDbgCom)
+             (_("Toggle Com Dbg"), "toggle", self.toggleDbgCom),
+             (_("View Flags"), "toggle", self.viewFlags)
             ])
 
         # print("ConnectionGroup app", app)
@@ -712,6 +713,9 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
 
         self.addWidget(but)
 
+    def viewFlags(self):
+        Utils.showState()
+
     @staticmethod
     def toggleDbgSnd():
         if OCV.DEBUG_SER is True:
@@ -725,6 +729,8 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             OCV.DEBUG_COM = False
         else:
             OCV.DEBUG_COM = True
+
+
 
 class MemoryGroup(CNCRibbon.ButtonMenuGroup):
     """Panel with memory buttons and some service buttons"""
