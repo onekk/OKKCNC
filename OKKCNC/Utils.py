@@ -388,7 +388,6 @@ def showState():
         OCV.s_alarm, OCV.s_pause))
 
 
-
 def addException():
     """collect and report exceptions"""
     # self.widget._report_exception()

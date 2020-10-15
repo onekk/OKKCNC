@@ -2195,8 +2195,7 @@ class Application(Tk.Toplevel, Sender):
         """
         Send enabled gcode file to the CNC machine
         """
-        self.cleanAfter = True  # Clean when this operation stops
-        print("RUN: Will clean after this operation")
+
 
         if OCV.HAS_SERIAL is False and not OCV.developer:
             tkMessageBox.showerror(
@@ -2215,6 +2214,11 @@ class Application(Tk.Toplevel, Sender):
                 parent=self)
             return
 
+        # probably is better to assign cleanAfter here, as there are changes
+        # that the two conditiong above reject the run request
+        self.cleanAfter = True  # Clean when this operation stops
+        print("RUN: Will clean after this operation")
+
         self.editor.selectClear()
         self.selectionChange()
         OCV.CD["errline"] = ""
@@ -2222,9 +2226,8 @@ class Application(Tk.Toplevel, Sender):
         # the buffer of the machine should be empty?
         self.initRun()
         OCV.CANVAS_F.canvas.clearSelection()
-        # temporary WARNING this value is used
-        # by Sender._serialIO to check if we
-        # are still sending or we finished
+        # temporary WARNING _runLines is used by Sender._serialIO
+        # to check if we are still sending lines
         self._runLines = sys.maxsize
         self._gcount = 0  # count executed lines
         self.disp_line = -1 # reset display line counter

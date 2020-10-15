@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.36-t0"
-PRG_DATE = "12 oct 2020"
+PRG_VER = "0.3.36-t1"
+PRG_DATE = "15 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -492,7 +492,9 @@ s_alarm = None
 s_pause = None
 s_running = None
 s_runningPrev = None
+# used in SIO it signal a request to stop sending lines see Sender code
 s_stop = None
+# used by Sender.stopRun to signal a stop request
 s_stop_req = None
 
 # T #

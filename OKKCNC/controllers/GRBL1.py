@@ -174,8 +174,7 @@ class Controller(_GenericGRBL):
                             print("Stream requested by CYCLE START machine button")
                             self.master.event_generate("<<Run>>", when = 'tail')
                         else:
-                            print(
-                                    "Ignoring machine stream request, because of state: ",
+                            print("Ignoring machine stream request, because of state: ",
                                     OCV.c_state, OCV.s_running)
                 except (ValueError,IndexError):
                     break
