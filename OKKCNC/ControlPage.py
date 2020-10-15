@@ -446,7 +446,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             activebackground="LightYellow")
 
         but.grid(row=3, column=column, columnspan=2, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Cut Line from memA to memB"))
+        tkExtra.Balloon.set(but, _("Line from memA to memB"))
         self.addWidget(but)
 
         but = Tk.Button(
@@ -458,7 +458,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             activebackground="LightYellow")
 
         but.grid(row=4, column=column, columnspan=2, sticky=Tk.EW)
-        tkExtra.Balloon.set(but, _("Cut Rectangula Pocket from memA to memB"))
+        tkExtra.Balloon.set(but, _("Rectangular Pocket from memA to memB"))
         self.addWidget(but)
 
         but = Tk.Button(
@@ -594,25 +594,31 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
     def line(self):
         """generate a line from mem_a to mem_b"""
         # avoid a dry run if both mem pos are not set
-        if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-
-            end_depth = Utils.ask_for_value(OCV.APP, "TD")
-
-            if end_depth is None:
-                return
-
-            CAMGen.line(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:        
+            if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
+    
+                end_depth = Utils.ask_for_value(OCV.APP, "TD")
+    
+                if end_depth is None:
+                    return
+    
+                CAMGen.line(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        else:
+            pass
 
     def pocket(self):
         """generate a rectangular pocket from mem_a to mem_b"""
         # avoid a dry run if both mem pos are not set
-        if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-            end_depth = Utils.ask_for_value(OCV.APP, "TD")
-
-            if end_depth is None:
-                return
-
-            CAMGen.pocket(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:
+            if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
+                end_depth = Utils.ask_for_value(OCV.APP, "TD")
+    
+                if end_depth is None:
+                    return
+    
+                CAMGen.pocket(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        else:
+            pass
 
 
     def go_to_origin(self, event=None):

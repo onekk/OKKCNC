@@ -91,11 +91,15 @@ def get_errors(ctl):
     if ctl in ("GRBL0", "GRBL1"):
         pat_err = r'\b' + re.escape("error:") + r'\b'
         pat_alm = r'\b' + re.escape("ALARM:") + r'\b'
-        # TODO: or re.search(pat_alm, key) ?? how to do this
         int_list = [
             "error:{0:02d} >> {1}".format(int(key[6:]), value)
             for key, value in ERROR_CODES.items()
             if re.search(pat_err, key)]
+        alm_list = [
+            "ALARM:{0:02d} >> {1}".format(int(key[6:]), value)
+            for key, value in ERROR_CODES.items()
+            if re.search(pat_alm, key)]
+        int_list.extend(alm_list)
     else:
         # I don't know other controllers behaviour
         # Maybe Wrong

@@ -62,6 +62,7 @@ class GCode(object):
         OCV.gcodelines = ["(-)",]  # Add a starting 0 pos to better align index
         self.vars.clear()
         self.undoredo.reset()
+        # FIXME check if this is needed
         # self.probe.init()
 
         self._lastModified = 0
@@ -1346,8 +1347,8 @@ class GCode(object):
         self.addUndo(undoinfo, "Optimize")
 
     def comp_level(self, queue, stopFunc=None):
-        """Use probe information to modify the g-code to autolevel"""
-        # lines = [self.cnc.startup]
+        """Use probe information (if exist) to modify the g-code to autolevel"""
+      
         paths = []
         # empty the gctos value
         OCV.gctos = []
@@ -1362,7 +1363,8 @@ class GCode(object):
                     OCV.gctos.append(line)
 
             paths.append(path)
-
+        
+        # check the existence of an autolevel file        
         autolevel = not self.probe.isEmpty()
 
         self.initPath()
@@ -1387,7 +1389,7 @@ class GCode(object):
                 cmds = CNC.compileLine(line)
                 if cmds is None:
                     continue
-                elif isinstance(cmds, str) or isinstance(cmds, unicode):
+                elif isinstance(cmds, str):
                     cmds = CNC.breakLine(cmds)
                 else:
                     # either CodeType or tuple, list[] append at it as is

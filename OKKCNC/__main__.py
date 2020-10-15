@@ -23,7 +23,7 @@ import getopt
 import socket
 import traceback
 from datetime import datetime
-import webbrowser
+#import webbrowser
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
@@ -754,8 +754,10 @@ class Application(Tk.Toplevel, Sender):
                           lambda e, s=self, c=value: s.execute(c))
 
     @staticmethod
-    def showUserFile(self):
-        webbrowser.open(OCV.USER_CONFIG)
+    def showUserFile():
+        #TODO: find a way to show the user file
+        #webbrowser.open(OCV.USER_CONFIG)
+        pass
 
     def load_main_config(self):
         """Load initial config parameters from ini file"""
@@ -2226,7 +2228,7 @@ class Application(Tk.Toplevel, Sender):
         # the buffer of the machine should be empty?
         self.initRun()
         OCV.CANVAS_F.canvas.clearSelection()
-        # temporary WARNING _runLines is used by Sender._serialIO
+        # WARNING _runLines is used by Sender._serialIO
         # to check if we are still sending lines
         self._runLines = sys.maxsize
         self._gcount = 0  # count executed lines

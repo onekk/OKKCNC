@@ -7,746 +7,1175 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OKKCNC\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-01 18:59+0100\n"
-"PO-Revision-Date: 2020-07-10 11:57+0100\n"
+"POT-Creation-Date: 2020-10-15 18:56+0200\n"
+"PO-Revision-Date: 2020-10-15 19:00+0200\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: OKKCNC team\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../..\n"
+"X-Poedit-KeywordsList: _\n"
+"X-Poedit-SearchPath-0: .\n"
 
-#: OKKCNC/Sender.py:362
-msgid "unknown command"
-msgstr "Comando sconosciuto"
+#: CAMGen.py:139 CAMGen.py:307
+msgid "Line Cut: Generated line cut code"
+msgstr ""
 
-#: OKKCNC/Sender.py:362
+#: CNCCanvas.py:380
+msgid "Select objects with mouse"
+msgstr "Seleziona oggetto con il mouse"
+
+#: CNCCanvas.py:384
+msgid "Pan viewport"
+msgstr ""
+
+#: CNCCanvas.py:388
+msgid "Click to set the origin (zero)"
+msgstr "Clicca per selezionare l'origine (Zero)"
+
+#: CNCCanvas.py:392
+msgid "Move graphically objects"
+msgstr ""
+
+#: CNCCanvas.py:397
+msgid "Move CNC gantry to mouse location"
+msgstr "Muovi la testa sulla posizione del mouse"
+
+#: CNCCanvas.py:402
+msgid "Set mouse location as current machine position (X/Y only)"
+msgstr ""
+
+#: CNCCanvas.py:406
+msgid "Drag a ruler to measure distances"
+msgstr ""
+
+#: CNCCanvas.py:410
+msgid "Add an orientation marker"
+msgstr ""
+
+#: CNCCanvas.py:458
+msgid "ERROR: Cannot set X-Y marker  with the current view"
+msgstr ""
+
+#: CNCCanvas.py:557
 #, python-brace-format
-msgid "Invalid command {0}"
-msgstr "Comando sconosciuto {0}"
-
-#: OKKCNC/Sender.py:606
-msgid "Run ended"
-msgstr "Esecuzione finita"
-
-#: OKKCNC/ToolsPage.py:557 OKKCNC/ToolsPage.py:569 OKKCNC/ToolsPage.py:581
-msgid "F1"
-msgstr "F1"
-
-#: OKKCNC/ToolsPage.py:558 OKKCNC/ToolsPage.py:570 OKKCNC/ToolsPage.py:582
-msgid "F2"
-msgstr "F2"
-
-#: OKKCNC/ToolsPage.py:559 OKKCNC/ToolsPage.py:571 OKKCNC/ToolsPage.py:583
-msgid "F3"
-msgstr "F3"
-
-#: OKKCNC/ToolsPage.py:560 OKKCNC/ToolsPage.py:572 OKKCNC/ToolsPage.py:584
-msgid "F4"
-msgstr "F4"
-
-#: OKKCNC/ToolsPage.py:561 OKKCNC/ToolsPage.py:573 OKKCNC/ToolsPage.py:585
-msgid "F5"
-msgstr "F5"
-
-#: OKKCNC/ToolsPage.py:562 OKKCNC/ToolsPage.py:574 OKKCNC/ToolsPage.py:586
-msgid "F6"
-msgstr "F6"
-
-#: OKKCNC/ToolsPage.py:563 OKKCNC/ToolsPage.py:575 OKKCNC/ToolsPage.py:587
-msgid "F7"
-msgstr "F7"
-
-#: OKKCNC/ToolsPage.py:564 OKKCNC/ToolsPage.py:576 OKKCNC/ToolsPage.py:588
-msgid "F8"
-msgstr "F8"
-
-#: OKKCNC/ToolsPage.py:565 OKKCNC/ToolsPage.py:577 OKKCNC/ToolsPage.py:589
-msgid "F9"
-msgstr "F9"
-
-#: OKKCNC/ToolsPage.py:566 OKKCNC/ToolsPage.py:578 OKKCNC/ToolsPage.py:590
-msgid "F10"
-msgstr "F10"
-
-#: OKKCNC/ToolsPage.py:567 OKKCNC/ToolsPage.py:579 OKKCNC/ToolsPage.py:591
-msgid "F11"
-msgstr "F11"
-
-#: OKKCNC/ToolsPage.py:568 OKKCNC/ToolsPage.py:580 OKKCNC/ToolsPage.py:592
-msgid "F12"
-msgstr "F12"
-
-#: OKKCNC/ToolsPage.py:569 OKKCNC/ToolsPage.py:570 OKKCNC/ToolsPage.py:571
-#: OKKCNC/ToolsPage.py:572 OKKCNC/ToolsPage.py:573 OKKCNC/ToolsPage.py:574
-#: OKKCNC/ToolsPage.py:575 OKKCNC/ToolsPage.py:576 OKKCNC/ToolsPage.py:577
-#: OKKCNC/ToolsPage.py:578 OKKCNC/ToolsPage.py:579 OKKCNC/ToolsPage.py:580
-msgid "Shift-"
+msgid "origin {0:f} {1:f} {2:f}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:581 OKKCNC/ToolsPage.py:582 OKKCNC/ToolsPage.py:583
-#: OKKCNC/ToolsPage.py:584 OKKCNC/ToolsPage.py:585 OKKCNC/ToolsPage.py:586
-#: OKKCNC/ToolsPage.py:587 OKKCNC/ToolsPage.py:588 OKKCNC/ToolsPage.py:589
-#: OKKCNC/ToolsPage.py:590 OKKCNC/ToolsPage.py:591 OKKCNC/ToolsPage.py:592
-msgid "Control-"
+#: CNCCanvas.py:607
+#, python-brace-format
+msgid "dx={0:f}  dy={1:f}  dz={2:f}  length={3:f}  angle={4:f}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:607
-msgid "Align Camera"
+#: CNCCanvas.py:690
+#, python-brace-format
+msgid "Move by {0:f}, {1:f}, {2:f}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:608
-msgid "Align Camera Width"
+#: CNCCanvas.py:2090
+#, python-brace-format
+msgid ">>> ERROR: {0}\n"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:609
-msgid "Align Camera Height"
+#: CNCCanvas.py:2093
+#, python-brace-format
+msgid "     line: {0}\n"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:610
-msgid "Align Camera Angle"
+#: CNCCanvas.py:2306
+msgid "Change viewing angle"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:611
-msgid "Web Camera"
+#: CNCCanvas.py:2313
+msgid "Zoom In [Ctrl-=]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:612
-msgid "Web Camera Width"
+#: CNCCanvas.py:2322
+msgid "Zoom Out [Ctrl--]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:613
-msgid "Web Camera Height"
+#: CNCCanvas.py:2331
+msgid "Fit to screen [F]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:614
-msgid "Web Camera Angle"
+#: CNCCanvas.py:2337 StateFrame.py:71
+msgid "Tool:"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:626
-msgid "Units (inches)"
-msgstr "Unità (inch)"
-
-#: OKKCNC/ToolsPage.py:627
-msgid "Laser Cutter"
-msgstr "Taglio Laser"
-
-#: OKKCNC/ToolsPage.py:628
-msgid "Laser Adaptive Power"
-msgstr "Potenza laser adattiva"
-
-#: OKKCNC/ToolsPage.py:629
-msgid "Double Size Icon"
-msgstr "Icone dimensione doppia"
-
-#: OKKCNC/ToolsPage.py:630
-msgid "Acceleration x"
-msgstr "Accelerazione X"
-
-#: OKKCNC/ToolsPage.py:631
-msgid "Acceleration y"
-msgstr "Accelerazione Y"
-
-#: OKKCNC/ToolsPage.py:632
-msgid "Acceleration z"
-msgstr "Accelerazione Z"
-
-#: OKKCNC/ToolsPage.py:633
-msgid "Feed max x"
-msgstr "Avanz. max X"
-
-#: OKKCNC/ToolsPage.py:634
-msgid "Feed max y"
-msgstr "Avanz. max Y"
-
-#: OKKCNC/ToolsPage.py:635
-msgid "Feed max z"
-msgstr "Avanz. max Z"
-
-#: OKKCNC/ToolsPage.py:636
-msgid "Travel x"
-msgstr "Corsa X"
-
-#: OKKCNC/ToolsPage.py:637
-msgid "Travel y"
-msgstr "Corsa Y"
-
-#: OKKCNC/ToolsPage.py:638
-msgid "Travel z"
-msgstr "Corsa Z"
-
-#: OKKCNC/ToolsPage.py:639
-msgid "Decimal digits"
-msgstr "Cifre decimali"
-
-#: OKKCNC/ToolsPage.py:640
-msgid "Plotting Arc accuracy"
-msgstr "Precisione Arco"
-
-#: OKKCNC/ToolsPage.py:641
-msgid "Start up"
+#: CNCCanvas.py:2353
+msgid "Select tool [S]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:642
-msgid "Spindle min (RPM)"
-msgstr "Giri motore min (RPM)"
-
-#: OKKCNC/ToolsPage.py:643
-msgid "Spindle max (RPM)"
-msgstr "Giri motore max (RPM)"
-
-#: OKKCNC/ToolsPage.py:644
-msgid "DRO Zero padding"
-msgstr "DRO Zero padding"
-
-#: OKKCNC/ToolsPage.py:645
-msgid "Header gcode"
-msgstr "Intestaz. GCode"
-
-#: OKKCNC/ToolsPage.py:646
-msgid "Footer gcode"
-msgstr "Postfaz. GCode"
-
-#: OKKCNC/ToolsPage.py:669 OKKCNC/ToolsPage.py:696 OKKCNC/ToolsPage.py:726
-#: OKKCNC/ToolsPage.py:1248 OKKCNC/lib/bFileDialog.py:276
-msgid "Name"
-msgstr "Nome"
-
-#: OKKCNC/ToolsPage.py:670 OKKCNC/ToolsPage.py:698 OKKCNC/ToolsPage.py:727
-#: OKKCNC/EditorPage.py:370
-msgid "Comment"
-msgstr "Commento"
-
-#: OKKCNC/ToolsPage.py:671
-msgid "-- Dati --"
-msgstr "-- Dati --"
-
-#: OKKCNC/ToolsPage.py:672
-msgid "Feed"
-msgstr "Avanz."
-
-#: OKKCNC/ToolsPage.py:673
-msgid "Plunge Feed"
-msgstr "Avanz. Z"
-
-#: OKKCNC/ToolsPage.py:697
-msgid "Number"
-msgstr "Numero"
-
-#: OKKCNC/ToolsPage.py:699 OKKCNC/lib/bFileDialog.py:277
-msgid "Type"
-msgstr "Tipo"
-
-#: OKKCNC/ToolsPage.py:700
-msgid "Shape"
-msgstr "Forma"
-
-#: OKKCNC/ToolsPage.py:701 OKKCNC/ToolsPage.py:728 OKKCNC/ToolsPage.py:988
-msgid "Material"
-msgstr "Materiale"
-
-#: OKKCNC/ToolsPage.py:702
-msgid "Coating"
-msgstr "Rivestim."
-
-#: OKKCNC/ToolsPage.py:703
-msgid "Diameter"
-msgstr "Diametro"
-
-#: OKKCNC/ToolsPage.py:704
-msgid "Mount Axis"
-msgstr "Codolo"
-
-#: OKKCNC/ToolsPage.py:705
-msgid "Flutes"
-msgstr "Taglienti"
-
-#: OKKCNC/ToolsPage.py:706
-msgid "Length"
-msgstr "Lung."
-
-#: OKKCNC/ToolsPage.py:707
-msgid "Angle"
-msgstr "Angolo"
-
-#: OKKCNC/ToolsPage.py:729
-msgid "Safe Z"
-msgstr "Z Sic."
-
-#: OKKCNC/ToolsPage.py:730
-msgid "Surface Z"
-msgstr "Z Superf."
-
-#: OKKCNC/ToolsPage.py:731
-msgid "Thickness"
-msgstr "Spessore"
-
-#: OKKCNC/ToolsPage.py:732
-msgid "Stepover %"
-msgstr "StepOver %"
-
-#: OKKCNC/ToolsPage.py:733
-msgid "Depth Increment"
-msgstr "Incr. Prof."
-
-#: OKKCNC/ToolsPage.py:757
-msgid "$0 Step pulse time [us]"
+#: CNCCanvas.py:2367
+msgid "Pan viewport [X]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:758
-msgid "$1 Step idle delay [ms]"
+#: CNCCanvas.py:2379
+msgid "Ruler [R]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:759
-msgid "$2 Step port invert [mask]"
+#: CNCCanvas.py:2388
+msgid "Draw:"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:760
-msgid "$3 Direction port invert [mask]"
+#: CNCCanvas.py:2401
+msgid "Toggle display of axes"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:761
-msgid "$4 Step enable invert"
+#: CNCCanvas.py:2412
+msgid "Toggle display of grid lines"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:762
-msgid "$5 Limit pins invert"
+#: CNCCanvas.py:2423
+msgid "Toggle display of margins"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:763
-msgid "$6 Probe pin invert"
+#: CNCCanvas.py:2435
+msgid "Toggle display of probe"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:764
-msgid "$10 Status report [mask]"
+#: CNCCanvas.py:2446
+msgid "Toggle display of paths (G1,G2,G3)"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:765
-msgid "$11 Junction deviation [mm]"
+#: CNCCanvas.py:2457
+msgid "Toggle display of rapid motion (G0)"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:766
-msgid "$12 Arc tolerance [mm]"
+#: CNCCanvas.py:2468
+msgid "Toggle display of workarea"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:767
-msgid "$13 Report inches"
+#: CNCCanvas.py:2479
+msgid "Toggle display of camera"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:768
-msgid "$20 Soft limits"
+#: CNCCanvas.py:2490
+msgid "Redraw display [Ctrl-R]"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:769
-msgid "$21 Hard limits"
+#: CNCCanvas.py:2501
+msgid "Draw timeout in seconds"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:770
-msgid "$22 Homing cycle"
+#: CNCCanvas.py:2509
+msgid "Timeout:"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:771
-msgid "$23 Homing direction invert [mask]"
+#: CNCList.py:761 EditorPage.py:207
+msgid "Color"
+msgstr "Colore"
+
+#: Commands.py:58
+#, python-brace-format
+msgid "Last error: {0}\n"
+msgstr "Ultimo Errore: {0}\n"
+
+#: Commands.py:64
+msgid ""
+"No info available.\n"
+"Please contact the author."
+msgstr ""
+"Nessuna informazione disponibile.\n"
+"Per favore contattare l'autore."
+
+#: Commands.py:66
+#, python-brace-format
+msgid "State: {0}"
+msgstr "Stato: {0}"
+
+#: ControlPage.py:56
+msgid "Control"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:772
-msgid "$24 Homing feed [mm/min]"
+#: ControlPage.py:81
+msgid "Step for Z move operation"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:773
-msgid "$25 Homing seek [mm/min]"
+#: ControlPage.py:93
+#, python-brace-format
+msgid "Step1 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:774
-msgid "$26 Homing debounce [ms]"
+#: ControlPage.py:106
+#, python-brace-format
+msgid "Step2 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:775
-msgid "$27 Homing pull-off [mm]"
+#: ControlPage.py:119
+#, python-brace-format
+msgid "Step3 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:776
-msgid "$30 Max spindle speed [RPM]"
+#: ControlPage.py:132
+#, python-brace-format
+msgid "Step4 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:777
-msgid "$31 Min spindle speed [RPM]"
+#: ControlPage.py:142
+msgid "Decrease zstep"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:778
-msgid "$32 Laser mode enable"
+#: ControlPage.py:150
+msgid "Increase zstep"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:779
-msgid "$100 X steps/mm"
+#: ControlPage.py:161
+msgid "Divide step by 5"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:780
-msgid "$101 Y steps/mm"
+#: ControlPage.py:171
+msgid "Multiply step by 5"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:781
-msgid "$102 Z steps/mm"
+#: ControlPage.py:180
+msgid "Step for coarse move operation"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:782
-msgid "$110 X max rate [mm/min]"
+#: ControlPage.py:190
+msgid "Decrease step"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:783
-msgid "$111 Y max rate [mm/min]"
+#: ControlPage.py:199
+msgid "Increase step"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:784
-msgid "$112 Z max rate [mm/min]"
+#: ControlPage.py:211
+msgid "Move +Z"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:785
-msgid "$120 X acceleration [mm/sec^2]"
+#: ControlPage.py:222
+msgid "Move -X +Y"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:786
-msgid "$121 Y acceleration [mm/sec^2]"
+#: ControlPage.py:232
+msgid "Move +Y"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:787
-msgid "$122 Z acceleration [mm/sec^2]"
+#: ControlPage.py:242
+msgid "Move +X +Y"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:788
-msgid "$130 X max travel [mm]"
+#: ControlPage.py:257
+#, python-brace-format
+msgid "Z Step1 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:789
-msgid "$131 Y max travel [mm]"
+#: ControlPage.py:271
+#, python-brace-format
+msgid "Z Step2 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:790
-msgid "$132 Z max travel [mm]"
+#: ControlPage.py:282
+msgid "Move -X"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:791
-msgid "$140 X homing pull-off [mm]"
+#: ControlPage.py:298
+msgid ""
+"Move to Origin.\n"
+"Right click to configure."
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:792
-msgid "$141 Y homing pull-off [mm]"
+#: ControlPage.py:311
+msgid "Move +X"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:793
-msgid "$142 Z homing pull-off [mm]"
+#: ControlPage.py:328
+#, python-brace-format
+msgid "Z Step3 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:967
-msgid "Database"
-msgstr "Database"
-
-#: OKKCNC/ToolsPage.py:974
-msgid "Stock"
-msgstr "Grezzo"
-
-#: OKKCNC/ToolsPage.py:981
-msgid "Stock material currently on machine"
-msgstr "Grezzo attualmente in macchina"
-
-#: OKKCNC/ToolsPage.py:995
-msgid "Editable database of material properties"
-msgstr "Database dei materiali"
-
-#: OKKCNC/ToolsPage.py:1002
-msgid "End Mill"
-msgstr "Utensile"
-
-#: OKKCNC/ToolsPage.py:1009
-msgid "Editable database of EndMills properties"
-msgstr "Database Utensili"
-
-#: OKKCNC/ToolsPage.py:1016
-msgid "Rename"
-msgstr "Rinomina"
-
-#: OKKCNC/ToolsPage.py:1021
-msgid "Edit name of current operation/object"
-msgstr "Modifica nome operazione/oggetto attuale"
-
-#: OKKCNC/ToolsPage.py:1029 OKKCNC/EditorPage.py:242 OKKCNC/ProbePage.py:569
-msgid "Add"
-msgstr "Aggiungi"
-
-#: OKKCNC/ToolsPage.py:1034
-msgid "Add a new operation/object"
-msgstr "Aggiungi un/a nuovo/a operazione/oggetto"
-
-#: OKKCNC/ToolsPage.py:1042 OKKCNC/EditorPage.py:258
-msgid "Clone"
-msgstr "Clona"
-
-#: OKKCNC/ToolsPage.py:1047
-msgid "Clone selected operation/object"
-msgstr "Clona un/a nuovo/a operazione/oggetto"
-
-#: OKKCNC/ToolsPage.py:1055 OKKCNC/EditorPage.py:283 OKKCNC/ProbePage.py:603
-msgid "Delete"
-msgstr "Elimina"
-
-#: OKKCNC/ToolsPage.py:1060
-msgid "Delete selected operation/object"
-msgstr "Elimina un/a nuovo/a operazione/oggetto"
-
-#: OKKCNC/ToolsPage.py:1070 OKKCNC/ToolsPage.py:1122
-msgid "Config"
-msgstr "Configura"
-
-#: OKKCNC/ToolsPage.py:1085
-msgid "Change program language restart is required"
-msgstr "Modifica Lingua del programma (ripartenza richiesta)"
-
-#: OKKCNC/ToolsPage.py:1094 OKKCNC/ProbePage.py:121 OKKCNC/ProbePage.py:1378
-msgid "Camera"
+#: ControlPage.py:344
+#, python-brace-format
+msgid "Z Step4 = {0}"
 msgstr ""
 
-#: OKKCNC/ToolsPage.py:1101
-msgid "Camera Configuration"
-msgstr "Configurazione Camera"
+#: ControlPage.py:357
+msgid "Move -Z"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1108
-msgid "Colors"
-msgstr "Colori"
+#: ControlPage.py:368
+msgid "Move -X -Y"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1115
-msgid "Color configuration"
-msgstr "Configurazione colori"
+#: ControlPage.py:379
+msgid "Move -Y"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1129
-msgid "Machine configuration for OKKCNC"
-msgstr "Configurazione macchina per OKKCNC"
+#: ControlPage.py:390
+msgid "Move +X -Y"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1136
-msgid "Controller"
-msgstr "Controllo"
+#: ControlPage.py:409
+msgid "Reset Gcode"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1143
-msgid "Controller (GRBL) configuration"
-msgstr "Configurazione controllo (GRBL)"
+#: ControlPage.py:423
+msgid "Mem A"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1150
-msgid "Fonts"
-msgstr "Caratteri"
+#: ControlPage.py:437
+msgid "Mem B"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1157
-msgid "Font configuration"
-msgstr "Configurazione caratteri"
+#: ControlPage.py:449
+msgid "Line from memA to memB"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1164
-msgid "Shortcuts"
-msgstr "Scorciatoie"
+#: ControlPage.py:461
+msgid "Rectangular Pocket from memA to memB"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1171
-msgid "Shortcuts configuration"
-msgstr "Configurazione scorciatoie"
+#: ControlPage.py:473
+msgid "Return to mem A"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1202
-msgid "Language change"
-msgstr "Cambia Lingua"
+#: ControlPage.py:485
+msgid "Return to mem B"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1203
-msgid "Please restart the program."
-msgstr "Prego Ripartenza richiesta"
+#: ControlPage.py:637 ControlPage.py:644 ControlPage.py:660
+msgid "Step: {0:.{2}f}    Zstep: {1:.{2}f} "
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1211
-msgid "Events"
-msgstr "Eventi"
+#: ControlPage.py:655
+msgid "Step: {0:.{1}f}"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1216
-msgid "User File"
-msgstr "File Utente"
+#: ControlPage.py:852
+msgid "CNC communication and control"
+msgstr ""
 
-#: OKKCNC/ToolsPage.py:1236
-msgid "Execute"
-msgstr "Esegui"
+#: EditorPage.py:44
+msgid "Paste"
+msgstr "Incolla"
 
-#: OKKCNC/ToolsPage.py:1249
-msgid "Value"
-msgstr "Valore"
+#: EditorPage.py:51
+msgid "Paste [Ctrl-V]"
+msgstr "Incolla [Ctrl-V]"
 
-#: OKKCNC/ToolsPage.py:1352
-msgid "GCode manipulation tools and user plugins"
-msgstr "Estensioni Utente e strumenti di modifica GCode"
+#: EditorPage.py:60
+msgid "Cut"
+msgstr "Taglia"
 
-#: OKKCNC/ToolsPage.py:1353
-msgid "CAM"
-msgstr "CAM"
+#: EditorPage.py:66
+msgid "Cut [Ctrl-X]"
+msgstr "Taglia [Ctrl-X]"
 
-#: OKKCNC/OKKCNC.py:97 OKKCNC/__main__.py:97
-msgid "All accepted"
-msgstr "Accetta tutto"
+#: EditorPage.py:77
+msgid "Copy"
+msgstr "Copia"
 
-#: OKKCNC/OKKCNC.py:100 OKKCNC/OKKCNC.py:2207 OKKCNC/__main__.py:100
-#: OKKCNC/__main__.py:2207
-msgid "G-Code"
-msgstr "G-Code"
+#: EditorPage.py:83
+msgid "Copy [Ctrl-C]"
+msgstr "Copia [Ctrl-C]"
 
-#: OKKCNC/OKKCNC.py:101 OKKCNC/__main__.py:101
-msgid "G-Code clean"
-msgstr "Pulisci G-Code"
+#: EditorPage.py:94
+msgid "Show statistics for enabled gcode"
+msgstr ""
 
-#: OKKCNC/OKKCNC.py:102 OKKCNC/ProbePage.py:88 OKKCNC/ProbePage.py:96
-#: OKKCNC/ProbePage.py:437 OKKCNC/ProbePage.py:508 OKKCNC/__main__.py:102
-msgid "Probe"
-msgstr "Sonda"
+#: EditorPage.py:96
+msgid "Show cutting information on selected blocks [Ctrl-n]"
+msgstr ""
 
-#: OKKCNC/OKKCNC.py:103 OKKCNC/ProbePage.py:549 OKKCNC/ProbePage.py:657
-#: OKKCNC/__main__.py:103
-msgid "Orient"
-msgstr "Orientamento"
-
-#: OKKCNC/OKKCNC.py:104 OKKCNC/EditorPage.py:103 OKKCNC/__main__.py:104
+#: EditorPage.py:108 OKKCNC.py:114 __main__.py:114
 msgid "All"
 msgstr "Tutto"
 
-#: OKKCNC/OKKCNC.py:476 OKKCNC/__main__.py:476
+#: EditorPage.py:115
+msgid "Select all blocks [Ctrl-A]"
+msgstr "Seleziona tutti i blocchi [Ctrl-A]"
+
+#: EditorPage.py:125
+msgid "None"
+msgstr "Nessuno"
+
+#: EditorPage.py:132
+msgid "Unselect all blocks [Ctrl-Shift-A]"
+msgstr "Deseleziona tutti i blocchi [Ctrl-Shift-A]"
+
+#: EditorPage.py:143 EditorPage.py:570
+msgid "Invert"
+msgstr "Inverti"
+
+#: EditorPage.py:150
+msgid "Invert selection [Ctrl-I]"
+msgstr "Inverti selezione [Ctrl-I]"
+
+#: EditorPage.py:160
+msgid "Layer"
+msgstr "Layer"
+
+#: EditorPage.py:167
+msgid "Select all blocks from current layer"
+msgstr "Seleziona tutti i blocchi del layer corrente"
+
+#: EditorPage.py:174
+msgid "Filter"
+msgstr "Filtra"
+
+#: EditorPage.py:186
+msgid "Filter blocks"
+msgstr "Filtra i blocchi"
+
+#: EditorPage.py:205 ProbePage.py:111 ProbePage.py:208 ProbePage.py:1020
+msgid "Autolevel"
+msgstr ""
+
+#: EditorPage.py:209 FilePage.py:131
+msgid "Import"
+msgstr "Importa"
+
+#: EditorPage.py:211
+msgid "Round"
+msgstr "Arrotonda"
+
+#: EditorPage.py:230 EditorPage.py:253
+msgid "Insert a new block or line of code [Ins or Ctrl-Enter]"
+msgstr "Inserisci un nuovo blocco o linea di codice [Ins o Ctrl-Invio]"
+
+#: EditorPage.py:235
+msgid "Line"
+msgstr "Linea"
+
+#: EditorPage.py:238
+msgid "Block"
+msgstr "Blocco"
+
+#: EditorPage.py:245 ProbePage.py:569 ToolsPage.py:989
+msgid "Add"
+msgstr "Aggiungi"
+
+#: EditorPage.py:261 ToolsPage.py:1007
+msgid "Clone"
+msgstr "Clona"
+
+#: EditorPage.py:275
+msgid "Clone selected lines or blocks [Ctrl-D]"
+msgstr ""
+
+#: EditorPage.py:286 ProbePage.py:603 ToolsPage.py:1025
+msgid "Delete"
+msgstr "Elimina"
+
+#: EditorPage.py:298
+msgid "Delete selected lines or blocks [Del]"
+msgstr ""
+
+#: EditorPage.py:318
+msgid "Toggle enable/disable block of g-code [Ctrl-L]"
+msgstr ""
+
+#: EditorPage.py:323
+msgid "Enable"
+msgstr "Attiva"
+
+#: EditorPage.py:325
+msgid "Disable"
+msgstr "Disattiva"
+
+#: EditorPage.py:331
+msgid "Active"
+msgstr "Attivo"
+
+#: EditorPage.py:341
+msgid "Enable or disable blocks of gcode"
+msgstr "Attiva o disattiva blocco di GCode"
+
+#: EditorPage.py:350
+msgid "Expand"
+msgstr "Espandi"
+
+#: EditorPage.py:362
+msgid "Toggle expand/collapse blocks of gcode [Ctrl-E]"
+msgstr ""
+
+#: EditorPage.py:373 ToolsPage.py:644 ToolsPage.py:667 ToolsPage.py:692
+msgid "Comment"
+msgstr "Commento"
+
+#: EditorPage.py:380
+msgid "(Un)Comment selected lines"
+msgstr ""
+
+#: EditorPage.py:391
+msgid "Join"
+msgstr "Unisci"
+
+#: EditorPage.py:398
+msgid "Join selected blocks"
+msgstr "Unisci i blocchi selezionati"
+
+#: EditorPage.py:409
+msgid "Split"
+msgstr "Dividi"
+
+#: EditorPage.py:416
+msgid "Split selected blocks"
+msgstr "Dividi i blocchi selezionati"
+
+#: EditorPage.py:427
+msgid "Clear All"
+msgstr "Pulisci tutto"
+
+#: EditorPage.py:439
+msgid "Clear Editor Window"
+msgstr ""
+
+#: EditorPage.py:455
+msgid "Move"
+msgstr "Muovi"
+
+#: EditorPage.py:465
+msgid "Move objects [M]"
+msgstr "Muovi oggetti [M]"
+
+#: EditorPage.py:474
+msgid "Origin"
+msgstr "Origine"
+
+#: EditorPage.py:484
+msgid "Move all gcode such as origin is on mouse location [O]"
+msgstr "Muovi l'origine del GCode sulla posizione del mouse [O] "
+
+#: EditorPage.py:491
+msgid "Top-Left"
+msgstr "Alto-Sinistra"
+
+#: EditorPage.py:492
+msgid "Left"
+msgstr "Sinistra"
+
+#: EditorPage.py:493
+msgid "Bottom-Left"
+msgstr "Basso-Sinistra"
+
+#: EditorPage.py:494
+msgid "Top"
+msgstr "Alto"
+
+#: EditorPage.py:495 ProbePage.py:525 ProbePage.py:537
+msgid "Center"
+msgstr ""
+
+#: EditorPage.py:496
+msgid "Bottom"
+msgstr "Basso"
+
+#: EditorPage.py:497
+msgid "Top-Right"
+msgstr "Alto-Destra"
+
+#: EditorPage.py:498
+msgid "Right"
+msgstr "Destra"
+
+#: EditorPage.py:499
+msgid "Bottom-Right"
+msgstr "Basso-Destra"
+
+#: EditorPage.py:518 OKKCNC.py:1596 __main__.py:1596
+msgid "Optimize"
+msgstr "Ottimizza"
+
+#: EditorPage.py:532
+msgid "Up"
+msgstr "Sù"
+
+#: EditorPage.py:541
+msgid "Move selected g-code up [Ctrl-Up, Ctrl-PgUp]"
+msgstr ""
+
+#: EditorPage.py:550
+msgid "Down"
+msgstr "Giù"
+
+#: EditorPage.py:559
+msgid "Move selected g-code down [Ctrl-Down, Ctrl-PgDn]"
+msgstr ""
+
+#: EditorPage.py:577
+msgid "Invert cutting order of selected blocks"
+msgstr ""
+
+#: EditorPage.py:594
+msgid "CW"
+msgstr ""
+
+#: EditorPage.py:602
+msgid "Rotate selected gcode clock-wise (-90deg)"
+msgstr ""
+
+#: EditorPage.py:611
+msgid "Flip"
+msgstr ""
+
+#: EditorPage.py:619
+msgid "Rotate selected gcode by 180deg"
+msgstr ""
+
+#: EditorPage.py:628
+msgid "CCW"
+msgstr ""
+
+#: EditorPage.py:634
+msgid "Rotate selected gcode counter-clock-wise (90deg)"
+msgstr ""
+
+#: EditorPage.py:642
+msgid "Horizontal"
+msgstr ""
+
+#: EditorPage.py:650
+msgid "Mirror horizontally X=-X selected gcode"
+msgstr ""
+
+#: EditorPage.py:659
+msgid "Vertical"
+msgstr ""
+
+#: EditorPage.py:667
+msgid "Mirror vertically Y=-Y selected gcode"
+msgstr ""
+
+#: EditorPage.py:698
+msgid "GCode editor"
+msgstr "Editor GCode"
+
+#: FilePage.py:82
+msgid "New"
+msgstr "Nuuovo"
+
+#: FilePage.py:88
+msgid "New gcode file"
+msgstr "Nuovo file GCode"
+
+#: FilePage.py:104
+msgid "Open existing gcode file [Ctrl-O]"
+msgstr "Apri file GCode esistente [Ctrl-O]"
+
+#: FilePage.py:113 FilePage.py:426 OKKCNC.py:2147 __main__.py:2147
+#: lib/bFileDialog.py:303 lib/bFileDialog.py:855 lib/bFileDialog.py:967
+msgid "Open"
+msgstr "Apri"
+
+#: FilePage.py:120
+msgid "Open recent file"
+msgstr "Apri file recente"
+
+#: FilePage.py:137
+msgid "Import gcode file"
+msgstr "Importa file GCode"
+
+#: FilePage.py:153
+msgid "Save gcode file [Ctrl-S]"
+msgstr "Salva file GCode [Ctrl-S]"
+
+#: FilePage.py:163 lib/bFileDialog.py:890
+msgid "Save"
+msgstr "Salva"
+
+#: FilePage.py:170
+msgid "Save gcode as..."
+msgstr "Salva Gcode come..."
+
+#: FilePage.py:227
+msgid "About"
+msgstr "Info"
+
+#: FilePage.py:236
+msgid "About the program"
+msgstr "Informazioni sul programma"
+
+#: FilePage.py:253 Interface.py:585
+msgid "Start"
+msgstr "Partenza"
+
+#: FilePage.py:262
+msgid "Start pendant"
+msgstr ""
+
+#: FilePage.py:268 Interface.py:616
+msgid "Stop"
+msgstr "Stop"
+
+#: FilePage.py:277
+msgid "Stop pendant"
+msgstr ""
+
+#: FilePage.py:292
+msgid "Exit"
+msgstr "Esci"
+
+#: FilePage.py:301
+msgid "Close program [Ctrl-Q]"
+msgstr "Chiudi programma [Ctrl-Q]"
+
+#: FilePage.py:311
+msgid "Serial"
+msgstr "Seriale"
+
+#: FilePage.py:317
+msgid "Port:"
+msgstr "Porta:"
+
+#: FilePage.py:334
+msgid "Select (or manual enter) port to connect"
+msgstr "Seleziona (o inserisci manualmente) la porta da connettere"
+
+#: FilePage.py:344
+msgid "Baud:"
+msgstr ""
+
+#: FilePage.py:355
+msgid "Select connection baud rate"
+msgstr "Imposta velocità connessione (Baud)"
+
+#: FilePage.py:365
+msgid "Controller:"
+msgstr "Controllo:"
+
+#: FilePage.py:377
+msgid "Select controller board"
+msgstr "Seleziona la scheda di controllo"
+
+#: FilePage.py:389
+msgid "Connect on startup"
+msgstr "Connetti all'Avvio"
+
+#: FilePage.py:396
+msgid "Connect to serial on startup of the program"
+msgstr "Connetti la seriale all'avvio del programma"
+
+#: FilePage.py:407
+msgid "Refresh"
+msgstr "Ricarica"
+
+#: FilePage.py:418
+msgid "Refresh list of serial ports"
+msgstr "Ricarica la lista delle porte seriali"
+
+#: FilePage.py:438
+msgid "Open/Close serial port"
+msgstr "Apri/Chiudi la porta seriale"
+
+#: FilePage.py:517
+msgid "File I/O and configuration"
+msgstr "File I/O e configurazione"
+
+#: Interface.py:112
+msgid "Controller buffer fill"
+msgstr "Riemp. Buffer"
+
+#: Interface.py:129 Utils.py:691
+msgid "Command:"
+msgstr "Comando"
+
+#: Interface.py:138
+msgid ""
+"MDI Command line: Accept g-code commands or macro commands (RESET/HOME...) "
+"or editor commands (move,inkscape, round...) [Space or Ctrl-Space]"
+msgstr ""
+"Line di comando: Accetta comandi GCode o macro (RESET/HOME...) o comandi "
+"dell'editor (move, round...) [Spazio or Ctrl-Spazio]"
+
+#: Interface.py:222
+msgid "Status:"
+msgstr "Stato:"
+
+#: Interface.py:240
+msgid ""
+"Show current state of the machine\n"
+"Click to see details\n"
+"Right-Click to clear alarm/errors"
+msgstr ""
+"Mostra lo Stato attuale della macchina\n"
+"Clicca per vedere i dettagli.\n"
+"Click-Destro per pulire allarmi/errori"
+
+#: Interface.py:248 ProbePage.py:617
+msgid "WPos:"
+msgstr "WCS:"
+
+#: Interface.py:260
+msgid "X work position (click to set)"
+msgstr "WCS X (click per impostare)"
+
+#: Interface.py:275
+msgid "Y work position (click to set)"
+msgstr "WCS Y (click per impostare)"
+
+#: Interface.py:289
+msgid "Z work position (click to set)"
+msgstr "WCS Z (click per impostare)"
+
+#: Interface.py:298
+msgid "MPos:"
+msgstr "MCS:"
+
+#: Interface.py:335
+msgid "SWP"
+msgstr ""
+
+#: Interface.py:346
+msgid "Set WPOS to mouse location"
+msgstr "Set WCS alle coordinate del mouse"
+
+#: Interface.py:355
+msgid "X=0"
+msgstr ""
+
+#: Interface.py:364
+msgid "Set X coordinate to zero (or to typed coordinate in WPos)"
+msgstr "Imposta le coordinate X a 0 (o alle coordinate inserite in WCS)"
+
+#: Interface.py:371
+msgid "Y=0"
+msgstr ""
+
+#: Interface.py:380
+msgid "Set Y coordinate to zero (or to typed coordinate in WPos)"
+msgstr "Imposta le coordinate Y a 0 (o alle coordinate inserite in WCS)"
+
+#: Interface.py:387
+msgid "Z=0"
+msgstr ""
+
+#: Interface.py:396
+msgid "Set Z coordinate to zero (or to typed coordinate in WPos)"
+msgstr "Imposta le coordinate Z a 0 (o alle coordinate inserite in WCS)"
+
+#: Interface.py:407
+msgid "MG"
+msgstr ""
+
+#: Interface.py:417
+msgid "Move gantry to mouse location [g]"
+msgstr "Muovi la fresa sulla posizione del mouse [g]"
+
+#: Interface.py:426
+msgid "XY=0"
+msgstr ""
+
+#: Interface.py:435
+msgid "Set XY coordinate to zero (or to typed coordinate in WPos)"
+msgstr "Imposta le coordinate XY a 0 (o alle coordinate inserite in WCS)"
+
+#: Interface.py:442
+msgid "XYZ=0"
+msgstr ""
+
+#: Interface.py:452
+msgid "Set XYZ coordinate to zero (or to typed coordinate in WPos)"
+msgstr "Imposta le coordinate XYZ a 0 (o alle coordinate inserite in WCS)"
+
+#: Interface.py:465
+msgid "Show Info"
+msgstr "Mostra Info"
+
+#: Interface.py:471
+msgid "Clear Message"
+msgstr "Pulisci messaggio"
+
+#: Interface.py:479
+msgid "Feed hold"
+msgstr "Feed hold"
+
+#: Interface.py:485
+msgid "Resume"
+msgstr "Riprendi"
+
+#: Interface.py:592
+msgid "Run g-code commands from editor to controller"
+msgstr "Invia comandi GCode dall'editor al controllo"
+
+#: Interface.py:601
+msgid "Pause"
+msgstr "Pausa"
+
+#: Interface.py:609
+msgid "Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"
+msgstr ""
+"Metti in Pausa il programma. Invia un FEED_HOLD ! oppure un CYCLE_START ~"
+
+#: Interface.py:624
+msgid "Pause running program and soft reset controller to empty the buffer."
+msgstr ""
+"Mette in Pausa il programma e invia un Soft-Reset al controllo per svuotare "
+"il buffer."
+
+#: Interface.py:636
+msgid "Hard Reset"
+msgstr "Hard Reset"
+
+#: Interface.py:637
+msgid "Toggle Sender Dbg"
+msgstr ""
+
+#: Interface.py:638
+msgid "Toggle Com Dbg"
+msgstr ""
+
+#: Interface.py:639
+msgid "View Flags"
+msgstr ""
+
+#: Interface.py:651
+msgid "Home"
+msgstr "Home"
+
+#: Interface.py:663
+msgid "Perform a homing cycle [$H]"
+msgstr "Esegue un ciclo di homing [$H]"
+
+#: Interface.py:672
+msgid "Unlock"
+msgstr "Sblocca"
+
+#: Interface.py:680
+msgid "Unlock controller [$X]"
+msgstr "Sblocca il controllo [$X]"
+
+#: Interface.py:689
+msgid "Connection"
+msgstr "Connes."
+
+#: Interface.py:697
+msgid "Open/Close connection"
+msgstr "Apri/Chiudi connessione"
+
+#: Interface.py:704 StateFrame.py:325
+msgid "Reset"
+msgstr "Reset"
+
+#: Interface.py:712
+msgid "Software reset of controller [ctrl-x]"
+msgstr "invia un Soft-reset al controllo [ctrl-x]"
+
+#: Interface.py:741
+msgid "Save Memories"
+msgstr "Salva Memorie"
+
+#: Interface.py:743
+msgid "Toggle this Bank visibility"
+msgstr ""
+
+#: Interface.py:745
+msgid "Don't Show all Memories"
+msgstr "Nascondi le memorie"
+
+#: Interface.py:755
+msgid "M2A"
+msgstr ""
+
+#: Interface.py:761
+msgid "Memory to A"
+msgstr "Memoria in A"
+
+#: Interface.py:771
+msgid "M2B"
+msgstr ""
+
+#: Interface.py:777
+msgid "Memory to B"
+msgstr "Memoria in B"
+
+#: Interface.py:787
+msgid "C_M"
+msgstr ""
+
+#: Interface.py:792
+msgid "Cancel mem X"
+msgstr "Cancella Memoria X"
+
+#: Interface.py:807
+#, python-brace-format
+msgid ""
+"Bank Number \n"
+" Mem {0}"
+msgstr ""
+"Banco di Memoria \n"
+"Mem {0}"
+
+#: Interface.py:817
+msgid "B +"
+msgstr ""
+
+#: Interface.py:825
+msgid "Upper Memory Bank"
+msgstr "Banco di Memoria Superiore"
+
+#: Interface.py:835
+msgid "B -"
+msgstr ""
+
+#: Interface.py:844
+msgid "Lower Memory Bank"
+msgstr "Banco di Memoria Inferiore"
+
+#: Interface.py:873
+#, python-brace-format
+msgid "Set {0}"
+msgstr "Set {0}"
+
+#: OKKCNC.desktop:5
+msgid "OKKCNC"
+msgstr ""
+
+#: OKKCNC.desktop:6
+#, fuzzy
+#| msgid "Controller"
+msgid "OKKCNC Controller"
+msgstr "Controllo"
+
+#: OKKCNC.py:107 __main__.py:107
+msgid "All accepted"
+msgstr "Accetta tutto"
+
+#: OKKCNC.py:110 OKKCNC.py:2098 __main__.py:110 __main__.py:2098
+msgid "G-Code"
+msgstr "G-Code"
+
+#: OKKCNC.py:111 __main__.py:111
+msgid "G-Code clean"
+msgstr "Pulisci G-Code"
+
+#: OKKCNC.py:112 ProbePage.py:98 ProbePage.py:437 ProbePage.py:508
+#: __main__.py:112
+msgid "Probe"
+msgstr "Sonda"
+
+#: OKKCNC.py:113 ProbePage.py:549 ProbePage.py:657 __main__.py:113
+msgid "Orient"
+msgstr "Orientamento"
+
+#: OKKCNC.py:682 __main__.py:682
 msgid "Running"
 msgstr "In Funzione"
 
-#: OKKCNC/OKKCNC.py:477 OKKCNC/__main__.py:477
+#: OKKCNC.py:683 __main__.py:683
 msgid "CNC is currently running, please stop it before."
 msgstr "CNC sta funzionando, prima premi STOP."
 
-#: OKKCNC/OKKCNC.py:710 OKKCNC/__main__.py:710
-#, python-brace-format
-msgid "About {0} v{1}"
-msgstr "A proposito {0} v{1}"
-
-#: OKKCNC/OKKCNC.py:747 OKKCNC/__main__.py:747
-msgid ""
-"OKKCNC/\tAn advanced fully featured\n"
-"\t\tg-code sender for GRBL. \n"
-"\n"
-"\t\tForked from bCNC"
-msgstr ""
-"OKKCNC/\tUn avanzato e completo\n"
-"\t\tG-code sender per GRBL. \n"
-"\n"
-"\t\tDerivato da bCNC"
-
-#: OKKCNC/OKKCNC.py:950 OKKCNC/OKKCNC.py:1271 OKKCNC/OKKCNC.py:2267
-#: OKKCNC/FilePage.py:227 OKKCNC/__main__.py:950 OKKCNC/__main__.py:1271
-#: OKKCNC/__main__.py:2267
-msgid "Close"
-msgstr "Chiudi"
-
-#: OKKCNC/OKKCNC.py:990 OKKCNC/EditorPage.py:779 OKKCNC/__main__.py:990
+#: OKKCNC.py:883 __main__.py:883
 msgid "Statistics"
 msgstr "Statistiche"
 
-#: OKKCNC/OKKCNC.py:1011 OKKCNC/__main__.py:1011
+#: OKKCNC.py:909 __main__.py:909
 msgid "Enabled GCode"
 msgstr "GCode attivo"
 
-#: OKKCNC/OKKCNC.py:1020 OKKCNC/OKKCNC.py:1155 OKKCNC/__main__.py:1020
-#: OKKCNC/__main__.py:1155
+#: OKKCNC.py:918 OKKCNC.py:1053 __main__.py:918 __main__.py:1053
 msgid "Margins X:"
 msgstr "Margini X:"
 
-#: OKKCNC/OKKCNC.py:1079 OKKCNC/OKKCNC.py:1214 OKKCNC/__main__.py:1079
-#: OKKCNC/__main__.py:1214
+#: OKKCNC.py:977 OKKCNC.py:1112 __main__.py:977 __main__.py:1112
 msgid "# Blocks:"
 msgstr "# Blocchi:"
 
-#: OKKCNC/OKKCNC.py:1094 OKKCNC/OKKCNC.py:1232 OKKCNC/__main__.py:1094
-#: OKKCNC/__main__.py:1232
+#: OKKCNC.py:992 OKKCNC.py:1130 __main__.py:992 __main__.py:1130
 msgid "Length:"
 msgstr "Lungh.:"
 
-#: OKKCNC/OKKCNC.py:1111 OKKCNC/__main__.py:1111
+#: OKKCNC.py:1009 __main__.py:1009
 msgid "Rapid:"
 msgstr "Rapidi:"
 
-#: OKKCNC/OKKCNC.py:1127 OKKCNC/OKKCNC.py:1248 OKKCNC/__main__.py:1127
-#: OKKCNC/__main__.py:1248
+#: OKKCNC.py:1025 OKKCNC.py:1146 __main__.py:1025 __main__.py:1146
 msgid "Time:"
 msgstr "Tempo:"
 
-#: OKKCNC/OKKCNC.py:1148 OKKCNC/__main__.py:1148
+#: OKKCNC.py:1046 __main__.py:1046
 msgid "All GCode"
 msgstr "Tutto il GCode"
 
-#: OKKCNC/OKKCNC.py:1418 OKKCNC/__main__.py:1418
+#: OKKCNC.py:1169 OKKCNC.py:2158 Utils.py:501 __main__.py:1169 __main__.py:2158
+msgid "Close"
+msgstr "Chiudi"
+
+#: OKKCNC.py:1198 TerminalPage.py:193 __main__.py:1198
+msgid "Error Help"
+msgstr ""
+
+#: OKKCNC.py:1208 TerminalPage.py:204 __main__.py:1208
+msgid "Settings Help"
+msgstr ""
+
+#: OKKCNC.py:1325 __main__.py:1325
 msgid "Evaluation error"
 msgstr "Errore (Valutazione)"
 
-#: OKKCNC/OKKCNC.py:1514 OKKCNC/__main__.py:1514
+#: OKKCNC.py:1421 __main__.py:1421
 msgid "Direction command error"
 msgstr "Errore (comando Dir)"
 
-#: OKKCNC/OKKCNC.py:1515 OKKCNC/__main__.py:1515
+#: OKKCNC.py:1422 __main__.py:1422
 #, python-brace-format
 msgid "Invalid direction {0} specified"
 msgstr "Specificata dir {0} non valida"
 
-#: OKKCNC/OKKCNC.py:1693 OKKCNC/EditorPage.py:515 OKKCNC/__main__.py:1693
-msgid "Optimize"
-msgstr "Ottimizza"
-
-#: OKKCNC/OKKCNC.py:1694 OKKCNC/__main__.py:1694
+#: OKKCNC.py:1597 __main__.py:1597
 msgid "Please select the blocks of gcode you want to optimize."
 msgstr "Prego selezione il blocco di GCode da ottimizzare"
 
-#: OKKCNC/OKKCNC.py:1824 OKKCNC/__main__.py:1824
-#, python-format
-msgid "EndMill: %s %g"
+#: OKKCNC.py:1723 __main__.py:1723
+#, fuzzy, python-brace-format
+#| msgid "EndMill: %s %g"
+msgid "EndMill: {0} {1}"
 msgstr "Utensile %s %g"
 
-#: OKKCNC/OKKCNC.py:1849 OKKCNC/__main__.py:1849
+#: OKKCNC.py:1750 __main__.py:1750
 #, python-brace-format
 msgid "Invalid user command {0}"
 msgstr "Comando utente {0} Non valido"
 
-#: OKKCNC/OKKCNC.py:1905 OKKCNC/__main__.py:1905
+#: OKKCNC.py:1805 __main__.py:1805
 msgid "Nothing to do"
 msgstr "Niente da eseguire"
 
-#: OKKCNC/OKKCNC.py:1906 OKKCNC/__main__.py:1906
+#: OKKCNC.py:1806 __main__.py:1806
 #, python-format
 msgid "Operation %s requires some gcode to be selected"
 msgstr "Operazione %s richiede che sia selezionato qualcosa"
 
-#: OKKCNC/OKKCNC.py:1950 OKKCNC/__main__.py:1950
+#: OKKCNC.py:1844 __main__.py:1844
 msgid "Operation error"
 msgstr "Errore operazione"
 
-#: OKKCNC/OKKCNC.py:2070 OKKCNC/__main__.py:2070
+#: OKKCNC.py:1961 __main__.py:1961
 msgid "Open file"
 msgstr "Apri File"
 
-#: OKKCNC/OKKCNC.py:2091 OKKCNC/__main__.py:2091
+#: OKKCNC.py:1980 __main__.py:1980
 msgid "Save file"
 msgstr "Salva File"
 
-#: OKKCNC/OKKCNC.py:2104 OKKCNC/__main__.py:2104
+#: OKKCNC.py:1992 __main__.py:1992
 msgid "File modified"
 msgstr "File modificato"
 
-#: OKKCNC/OKKCNC.py:2105 OKKCNC/__main__.py:2105
+#: OKKCNC.py:1993 __main__.py:1993
 msgid "Gcode was modified do you want to save it first?"
 msgstr "Il GCode è stato modificato, lo vuoi salvare?"
 
-#: OKKCNC/OKKCNC.py:2115 OKKCNC/__main__.py:2115
+#: OKKCNC.py:2003 __main__.py:2003
 msgid "Probe File modified"
 msgstr "File sonda modificato"
 
-#: OKKCNC/OKKCNC.py:2116 OKKCNC/__main__.py:2116
+#: OKKCNC.py:2004 __main__.py:2004
 msgid "Probe was modified do you want to save it first?"
 msgstr "Il File sonda è stato modificato, lo vuoi salvare?"
 
-#: OKKCNC/OKKCNC.py:2140 OKKCNC/__main__.py:2140
+#: OKKCNC.py:2029 __main__.py:2029
 msgid "Existing Autolevel"
 msgstr "Autolivell. esistente"
 
-#: OKKCNC/OKKCNC.py:2141 OKKCNC/__main__.py:2141
+#: OKKCNC.py:2030 __main__.py:2030
 msgid ""
 "Autolevel/probe information already exists.\n"
 "Delete it?"
@@ -754,35 +1183,35 @@ msgstr ""
 "Informazioni autolivell./sonda  già esistenti\n"
 "Cancellarle?"
 
-#: OKKCNC/OKKCNC.py:2147 OKKCNC/__main__.py:2147
+#: OKKCNC.py:2036 __main__.py:2036
 #, python-brace-format
 msgid "Loading: {0} ..."
 msgstr "Carico: {0} ..."
 
-#: OKKCNC/OKKCNC.py:2169 OKKCNC/__main__.py:2169
+#: OKKCNC.py:2058 __main__.py:2058
 #, python-brace-format
 msgid "'{0}' reloaded at '{1}'"
 msgstr "'{0}' ricaricato a '{1}'"
 
-#: OKKCNC/OKKCNC.py:2173 OKKCNC/__main__.py:2173
+#: OKKCNC.py:2062 __main__.py:2062
 #, python-brace-format
 msgid "'{0}' loaded"
 msgstr "'{0}' caricato"
 
-#: OKKCNC/OKKCNC.py:2181 OKKCNC/__main__.py:2181
+#: OKKCNC.py:2071 __main__.py:2071
 #, python-brace-format
 msgid "'{0}' saved"
 msgstr "'{0}' salvato"
 
-#: OKKCNC/OKKCNC.py:2202 OKKCNC/__main__.py:2202
+#: OKKCNC.py:2093 __main__.py:2093
 msgid "Import Gcode file"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2237 OKKCNC/__main__.py:2237
+#: OKKCNC.py:2128 __main__.py:2128
 msgid "Warning"
 msgstr "Avviso"
 
-#: OKKCNC/OKKCNC.py:2238 OKKCNC/__main__.py:2238
+#: OKKCNC.py:2129 __main__.py:2129
 #, python-brace-format
 msgid ""
 "Gcode file {0} was changed since editing started\n"
@@ -791,73 +1220,68 @@ msgstr ""
 "Il file GCode {0} è stato modificato:\n"
 "ricarico la nuova versione?"
 
-#: OKKCNC/OKKCNC.py:2256 OKKCNC/FilePage.py:94 OKKCNC/FilePage.py:317
-#: OKKCNC/__main__.py:2256 OKKCNC/lib/bFileDialog.py:303
-#: OKKCNC/lib/bFileDialog.py:855 OKKCNC/lib/bFileDialog.py:967
-msgid "Open"
-msgstr "Apri"
-
-#: OKKCNC/OKKCNC.py:2280 OKKCNC/__main__.py:2280
+#: OKKCNC.py:2171 __main__.py:2171
 msgid "Error opening serial"
-msgstr "Errore apeertura porta seriae"
+msgstr "Errore apertura porta seriale"
 
-#: OKKCNC/OKKCNC.py:2317 OKKCNC/__main__.py:2317
+#: OKKCNC.py:2204 __main__.py:2204
 msgid "Serial Error"
 msgstr "Errore Seriale"
 
-#: OKKCNC/OKKCNC.py:2318 OKKCNC/__main__.py:2318
+#: OKKCNC.py:2205 __main__.py:2205
 msgid "Serial is not connected"
 msgstr "Seriale non connessa"
 
-#: OKKCNC/OKKCNC.py:2327 OKKCNC/__main__.py:2327
+#: OKKCNC.py:2214 __main__.py:2214
 msgid "Already running"
 msgstr "Già in funzionamento"
 
-#: OKKCNC/OKKCNC.py:2328 OKKCNC/__main__.py:2328
+#: OKKCNC.py:2215 __main__.py:2215
 msgid "Please stop before"
 msgstr "Prego prima premere STOP"
 
-#: OKKCNC/OKKCNC.py:2370 OKKCNC/__main__.py:2370
+#: OKKCNC.py:2260 __main__.py:2260
 msgid "Empty gcode"
 msgstr "GCode vuoto"
 
-#: OKKCNC/OKKCNC.py:2371 OKKCNC/__main__.py:2371
-msgid "Not gcode file was loaded"
+#: OKKCNC.py:2261 __main__.py:2261
+#, fuzzy
+#| msgid "Not gcode file was loaded"
+msgid "No gcode file was loaded"
 msgstr "Nessun file GCode caricato"
 
-#: OKKCNC/OKKCNC.py:2409 OKKCNC/__main__.py:2409
+#: OKKCNC.py:2306 __main__.py:2306
 msgid "Running..."
 msgstr "in Funzione..."
 
-#: OKKCNC/OKKCNC.py:2429 OKKCNC/OKKCNC.py:2434 OKKCNC/OKKCNC.py:2449
-#: OKKCNC/FilePage.py:196 OKKCNC/__main__.py:2429 OKKCNC/__main__.py:2434
-#: OKKCNC/__main__.py:2449
+#: OKKCNC.py:2326 OKKCNC.py:2331 OKKCNC.py:2343 __main__.py:2326
+#: __main__.py:2331 __main__.py:2343
 msgid "Pendant"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2430 OKKCNC/__main__.py:2430
+#: OKKCNC.py:2327 __main__.py:2327
 msgid "Pendant started:\n"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2435 OKKCNC/__main__.py:2435
+#: OKKCNC.py:2332 __main__.py:2332
 msgid "Pendant already started:\n"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2437 OKKCNC/__main__.py:2437
+#: OKKCNC.py:2334 __main__.py:2334
 msgid ""
 "\n"
 "Would you like open it locally?"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2450 OKKCNC/__main__.py:2450
+#: OKKCNC.py:2344 __main__.py:2344
 msgid "Pendant stopped"
 msgstr ""
 
-#: OKKCNC/OKKCNC.py:2849 OKKCNC/__main__.py:2849
+#: OKKCNC.py:2774 __main__.py:2774
 msgid "python serial missing"
 msgstr "python serial mancante"
 
-#: OKKCNC/OKKCNC.py:2850 OKKCNC/__main__.py:2850
+#: OKKCNC.py:2775 __main__.py:2775
 msgid ""
 "ERROR: Please install the python pyserial module\n"
 "Windows:\n"
@@ -868,2073 +1292,1562 @@ msgid ""
 "\tor dnf install python-pyserial"
 msgstr ""
 
-#: OKKCNC/Utils.py:302
-msgid "Enter A Value"
-msgstr "'{0}' saved"
-
-#: OKKCNC/Utils.py:303
-#, python-brace-format
-msgid "Enter Value for {0} :"
-msgstr "Inserisci un Valore per {0} :"
-
-#: OKKCNC/Utils.py:333
-msgid "Enter Target Depth :"
-msgstr "Inserisci Quota Obiettivo:"
-
-#: OKKCNC/Utils.py:338
-msgid "Enter Memory Number :"
-msgstr "Inserisci Numero Memoria:"
-
-#: OKKCNC/Utils.py:344
-#, python-brace-format
-msgid "Enter Memory {0} Description :"
-msgstr "Inserisci descrizione per memoria N {0}:"
-
-#: OKKCNC/Utils.py:349
-msgid "Enter a float Value :"
-msgstr "Inserisci un numero decimale:"
-
-#: OKKCNC/Utils.py:694
-msgid "User configurable button"
-msgstr "Bottone configurabile dall'Utente"
-
-#: OKKCNC/Utils.py:700
-msgid "Name:"
-msgstr "Nome:"
-
-#: OKKCNC/Utils.py:708
-msgid "Name to appear on button"
-msgstr "Nome che appare sul bottone"
-
-#: OKKCNC/Utils.py:712
-msgid "Icon:"
-msgstr "Icona:"
-
-#: OKKCNC/Utils.py:732
-msgid "Icon to appear on button"
-msgstr "Icona che appare sul bottone"
-
-#: OKKCNC/Utils.py:736
-msgid "Tool Tip:"
-msgstr "Suggerimento:"
-
-#: OKKCNC/Utils.py:748
-msgid "Tooltip for button"
-msgstr "Suggerimento per il bottone"
-
-#: OKKCNC/Utils.py:753 OKKCNC/Interface.py:124
-msgid "Command:"
-msgstr "Comando"
-
-#: OKKCNC/Utils.py:774 OKKCNC/lib/bFileDialog.py:327
-msgid "Cancel"
-msgstr "Cancella"
-
-#: OKKCNC/Utils.py:775
-msgid "Ok"
-msgstr "OK"
-
-#: OKKCNC/Utils.py:824
-msgid "User configurable Dialog"
-msgstr "Dialogo configurabile dall'Utente"
-
-#: OKKCNC/Ribbon.py:517
-msgid "New file"
-msgstr "Nuovo File"
-
-#: OKKCNC/Ribbon.py:528
-msgid "Open file [Ctrl-O]"
-msgstr "Apri File [Ctrl-O]"
-
-#: OKKCNC/Ribbon.py:539
-msgid "Save all [Ctrl-S]"
-msgstr "Salva Tutto [Ctrl-S]"
-
-#: OKKCNC/Ribbon.py:549
-msgid "Undo [Ctrl-Z]"
-msgstr "Annulla [Ctrl-Z]"
-
-#: OKKCNC/Ribbon.py:572
-msgid "Redo [Ctrl-Y]"
-msgstr "Ripeti [Ctrl-Y]"
-
-#: OKKCNC/Ribbon.py:592
-msgid "Help [F1]"
-msgstr "Aiuto [F1]"
-
-#: OKKCNC/EditorPage.py:36
-msgid "Clipboard"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:44
-msgid "Paste"
-msgstr "Incolla"
-
-#: OKKCNC/EditorPage.py:51
-msgid "Paste [Ctrl-V]"
-msgstr "Incolla [Ctrl-V]"
-
-#: OKKCNC/EditorPage.py:60
-msgid "Cut"
-msgstr "Taglia"
-
-#: OKKCNC/EditorPage.py:66
-msgid "Cut [Ctrl-X]"
-msgstr "Taglia [Ctrl-X]"
-
-#: OKKCNC/EditorPage.py:77
-msgid "Copy"
-msgstr "Copia"
-
-#: OKKCNC/EditorPage.py:83
-msgid "Copy [Ctrl-C]"
-msgstr "Copia [Ctrl-C]"
-
-#: OKKCNC/EditorPage.py:93
-msgid "Select"
-msgstr "Seleziona"
-
-#: OKKCNC/EditorPage.py:110
-msgid "Select all blocks [Ctrl-A]"
-msgstr "Seleziona tutti i blocchi [Ctrl-A]"
-
-#: OKKCNC/EditorPage.py:120
-msgid "None"
-msgstr "Nessuno"
-
-#: OKKCNC/EditorPage.py:127
-msgid "Unselect all blocks [Ctrl-Shift-A]"
-msgstr "Deseleziona tutti i blocchi [Ctrl-Shift-A]"
-
-#: OKKCNC/EditorPage.py:138 OKKCNC/EditorPage.py:567
-msgid "Invert"
-msgstr "Inverti"
-
-#: OKKCNC/EditorPage.py:145
-msgid "Invert selection [Ctrl-I]"
-msgstr "Inverti selezione [Ctrl-I]"
-
-#: OKKCNC/EditorPage.py:155
-msgid "Layer"
-msgstr "Layer"
-
-#: OKKCNC/EditorPage.py:162
-msgid "Select all blocks from current layer"
-msgstr "Seleziona tutti i blocchi del layer corrente"
-
-#: OKKCNC/EditorPage.py:169
-msgid "Filter"
-msgstr "Filtra"
-
-#: OKKCNC/EditorPage.py:181
-msgid "Filter blocks"
-msgstr "Filtra i blocchi"
-
-#: OKKCNC/EditorPage.py:198
-msgid "Edit"
-msgstr "Modifica"
-
-#: OKKCNC/EditorPage.py:200 OKKCNC/ProbePage.py:109 OKKCNC/ProbePage.py:206
-#: OKKCNC/ProbePage.py:1020
-msgid "Autolevel"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:202 OKKCNC/CNCList.py:723
-msgid "Color"
-msgstr "Colore"
-
-#: OKKCNC/EditorPage.py:204 OKKCNC/FilePage.py:106
-msgid "Import"
-msgstr "Importa"
-
-#: OKKCNC/EditorPage.py:206
-msgid "Postprocess Inkscape g-code"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:208
-msgid "Round"
-msgstr "Arrotonda"
-
-#: OKKCNC/EditorPage.py:227 OKKCNC/EditorPage.py:250
-msgid "Insert a new block or line of code [Ins or Ctrl-Enter]"
-msgstr "Inserisci un nuovo blocco o linea di codice [Ins o Ctrl-Invio]"
-
-#: OKKCNC/EditorPage.py:232
-msgid "Line"
-msgstr "Linea"
-
-#: OKKCNC/EditorPage.py:235
-msgid "Block"
-msgstr "Blocco"
-
-#: OKKCNC/EditorPage.py:272
-msgid "Clone selected lines or blocks [Ctrl-D]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:295
-msgid "Delete selected lines or blocks [Del]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:315
-msgid "Toggle enable/disable block of g-code [Ctrl-L]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:320
-msgid "Enable"
-msgstr "Attiva"
-
-#: OKKCNC/EditorPage.py:322
-msgid "Disable"
-msgstr "Disattiva"
-
-#: OKKCNC/EditorPage.py:328
-msgid "Active"
-msgstr "Attivo"
-
-#: OKKCNC/EditorPage.py:338
-msgid "Enable or disable blocks of gcode"
-msgstr "Attiva o disattiva blocco di GCode"
-
-#: OKKCNC/EditorPage.py:347
-msgid "Expand"
-msgstr "Espandi"
-
-#: OKKCNC/EditorPage.py:359
-msgid "Toggle expand/collapse blocks of gcode [Ctrl-E]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:377
-msgid "(Un)Comment selected lines"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:388
-msgid "Join"
-msgstr "Unisci"
-
-#: OKKCNC/EditorPage.py:395
-msgid "Join selected blocks"
-msgstr "Unisci i blocchi selezionati"
-
-#: OKKCNC/EditorPage.py:406
-msgid "Split"
-msgstr "Dividi"
-
-#: OKKCNC/EditorPage.py:413
-msgid "Split selected blocks"
-msgstr "Dividi i blocchi selezionati"
-
-#: OKKCNC/EditorPage.py:424
-msgid "Clear All"
-msgstr "Pulisci tutto"
-
-#: OKKCNC/EditorPage.py:436
-msgid "Clear Editor Window"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:444 OKKCNC/EditorPage.py:452
-msgid "Move"
-msgstr "Muovi"
-
-#: OKKCNC/EditorPage.py:462
-msgid "Move objects [M]"
-msgstr "Muovi oggetti [M]"
-
-#: OKKCNC/EditorPage.py:471
-msgid "Origin"
-msgstr "Origine"
-
-#: OKKCNC/EditorPage.py:481
-msgid "Move all gcode such as origin is on mouse location [O]"
-msgstr "Muovi l'origine del GCode sulla posizione del mouse [O] "
-
-#: OKKCNC/EditorPage.py:488
-msgid "Top-Left"
-msgstr "Alto-Sinistra"
-
-#: OKKCNC/EditorPage.py:489
-msgid "Left"
-msgstr "Sinistra"
-
-#: OKKCNC/EditorPage.py:490
-msgid "Bottom-Left"
-msgstr "Basso-Sinistra"
-
-#: OKKCNC/EditorPage.py:491
-msgid "Top"
-msgstr "Alto"
-
-#: OKKCNC/EditorPage.py:492 OKKCNC/ProbePage.py:525 OKKCNC/ProbePage.py:537
-msgid "Center"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:493
-msgid "Bottom"
-msgstr "Basso"
-
-#: OKKCNC/EditorPage.py:494
-msgid "Top-Right"
-msgstr "Alto-Destra"
-
-#: OKKCNC/EditorPage.py:495
-msgid "Right"
-msgstr "Destra"
-
-#: OKKCNC/EditorPage.py:496
-msgid "Bottom-Right"
-msgstr "Basso-Destra"
-
-#: OKKCNC/EditorPage.py:513
-msgid "Order"
-msgstr "Ordina"
-
-#: OKKCNC/EditorPage.py:529
-msgid "Up"
-msgstr "Sù"
-
-#: OKKCNC/EditorPage.py:538
-msgid "Move selected g-code up [Ctrl-Up, Ctrl-PgUp]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:547
-msgid "Down"
-msgstr "Giù"
-
-#: OKKCNC/EditorPage.py:556
-msgid "Move selected g-code down [Ctrl-Down, Ctrl-PgDn]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:574
-msgid "Invert cutting order of selected blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:582
-msgid "Transform"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:591
-msgid "CW"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:599
-msgid "Rotate selected gcode clock-wise (-90deg)"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:608
-msgid "Flip"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:616
-msgid "Rotate selected gcode by 180deg"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:625
-msgid "CCW"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:631
-msgid "Rotate selected gcode counter-clock-wise (90deg)"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:639
-msgid "Horizontal"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:647
-msgid "Mirror horizontally X=-X selected gcode"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:656
-msgid "Vertical"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:664
-msgid "Mirror vertically Y=-Y selected gcode"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:676
-msgid "Route"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:685
-msgid "Conventional"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:693
-msgid "Change cut direction to conventional for selected gcode blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:702
-msgid "Climb"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:710
-msgid "Change cut direction to climb for selected gcode blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:719
-msgid "Reverse"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:727
-msgid "Reverse cut direction for selected gcode blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:736
-msgid "Cut CW"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:744
-msgid "Change cut direction to CW for selected gcode blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:753
-msgid "Cut CCW"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:761
-msgid "Change cut direction to CCW for selected gcode blocks"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:770 OKKCNC/EditorPage.py:796
-msgid "Info"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:787
-msgid "Show statistics for enabled gcode"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:806
-msgid "Show cutting information on selected blocks [Ctrl-n]"
-msgstr ""
-
-#: OKKCNC/EditorPage.py:835
-msgid "GCode editor"
-msgstr "Editor GCode"
-
-#: OKKCNC/EditorPage.py:836
-msgid "Editor"
-msgstr ""
-
-#: OKKCNC/Interface.py:108
-msgid "Controller buffer fill"
-msgstr "Riemp. Buffer"
-
-#: OKKCNC/Interface.py:133
-msgid ""
-"MDI Command line: Accept g-code commands or macro commands (RESET/HOME...) "
-"or editor commands (move,inkscape, round...) [Space or Ctrl-Space]"
-msgstr ""
-"Line di comando: Accetta comandi GCode o macro (RESET/HOME...) o comandi "
-"dell'editor (move, round...) [Spazio or Ctrl-Spazio]"
-
-#: OKKCNC/Interface.py:213
-msgid "Status:"
-msgstr "Stato:"
-
-#: OKKCNC/Interface.py:226
-msgid ""
-"Show current state of the machine\n"
-"Click to see details\n"
-"Right-Click to clear alarm/errors"
-msgstr ""
-"Mostra lo Stato attuale della macchina\n"
-"Clicca per vedere i dettagli.\n"
-"Click-Destro per pulire allarmi/errori"
-
-#: OKKCNC/Interface.py:234 OKKCNC/ProbePage.py:617
-msgid "WPos:"
-msgstr "WCS:"
-
-#: OKKCNC/Interface.py:246
-msgid "X work position (click to set)"
-msgstr "WCS X (click per impostare)"
-
-#: OKKCNC/Interface.py:261
-msgid "Y work position (click to set)"
-msgstr "WCS Y (click per impostare)"
-
-#: OKKCNC/Interface.py:275
-msgid "Z work position (click to set)"
-msgstr "WCS Z (click per impostare)"
-
-#: OKKCNC/Interface.py:283
-msgid "MPos:"
-msgstr "MCS:"
-
-#: OKKCNC/Interface.py:318
-msgid "X=0"
-msgstr ""
-
-#: OKKCNC/Interface.py:325
-msgid "Set X coordinate to zero (or to typed coordinate in WPos)"
-msgstr "Imposta le coordinate X a 0 (o alle coordinate inserite in WCS)"
-
-#: OKKCNC/Interface.py:331
-msgid "Y=0"
-msgstr ""
-
-#: OKKCNC/Interface.py:338
-msgid "Set Y coordinate to zero (or to typed coordinate in WPos)"
-msgstr "Imposta le coordinate Y a 0 (o alle coordinate inserite in WCS)"
-
-#: OKKCNC/Interface.py:344
-msgid "Z=0"
-msgstr ""
-
-#: OKKCNC/Interface.py:351
-msgid "Set Z coordinate to zero (or to typed coordinate in WPos)"
-msgstr "Imposta le coordinate Z a 0 (o alle coordinate inserite in WCS)"
-
-#: OKKCNC/Interface.py:359
-msgid "XY=0"
-msgstr ""
-
-#: OKKCNC/Interface.py:366
-msgid "Set XY coordinate to zero (or to typed coordinate in WPos)"
-msgstr "Imposta le coordinate XY a 0 (o alle coordinate inserite in WCS)"
-
-#: OKKCNC/Interface.py:372
-msgid "XYZ=0"
-msgstr ""
-
-#: OKKCNC/Interface.py:379
-msgid "Set XYZ coordinate to zero (or to typed coordinate in WPos)"
-msgstr "Imposta le coordinate XYZ a 0 (o alle coordinate inserite in WCS)"
-
-#: OKKCNC/Interface.py:390
-msgid "Set WPOS"
-msgstr "Set WCS"
-
-#: OKKCNC/Interface.py:398
-msgid "Set WPOS to mouse location"
-msgstr "Set WCS alle coordinate del mouse"
-
-#: OKKCNC/Interface.py:404
-msgid "Move Gantry"
-msgstr "Muovi Fresa"
-
-#: OKKCNC/Interface.py:413
-msgid "Move gantry to mouse location [g]"
-msgstr "Muovi la fresa sulla posizione del mouse [g]"
-
-#: OKKCNC/Interface.py:425
-msgid "Show Info"
-msgstr "Mostra Info"
-
-#: OKKCNC/Interface.py:431
-msgid "Clear Message"
-msgstr "Pulisci messaggio"
-
-#: OKKCNC/Interface.py:439
-msgid "Feed hold"
-msgstr "Feed hold"
-
-#: OKKCNC/Interface.py:445
-msgid "Resume"
-msgstr "Riprendi"
-
-#: OKKCNC/Interface.py:540 OKKCNC/FilePage.py:201
-msgid "Start"
-msgstr "Partenza"
-
-#: OKKCNC/Interface.py:544
-msgid "Run g-code commands from editor to controller"
-msgstr "Invia comandi GCode dall'editor al controllo"
-
-#: OKKCNC/Interface.py:552
-msgid "Pause"
-msgstr "Pausa"
-
-#: OKKCNC/Interface.py:558
-msgid "Pause running program. Sends either FEED_HOLD ! or CYCLE_START ~"
-msgstr ""
-"Metti in Pausa il programma. Invia un FEED_HOLD ! oppure un CYCLE_START ~"
-
-#: OKKCNC/Interface.py:565 OKKCNC/FilePage.py:212
-msgid "Stop"
-msgstr "Stop"
-
-#: OKKCNC/Interface.py:571
-msgid "Pause running program and soft reset controller to empty the buffer."
-msgstr ""
-"Mette in Pausa il programma e invia un Soft-Reset al controllo per svuotare "
-"il buffer."
-
-#: OKKCNC/Interface.py:581 OKKCNC/Interface.py:627
-msgid "Connection"
-msgstr "Connessione"
-
-#: OKKCNC/Interface.py:583
-msgid "Hard Reset"
-msgstr "Hard Reset"
-
-#: OKKCNC/Interface.py:594
-msgid "Home"
-msgstr "Home"
-
-#: OKKCNC/Interface.py:602
-msgid "Perform a homing cycle [$H]"
-msgstr "Esegue un ciclo di homing [$H]"
-
-#: OKKCNC/Interface.py:611
-msgid "Unlock"
-msgstr "Sblocca"
-
-#: OKKCNC/Interface.py:619
-msgid "Unlock controller [$X]"
-msgstr "Sblocca il controllo [$X]"
-
-#: OKKCNC/Interface.py:633
-msgid "Open/Close connection"
-msgstr "Apri/Chiudi connessione"
-
-#: OKKCNC/Interface.py:640 OKKCNC/ControlPage.py:1046
-msgid "Reset"
-msgstr "Reset"
-
-#: OKKCNC/Interface.py:646
-msgid "Software reset of controller [ctrl-x]"
-msgstr "invia un Soft-reset al controllo [ctrl-x]"
-
-#: OKKCNC/Interface.py:653
-msgid "Memory"
-msgstr "Memoria"
-
-#: OKKCNC/Interface.py:654
-msgid "Save Memories"
-msgstr "Salva Memorie"
-
-#: OKKCNC/Interface.py:655
-msgid "Show this Bank"
-msgstr "Visualizza questo banco"
-
-#: OKKCNC/Interface.py:656
-msgid "Don't Show this Bank"
-msgstr "Nascondi questo Banco"
-
-#: OKKCNC/Interface.py:657
-msgid "Don't Show Memories"
-msgstr "Nascondi tutto"
-
-#: OKKCNC/Interface.py:665
-msgid "M2A"
-msgstr ""
-
-#: OKKCNC/Interface.py:670
-msgid "Memory to A"
-msgstr "Memoria in A"
-
-#: OKKCNC/Interface.py:677
-msgid "M2B"
-msgstr ""
-
-#: OKKCNC/Interface.py:681
-msgid "Memory to B"
-msgstr "Memoria in B"
-
-#: OKKCNC/Interface.py:688
-msgid "C_M"
-msgstr ""
-
-#: OKKCNC/Interface.py:692
-msgid "Cancel mem X"
-msgstr "Cancella Memoria X"
-
-#: OKKCNC/Interface.py:700
-#, python-brace-format
-msgid ""
-"Bank Number \n"
-" Mem {0}"
-msgstr ""
-"Banco di Memoria \n"
-"Mem {0}"
-
-#: OKKCNC/Interface.py:708
-msgid "B +"
-msgstr ""
-
-#: OKKCNC/Interface.py:712
-msgid "Upper Memory Bank"
-msgstr "Banco di Memoria Superiore"
-
-#: OKKCNC/Interface.py:720
-msgid "B -"
-msgstr ""
-
-#: OKKCNC/Interface.py:725
-msgid "Lower Memory Bank"
-msgstr "Banco di Memoria Inferiore"
-
-#: OKKCNC/Interface.py:748
-#, python-brace-format
-msgid "Set {0}"
-msgstr "Set {0}"
-
-#: OKKCNC/ProbePage.py:38
+#: ProbePage.py:40
 msgid "G38.2 stop on contact else error"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:39
+#: ProbePage.py:41
 msgid "G38.3 stop on contact"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:40
+#: ProbePage.py:42
 msgid "G38.4 stop on loss contact else error"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:41
+#: ProbePage.py:43
 msgid "G38.5 stop on loss contact"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:45
+#: ProbePage.py:47
 msgid "Send M6 commands"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:46
+#: ProbePage.py:48
 msgid "Ignore M6 commands"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:47
+#: ProbePage.py:49
 msgid "Manual Tool Change (WCS)"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:48
+#: ProbePage.py:50
 msgid "Manual Tool Change (TLO)"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:49
+#: ProbePage.py:51
 msgid "Manual Tool Change (NoProbe)"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:53
+#: ProbePage.py:55
 msgid "ONLY before probing"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:54
+#: ProbePage.py:56
 msgid "BEFORE & AFTER probing"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:102
+#: ProbePage.py:104
 msgid "Simple probing along a direction"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:115
+#: ProbePage.py:117
 msgid "Autolevel Z surface"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:127
+#: ProbePage.py:123 ProbePage.py:1376 ToolsPage.py:1072
+msgid "Camera"
+msgstr ""
+
+#: ProbePage.py:129
 msgid "Work surface camera view and alignment"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:134
+#: ProbePage.py:136
 msgid "Tool"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:140
+#: ProbePage.py:142
 msgid "Setup probing for manual tool change"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:158
+#: ProbePage.py:160
 msgid "Margins"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:163
+#: ProbePage.py:165
 msgid "Get margins from gcode file"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:170
+#: ProbePage.py:172
 msgid "Zero"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:175
+#: ProbePage.py:177
 msgid ""
 "Set current XY location as autoleveling Z-zero (recalculate probed data to "
 "be relative to this XY origin point)"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:182 OKKCNC/ProbePage.py:636 OKKCNC/TerminalPage.py:40
+#: ProbePage.py:184 ProbePage.py:636 TerminalPage.py:39
 msgid "Clear"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:187
+#: ProbePage.py:189
 msgid "Clear probe data"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:195 OKKCNC/ProbePage.py:219
+#: ProbePage.py:197 ProbePage.py:221
 msgid "Scan"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:200
+#: ProbePage.py:202
 msgid "Scan Autolevel Margins"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:212
+#: ProbePage.py:214
 msgid "Modify selected G-Code to match autolevel"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:226
+#: ProbePage.py:228
 msgid "Scan probed area for level information on Z plane"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:240
+#: ProbePage.py:242
 msgid "Common"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:250
+#: ProbePage.py:252
 msgid "Fast Probe Feed:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:259
+#: ProbePage.py:261
 msgid "Set initial probe feed rate for tool change and calibration"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:266
+#: ProbePage.py:268
 msgid "Probe Feed:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:273
+#: ProbePage.py:275
 msgid "Set probe feed rate"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:280
+#: ProbePage.py:282
 msgid "TLO"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:285
+#: ProbePage.py:287
 msgid "Set tool offset for probing"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:292 OKKCNC/ControlPage.py:927 OKKCNC/ControlPage.py:971
-#: OKKCNC/ControlPage.py:1015
+#: ProbePage.py:294 StateFrame.py:167 StateFrame.py:225 StateFrame.py:282
 msgid "set"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:302
+#: ProbePage.py:304
 msgid "Probe Command"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:377
+#: ProbePage.py:377
 msgid "Record"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:385
+#: ProbePage.py:385
 msgid "Z"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:389
+#: ProbePage.py:389
 msgid "Record Z coordinate?"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:393
+#: ProbePage.py:393
 msgid "RAPID"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:400
+#: ProbePage.py:400
 msgid "FEED"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:407
+#: ProbePage.py:407
 msgid "POINT"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:414
+#: ProbePage.py:414
 msgid "CIRCLE"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:421
+#: ProbePage.py:421
 msgid "FINISH"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:429
+#: ProbePage.py:429
 msgid "Circle radius"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:441 OKKCNC/ProbePage.py:1736
+#: ProbePage.py:441 ProbePage.py:1683
 msgid "Probe:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:464
+#: ProbePage.py:464
 msgid "Automatic GOTO after probing"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:473
+#: ProbePage.py:473
 msgid "Goto"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:480
+#: ProbePage.py:480
 msgid "Rapid goto to last probe location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:484
+#: ProbePage.py:484
 msgid "Pos:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:489
+#: ProbePage.py:489
 msgid "Probe along X direction"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:495
+#: ProbePage.py:495
 msgid "Probe along Y direction"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:501
+#: ProbePage.py:501
 msgid "Probe along Z direction"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:515
+#: ProbePage.py:515
 msgid "Perform a single probe cycle"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:528
+#: ProbePage.py:528
 msgid "Diameter:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:531
+#: ProbePage.py:531
 msgid "Probing ring internal diameter"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:544
+#: ProbePage.py:544
 msgid "Center probing using a ring"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:555
+#: ProbePage.py:555
 msgid "Markers:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:565
+#: ProbePage.py:565
 msgid "Select orientation marker"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:577
+#: ProbePage.py:577
 msgid ""
 "Add an orientation marker. Jog first the machine to the marker position and "
 "then click on canvas to add the marker."
 msgstr ""
 
-#: OKKCNC/ProbePage.py:584
+#: ProbePage.py:584
 msgid "Gcode:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:591
+#: ProbePage.py:591
 msgid "GCode X coordinate of orientation point"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:599
+#: ProbePage.py:599
 msgid "GCode Y coordinate of orientation point"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:611
+#: ProbePage.py:611
 msgid "Delete current marker"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:624
+#: ProbePage.py:624
 msgid "Machine X coordinate of orientation point"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:632
+#: ProbePage.py:632
 msgid "Machine Y coordinate of orientation point"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:644 OKKCNC/ProbePage.py:864
+#: ProbePage.py:644 ProbePage.py:864
 msgid "Delete all markers"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:649
+#: ProbePage.py:649
 msgid "Angle:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:665
+#: ProbePage.py:665
 msgid "Align GCode with the machine markers"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:670 OKKCNC/ProbePage.py:1444
+#: ProbePage.py:670 ProbePage.py:1442
 msgid "Offset:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:683
+#: ProbePage.py:683
 msgid "Error:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:728
+#: ProbePage.py:728
 msgid "Probe connected?"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:729
+#: ProbePage.py:729
 msgid ""
 "Please verify that the probe is connected.\n"
 "\n"
 "Show this message again?"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:743 OKKCNC/ProbePage.py:774 OKKCNC/ProbePage.py:1186
-#: OKKCNC/ProbePage.py:1193 OKKCNC/ProbePage.py:1206 OKKCNC/ProbePage.py:1213
-#: OKKCNC/ProbePage.py:1223 OKKCNC/ProbePage.py:1230 OKKCNC/ProbePage.py:1237
+#: ProbePage.py:743 ProbePage.py:774 ProbePage.py:1184 ProbePage.py:1191
+#: ProbePage.py:1204 ProbePage.py:1211 ProbePage.py:1221 ProbePage.py:1228
+#: ProbePage.py:1235
 msgid "Probe Error"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:744 OKKCNC/ProbePage.py:1238
+#: ProbePage.py:744 ProbePage.py:1236
 msgid "Invalid probe feed rate"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:775
+#: ProbePage.py:775
 msgid "At least one probe direction should be specified"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:800
+#: ProbePage.py:800
 msgid "Probe Center Error"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:801
+#: ProbePage.py:801
 msgid "Invalid diameter entered"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:865
+#: ProbePage.py:865
 msgid "Do you want to delete all orientation markers?"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:960
+#: ProbePage.py:960
 msgid "Pointrec"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1010
+#: ProbePage.py:1010
 msgid "Finished recording"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1026
+#: ProbePage.py:1026
 msgid "Min"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1028
+#: ProbePage.py:1028
 msgid "Max"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1030
+#: ProbePage.py:1030
 msgid "Step"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1032
+#: ProbePage.py:1032
 msgid "N"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1037
+#: ProbePage.py:1037
 msgid "X:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1041
+#: ProbePage.py:1041
 msgid "X minimum"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1047
+#: ProbePage.py:1047
 msgid "X maximum"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1054
+#: ProbePage.py:1054
 msgid "X step"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1063
+#: ProbePage.py:1063
 msgid "X bins"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1069
+#: ProbePage.py:1069
 msgid "Y:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1073
+#: ProbePage.py:1073
 msgid "Y minimum"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1079
+#: ProbePage.py:1079
 msgid "Y maximum"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1086
+#: ProbePage.py:1086
 msgid "Y step"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1095
+#: ProbePage.py:1095
 msgid "Y bins"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1102
+#: ProbePage.py:1102
 msgid "Z:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1106
+#: ProbePage.py:1106
 msgid "Z Minimum depth to scan"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1112
+#: ProbePage.py:1112
 msgid "Z safe to move"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1187
+#: ProbePage.py:1185
 msgid "Invalid X probing region"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1194
+#: ProbePage.py:1192
 msgid "Invalid X range [xmin>=xmax]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1207
+#: ProbePage.py:1205
 msgid "Invalid Y probing region"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1214
+#: ProbePage.py:1212
 msgid "Invalid Y range [ymin>=ymax]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1224
+#: ProbePage.py:1222
 msgid "Invalid Z probing region"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1231
+#: ProbePage.py:1229
 msgid "Invalid Z range [zmin>=zmax]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1258
+#: ProbePage.py:1256
 msgid "Delete autolevel information"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1259
+#: ProbePage.py:1257
 msgid "Do you want to delete all autolevel in formation?"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1299
+#: ProbePage.py:1297
 msgid "Switch To"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1305
+#: ProbePage.py:1303
 msgid "Switch between camera and spindle"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1311
+#: ProbePage.py:1309
 msgid "Edge Detection"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1318
+#: ProbePage.py:1316
 msgid "Turn on/off edge detection"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1324
+#: ProbePage.py:1322
 msgid "Freeze"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1331
+#: ProbePage.py:1329
 msgid "Turn on/off freeze image"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1383
+#: ProbePage.py:1381
 msgid "Location:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1390
+#: ProbePage.py:1388
 msgid "Camera location inside canvas"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1394
+#: ProbePage.py:1392
 msgid "Rotation:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1400
+#: ProbePage.py:1398
 msgid "Camera rotation [degrees]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1403
+#: ProbePage.py:1401
 msgid "Haircross Offset:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1409
+#: ProbePage.py:1407
 msgid "Haircross X offset [unit]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1416
+#: ProbePage.py:1414
 msgid "Haircross Y offset [unit]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1420
+#: ProbePage.py:1418
 msgid "Scale:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1426
+#: ProbePage.py:1424
 msgid "Camera scale [pixels / unit]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1430
+#: ProbePage.py:1428
 msgid "Crosshair:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1436
+#: ProbePage.py:1434
 msgid "Camera cross hair diameter [units]"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1438
+#: ProbePage.py:1436
 msgid "Get"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1440
+#: ProbePage.py:1438
 msgid "Get diameter from active endmill"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1450 OKKCNC/ProbePage.py:1457
+#: ProbePage.py:1448 ProbePage.py:1455
 msgid "Camera offset from gantry"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1464
+#: ProbePage.py:1462
 msgid "Spindle Z position when camera was registered"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1467
+#: ProbePage.py:1465
 msgid "Register:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1468
+#: ProbePage.py:1466
 msgid "1. Spindle"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1472
+#: ProbePage.py:1470
 msgid "Mark spindle position for calculating offset"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1474
+#: ProbePage.py:1472
 msgid "2. Camera"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1478
+#: ProbePage.py:1476
 msgid "Mark camera position for calculating offset"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1557
+#: ProbePage.py:1550
 msgid "Spindle position is registered"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1564
+#: ProbePage.py:1557
 msgid "Spindle position is not registered"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1565
+#: ProbePage.py:1558
 msgid "Spindle position must be registered before camera"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1571
+#: ProbePage.py:1564
 msgid "Camera offset is updated"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1631 OKKCNC/ProbePage.py:1793
+#: ProbePage.py:1578 ProbePage.py:1740
 msgid "Calibrate"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1637
+#: ProbePage.py:1584
 msgid "Perform a single a tool change cycle to set the calibration field"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1641
+#: ProbePage.py:1588
 msgid "Change"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1647
+#: ProbePage.py:1594
 msgid "Perform a tool change cycle"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1657
+#: ProbePage.py:1604
 msgid "Manual Tool Change"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1662
+#: ProbePage.py:1609
 msgid "Policy:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1671
+#: ProbePage.py:1618
 msgid "Tool change policy"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1677
+#: ProbePage.py:1624
 msgid "Pause:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1691
+#: ProbePage.py:1638
 msgid "MX"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1693
+#: ProbePage.py:1640
 msgid "MY"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1695
+#: ProbePage.py:1642
 msgid "MZ"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1700
+#: ProbePage.py:1647
 msgid "Change:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1704
+#: ProbePage.py:1651
 msgid "Manual tool change Machine X location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1712
+#: ProbePage.py:1659
 msgid "Manual tool change Machine Y location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1720
+#: ProbePage.py:1667
 msgid "Manual tool change Machine Z location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1726 OKKCNC/ProbePage.py:1762
+#: ProbePage.py:1673 ProbePage.py:1709
 msgid "get"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1730
+#: ProbePage.py:1677
 msgid "Get current gantry position as machine tool change location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1740
+#: ProbePage.py:1687
 msgid "Manual tool change Probing MX location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1748
+#: ProbePage.py:1695
 msgid "Manual tool change Probing MY location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1756
+#: ProbePage.py:1703
 msgid "Manual tool change Probing MZ location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1766
+#: ProbePage.py:1713
 msgid "Get current gantry position as machine tool probe location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1772 OKKCNC/ControlPage.py:850
+#: ProbePage.py:1719 StateFrame.py:71
 msgid "Distance:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1777
+#: ProbePage.py:1724
 msgid "After a tool change distance to scan starting from ProbeZ"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1785
+#: ProbePage.py:1732
 msgid "Calibration:"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1789
+#: ProbePage.py:1736
 msgid "Tool probe height"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1797
+#: ProbePage.py:1744
 msgid "Perform a calibration probing to determine the height"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1852 OKKCNC/ProbePage.py:1862 OKKCNC/ProbePage.py:1870
-#: OKKCNC/ProbePage.py:1878 OKKCNC/ProbePage.py:1886
+#: ProbePage.py:1799 ProbePage.py:1809 ProbePage.py:1817 ProbePage.py:1825
+#: ProbePage.py:1833
 msgid "Probe Tool Change Error"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1853
+#: ProbePage.py:1800
 msgid "Invalid tool change position"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1863
+#: ProbePage.py:1810
 msgid "Invalid tool probe location"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1871 OKKCNC/ProbePage.py:1887
+#: ProbePage.py:1818 ProbePage.py:1834
 msgid "Invalid tool scanning distance entered"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:1879
+#: ProbePage.py:1826
 msgid "Invalid tool height or not calibrated"
 msgstr ""
 
-#: OKKCNC/ProbePage.py:2000
+#: ProbePage.py:1947
 msgid "Probe configuration and probing"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:60 OKKCNC/ControlPage.py:1303
-msgid "Control"
-msgstr ""
+#: Ribbon.py:517
+msgid "New file"
+msgstr "Nuovo File"
 
-#: OKKCNC/ControlPage.py:85
-msgid "Step for Z move operation"
-msgstr ""
+#: Ribbon.py:528
+msgid "Open file [Ctrl-O]"
+msgstr "Apri File [Ctrl-O]"
 
-#: OKKCNC/ControlPage.py:97
+#: Ribbon.py:539 lib/bFileDialog.py:885
+#, fuzzy
+msgid "Save As"
+msgstr "Salva Come"
+
+#: Ribbon.py:549
+msgid "Undo [Ctrl-Z]"
+msgstr "Annulla [Ctrl-Z]"
+
+#: Ribbon.py:572
+msgid "Redo [Ctrl-Y]"
+msgstr "Ripeti [Ctrl-Y]"
+
+#: Ribbon.py:592
+#, fuzzy
+#| msgid "Show Info"
+msgid "Progam Info"
+msgstr "Mostra Info"
+
+#: Ribbon.py:605
+msgid "Help [F1]"
+msgstr "Aiuto [F1]"
+
+#: Sender.py:320
+msgid "unknown command"
+msgstr "Comando sconosciuto"
+
+#: Sender.py:320
 #, python-brace-format
-msgid "Step1 = {0}"
-msgstr ""
+msgid "Invalid command {0}"
+msgstr "Comando sconosciuto {0}"
 
-#: OKKCNC/ControlPage.py:110
-#, python-brace-format
-msgid "Step2 = {0}"
-msgstr ""
+#: Sender.py:568
+msgid "Run ended"
+msgstr "Esecuzione finita"
 
-#: OKKCNC/ControlPage.py:123
-#, python-brace-format
-msgid "Step3 = {0}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:136
-msgid "Divide step by 5"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:146
-msgid "Multiply step by 5"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:153
-msgid "Step for coarse move operation"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:161
-msgid "Decrease step"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:169
-msgid "Increase step"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:178
-msgid "Decrease zstep"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:185
-msgid "Increase zstep"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:193
-msgid "Decrease step fine"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:201
-msgid "Increase step fine"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:216
-msgid "Move +Z"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:225
-msgid "Move -X +Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:233
-msgid "Move +Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:241
-msgid "Move +X +Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:254
-#, python-brace-format
-msgid "Z Step1 = {0}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:266
-#, python-brace-format
-msgid "Z Step2 = {0}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:276
-msgid "Move -X"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:289
-msgid ""
-"Move to Origin.\n"
-"User configurable button.\n"
-"Right click to configure."
-msgstr ""
-
-#: OKKCNC/ControlPage.py:302
-msgid "Move +X"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:322
-#, python-brace-format
-msgid "Z Step3 = {0}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:336
-#, python-brace-format
-msgid "Z Step4 = {0}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:347
-msgid "Move -Z"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:356
-msgid "Move -X -Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:364
-msgid "Move -Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:372
-msgid "Move +X -Y"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:390
-msgid "Reset Gcode"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:401
-msgid "Mem A"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:413
-msgid "Mem B"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:422
-msgid "Cut Line from memA to memB"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:431
-msgid "Cut Pocket from memA to memB"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:440
-msgid "Return to mem A"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:449
-msgid "Return to mem B"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:636
-#, python-brace-format
-msgid "Step: {0:.4f}"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:640
-#, python-brace-format
-msgid "Step: {0:.4f}    Zstep: {1:.4f} "
-msgstr ""
-
-#: OKKCNC/ControlPage.py:820 OKKCNC/TerminalPage.py:102
+#: StateFrame.py:35 TerminalPage.py:101
 msgid "State"
+msgstr "Stato"
+
+#: StateFrame.py:65
+#, python-brace-format
+msgid "Switch to workspace {0}"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:844
-#, python-format
-msgid "Switch to workspace %s"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:850
+#: StateFrame.py:71
 msgid "Units:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:850 OKKCNC/CNCCanvas.py:2318
-msgid "Tool:"
-msgstr ""
-
-#: OKKCNC/ControlPage.py:850
+#: StateFrame.py:71
 msgid "Plane:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:851
+#: StateFrame.py:72
 msgid "Feed:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:851
+#: StateFrame.py:72
 msgid "Mode:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:851
+#: StateFrame.py:72
 msgid "TLO:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:851
+#: StateFrame.py:72
 msgid "G92:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:883
+#: StateFrame.py:111
 #, python-brace-format
 msgid ""
 "Distance Mode:\n"
 "{0}"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:911
+#: StateFrame.py:143
 #, python-brace-format
 msgid ""
 "Units:\n"
 "{0}"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:923
+#: StateFrame.py:160
 msgid "Tool number [T#]"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:953
+#: StateFrame.py:198
 #, python-brace-format
 msgid ""
 "Plane:\n"
 "{0}"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:967
+#: StateFrame.py:218
 msgid "Feed Rate [F#]"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:997
+#: StateFrame.py:255
 #, python-brace-format
 msgid ""
 "Feed Mode:\n"
 "{0}"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1011
+#: StateFrame.py:275
 msgid "Tool length offset [G43.1#]"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1025
+#: StateFrame.py:296
 msgid "Set position [G92 X# Y# Z#]"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1044
+#: StateFrame.py:321
 msgid "Select override type."
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1048
+#: StateFrame.py:331
 msgid "Reset override to 100%"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1063
+#: StateFrame.py:352
 msgid "Set Feed/Rapid/Spindle Override. Right or Double click to reset."
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1069
+#: StateFrame.py:361
 msgid "Spindle"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1077
+#: StateFrame.py:370
 msgid "Start/Stop spindle (M3/M5)"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1088
+#: StateFrame.py:385
 msgid "Set spindle RPM"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1103
+#: StateFrame.py:400
 msgid "Coolant:"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1106
+#: StateFrame.py:406
 msgid "OFF"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1112
+#: StateFrame.py:413
 msgid "Stop cooling (M9)"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1117
+#: StateFrame.py:421
 msgid "Flood"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1123
+#: StateFrame.py:428
 msgid "Start flood (M8)"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1128
+#: StateFrame.py:436
 msgid "Mist"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1134
+#: StateFrame.py:443
 msgid "Start mist (M7)"
 msgstr ""
 
-#: OKKCNC/ControlPage.py:1302
-msgid "CNC communication and control"
-msgstr ""
-
-#: OKKCNC/FilePage.py:69 OKKCNC/FilePage.py:395
-msgid "File"
-msgstr "File"
-
-#: OKKCNC/FilePage.py:76
-msgid "New"
-msgstr "Nuuovo"
-
-#: OKKCNC/FilePage.py:80
-msgid "New gcode file"
-msgstr "Nuovo file GCode"
-
-#: OKKCNC/FilePage.py:89
-msgid "Open existing gcode file [Ctrl-O]"
-msgstr "Apri file GCode esistente [Ctrl-O]"
-
-#: OKKCNC/FilePage.py:99
-msgid "Open recent file"
-msgstr "Apri file recente"
-
-#: OKKCNC/FilePage.py:110
-msgid "Import gcode file"
-msgstr "Importa file GCode"
-
-#: OKKCNC/FilePage.py:120
-msgid "Save gcode file [Ctrl-S]"
-msgstr "Salva file GCode [Ctrl-S]"
-
-#: OKKCNC/FilePage.py:125 OKKCNC/lib/bFileDialog.py:890
-msgid "Save"
-msgstr "Salva"
-
-#: OKKCNC/FilePage.py:130
-msgid "Save gcode as..."
-msgstr "Salva Gcode come..."
-
-#: OKKCNC/FilePage.py:139
-msgid "Options"
-msgstr "Opzioni"
-
-#: OKKCNC/FilePage.py:181
-msgid "About"
-msgstr "Info"
-
-#: OKKCNC/FilePage.py:188
-msgid "About the program"
-msgstr "Informazioni sul programma"
-
-#: OKKCNC/FilePage.py:208
-msgid "Start pendant"
-msgstr ""
-
-#: OKKCNC/FilePage.py:219
-msgid "Stop pendant"
-msgstr ""
-
-#: OKKCNC/FilePage.py:231
-msgid "Exit"
-msgstr "Esci"
-
-#: OKKCNC/FilePage.py:238
-msgid "Close program [Ctrl-Q]"
-msgstr "Chiudi programma [Ctrl-Q]"
-
-#: OKKCNC/FilePage.py:246
-msgid "Serial"
-msgstr "Seriale"
-
-#: OKKCNC/FilePage.py:251
-msgid "Port:"
-msgstr "Porta:"
-
-#: OKKCNC/FilePage.py:257
-msgid "Select (or manual enter) port to connect"
-msgstr "Seleziona (o inserisci manualmente) la porta da connettere"
-
-#: OKKCNC/FilePage.py:266
-msgid "Baud:"
-msgstr ""
-
-#: OKKCNC/FilePage.py:271
-msgid "Select connection baud rate"
-msgstr "Imposta velocità connessione (Baud)"
-
-#: OKKCNC/FilePage.py:278
-msgid "Controller:"
-msgstr "Controllo:"
-
-#: OKKCNC/FilePage.py:285
-msgid "Select controller board"
-msgstr "Seleziona la scheda di controllo"
-
-#: OKKCNC/FilePage.py:293
-msgid "Connect on startup"
-msgstr "Connetti all'Avvio"
-
-#: OKKCNC/FilePage.py:296
-msgid "Connect to serial on startup of the program"
-msgstr "Connetti la seriale all'avvio del programma"
-
-#: OKKCNC/FilePage.py:304
-msgid "Refresh"
-msgstr "Ricarica"
-
-#: OKKCNC/FilePage.py:309
-msgid "Refresh list of serial ports"
-msgstr "Ricarica la lista delle porte seriali"
-
-#: OKKCNC/FilePage.py:322
-msgid "Open/Close serial port"
-msgstr "Apri/Chiudi la porta seriale"
-
-#: OKKCNC/FilePage.py:394
-msgid "File I/O and configuration"
-msgstr "File I/O e configurazione"
-
-#: OKKCNC/CNCCanvas.py:383
-msgid "Select objects with mouse"
-msgstr "Seleziona oggetto con il mouse"
-
-#: OKKCNC/CNCCanvas.py:388
-msgid "Pan viewport"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:393
-msgid "Click to set the origin (zero)"
-msgstr "Clicca per selezionare l'origine (Zero)"
-
-#: OKKCNC/CNCCanvas.py:398
-msgid "Move graphically objects"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:404
-msgid "Move CNC gantry to mouse location"
-msgstr "Muovi la testa sulla posizione del mouse"
-
-#: OKKCNC/CNCCanvas.py:410
-msgid "Set mouse location as current machine position (X/Y only)"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:415
-msgid "Drag a ruler to measure distances"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:420
-msgid "Add an orientation marker"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:471
-msgid "ERROR: Cannot set X-Y marker  with the current view"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:563
-#, python-brace-format
-msgid "origin {0:f} {1:f} {2:f}"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:616
-#, python-brace-format
-msgid "dx={0:f}  dy={1:f}  dz={2:f}  length={3:f}  angle={4:f}"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:700
-#, python-brace-format
-msgid "Move by {0:f}, {1:f}, {2:f}"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2068
-#, python-brace-format
-msgid ">>> ERROR: {0}\n"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2071
-#, python-brace-format
-msgid "     line: {0}\n"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2287
-msgid "Change viewing angle"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2294
-msgid "Zoom In [Ctrl-=]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2303
-msgid "Zoom Out [Ctrl--]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2312
-msgid "Fit to screen [F]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2334
-msgid "Select tool [S]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2348
-msgid "Pan viewport [X]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2360
-msgid "Ruler [R]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2369
-msgid "Draw:"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2382
-msgid "Toggle display of axes"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2393
-msgid "Toggle display of grid lines"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2404
-msgid "Toggle display of margins"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2416
-msgid "Toggle display of probe"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2427
-msgid "Toggle display of paths (G1,G2,G3)"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2438
-msgid "Toggle display of rapid motion (G0)"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2449
-msgid "Toggle display of workarea"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2460
-msgid "Toggle display of camera"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2471
-msgid "Redraw display [Ctrl-R]"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2482
-msgid "Draw timeout in seconds"
-msgstr ""
-
-#: OKKCNC/CNCCanvas.py:2490
-msgid "Timeout:"
-msgstr ""
-
-#: OKKCNC/Commands.py:57
-#, python-brace-format
-msgid "Last error: {0}\n"
-msgstr "Ultimo Errore: {0}\n"
-
-#: OKKCNC/Commands.py:63
-msgid ""
-"No info available.\n"
-"Please contact the author."
-msgstr ""
-"Nessuna informazione disponibile.\n"
-"Per favore contattare l'autore."
-
-#: OKKCNC/Commands.py:65
-#, python-brace-format
-msgid "State: {0}"
-msgstr "Stato: {0}"
-
-#: OKKCNC/CAMGen.py:137 OKKCNC/CAMGen.py:305
-msgid "Line Cut: Generated line cut code"
-msgstr ""
-
-#: OKKCNC/TerminalPage.py:34 OKKCNC/TerminalPage.py:207
-msgid "Terminal"
-msgstr ""
-
-#: OKKCNC/TerminalPage.py:46
+#: TerminalPage.py:45
 msgid "Clear terminal"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:54
-msgid "Commands"
-msgstr ""
-
-#: OKKCNC/TerminalPage.py:55
+#: TerminalPage.py:54
 msgid "Restore Settings"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:56
+#: TerminalPage.py:55
 msgid "Restore Workspace"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:57
+#: TerminalPage.py:56
 msgid "Restore All"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:70
+#: TerminalPage.py:69
 msgid "Settings"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:78
+#: TerminalPage.py:77
 msgid "$$ Display settings of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:87
+#: TerminalPage.py:86
 msgid "Parameters"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:95
+#: TerminalPage.py:94
 msgid "$# Display parameters of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:110
+#: TerminalPage.py:109
 msgid "$G Display state of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:121
+#: TerminalPage.py:120
 msgid "Build"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:129
+#: TerminalPage.py:128
 msgid "$I Display build information of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:138
+#: TerminalPage.py:137
 msgid "Startup"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:147
+#: TerminalPage.py:146
 msgid "$N Display startup configuration of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:157
+#: TerminalPage.py:156
 msgid "Check gcode"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:166
+#: TerminalPage.py:165
 msgid "$C Enable/Disable checking of gcode"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:178
+#: TerminalPage.py:176
 msgid "Help"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:186
+#: TerminalPage.py:184
 msgid "$ Display build information of Grbl"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:196
-msgid "Error Help"
-msgstr ""
-
-#: OKKCNC/TerminalPage.py:227
+#: TerminalPage.py:234
 msgid "Terminal communication with controller"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:246
+#: TerminalPage.py:253
 msgid "Buffered commands"
 msgstr ""
 
-#: OKKCNC/TerminalPage.py:267
+#: TerminalPage.py:274
 msgid "Serial Terminal"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericController.py:146
+#: ToolsPage.py:539 ToolsPage.py:551 ToolsPage.py:563
+msgid "F1"
+msgstr "F1"
+
+#: ToolsPage.py:540 ToolsPage.py:552 ToolsPage.py:564
+msgid "F2"
+msgstr "F2"
+
+#: ToolsPage.py:541 ToolsPage.py:553 ToolsPage.py:565
+msgid "F3"
+msgstr "F3"
+
+#: ToolsPage.py:542 ToolsPage.py:554 ToolsPage.py:566
+msgid "F4"
+msgstr "F4"
+
+#: ToolsPage.py:543 ToolsPage.py:555 ToolsPage.py:567
+msgid "F5"
+msgstr "F5"
+
+#: ToolsPage.py:544 ToolsPage.py:556 ToolsPage.py:568
+msgid "F6"
+msgstr "F6"
+
+#: ToolsPage.py:545 ToolsPage.py:557 ToolsPage.py:569
+msgid "F7"
+msgstr "F7"
+
+#: ToolsPage.py:546 ToolsPage.py:558 ToolsPage.py:570
+msgid "F8"
+msgstr "F8"
+
+#: ToolsPage.py:547 ToolsPage.py:559 ToolsPage.py:571
+msgid "F9"
+msgstr "F9"
+
+#: ToolsPage.py:548 ToolsPage.py:560 ToolsPage.py:572
+msgid "F10"
+msgstr "F10"
+
+#: ToolsPage.py:549 ToolsPage.py:561 ToolsPage.py:573
+msgid "F11"
+msgstr "F11"
+
+#: ToolsPage.py:550 ToolsPage.py:562 ToolsPage.py:574
+msgid "F12"
+msgstr "F12"
+
+#: ToolsPage.py:551 ToolsPage.py:552 ToolsPage.py:553 ToolsPage.py:554
+#: ToolsPage.py:555 ToolsPage.py:556 ToolsPage.py:557 ToolsPage.py:558
+#: ToolsPage.py:559 ToolsPage.py:560 ToolsPage.py:561 ToolsPage.py:562
+msgid "Shift-"
+msgstr ""
+
+#: ToolsPage.py:563 ToolsPage.py:564 ToolsPage.py:565 ToolsPage.py:566
+#: ToolsPage.py:567 ToolsPage.py:568 ToolsPage.py:569 ToolsPage.py:570
+#: ToolsPage.py:571 ToolsPage.py:572 ToolsPage.py:573 ToolsPage.py:574
+msgid "Control-"
+msgstr ""
+
+#: ToolsPage.py:587
+msgid "Align Camera"
+msgstr ""
+
+#: ToolsPage.py:588
+msgid "Align Camera Width"
+msgstr ""
+
+#: ToolsPage.py:589
+msgid "Align Camera Height"
+msgstr ""
+
+#: ToolsPage.py:590
+msgid "Align Camera Angle"
+msgstr ""
+
+#: ToolsPage.py:591
+msgid "Web Camera"
+msgstr ""
+
+#: ToolsPage.py:592
+msgid "Web Camera Width"
+msgstr ""
+
+#: ToolsPage.py:593
+msgid "Web Camera Height"
+msgstr ""
+
+#: ToolsPage.py:594
+msgid "Web Camera Angle"
+msgstr ""
+
+#: ToolsPage.py:604
+msgid "Units (inches)"
+msgstr "Unità (inch)"
+
+#: ToolsPage.py:605
+msgid "Laser Cutter"
+msgstr "Taglio Laser"
+
+#: ToolsPage.py:606
+msgid "Laser Adaptive Power"
+msgstr "Potenza laser adattiva"
+
+#: ToolsPage.py:607
+msgid "Double Size Icon"
+msgstr "Icone dimensione doppia"
+
+#: ToolsPage.py:608
+msgid "Acceleration x"
+msgstr "Accelerazione X"
+
+#: ToolsPage.py:609
+msgid "Acceleration y"
+msgstr "Accelerazione Y"
+
+#: ToolsPage.py:610
+msgid "Acceleration z"
+msgstr "Accelerazione Z"
+
+#: ToolsPage.py:611
+msgid "Feed max x"
+msgstr "Avanz. max X"
+
+#: ToolsPage.py:612
+msgid "Feed max y"
+msgstr "Avanz. max Y"
+
+#: ToolsPage.py:613
+msgid "Feed max z"
+msgstr "Avanz. max Z"
+
+#: ToolsPage.py:614
+msgid "Travel x"
+msgstr "Corsa X"
+
+#: ToolsPage.py:615
+msgid "Travel y"
+msgstr "Corsa Y"
+
+#: ToolsPage.py:616
+msgid "Travel z"
+msgstr "Corsa Z"
+
+#: ToolsPage.py:617
+msgid "Decimal digits"
+msgstr "Cifre decimali"
+
+#: ToolsPage.py:618
+msgid "Plotting Arc accuracy"
+msgstr "Precisione Arco"
+
+#: ToolsPage.py:619
+msgid "Start up"
+msgstr ""
+
+#: ToolsPage.py:620
+msgid "Spindle min (RPM)"
+msgstr "Giri motore min (RPM)"
+
+#: ToolsPage.py:621
+msgid "Spindle max (RPM)"
+msgstr "Giri motore max (RPM)"
+
+#: ToolsPage.py:622
+msgid "DRO Zero padding"
+msgstr "DRO Zero padding"
+
+#: ToolsPage.py:623
+msgid "Header gcode"
+msgstr "Intestaz. GCode"
+
+#: ToolsPage.py:624
+msgid "Footer gcode"
+msgstr "Postfaz. GCode"
+
+#: ToolsPage.py:643 ToolsPage.py:665 ToolsPage.py:691 ToolsPage.py:1250
+#: lib/bFileDialog.py:276
+msgid "Name"
+msgstr "Nome"
+
+#: ToolsPage.py:645
+#, fuzzy
+#| msgid "-- Dati --"
+msgid "-- Data --"
+msgstr "-- Dati --"
+
+#: ToolsPage.py:646
+msgid "Feed"
+msgstr "Avanz."
+
+#: ToolsPage.py:647
+msgid "Plunge Feed"
+msgstr "Avanz. Z"
+
+#: ToolsPage.py:666
+msgid "Number"
+msgstr "Numero"
+
+#: ToolsPage.py:668 lib/bFileDialog.py:277
+msgid "Type"
+msgstr "Tipo"
+
+#: ToolsPage.py:669
+msgid "Shape"
+msgstr "Forma"
+
+#: ToolsPage.py:670 ToolsPage.py:693 ToolsPage.py:935
+msgid "Material"
+msgstr "Materiale"
+
+#: ToolsPage.py:671
+msgid "Coating"
+msgstr "Rivest."
+
+#: ToolsPage.py:672
+msgid "Diameter"
+msgstr "Diametro"
+
+#: ToolsPage.py:673
+msgid "Mount Axis"
+msgstr "Codolo"
+
+#: ToolsPage.py:674
+msgid "Flutes"
+msgstr "Taglienti"
+
+#: ToolsPage.py:675
+msgid "Length"
+msgstr "Lung."
+
+#: ToolsPage.py:676
+msgid "Angle"
+msgstr "Angolo"
+
+#: ToolsPage.py:694
+msgid "Safe Z"
+msgstr "Z Sic."
+
+#: ToolsPage.py:695
+msgid "Surface Z"
+msgstr "Z Superf."
+
+#: ToolsPage.py:696
+msgid "Thickness"
+msgstr "Spessore"
+
+#: ToolsPage.py:697
+msgid "Stepover %"
+msgstr "StepOver %"
+
+#: ToolsPage.py:698
+msgid "Depth Increment"
+msgstr "Incr. Prof."
+
+#: ToolsPage.py:719
+msgid "$0 Step pulse time [us]"
+msgstr ""
+
+#: ToolsPage.py:720
+msgid "$1 Step idle delay [ms]"
+msgstr ""
+
+#: ToolsPage.py:721
+msgid "$2 Step port invert [mask]"
+msgstr ""
+
+#: ToolsPage.py:722
+msgid "$3 Direction port invert [mask]"
+msgstr ""
+
+#: ToolsPage.py:723
+msgid "$4 Step enable invert"
+msgstr ""
+
+#: ToolsPage.py:724
+msgid "$5 Limit pins invert"
+msgstr ""
+
+#: ToolsPage.py:725
+msgid "$6 Probe pin invert"
+msgstr ""
+
+#: ToolsPage.py:726
+msgid "$10 Status report [mask]"
+msgstr ""
+
+#: ToolsPage.py:727
+msgid "$11 Junction deviation [mm]"
+msgstr ""
+
+#: ToolsPage.py:728
+msgid "$12 Arc tolerance [mm]"
+msgstr ""
+
+#: ToolsPage.py:729
+msgid "$13 Report inches"
+msgstr ""
+
+#: ToolsPage.py:730
+msgid "$20 Soft limits"
+msgstr ""
+
+#: ToolsPage.py:731
+msgid "$21 Hard limits"
+msgstr ""
+
+#: ToolsPage.py:732
+msgid "$22 Homing cycle"
+msgstr ""
+
+#: ToolsPage.py:733
+msgid "$23 Homing direction invert [mask]"
+msgstr ""
+
+#: ToolsPage.py:734
+msgid "$24 Homing feed [mm/min]"
+msgstr ""
+
+#: ToolsPage.py:735
+msgid "$25 Homing seek [mm/min]"
+msgstr ""
+
+#: ToolsPage.py:736
+msgid "$26 Homing debounce [ms]"
+msgstr ""
+
+#: ToolsPage.py:737
+msgid "$27 Homing pull-off [mm]"
+msgstr ""
+
+#: ToolsPage.py:738
+msgid "$30 Max spindle speed [RPM]"
+msgstr ""
+
+#: ToolsPage.py:739
+msgid "$31 Min spindle speed [RPM]"
+msgstr ""
+
+#: ToolsPage.py:740
+msgid "$32 Laser mode enable"
+msgstr ""
+
+#: ToolsPage.py:741
+msgid "$100 X steps/mm"
+msgstr ""
+
+#: ToolsPage.py:742
+msgid "$101 Y steps/mm"
+msgstr ""
+
+#: ToolsPage.py:743
+msgid "$102 Z steps/mm"
+msgstr ""
+
+#: ToolsPage.py:744
+msgid "$110 X max rate [mm/min]"
+msgstr ""
+
+#: ToolsPage.py:745
+msgid "$111 Y max rate [mm/min]"
+msgstr ""
+
+#: ToolsPage.py:746
+msgid "$112 Z max rate [mm/min]"
+msgstr ""
+
+#: ToolsPage.py:747
+msgid "$120 X acceleration [mm/sec^2]"
+msgstr ""
+
+#: ToolsPage.py:748
+msgid "$121 Y acceleration [mm/sec^2]"
+msgstr ""
+
+#: ToolsPage.py:749
+msgid "$122 Z acceleration [mm/sec^2]"
+msgstr ""
+
+#: ToolsPage.py:750
+msgid "$130 X max travel [mm]"
+msgstr ""
+
+#: ToolsPage.py:751
+msgid "$131 Y max travel [mm]"
+msgstr ""
+
+#: ToolsPage.py:752
+msgid "$132 Z max travel [mm]"
+msgstr ""
+
+#: ToolsPage.py:753
+msgid "$140 X homing pull-off [mm]"
+msgstr ""
+
+#: ToolsPage.py:754
+msgid "$141 Y homing pull-off [mm]"
+msgstr ""
+
+#: ToolsPage.py:755
+msgid "$142 Z homing pull-off [mm]"
+msgstr ""
+
+#: ToolsPage.py:919
+msgid "Stock"
+msgstr "Grezzo"
+
+#: ToolsPage.py:927
+msgid "Stock material currently on machine"
+msgstr "Grezzo attualmente in macchina"
+
+#: ToolsPage.py:944
+msgid "Editable database of material properties"
+msgstr "Database dei materiali"
+
+#: ToolsPage.py:953
+msgid "End Mill"
+msgstr "Utensile"
+
+#: ToolsPage.py:962
+msgid "Editable database of EndMills properties"
+msgstr "Database Utensili"
+
+#: ToolsPage.py:971
+msgid "Rename"
+msgstr "Rinomina"
+
+#: ToolsPage.py:978
+msgid "Edit name of current operation/object"
+msgstr "Modifica nome operazione/oggetto attuale"
+
+#: ToolsPage.py:996
+msgid "Add a new operation/object"
+msgstr "Aggiungi un/a nuovo/a operazione/oggetto"
+
+#: ToolsPage.py:1014
+msgid "Clone selected operation/object"
+msgstr "Clona un/a nuovo/a operazione/oggetto"
+
+#: ToolsPage.py:1032
+msgid "Delete selected operation/object"
+msgstr "Elimina un/a nuovo/a operazione/oggetto"
+
+#: ToolsPage.py:1063
+msgid "Change program language restart is required"
+msgstr "Modifica Lingua del programma (ripartenza richiesta)"
+
+#: ToolsPage.py:1081
+msgid "Camera Configuration"
+msgstr "Configurazione Camera"
+
+#: ToolsPage.py:1090
+msgid "Colors"
+msgstr "Colori"
+
+#: ToolsPage.py:1099
+msgid "Color configuration"
+msgstr "Configurazione colori"
+
+#: ToolsPage.py:1108
+msgid "Config"
+msgstr "Configura"
+
+#: ToolsPage.py:1117
+msgid "Machine configuration for OKKCNC"
+msgstr "Configurazione macchina per OKKCNC"
+
+#: ToolsPage.py:1126
+msgid "Controller"
+msgstr "Controllo"
+
+#: ToolsPage.py:1135
+msgid "Controller (GRBL) configuration"
+msgstr "Configurazione controllo (GRBL)"
+
+#: ToolsPage.py:1143
+msgid "Fonts"
+msgstr "Caratteri"
+
+#: ToolsPage.py:1152
+msgid "Font configuration"
+msgstr "Configurazione caratteri"
+
+#: ToolsPage.py:1161
+msgid "Shortcuts"
+msgstr "Scorciatoie"
+
+#: ToolsPage.py:1170
+msgid "Shortcuts configuration"
+msgstr "Configurazione scorciatoie"
+
+#: ToolsPage.py:1202
+msgid "Language change"
+msgstr "Cambia Lingua"
+
+#: ToolsPage.py:1203
+msgid "Please restart the program."
+msgstr "Prego Ripartenza richiesta"
+
+#: ToolsPage.py:1210
+msgid "Events"
+msgstr "Eventi"
+
+#: ToolsPage.py:1215
+msgid "User File"
+msgstr "File Utente"
+
+#: ToolsPage.py:1235
+msgid "Execute"
+msgstr "Esegui"
+
+#: ToolsPage.py:1251
+msgid "Value"
+msgstr "Valore"
+
+#: ToolsPage.py:1340
+msgid "GCode manipulation tools and user plugins"
+msgstr "Estensioni Utente e strumenti di modifica GCode"
+
+#: Utils.py:288
+msgid "Enter A Value"
+msgstr "'{0}' saved"
+
+#: Utils.py:299
+msgid "Enter Target Depth :"
+msgstr "Inserisci Quota Obiettivo:"
+
+#: Utils.py:300
+msgid "Enter Memory Number :"
+msgstr "Inserisci Numero Memoria:"
+
+#: Utils.py:301
+#, python-brace-format
+msgid "Enter Memory {0} Description :"
+msgstr "Inserisci descrizione per memoria N {0}:"
+
+#: Utils.py:305
+msgid "Enter a float Value :"
+msgstr "Inserisci un numero decimale:"
+
+#: Utils.py:309
+#, python-brace-format
+msgid "Enter Value for {0} :"
+msgstr "Inserisci un Valore per {0} :"
+
+#: Utils.py:414
+#, fuzzy, python-brace-format
+#| msgid "About {0} v{1}"
+msgid "About {0}"
+msgstr "A proposito {0} v{1}"
+
+#: Utils.py:424
+#, fuzzy
+#| msgid ""
+#| "OKKCNC/\tAn advanced fully featured\n"
+#| "\t\tg-code sender for GRBL. \n"
+#| "\n"
+#| "\t\tForked from bCNC"
+msgid ""
+"An advanced fully featured g-code sender for GRBL. \n"
+"Forked from bCNC"
+msgstr ""
+"OKKCNC/\tUn avanzato e completo\n"
+"\t\tG-code sender per GRBL. \n"
+"\n"
+"\t\tDerivato da bCNC"
+
+#: Utils.py:632
+msgid "User configurable button"
+msgstr "Bottone configurabile dall'Utente"
+
+#: Utils.py:638
+msgid "Name:"
+msgstr "Nome:"
+
+#: Utils.py:646
+msgid "Name to appear on button"
+msgstr "Nome che appare sul bottone"
+
+#: Utils.py:650
+msgid "Icon:"
+msgstr "Icona:"
+
+#: Utils.py:670
+msgid "Icon to appear on button"
+msgstr "Icona che appare sul bottone"
+
+#: Utils.py:674
+msgid "Tool Tip:"
+msgstr "Suggerimento:"
+
+#: Utils.py:686
+msgid "Tooltip for button"
+msgstr "Suggerimento per il bottone"
+
+#: Utils.py:712 lib/bFileDialog.py:327
+msgid "Cancel"
+msgstr "Cancella"
+
+#: Utils.py:713
+msgid "Ok"
+msgstr "OK"
+
+#: controllers/_GenericController.py:146
 #, python-brace-format
 msgid "Set workspace {0} to {1}"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:11
+#: controllers/_GenericGRBL.py:11
 msgid "OKKCNC is currently sending a gcode program to Grbl"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:12
+#: controllers/_GenericGRBL.py:12
 msgid "Grbl is in idle state and waiting for user commands"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:13
+#: controllers/_GenericGRBL.py:13
 msgid "Grbl is on hold state. Click on resume (pause) to continue"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:14
+#: controllers/_GenericGRBL.py:14
 msgid ""
 "Alarm is an emergency state. Something has gone terribly wrong when these "
 "occur. Typically, they are caused by limit error when the machine has moved "
@@ -2947,18 +2860,18 @@ msgid ""
 "acknowledges the problem and has taken steps to fix or account for it."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:15
+#: controllers/_GenericGRBL.py:15
 msgid ""
 "Grbl is in g-code check mode. If you send g-code to it, it will only check "
 "it without actualy doing any motion. You can exit this by $C command (Or "
 "equivalent button in terminal tab)"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:16
+#: controllers/_GenericGRBL.py:16
 msgid "Grbl executes jogging motion"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:17
+#: controllers/_GenericGRBL.py:17
 msgid ""
 "Grbl is in sleep mode. Motors are disabled, so you can move them manualy. "
 "That also means that your machine might have lost the position (or "
@@ -2966,358 +2879,395 @@ msgid ""
 "wake Grbl again."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:18
+#: controllers/_GenericGRBL.py:18
 msgid ""
 "Grbl is in queue state. This also means you have relatively old GRBL "
 "version, there are even 0.9 versions newer than this."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:19
+#: controllers/_GenericGRBL.py:19
 msgid "Grbl is not connected. Please specify the correct port and click Open."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:20
+#: controllers/_GenericGRBL.py:20
 msgid "Connection is established with Grbl"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:22
+#: controllers/_GenericGRBL.py:22
 msgid ""
 "All is good! Everything in the last line was understood by Grbl and was "
 "successfully processed and executed."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:24
+#: controllers/_GenericGRBL.py:24
 msgid "G-code words consist of a letter and a value. Letter was not found."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:25
+#: controllers/_GenericGRBL.py:25
 msgid "Numeric value format is not valid or missing an expected value."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:26
+#: controllers/_GenericGRBL.py:26
 msgid "Grbl '$' system command was not recognized or supported."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:27
+#: controllers/_GenericGRBL.py:27
 msgid "Negative value received for an expected positive value."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:28
+#: controllers/_GenericGRBL.py:28
 msgid "Homing cycle is not enabled via settings."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:29
+#: controllers/_GenericGRBL.py:29
 msgid "Minimum step pulse time must be greater than 3usec"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:30
+#: controllers/_GenericGRBL.py:30
 msgid "EEPROM read failed. Reset and restored to default values."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:31
+#: controllers/_GenericGRBL.py:31
 msgid ""
 "Grbl '$' command cannot be used unless Grbl is IDLE. Ensures smooth "
 "operation during a job."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:32
+#: controllers/_GenericGRBL.py:32
 msgid "G-code locked out during alarm or jog state"
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:33
+#: controllers/_GenericGRBL.py:33
 msgid "Soft limits cannot be enabled without homing also enabled."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:34
+#: controllers/_GenericGRBL.py:34
 msgid "Max characters per line exceeded. Line was not processed and executed."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:35
+#: controllers/_GenericGRBL.py:35
 msgid ""
 "(Compile Option) Grbl '$' setting value exceeds the maximum step rate "
 "supported."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:36
+#: controllers/_GenericGRBL.py:36
 msgid "Safety door detected as opened and door state initiated."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:37
+#: controllers/_GenericGRBL.py:37
 msgid ""
 "(Grbl-Mega Only) Build info or startup line exceeded EEPROM line length "
 "limit."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:38
+#: controllers/_GenericGRBL.py:38
 msgid "Jog target exceeds machine travel. Command ignored."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:39
+#: controllers/_GenericGRBL.py:39
 msgid "Jog command with no '=' or contains prohibited g-code."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:40
+#: controllers/_GenericGRBL.py:40
 msgid "Laser mode requires PWM output."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:41
+#: controllers/_GenericGRBL.py:41
 msgid "Unsupported or invalid g-code command found in block."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:42
+#: controllers/_GenericGRBL.py:42
 msgid "More than one g-code command from same modal group found in block."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:43
+#: controllers/_GenericGRBL.py:43
 msgid "Feed rate has not yet been set or is undefined."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:44
+#: controllers/_GenericGRBL.py:44
 msgid "G-code command in block requires an integer value."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:45
+#: controllers/_GenericGRBL.py:45
 msgid ""
 "Two G-code commands that both require the use of the XYZ axis words were "
 "detected in the block."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:46
+#: controllers/_GenericGRBL.py:46
 msgid "A G-code word was repeated in the block."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:47
+#: controllers/_GenericGRBL.py:47
 msgid ""
 "A G-code command implicitly or explicitly requires XYZ axis words in the "
 "block, but none were detected."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:48
+#: controllers/_GenericGRBL.py:48
 msgid "N line number value is not within the valid range of 1 - 9,999,999."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:49
+#: controllers/_GenericGRBL.py:49
 msgid ""
 "A G-code command was sent, but is missing some required P or L value words "
 "in the line."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:50
+#: controllers/_GenericGRBL.py:50
 msgid ""
 "Grbl supports six work coordinate systems G54-G59. G59.1, G59.2, and G59.3 "
 "are not supported."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:51
+#: controllers/_GenericGRBL.py:51
 msgid ""
 "The G53 G-code command requires either a G0 seek or G1 feed motion mode to "
 "be active. A different motion was active."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:52
+#: controllers/_GenericGRBL.py:52
 msgid ""
 "There are unused axis words in the block and G80 motion mode cancel is "
 "active."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:53
+#: controllers/_GenericGRBL.py:53
 msgid ""
 "A G2 or G3 arc was commanded but there are no XYZ axis words in the selected "
 "plane to trace the arc."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:54
+#: controllers/_GenericGRBL.py:54
 msgid ""
 "The motion command has an invalid target. G2, G3, and G38.2 generates this "
 "error, if the arc is impossible to generate or if the probe target is the "
 "current position."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:55
+#: controllers/_GenericGRBL.py:55
 msgid ""
 "A G2 or G3 arc, traced with the radius definition, had a mathematical error "
 "when computing the arc geometry. Try either breaking up the arc into semi-"
 "circles or quadrants, or redefine them with the arc offset definition."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:56
+#: controllers/_GenericGRBL.py:56
 msgid ""
 "A G2 or G3 arc, traced with the offset definition, is missing the IJK offset "
 "word in the selected plane to trace the arc."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:57
+#: controllers/_GenericGRBL.py:57
 msgid ""
 "There are unused, leftover G-code words that aren't used by any command in "
 "the block."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:58
+#: controllers/_GenericGRBL.py:58
 msgid ""
 "The G43.1 dynamic tool length offset command cannot apply an offset to an "
 "axis other than its configured axis. The Grbl default axis is the Z-axis."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:59
+#: controllers/_GenericGRBL.py:59
 msgid "Tool number greater than max supported value."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:61
+#: controllers/_GenericGRBL.py:61
 msgid ""
 "Hard limit triggered. Machine position is likely lost due to sudden and "
 "immediate halt. Re-homing is highly recommended."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:62
+#: controllers/_GenericGRBL.py:62
 msgid ""
 "G-code motion target exceeds machine travel. Machine position safely "
 "retained. Alarm may be unlocked."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:63
+#: controllers/_GenericGRBL.py:63
 msgid ""
 "Reset while in motion. Grbl cannot guarantee position. Lost steps are "
 "likely. Re-homing is highly recommended."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:64
+#: controllers/_GenericGRBL.py:64
 msgid ""
 "Probe fail. The probe is not in the expected initial state before starting "
 "probe cycle, where G38.2 and G38.3 is not triggered and G38.4 and G38.5 is "
 "triggered."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:65
+#: controllers/_GenericGRBL.py:65
 msgid ""
 "Probe fail. Probe did not contact the workpiece within the programmed travel "
 "for G38.2 and G38.4."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:66
+#: controllers/_GenericGRBL.py:66
 msgid "Homing fail. Reset during active homing cycle."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:67
+#: controllers/_GenericGRBL.py:67
 msgid "Homing fail. Safety door was opened during active homing cycle."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:68
+#: controllers/_GenericGRBL.py:68
 msgid ""
 "Homing fail. Cycle failed to clear limit switch when pulling off. Try "
 "increasing pull-off setting or check wiring."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:69
+#: controllers/_GenericGRBL.py:69
 msgid ""
 "Homing fail. Could not find limit switch within search distance. Defined as "
 "1.5 * max_travel on search and 5 * pulloff on locate phases."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:71
+#: controllers/_GenericGRBL.py:71
 msgid "Hold complete. Ready to resume."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:72
+#: controllers/_GenericGRBL.py:72
 msgid "Hold in-progress. Reset will throw an alarm."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:73
+#: controllers/_GenericGRBL.py:73
 msgid "Door closed. Ready to resume."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:74
+#: controllers/_GenericGRBL.py:74
 msgid "Machine stopped. Door still ajar. Can't resume until closed."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:75
+#: controllers/_GenericGRBL.py:75
 msgid ""
 "Door opened. Hold (or parking retract) in-progress. Reset will throw an "
 "alarm."
 msgstr ""
 
-#: OKKCNC/controllers/_GenericGRBL.py:76
+#: controllers/_GenericGRBL.py:76
 msgid ""
 "Door closed and resuming. Restoring from park, if applicable. Reset will "
 "throw an alarm."
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:252
+#: lib/bFileDialog.py:252
 msgid "Directory:"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:278
+#: lib/bFileDialog.py:278
 msgid "Size"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:279
+#: lib/bFileDialog.py:279
 msgid "Date"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:299
+#: lib/bFileDialog.py:299
 msgid "File name:"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:306
+#: lib/bFileDialog.py:306
 msgid "Files of type:"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:536 OKKCNC/lib/bFileDialog.py:594
-#: OKKCNC/lib/bFileDialog.py:801 OKKCNC/lib/bFileDialog.py:825
-#: OKKCNC/lib/bFileDialog.py:847
+#: lib/bFileDialog.py:536 lib/bFileDialog.py:594 lib/bFileDialog.py:801
+#: lib/bFileDialog.py:825 lib/bFileDialog.py:847
 msgid "Error"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:537
+#: lib/bFileDialog.py:537
 #, python-format
 msgid "Cannot access path \"%s\""
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:595
+#: lib/bFileDialog.py:595
 #, python-format
 msgid "Error listing folder \"%s\""
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:789
+#: lib/bFileDialog.py:789
 msgid "NewFolder"
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:802
+#: lib/bFileDialog.py:802
 #, python-format
 msgid "Error creating folder \"%s\""
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:826
+#: lib/bFileDialog.py:826
 #, python-format
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:848
+#: lib/bFileDialog.py:848
 #, python-format
 msgid "Error deleting file \"%s\""
 msgstr ""
 
-#: OKKCNC/lib/bFileDialog.py:866 OKKCNC/lib/bFileDialog.py:875
+#: lib/bFileDialog.py:866 lib/bFileDialog.py:875
 msgid "File does not exist"
-msgstr ""
+msgstr "Il file non esiste"
 
-#: OKKCNC/lib/bFileDialog.py:867 OKKCNC/lib/bFileDialog.py:876
+#: lib/bFileDialog.py:867 lib/bFileDialog.py:876
 #, python-format
 msgid "File \"%s\" does not exist"
-msgstr ""
+msgstr "Il file \"%s\" non esiste"
 
-#: OKKCNC/lib/bFileDialog.py:885
-msgid "Save As"
-msgstr ""
-
-#: OKKCNC/lib/bFileDialog.py:896
+#: lib/bFileDialog.py:896
 msgid "File already exists"
-msgstr ""
+msgstr "File già presente"
 
-#: OKKCNC/lib/bFileDialog.py:897
+#: lib/bFileDialog.py:897
 #, python-format
 msgid "Overwrite existing file %r?"
-msgstr ""
+msgstr "Sovrascrivo il file esistente %r?"
 
-#: OKKCNC/lib/bFileDialog.py:909
+#: lib/bFileDialog.py:909
 msgid "Choose Directory"
-msgstr ""
+msgstr "Scegli Directory"
+
+#~ msgid "Database"
+#~ msgstr "Database"
+
+#~ msgid "CAM"
+#~ msgstr "CAM"
+
+#~ msgid "User configurable Dialog"
+#~ msgstr "Dialogo configurabile dall'Utente"
+
+#~ msgid "Save all [Ctrl-S]"
+#~ msgstr "Salva Tutto [Ctrl-S]"
+
+#~ msgid "Select"
+#~ msgstr "Seleziona"
+
+#~ msgid "Edit"
+#~ msgstr "Modifica"
+
+#~ msgid "Order"
+#~ msgstr "Ordina"
+
+#~ msgid "Set WPOS"
+#~ msgstr "Set WCS"
+
+#~ msgid "Move Gantry"
+#~ msgstr "Muovi Fresa"
+
+#~ msgid "Memory"
+#~ msgstr "Memoria"
+
+#~ msgid "Show this Bank"
+#~ msgstr "Visualizza questo banco"
+
+#~ msgid "Don't Show this Bank"
+#~ msgstr "Nascondi questo Banco"
+
+#~ msgid "File"
+#~ msgstr "File"
+
+#~ msgid "Options"
+#~ msgstr "Opzioni"

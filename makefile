@@ -1,18 +1,19 @@
 NAME = OKKCNC
 SOURCES =	OKKCNC/*.py \
-		OKKCNC/controllers/*.py \
-		OKKCNC/lib/*.py \
-		OKKCNC/lib/python_utils/*.py \
-		OKKCNC/lib/stl/*.py \
-		OKKCNC/lib/svg/*.py \
-		OKKCNC/lib/svg/path/*.py \
+		OKKCNC/controllers/*.py
+#		OKKCNC/lib/*.py \
+#		OKKCNC/lib/python_utils/*.py \
+#		OKKCNC/lib/stl/*.py \
+#		OKKCNC/lib/svg/*.py \
+#		OKKCNC/lib/svg/path/*.py \
 
 .PHONY = help
 
 help:
 	@echo see source
 
-pot: OKKCNC/${NAME}.pot
+pot: 
+	OKKCNC/${NAME}.pot
 
 OKKCNC/${NAME}.pot: ${SOURCES}
 	xgettext --from-code=UTF-8 --keyword=N_ -d ${NAME} -o $@ $^

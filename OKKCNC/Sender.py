@@ -563,6 +563,7 @@ class Sender(object):
     def runEnded(self, msg):
         """Called when run is finished"""
         print("runEnded >> {}".format(msg))
+        
         if OCV.s_running:
             self.log.put((Sender.MSG_RUNEND, _("Run ended")))
 
@@ -573,22 +574,23 @@ class Sender(object):
                 except:
                     pass
 
-        if OCV.s_pause is True:
-            OCV.s_pause = False
-            but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
-            but.config(background=OCV.COLOR_BACKGROUND)
+        but = OCV.RUN_GROUP.frame.nametowidget("run_pause")
+        but.config(background=OCV.COLOR_BACKGROUND)
 
-        if OCV.s_stop_req is True:
-            OCV.s_stop_req = False
-            but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
-            but.config(background=OCV.COLOR_BACKGROUND)
+        but = OCV.RUN_GROUP.frame.nametowidget("run_stop")
+        but.config(background=OCV.COLOR_BACKGROUND)
+            
+        # Restore variables set in InitRun and in 
         
         self._runLines = 0
         self._quit = 0
+        OCV.s_pause = False        
         self._msg = None
         OCV.s_running = False
         OCV.CD["running"] = False
         OCV.s_stop = False
+        OCV.s_stop_req = False    
+        OCV.APP.enable()
         print("runEnded End")
 
 
@@ -608,7 +610,6 @@ class Sender(object):
 
         if OCV.c_state == "Hold:0":
             if OCV.s_stop_req is True:
-                OCV.s_running = False
                 self.runEnded("SR")
                 self.jobDone("SR")
         else:
@@ -628,25 +629,26 @@ class Sender(object):
 
     def controllerStateChange(self, state):
         """
-        This is called everytime that motion controller changes the state
-        YOU SHOULD PASS ONLY REAL HW STATE TO THIS, NOT ONEKKCNC STATE
-        Right now the primary idea is to detect when job stopped running
+        This is called by everytime GRBL1.parseBracketAngle detects
+        a change in state checking the state reported by GRBL1 <> response
         """
-        if OCV.DEBUG_COM is True:
-            print(
-                "Controller state changed to: {0} (Running: {1})".format(
-                    state,
-                    OCV.s_running))
+        # FIXME: check if the work is OK
+        
+        Utils.showState()
 
         if state in ("Idle",):
             OCV.MCTRL.viewParameters()
             OCV.MCTRL.viewState()
+            
+            if self.cleanAfter is True and OCV.s_running is False:
+                self.cleanAfter = False
+                self.jobDone("CSG")
 
-        if self.cleanAfter is True and OCV.s_running is False and \
-                state in ("Idle",):
-            self.cleanAfter = False
-            self.jobDone("CSG")
-
+        # Original bCNC line and state in ("Idle") 
+        #if self.cleanAfter == True and self.running == False and state in ("Idle"):
+		#	self.cleanAfter = False
+		#	self.jobDone()
+        
     def serialIO(self):
         """thread performing I/O on serial line"""
         # wait for commands to complete (status change to Idle)
