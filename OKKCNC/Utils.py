@@ -620,6 +620,7 @@ class UserButton(Ribbon.LabelButton):
             self.edit()
             return
         for line in cmd.splitlines():
+            # put the lines in pendant/buttons queue
             self.cnc.pendant.put(line)
 
 

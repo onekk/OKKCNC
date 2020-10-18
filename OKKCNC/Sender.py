@@ -81,8 +81,10 @@ class Sender(object):
         self.cnc = self.gcode.cnc
 
         self.log = Queue()  # Log queue returned from GRBL
-        self.queue = Queue()  # Command queue to be sent to GRBL
-        self.pendant = Queue()  # Command queue to be executed from Pendant
+        # Command queue to be sent to GRBL
+        self.queue = Queue()
+        # Command queue to be executed from buttons  or pendant
+        self.pendant = Queue()
         self.serial = None
         self.thread = None
 

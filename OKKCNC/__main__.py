@@ -2424,7 +2424,7 @@ class Application(Tk.Toplevel, Sender):
         if inserted:
             self.terminal.see(Tk.END)
 
-        # Check pendant
+        # Check pendant/buttons queue 
         try:
             cmd = self.pendant.get_nowait()
             self.execute(cmd)
