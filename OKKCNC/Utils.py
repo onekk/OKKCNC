@@ -776,3 +776,55 @@ class ErrorWindow(Tk.Toplevel):
         self.m_txt.insert(Tk.END, msg)
         self.m_txt.configure(state=Tk.DISABLED)
         self.m_txt.pack()
+        
+class MOPWindow(Tk.Toplevel):
+
+    def __init__(self, master, title):
+        Tk.Toplevel.__init__(self, master, name="mop_window")
+        self.title(title)
+        self.transient(master)
+        self.frame = Tk.Frame(self, width=100, height=100)
+        self.frame.pack( fill=Tk.X, expand=0)
+
+        self.f_row = 0
+        self.f_col = 0
+        
+    def create_form(self, tipo):
+        if tipo == "PK":
+            self.populate_form(
+                (("Utensile", "db", "db_name"),
+                 ("StepOver","fl", "SO"),
+                 ("StepDown", "fl", "SD")
+                 ))
+ 
+    def populate_form(self, data):
+        print("Create Form")
+        for field in data:
+            if field[1] == "db":
+                self.create_db_field(field[0], field[2])
+            if field[1] == "fl":
+                self.create_fl_field(field[0], field[2])
+                
+    def create_db_field(self, name, db_name):
+        label = Tk.Label(
+                    self.frame,
+                    text=name, width=1)
+        label.grid(row=self.f_row, column=self.f_col)
+        self.f_col +=1
+        self.addWidget(label)
+
+    def create_fl_field(self, name, var_name):
+        label = Tk.Label(
+                    self.frame,
+                    text=name, width=1)
+        label.grid(row=self.f_row, column=self.f_col)
+        self.f_col +=1
+        self.addWidget(label)
+
+
+    def show_message(self, msg):
+        self.m_txt.configure(state=Tk.NORMAL)
+        self.m_txt.delete(1.0, Tk.END)
+        self.m_txt.insert(Tk.END, msg)
+        self.m_txt.configure(state=Tk.DISABLED)
+        self.m_txt.pack()

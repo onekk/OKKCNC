@@ -731,7 +731,6 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             OCV.DEBUG_COM = True
 
 
-
 class MemoryGroup(CNCRibbon.ButtonMenuGroup):
     """Panel with memory buttons and some service buttons"""
 
@@ -772,7 +771,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             background=OCV.COLOR_BACKGROUND,
             command=None)
 
-        but.grid(row=row, column=col)#, padx=0, pady=0, sticky=Tk.EW)
+        but.grid(row=row, column=col, columnspan=3)
 
         tkExtra.Balloon.set(but, _("Memory to B"))
 
@@ -787,13 +786,13 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             text=_("C_M"),
             command=self.clr_mem,
             background=OCV.COLOR_BACKGROUND)
-        but.grid(row=row, column=col)#, padx=0, pady=0, sticky=Tk.EW)
+        but.grid(row=row, column=col, columnspan=3)
 
         tkExtra.Balloon.set(but, _("Cancel mem X"))
 
         self.addWidget(but)
 
-        row, col = 0, 1
+        row, col = 0, 4
 
         lab = Tk.Label(
             self.frame,
@@ -801,7 +800,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             text="B {0}".format(OCV.WK_bank),
             background=OCV.COLOR_BACKGROUND_LABELS)
 
-        lab.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
+        lab.grid(row=row, column=col, columnspan=2)
 
         tkExtra.Balloon.set(
             lab, _("Bank Number \n Mem {0}".format(OCV.WK_mem_num)))
@@ -817,7 +816,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             text=_("B +"),
             background=OCV.COLOR_BACKGROUND)
 
-        but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
+        but.grid(row=row, column=col, columnspan=2)
 
         but.bind(
             "<1>", lambda event, obj="B+": self.on_click_bank(event, obj))
@@ -836,7 +835,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.TOP,
             background=OCV.COLOR_BACKGROUND)
 
-        but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.EW)
+        but.grid(row=row, column=col, columnspan=2)
 
         but.bind(
             "<1>", lambda event, obj="B-": self.on_click_bank(event, obj))
@@ -846,7 +845,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(but)
 
         for idx in range(0, OCV.WK_bank_mem, 3):
-            col += 1
+            col += 3
             rows = 0
             for sub_i in range(idx, idx+3):
                 but_name = "but_m_{0}".format(str(sub_i))
@@ -856,11 +855,12 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                     # image=OCV.icons["pause32"],
                     font=OCV.FONT,
                     name=but_name,
-                    text="M_{0}".format(sub_i + 2),
+                    text="M_{0:02d}".format(sub_i + 2),
                     compound=Tk.TOP,
                     background=OCV.COLOR_BACKGROUND)
 
-                but.grid(row=rows, column=col, padx=0, pady=0, sticky=Tk.NSEW)
+                but.grid(row=rows, column=col, columnspan=3,
+                         padx=0, pady=0, sticky=Tk.NSEW)
 
                 but.bind(
                     "<Button-1>",
@@ -957,7 +957,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         for idx in range(0, OCV.WK_bank_mem):
             but_name = "but_m_{0}".format(str(idx))
-            label = "M_{0}".format(OCV.WK_bank_start + idx)
+            label = "M_{0:02d}".format(OCV.WK_bank_start + idx)
             mem_addr = "mem_{0}".format(OCV.WK_bank_start + idx)
             mem_tt = "{0}\n\n name: {5}\n\nX: {1}\n\nY: {2}\n\nZ: {3}"
             wdg = self.frame.nametowidget(but_name)

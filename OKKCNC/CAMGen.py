@@ -80,12 +80,12 @@ def line(self, app, end_depth, mem_0, mem_1):
 
     # Set the Initialization file
     blocks = []
-    block = Block("Init")
+    block = Block.Block("Init")
     # Get the current WCS as the mem are related to it
     block.append(OCV.CD['WCS'])
     blocks.append(block)
 
-    block = Block("Line")
+    block = Block.Block("Line")
     block.append("(Line Cut)")
     block.append("(From: {0})".format(OCV.gcodeCC(x_start, y_start, z_start)))
     block.append("(To: {0})".format(OCV.gcodeCC(x_end, y_end, end_depth)))
@@ -175,12 +175,12 @@ def pocket(self, app, end_depth, mem_0, mem_1):
 
     # Set the Initialization file
     blocks = []
-    block = Block("Init")
+    block = Block.Block("Init")
     # Get the current WCS as the mem are related to it
     block.append(OCV.CD['WCS'])
     blocks.append(block)
 
-    block = Block("Pocket")
+    block = Block.Block("Pocket")
     block.append("(Pocket)")
     block.append("(Start: {0})".format(OCV.gcodeCC(x_start, y_start, z_start)))
     block.append("(End: {0})".format(OCV.gcodeCC(x_end, y_end, end_depth)))
