@@ -357,7 +357,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<Control-Key-space>', self.commandFocus)
         self.bind('<<CommandFocus>>', self.commandFocus)
 
-        tools = self.pages["CAM"]
+        tools = self.pages["Tools"]
         self.bind('<<ToolAdd>>', tools.add)
         self.bind('<<ToolDelete>>', tools.delete)
         self.bind('<<ToolClone>>', tools.clone)
@@ -1724,7 +1724,7 @@ class Application(Tk.Toplevel, Sender):
 
         # TOOLS
         elif cmd == "TOOLS":
-            OCV.RIBBON.changePage("CAM")
+            OCV.RIBBON.changePage("Tools")
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
@@ -1853,7 +1853,7 @@ class Application(Tk.Toplevel, Sender):
         page = OCV.RIBBON.getActivePage()
         if page.name == "Editor":
             self.editor.edit()
-        elif page.name == "CAM":
+        elif page.name == "Tools":
             page.edit()
 
     def commandFocus(self, event=None):
@@ -2051,7 +2051,7 @@ class Application(Tk.Toplevel, Sender):
             OCV.CANVAS_F.canvas.reset()
             self.draw()
             OCV.CANVAS_F.canvas.fit2Screen()
-            Page.frames["CAM"].populate()
+            Page.frames["Tools"].populate()
 
         if autoloaded:
             self.setStatus(
@@ -2197,7 +2197,6 @@ class Application(Tk.Toplevel, Sender):
         """
         Send enabled gcode file to the CNC machine
         """
-
 
         if OCV.HAS_SERIAL is False and not OCV.developer:
             tkMessageBox.showerror(

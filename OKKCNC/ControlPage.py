@@ -611,9 +611,10 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                panel = Utils.MOPWindow(OCV.APP, _("Pocket"))
-                panel.create_form("PK")
-                
+                OCV.MOP = Utils.MOPWindow(OCV.APP, "PK")
+                OCV.MOP.title(_("Pocket"))
+                OCV.MOP.create_form("PK")
+
                 """
                 end_depth = Utils.ask_for_value(OCV.APP, "TD")
     

@@ -779,52 +779,84 @@ class ErrorWindow(Tk.Toplevel):
         
 class MOPWindow(Tk.Toplevel):
 
-    def __init__(self, master, title):
-        Tk.Toplevel.__init__(self, master, name="mop_window")
-        self.title(title)
+    def __init__(self, master, tipo):
+        super().__init__(master)
+        super().minsize(250,150)
         self.transient(master)
-        self.frame = Tk.Frame(self, width=100, height=100)
-        self.frame.pack( fill=Tk.X, expand=0)
+        self.fr1 = Tk.Frame(self)
+        self.fr1.pack(fill=Tk.BOTH, expand=True)
 
+        butOK = Tk.Button(self, text="OK")
+        butOK.bind("<Button-1>",
+                   lambda event, obj=tipo: self.validate_mop(event, obj))
+        butOK.pack() 
+    
         self.f_row = 0
         self.f_col = 0
+        self.values = []
         
     def create_form(self, tipo):
         if tipo == "PK":
             self.populate_form(
                 (("Utensile", "db", "db_name"),
-                 ("StepOver","fl", "SO"),
-                 ("StepDown", "fl", "SD")
+                 ("StepOver", "en", "pc", "mso"),
+                 ("StepDown", "en", "pc", "msd")
                  ))
+
+    def validate_mop(self, event, tipo):
+        print("MOP validate")
+        if tipo == "PK":
+            print("MOP Pocket")
+            for ret_val in self.values:
+                print(ret_val[0], ret_val[1].get())
+                
+        elif tipo == "LN":
+            print("MOP Line")
+        #self.event_generate("<<MOP_OK>>")
  
     def populate_form(self, data):
         print("Create Form")
         for field in data:
             if field[1] == "db":
                 self.create_db_field(field[0], field[2])
-            if field[1] == "fl":
-                self.create_fl_field(field[0], field[2])
+            if field[1] == "en":
+                self.create_en_field(field[0], field[2], field[3])
                 
     def create_db_field(self, name, db_name):
+        print("name {} - row {}, col{}".format(name, self.f_row, self.f_col))
         label = Tk.Label(
-                    self.frame,
+                    self.fr1,
                     text=name, width=1)
-        label.grid(row=self.f_row, column=self.f_col)
-        self.f_col +=1
-        self.addWidget(label)
+        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.NSEW)
+        
+        # set frame resize priorities
+        self.fr1.rowconfigure(self.f_row, weight=1)
+        self.fr1.columnconfigure(self.f_col, weight=1)
+        self.f_row +=1
 
-    def create_fl_field(self, name, var_name):
-        label = Tk.Label(
-                    self.frame,
-                    text=name, width=1)
-        label.grid(row=self.f_row, column=self.f_col)
-        self.f_col +=1
-        self.addWidget(label)
+    def create_en_field(self, name, var_type, var_name):
+        print("name {} - row {}, col{}".format(name, self.f_row, self.f_col))
 
+        if var_type == "pc":
+            lab_name = name + " (0-100)"
+            f_width = 5
+        else:
+            lab_name = name
+            f_width = 10
+            
+        label = Tk.Label(self.fr1, text=lab_name, width=1)
+        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.NSEW)
 
-    def show_message(self, msg):
-        self.m_txt.configure(state=Tk.NORMAL)
-        self.m_txt.delete(1.0, Tk.END)
-        self.m_txt.insert(Tk.END, msg)
-        self.m_txt.configure(state=Tk.DISABLED)
-        self.m_txt.pack()
+        ret_val = Tk.StringVar()
+        value = Tk.Entry(self.fr1, name=var_name, width=f_width,
+                         textvariable=ret_val)
+        value.grid(row=self.f_row, column=self.f_col + 1, sticky="nse")
+
+        self.values.append((var_name, ret_val))
+         
+        # set frame resize priorities
+        self.fr1.rowconfigure(self.f_row, weight=1)
+        self.fr1.columnconfigure(self.f_col, weight=2)
+        self.fr1.columnconfigure(self.f_col + 1, weight=1) 
+
+        self.f_row +=1

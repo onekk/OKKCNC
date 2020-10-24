@@ -1222,7 +1222,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 class ToolsFrame(CNCRibbon.PageFrame):
     """Tools Frame"""
     def __init__(self, master, app):
-        CNCRibbon.PageFrame.__init__(self, master, "CAM", app)
+        CNCRibbon.PageFrame.__init__(self, master, "Tools", app)
         self.tools = OCV.APP.tools
 
         paned = Tk.PanedWindow(self, orient=Tk.VERTICAL)
@@ -1338,7 +1338,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
 class ToolsPage(CNCRibbon.Page):
     """Tools Page"""
     __doc__ = _("GCode manipulation tools and user plugins")
-    _name_ = N_("CAM")
+    _name_ = N_("Tools")
     _icon_ = "tools"
 
     def register(self):
@@ -1355,16 +1355,16 @@ class ToolsPage(CNCRibbon.Page):
             (ToolsFrame,))
 
     def edit(self, event=None):
-        CNCRibbon.Page.frames["CAM"].edit()
+        CNCRibbon.Page.frames["Tools"].edit()
 
     def add(self, event=None):
-        CNCRibbon.Page.frames["CAM"].add()
+        CNCRibbon.Page.frames["Tools"].add()
 
     def clone(self, event=None):
-        CNCRibbon.Page.frames["CAM"].clone()
+        CNCRibbon.Page.frames["Tools"].clone()
 
     def delete(self, event=None):
-        CNCRibbon.Page.frames["CAM"].delete()
+        CNCRibbon.Page.frames["Tools"].delete()
 
     def rename(self, event=None):
-        CNCRibbon.Page.frames["CAM"].rename()
+        CNCRibbon.Page.frames["Tools"].rename()

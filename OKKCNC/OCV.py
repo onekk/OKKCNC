@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.36-t1"
-PRG_DATE = "15 oct 2020"
+PRG_VER = "0.3.37-t0"
+PRG_DATE = "24 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -182,6 +182,8 @@ CANVAS_F = None
 CMD_W = None
 # Machine controller instance
 MCTRL = None
+# MOP window
+MOP = None
 # Main interface Ribbon
 RIBBON = None
 RUN_GROUP = None
