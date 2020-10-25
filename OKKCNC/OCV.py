@@ -502,7 +502,7 @@ s_stop_req = None
 # T #
 TITLE_MSG = ""
 TOLERANCE = 1e-7
-toolPolicy = 1
+
 """
 Should be in sync with ProbePage
 0 > send to grbl
@@ -511,8 +511,10 @@ Should be in sync with ProbePage
 3 > manual tool change (TLO)
 4 > manual tool change (No Probe)
 """
-
-toolWaitAfterProbe = True  # wait at tool change position after probing
+toolPolicy = 1
+# wait at tool change position after probing
+toolWaitAfterProbe = True
+tooltable = []
 travel_x = 300
 travel_y = 300
 travel_z = 60

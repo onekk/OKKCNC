@@ -24,6 +24,8 @@ import sys
 import glob
 import traceback
 import gettext
+import re
+
 try:
     import __builtin__
 except:
@@ -42,6 +44,7 @@ except ImportError:
     import tkinter.font as tkFont
     import tkinter.simpledialog as tkSimpleDialog
     import tkinter.messagebox as tkMessageBox
+    import tkinter.ttk as ttk
     import configparser as ConfigParser
 
 # import webbrowser
@@ -279,7 +282,18 @@ def set_steps():
         distance = abs(OCV.stepz - val)
         if distance < 1:
             OCV.pstep_z = idx
-   
+ 
+def populate_tooltable():
+    """Popultae tooltable list for use with CAM Buttons
+    It reuse the existing EndMill data saved in inifile"""
+    n_tools = IniFile.get_int("EndMill", "n", 0)
+    for idx in range(0, n_tools):
+        t_index = IniFile.get_int("EndMill", "number.{}".format(idx), 0)
+        t_dia = IniFile.get_float("EndMill", "diameter.{}".format(idx) , 0)
+        #print("Tool number: {} diameter: {}".format(t_index, t_dia))
+        OCV.tooltable.append((t_index, t_dia))
+
+    print(OCV.tooltable)
 
 def ask_for_value(app, caller):
     """Show an input windows asking for a value
@@ -779,9 +793,10 @@ class ErrorWindow(Tk.Toplevel):
         
 class MOPWindow(Tk.Toplevel):
 
-    def __init__(self, master, tipo):
+    def __init__(self, master, tipo, title):
         super().__init__(master)
-        super().minsize(250,150)
+        super().minsize(350,150)
+        super().title(title)
         self.transient(master)
         self.fr1 = Tk.Frame(self)
         self.fr1.pack(fill=Tk.BOTH, expand=True)
@@ -789,7 +804,12 @@ class MOPWindow(Tk.Toplevel):
         butOK = Tk.Button(self, text="OK")
         butOK.bind("<Button-1>",
                    lambda event, obj=tipo: self.validate_mop(event, obj))
-        butOK.pack() 
+        butOK.pack(side=Tk.LEFT) 
+
+        butKO = Tk.Button(self, text="KO")
+        butKO.bind("<Button-1>",
+                   lambda event, obj=tipo: self.exit_mop(event, obj))
+        butKO.pack(side=Tk.LEFT) 
     
         self.f_row = 0
         self.f_col = 0
@@ -798,21 +818,12 @@ class MOPWindow(Tk.Toplevel):
     def create_form(self, tipo):
         if tipo == "PK":
             self.populate_form(
-                (("Utensile", "db", "db_name"),
+                (("ToolsDb", "db", "tt"),
+                 ("Diameter", "en", "fl", "tdi"),
                  ("StepOver", "en", "pc", "mso"),
-                 ("StepDown", "en", "pc", "msd")
+                 ("StepDown", "en", "fl", "msd"),
+                 ("Target Depth", "en", "fl", "tdp")
                  ))
-
-    def validate_mop(self, event, tipo):
-        print("MOP validate")
-        if tipo == "PK":
-            print("MOP Pocket")
-            for ret_val in self.values:
-                print(ret_val[0], ret_val[1].get())
-                
-        elif tipo == "LN":
-            print("MOP Line")
-        #self.event_generate("<<MOP_OK>>")
  
     def populate_form(self, data):
         print("Create Form")
@@ -827,9 +838,21 @@ class MOPWindow(Tk.Toplevel):
         label = Tk.Label(
                     self.fr1,
                     text=name, width=1)
-        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.NSEW)
-        
-        # set frame resize priorities
+        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.EW)
+
+        if db_name == "tt":
+            self.tcb = ttk.Combobox(self.fr1)
+            cbitems = []
+
+            for item in OCV.tooltable:
+                cbitems.append("n: {} dia: {}".format(item[0], item[1]))
+
+            self.tcb['values'] = cbitems     
+            self.tcb.grid(row=self.f_row, column=self.f_col +1, sticky=Tk.EW)
+       
+            self.tcb.bind("<<ComboboxSelected>>", self.fill_dia)
+ 
+       # set frame resize priorities
         self.fr1.rowconfigure(self.f_row, weight=1)
         self.fr1.columnconfigure(self.f_col, weight=1)
         self.f_row +=1
@@ -845,12 +868,12 @@ class MOPWindow(Tk.Toplevel):
             f_width = 10
             
         label = Tk.Label(self.fr1, text=lab_name, width=1)
-        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.NSEW)
+        label.grid(row=self.f_row, column=self.f_col, sticky="ew")
 
         ret_val = Tk.StringVar()
         value = Tk.Entry(self.fr1, name=var_name, width=f_width,
-                         textvariable=ret_val)
-        value.grid(row=self.f_row, column=self.f_col + 1, sticky="nse")
+                         textvariable=ret_val, justify="right")
+        value.grid(row=self.f_row, column=self.f_col + 1, sticky="e")
 
         self.values.append((var_name, ret_val))
          
@@ -860,3 +883,26 @@ class MOPWindow(Tk.Toplevel):
         self.fr1.columnconfigure(self.f_col + 1, weight=1) 
 
         self.f_row +=1
+
+    def fill_dia(self, event):    
+        print(self.tcb.get())
+        ret_val = self.tcb.get()
+        x = re.search("dia: ", ret_val)
+        value = ret_val[x.span()[1]:] 
+
+        wdg = [value[1] for value in self.values if value[0] == "tdi"]
+        wdg[0].set(value)
+
+    def validate_mop(self, event, tipo):
+        print("MOP validate")
+        if tipo == "PK":
+            print("MOP Pocket")
+            for ret_val in self.values:
+                print(ret_val[0], ret_val[1].get())
+                
+        elif tipo == "LN":
+            print("MOP Line")
+        #self.event_generate("<<MOP_OK>>")
+
+    def exit_mop(self, event, tipo):
+        self.destroy()

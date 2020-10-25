@@ -68,6 +68,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         z_step_font = Utils.get_font("z_step.font", ControlFrame.z_step_font)
 
         Utils.set_steps()
+        Utils.populate_tooltable()
        
 
         row = 0
@@ -611,8 +612,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                OCV.MOP = Utils.MOPWindow(OCV.APP, "PK")
-                OCV.MOP.title(_("Pocket"))
+                OCV.MOP = Utils.MOPWindow(OCV.APP, "PK", _("Pocket"))
                 OCV.MOP.create_form("PK")
 
                 """
