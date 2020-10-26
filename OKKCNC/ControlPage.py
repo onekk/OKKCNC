@@ -25,7 +25,6 @@ except ImportError:
 import math
 
 import OCV
-import CAMGen
 import CNCRibbon
 import IniFile
 import Interface
@@ -597,13 +596,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:        
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-    
-                end_depth = Utils.ask_for_value(OCV.APP, "TD")
-    
-                if end_depth is None:
-                    return
-    
-                CAMGen.line(self, OCV.APP, end_depth, "mem_0", "mem_1")
+                pass
         else:
             pass
 
@@ -614,15 +607,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
                 OCV.MOP = Utils.MOPWindow(OCV.APP, "PK", _("Pocket"))
                 OCV.MOP.create_form("PK")
-
-                """
-                end_depth = Utils.ask_for_value(OCV.APP, "TD")
-    
-                if end_depth is None:
-                    return
-    
-                CAMGen.pocket(self, OCV.APP, end_depth, "mem_0", "mem_1")
-                """
         else:
             pass
 

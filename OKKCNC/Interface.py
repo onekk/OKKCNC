@@ -159,7 +159,7 @@ def main_interface(self):
 
     self.linebuffer.pack(side=Tk.BOTTOM, fill=Tk.X)
 
-    # fist create Pages
+    # first create Pages
     self.pages = {}
     for cls in (ControlPage, EditorPage, FilePage, ProbePage,
                 TerminalPage, ToolsPage):

@@ -776,19 +776,20 @@ class UserButtonDialog(Tk.Toplevel):
 
 class ErrorWindow(Tk.Toplevel):
 
-    def __init__(self, master, title):
-        Tk.Toplevel.__init__(self, master, name="error_panel")
-        self.title(title)
+    def __init__(self, master, title="Error_panel"):
+        super().__init__(master)
+        super().minsize(100,100)
+        super().title(title)
         self.transient(master)
-        frame = Tk.Frame(self, width=100, height=100)
-        self.m_txt = Tk.Text(frame, wrap=Tk.WORD)
+        frame = Tk.Frame(self)
+        self.m_txt = Tk.Text(frame, width=80, height=5, wrap=Tk.WORD)
         frame.pack(fill=Tk.BOTH, expand=1)
 
     def show_message(self, msg):
         self.m_txt.configure(state=Tk.NORMAL)
         self.m_txt.delete(1.0, Tk.END)
         self.m_txt.insert(Tk.END, msg)
-        self.m_txt.configure(state=Tk.DISABLED)
+        self.m_txt['state'] = Tk.DISABLED
         self.m_txt.pack()
         
 class MOPWindow(Tk.Toplevel):
@@ -817,13 +818,14 @@ class MOPWindow(Tk.Toplevel):
         
     def create_form(self, tipo):
         if tipo == "PK":
-            self.populate_form(
-                (("ToolsDb", "db", "tt"),
-                 ("Diameter", "en", "fl", "tdi"),
-                 ("StepOver", "en", "pc", "mso"),
-                 ("StepDown", "en", "fl", "msd"),
-                 ("Target Depth", "en", "fl", "tdp")
-                 ))
+            OCV.mop_vars["type"] = "PK"
+            self.populate_form((
+                ("ToolsDb", "db", "tt"),
+                ("Diameter", "en", "fl", "tdi"),
+                ("StepOver", "en", "pc", "mso"),
+                ("StepDown", "en", "fl", "msd"),
+                ("Target Depth", "en", "fl", "tdp")
+                ))
  
     def populate_form(self, data):
         print("Create Form")
@@ -841,7 +843,7 @@ class MOPWindow(Tk.Toplevel):
         label.grid(row=self.f_row, column=self.f_col, sticky=Tk.EW)
 
         if db_name == "tt":
-            self.tcb = ttk.Combobox(self.fr1)
+            self.tcb = ttk.Combobox(self.fr1, width=15)
             cbitems = []
 
             for item in OCV.tooltable:
@@ -875,7 +877,7 @@ class MOPWindow(Tk.Toplevel):
                          textvariable=ret_val, justify="right")
         value.grid(row=self.f_row, column=self.f_col + 1, sticky="e")
 
-        self.values.append((var_name, ret_val))
+        self.values.append((var_name, var_type, ret_val))
          
         # set frame resize priorities
         self.fr1.rowconfigure(self.f_row, weight=1)
@@ -887,22 +889,75 @@ class MOPWindow(Tk.Toplevel):
     def fill_dia(self, event):    
         print(self.tcb.get())
         ret_val = self.tcb.get()
-        x = re.search("dia: ", ret_val)
-        value = ret_val[x.span()[1]:] 
+        s_pat = re.search("dia: ", ret_val)
+        value = ret_val[s_pat.span()[1]:] 
 
-        wdg = [value[1] for value in self.values if value[0] == "tdi"]
+        wdg = [value[2] for value in self.values if value[0] == "tdi"]
         wdg[0].set(value)
 
     def validate_mop(self, event, tipo):
         print("MOP validate")
-        if tipo == "PK":
-            print("MOP Pocket")
-            for ret_val in self.values:
-                print(ret_val[0], ret_val[1].get())
-                
-        elif tipo == "LN":
-            print("MOP Line")
-        #self.event_generate("<<MOP_OK>>")
+        tdia =  self.get_value("tdi")
 
+        if tdia > 0 and tdia < 100:
+            OCV.mop_vars["tdia"] = tdia        
+        else:
+             e_win = ErrorWindow(self, _("Tool Diameter Invalid"))
+             e_win.show_message(_("Tool Diameter must be > 0 or < 100"))    
+             return
+         
+        mult = self.get_value("mso")
+        ret_val = [value for value in self.values if value[0] == "mso"]
+ 
+        if ret_val[0][1] == "pc":
+            if mult > 0 and mult < 100:
+                stepover = tdia * mult / 100
+            else:
+                 e_win = ErrorWindow(self, _("Step Over Invalid"))
+                 e_win.show_message(_("Step Over must be > 0 and < 100"))    
+                 return
+        else:
+            if mult > 0 and mult <= tdia:
+                stepover = mult
+            else:
+                 e_win = ErrorWindow(self, _("Step Over Invalid"))
+                 e_win.show_message(_("Step Over must be > 0 and < tdia"))    
+                 return            
+
+        OCV.mop_vars["mso"] = stepover
+
+        stepdown = self.get_value("msd")
+
+        if stepdown > 0 and stepdown < tdia * 0.5:
+            OCV.mop_vars["msd"] = stepdown
+        else:
+             e_win = ErrorWindow(self, _("Step Down Invalid"))
+             e_win.show_message(_("Step Down must be > 0 and < tdia * 0.5"))    
+             return
+
+        t_depth = self.get_value("tdp")
+        
+        if t_depth < 0:
+            OCV.mop_vars["tdp"] = self.get_value("tdp")            
+        else:
+             e_win = ErrorWindow(self, _("Data Invalid"))
+             e_win.show_message(_("Target Depth has to be negative"))
+             return
+        
+        if tipo == "PK":
+            pass
+        
+        OCV.APP.event_generate("<<MOP_OK>>")    
+        self.destroy()    
+  
+    def get_value(self, var_name):
+        ret_val = [value for value in self.values if value[0] == var_name]
+        value = ret_val[0][2].get()
+        
+        try:
+            return float(value) 
+        except ValueError:
+            return 0
+            
     def exit_mop(self, event, tipo):
         self.destroy()

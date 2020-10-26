@@ -112,11 +112,11 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
         self.addWidget(self.distance)
 
-        # populate gstate dictionary
-        self.gstate = {}  # $G state results widget dictionary
+        # populate g_state dictionary
+        self.g_state = {}  # $G state results widget dictionary
 
         for key, val in g17_items:
-            self.gstate[key] = (self.distance, val)
+            self.g_state[key] = (self.distance, val)
 
         col += 3
 
@@ -143,7 +143,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         tkExtra.Balloon.set(self.units, _("Units:\n{0}".format(bal_text)))
 
         for key, val in unit_items:
-            self.gstate[key] = (self.units, val)
+            self.g_state[key] = (self.units, val)
 
         self.addWidget(self.units)
 
@@ -200,7 +200,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         self.addWidget(self.plane)
 
         for k, v in plane_items:
-            self.gstate[k] = (self.plane, v)
+            self.g_state[k] = (self.plane, v)
 
         # Feed speed
         row += 1
@@ -255,7 +255,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             self.feedMode, _("Feed Mode:\n{0}".format(bal_text)))
 
         for key, val in feed_items:
-            self.gstate[key] = (self.feedMode, val)
+            self.g_state[key] = (self.feedMode, val)
 
         self.addWidget(self.feedMode)
 
@@ -447,7 +447,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
         frame1.grid_columnconfigure(1, weight=1)
 
         # DEBUG
-        # print(self.gstate)
+        # print(self.g_state)
 
     def overrideChange(self, event=None):
         n_val = self.overrideCombo.get()

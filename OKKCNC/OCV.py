@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.37-t0"
-PRG_DATE = "24 oct 2020"
+PRG_VER = "0.3.37-t1"
+PRG_DATE = "26 oct 2020"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -197,7 +197,7 @@ gc_coord = "X: {0:.{3}f} Y: {1:.{3}f} Z: {2:.{3}f}"
 
 """Other variables in alphabetical order"""
 
-# A #
+#--- A #
 acceleration_x = 25.0  # mm/s^2
 acceleration_y = 25.0  # mm/s^2
 acceleration_z = 25.0  # mm/s^2
@@ -208,7 +208,7 @@ will not be needed after Grbl v1.0
 """
 appendFeed = False
 
-# B #
+#--- B #
 blocks = []  # Gcode blocks, here to be shared
 """ blocks_info is used in GCode.process_block indes is given by block_pos
     list items:
@@ -235,7 +235,7 @@ b_mdata_mr = "RAPMOV from"
 b_mdata_ss = "[{0}][{1}]"
 
 
-# C #
+#--- C #
 cb_dig = 3  # number of decimal displayed in the controlframe comboboxes
 CD = {
     "prbx": 0.0,
@@ -316,7 +316,7 @@ CTL_ERRORS = []
 # controllers errors (only for GBRL for now)
 CTL_SHELP = []
 
-# D #
+#--- D #
 """Debug flags. used across the interface to print debug info on terminal
     the debug comment
     Debug Flags are set in config.ini and read at program start
@@ -353,14 +353,14 @@ DISTANCE_MODE = {
 drillPolicy = 1  # Expand Canned cycles
 drozeropad = 0
 
-# E #
+#--- E #
 # theese command are parsed as a block end command after a G0 Z_max
 end_cmds = ("M9", "M5", "M2", "M30")
 errors = []
 ERROR_HANDLING = {}
 error_report = True
 
-# F #
+#--- F #
 feedmax_x = 3000
 feedmax_y = 3000
 feedmax_z = 2000
@@ -385,7 +385,7 @@ FONT_STATE_BUT = ("Sans", "-11")
 # Font section name in Config file.
 FONT_SEC_NAME = "Font"
 
-# G #
+#--- G #
 # gcodelines holds "plain" lines, readed from file, used by heuristic and
 # other parts
 gcodelines = ["(-)",]
@@ -406,11 +406,11 @@ g_code_precision = 4
 # OKKCNC/controllers dir that is taylored to supply some relevant metadata
 g_code_pp = "Generic"
 
-# H #
+#--- H #
 HAS_SERIAL = None  # flag
 history = []
 
-# I #
+#--- I #
 icons = {}
 # This holds the interface widgets
 iface_widgets = []
@@ -421,12 +421,12 @@ init_msg = []
 infos = []
 IS_PY3 = False  # flag
 
-# L #
+#--- L #
 language = ""
 lasercutter = False
 laseradaptive = False
 
-# M #
+#--- M #
 # python3 doesn't have maxint it has sys.maxsize
 MAXINT = 1000000000
 maxRecent = 10
@@ -434,11 +434,12 @@ memNum = 0
 min_z = 0
 max_z = 0
 
+mop_vars = {}
 # N #
 
 # O #
 
-# P #
+#--- P #
 PLANE = {
     "G17": "XY",
     "G18": "XZ",
@@ -452,7 +453,7 @@ pstep_z = 0
 pslist_xy = []
 pslist_z= []
 
-# S #
+#--- S #
 serial_open = False
 # hold the set commands that probably follow
 set_cmds = ("G17", "G18", "G19", "G20", "G21")
@@ -499,7 +500,7 @@ s_stop = None
 # used by Sender.stopRun to signal a stop request
 s_stop_req = None
 
-# T #
+#--- T #
 TITLE_MSG = ""
 TOLERANCE = 1e-7
 
@@ -519,19 +520,19 @@ travel_x = 300
 travel_y = 300
 travel_z = 60
 
-# U #
+#--- U #
 unit = 1.0
 UNITS = {
     "G20": "inch",
     "G21": "mm"}
 
-# Z #
+#--- Z #
 zstep1 = 0.0
 zstep2 = 0.0
 zstep3 = 0.0
 zstep4 = 0.0
 
-# W #
+#--- W #
 WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
 wcsvar = object
 

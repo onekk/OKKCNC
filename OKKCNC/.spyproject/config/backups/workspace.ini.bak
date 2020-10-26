@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['OCV.py', 'Sender.py', '__main__.py', 'GCode.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNC.py', 'Interface.py', 'Utils.py', '../../../../common/Remote/OKKCNC/OKKCNC/ControlPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/OKKCNC.ini', 'ToolsPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/EditorPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/lib/imageToGcode.py', '../../../../common/Remote/OKKCNC/OKKCNC/locale/it/LC_MESSAGES/OKKCNC.po', 'IniFile.py', 'lib/tkExtra.py']
+recent_files = ['OCV.py', 'Sender.py', '__main__.py', 'GCode.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNC.py', 'Interface.py', 'Utils.py', '../../../../common/Remote/OKKCNC/OKKCNC/ControlPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/OKKCNC.ini', 'ToolsPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/EditorPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNCCanvas.py']
 

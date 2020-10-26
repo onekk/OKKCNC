@@ -70,6 +70,7 @@ import rexx
 import tkExtra
 import bFileDialog
 import tkDialogs
+import CAMGen
 import CNCCanvas
 import Commands as cmd
 import Heuristic
@@ -123,7 +124,7 @@ class Application(Tk.Toplevel, Sender):
         # interface, quick and dirty method to add clarity
         OCV.APP = self
 
-        print("Application > ", self)
+        #print("Application > ", self)
 
         Sender.__init__(OCV.APP)
 
@@ -135,12 +136,14 @@ class Application(Tk.Toplevel, Sender):
                 OCV.PRG_NAME, OCV.PRG_VER, OCV.PLATFORM, OCV.TITLE_MSG))
         OCV.iface_widgets = []
 
-        # Global variables
+    #--- GLOBAL VARIABLES
+        
         self.tools = Tools(self.gcode)
         self.controller = None
         self.load_main_config()
-        print(OCV.MCTRL)
-        # many widget for main interface are definited in Interface.py
+        #print(OCV.MCTRL)
+        # self.pages, OCV.RIBBON, OCV.CMD_W and many widget
+        # are definited in Interface.py 
         Interface.main_interface(OCV.APP)
 
         ctl = OCV.CD["controller"]
@@ -151,19 +154,9 @@ class Application(Tk.Toplevel, Sender):
             OCV.CTL_ERRORS = []
             OCV.CTL_SHELP = [] 
 
-        OCV.CMD_W.bind("<Return>", self.cmdExecute)
-        OCV.CMD_W.bind("<Up>", self.commandHistoryUp)
-        OCV.CMD_W.bind("<Down>", self.commandHistoryDown)
-        OCV.CMD_W.bind("<FocusIn>", self.commandFocusIn)
-        OCV.CMD_W.bind("<FocusOut>", self.commandFocusOut)
-        OCV.CMD_W.bind("<Key>", self.commandKey)
-        OCV.CMD_W.bind("<Control-Key-z>", self.undo)
-        OCV.CMD_W.bind("<Control-Key-Z>", self.redo)
-        OCV.CMD_W.bind("<Control-Key-y>", self.redo)
-
         OCV.iface_widgets.append(OCV.CMD_W)
 
-        # remember the editor list widget
+        # remember some widgets
         self.dro = Page.frames["DRO"]
         self.gstate = Page.frames["State"]
         self.control = Page.frames["Control"]
@@ -186,19 +179,21 @@ class Application(Tk.Toplevel, Sender):
         self.pages["Probe"].tabChange()
         OCV.RIBBON.changePage(IniFile.get_str(OCV.PRG_NAME, "page", "File"))
 
-        probe = Page.frames["Probe:Probe"]
+        # FIXME: see that this is needed anymore
+        #probe = Page.frames["Probe:Probe"]
 
         tkExtra.bindEventData(
             self, "<<OrientSelect>>",
-            lambda e, f=probe: f.selectMarker(int(e.data)))
+            lambda e,
+            f=Page.frames["Probe:Probe"]: f.selectMarker(int(e.data)))
 
         tkExtra.bindEventData(
             self, '<<OrientChange>>',
             lambda e, s=self: s.canvas.orientChange(int(e.data)))
 
-        self.bind('<<OrientUpdate>>', probe.orientUpdate)
+        self.bind('<<OrientUpdate>>', Page.frames["Probe:Probe"].orientUpdate)
 
-        # Global bindings
+    #--- Global bindings
         self.bind('<<Undo>>', self.undo)
         self.bind('<<Redo>>', self.redo)
         self.bind('<<Copy>>', self.copy)
@@ -227,8 +222,15 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<AlarmClear>>', self.alarmClear)
         self.bind('<<About>>', self.about)
         self.bind('<<Help>>', self.help)
-        
-        # Machine controls    
+ 
+        for i_wdg in OCV.iface_widgets:
+            if isinstance(i_wdg, Tk.Entry):
+                i_wdg.bind("<Escape>", self.canvasFocus)
+
+        self.bind('<FocusIn>', self.focus_in)
+        self.protocol("WM_DELETE_WINDOW", self.quit)
+    
+    #--- Machine control Bindings    
         self.bind('<<Home>>', self.ctrl_home)
         self.bind('<<FeedHold>>', self.ctrl_feedhold)
         self.bind('<<SoftReset>>', self.ctrl_softreset)
@@ -245,123 +247,6 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<JOG-XUPYDW>>', self.jog_x_up_y_down)
         self.bind('<<JOG-XYDW>>', self.jog_x_down_y_down)
         self.bind('<<JOG-XDWYUP>>', self.jog_x_down_y_up)
-
-        # END machine control
-
-        self.bind('<<Resume>>', lambda e, s=self: s.resume())
-        self.bind('<<Run>>', lambda e, s=self: s.run())
-        self.bind('<<Stop>>', self.stopRun)
-        self.bind('<<Pause>>', self.pause)
-
-        self.bind('<<SetMem>>', self.setMem)
-        self.bind('<<ClrMem>>', self.clrMem)
-        self.bind('<<SaveMems>>', self.saveMems)
-        self.bind("<<ListboxSelect>>", self.selectionChange)
-        self.bind("<<Modified>>", self.drawAfter)
-
-        self.bind('<Control-Key-a>', self.selectAll)
-        self.bind('<Control-Key-A>', self.unselectAll)
-        self.bind('<Escape>', self.unselectAll)
-        self.bind('<Control-Key-i>', self.selectInvert)
-
-        self.bind('<<SelectAll>>', self.selectAll)
-        self.bind('<<SelectNone>>', self.unselectAll)
-        self.bind('<<SelectInvert>>', self.selectInvert)
-        self.bind('<<SelectLayer>>', self.selectLayer)
-        self.bind('<<ShowInfo>>', self.showInfo)
-        self.bind('<<ShowStats>>', self.showStats)
-
-
-        self.bind("<<ERR_HELP>>", self.show_error_panel)
-        self.bind("<<SET_HELP>>", self.show_settings_panel)        
-        self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
-
-        tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
-        tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
-
-        # Editor bindings
-        self.bind("<<Add>>", self.editor.insertItem)
-        self.bind("<<AddBlock>>", self.editor.insertBlock)
-        self.bind("<<AddLine>>", self.editor.insertLine)
-        self.bind("<<Clone>>", self.editor.clone)
-        self.bind("<<ClearEditor>>", self.ClearEditor)
-        self.bind("<<Delete>>", self.editor.deleteBlock)
-
-        OCV.CANVAS_F.canvas.bind(
-            "<Control-Key-Prior>", self.editor.orderUp)
-        OCV.CANVAS_F.canvas.bind(
-            "<Control-Key-Next>", self.editor.orderDown)
-        OCV.CANVAS_F.canvas.bind('<Control-Key-d>', self.editor.clone)
-        OCV.CANVAS_F.canvas.bind('<Control-Key-c>', self.copy)
-        OCV.CANVAS_F.canvas.bind('<Control-Key-x>', self.cut)
-        OCV.CANVAS_F.canvas.bind('<Control-Key-v>', self.paste)
-        OCV.CANVAS_F.canvas.bind("<Delete>", self.editor.deleteBlock)
-        OCV.CANVAS_F.canvas.bind("<BackSpace>", self.editor.deleteBlock)
-
-        try:
-            OCV.CANVAS_F.canvas.bind(
-                "<KP_Delete>", self.editor.deleteBlock)
-        except:
-            pass
-
-        self.bind('<<Invert>>', self.editor.invertBlocks)
-        self.bind('<<Expand>>', self.editor.toggleExpand)
-        self.bind('<<EnableToggle>>', self.editor.toggleEnable)
-        self.bind('<<Enable>>', self.editor.enable)
-        self.bind('<<Disable>>', self.editor.disable)
-        self.bind('<<ChangeColor>>', self.editor.changeColor)
-        self.bind('<<Comment>>', self.editor.commentRow)
-        self.bind('<<Join>>', self.editor.joinBlocks)
-        self.bind('<<Split>>', self.editor.splitBlocks)
-
-        # Canvas X-bindings
-        self.bind("<<ViewChange>>", self.viewChange)
-        self.bind("<<AddMarker>>", OCV.CANVAS_F.canvas.setActionAddMarker)
-        self.bind('<<MoveGantry>>', OCV.CANVAS_F.canvas.setActionGantry)
-        self.bind('<<SetWPOS>>', OCV.CANVAS_F.canvas.setActionWPOS)
-
-        frame = Page.frames["Probe:Tool"]
-
-        self.bind('<<ToolCalibrate>>', frame.calibrate)
-        self.bind('<<ToolChange>>', frame.change)
-
-        self.bind('<<AutolevelMargins>>',
-                  Page.frames["Probe:Autolevel"].getMargins)
-        self.bind('<<AutolevelZero>>', Page.frames["Probe:Autolevel"].setZero)
-        self.bind('<<AutolevelClear>>', Page.frames["Probe:Autolevel"].clear)
-        self.bind('<<AutolevelScan>>', Page.frames["Probe:Autolevel"].scan)
-        self.bind('<<AutolevelScanMargins>>',
-                  Page.frames["Probe:Autolevel"].scanMargins)
-
-        self.bind('<<CameraOn>>', OCV.CANVAS_F.canvas.cameraOn)
-        self.bind('<<CameraOff>>', OCV.CANVAS_F.canvas.cameraOff)
-
-        self.bind('<<CanvasFocus>>', self.canvasFocus)
-        self.bind('<<Draw>>', self.draw)
-        self.bind('<<DrawProbe>>',
-                  lambda e, c=OCV.CANVAS_F: c.drawProbe(True))
-        self.bind('<<DrawOrient>>', OCV.CANVAS_F.canvas.drawOrient)
-
-        self.bind('<Control-Key-e>', self.editor.toggleExpand)
-        self.bind('<Control-Key-n>', self.showInfo)
-        self.bind('<<ShowInfo>>', self.showInfo)
-        self.bind('<Control-Key-l>', self.editor.toggleEnable)
-        self.bind('<Control-Key-q>', self.quit)
-        self.bind('<Control-Key-o>', self.loadDialog)
-        self.bind('<Control-Key-r>', self.drawAfter)
-        self.bind("<Control-Key-s>", self.saveAll)
-        self.bind('<Control-Key-y>', self.redo)
-        self.bind('<Control-Key-z>', self.undo)
-        self.bind('<Control-Key-Z>', self.redo)
-        OCV.CANVAS_F.canvas.bind('<Key-space>', self.commandFocus)
-        self.bind('<Control-Key-space>', self.commandFocus)
-        self.bind('<<CommandFocus>>', self.commandFocus)
-
-        tools = self.pages["Tools"]
-        self.bind('<<ToolAdd>>', tools.add)
-        self.bind('<<ToolDelete>>', tools.delete)
-        self.bind('<<ToolClone>>', tools.clone)
-        self.bind('<<ToolRename>>', tools.rename)
 
         if self._swapKeyboard == 1:
             self.bind('<Right>', self.jog_y_up)
@@ -386,7 +271,6 @@ class Application(Tk.Toplevel, Sender):
 
         self.bind('<KP_Prior>', self.jog_z_up)
         self.bind('<KP_Next>', self.jog_z_down)
-
 
         try:
             if self._swapKeyboard == 1:
@@ -419,12 +303,148 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<Key-slash>', self.cycle_dw_step_z)
         self.bind('<KP_Divide>', self.cycle_dw_step_z)
 
-        for x in OCV.iface_widgets:
-            if isinstance(x, Tk.Entry):
-                x.bind("<Escape>", self.canvasFocus)
 
-        self.bind('<FocusIn>', self.focus_in)
-        self.protocol("WM_DELETE_WINDOW", self.quit)
+    # END machine control
+
+        self.bind('<<Resume>>', lambda e, s=self: s.resume())
+        self.bind('<<Run>>', lambda e, s=self: s.run())
+        self.bind('<<Stop>>', self.stopRun)
+        self.bind('<<Pause>>', self.pause)
+
+    #--- Memory Bindings
+        self.bind('<<SetMem>>', self.setMem)
+        self.bind('<<ClrMem>>', self.clrMem)
+        self.bind('<<SaveMems>>', self.saveMems)
+        self.bind("<<ListboxSelect>>", self.selectionChange)
+        self.bind("<<Modified>>", self.drawAfter)
+
+    #--- CAMGen Bindings
+        self.bind("<<MOP_OK>>", self.mop_ok)
+
+    #--- Selection Binding
+
+        self.bind('<Control-Key-a>', self.selectAll)
+        self.bind('<Control-Key-A>', self.unselectAll)
+        self.bind('<Escape>', self.unselectAll)
+        self.bind('<Control-Key-i>', self.selectInvert)
+
+        self.bind('<<SelectAll>>', self.selectAll)
+        self.bind('<<SelectNone>>', self.unselectAll)
+        self.bind('<<SelectInvert>>', self.selectInvert)
+        self.bind('<<SelectLayer>>', self.selectLayer)
+        self.bind('<<ShowInfo>>', self.showInfo)
+        self.bind('<<ShowStats>>', self.showStats)
+
+
+        self.bind("<<ERR_HELP>>", self.show_error_panel)
+        self.bind("<<SET_HELP>>", self.show_settings_panel)        
+        self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
+
+        tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
+        tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
+
+    #--- Editor bindings
+        self.bind("<<Add>>", self.editor.insertItem)
+        self.bind("<<AddBlock>>", self.editor.insertBlock)
+        self.bind("<<AddLine>>", self.editor.insertLine)
+        self.bind("<<Clone>>", self.editor.clone)
+        self.bind("<<ClearEditor>>", self.ClearEditor)
+        self.bind("<<Delete>>", self.editor.deleteBlock)
+        self.bind('<<Invert>>', self.editor.invertBlocks)
+        self.bind('<<Expand>>', self.editor.toggleExpand)
+        self.bind('<<EnableToggle>>', self.editor.toggleEnable)
+        self.bind('<<Enable>>', self.editor.enable)
+        self.bind('<<Disable>>', self.editor.disable)
+        self.bind('<<ChangeColor>>', self.editor.changeColor)
+        self.bind('<<Comment>>', self.editor.commentRow)
+        self.bind('<<Join>>', self.editor.joinBlocks)
+        self.bind('<<Split>>', self.editor.splitBlocks)
+
+        self.bind('<Control-Key-e>', self.editor.toggleExpand)        
+        self.bind('<Control-Key-l>', self.editor.toggleEnable)
+
+    #--- Canvas X-bindings
+        self.bind("<<ViewChange>>", self.viewChange)
+        self.bind("<<AddMarker>>", OCV.CANVAS_F.canvas.setActionAddMarker)
+        self.bind('<<MoveGantry>>', OCV.CANVAS_F.canvas.setActionGantry)
+        self.bind('<<SetWPOS>>', OCV.CANVAS_F.canvas.setActionWPOS)
+        self.bind('<<CameraOn>>', OCV.CANVAS_F.canvas.cameraOn)
+        self.bind('<<CameraOff>>', OCV.CANVAS_F.canvas.cameraOff)
+        self.bind('<<DrawProbe>>',
+                  lambda e, c=OCV.CANVAS_F: c.drawProbe(True))
+        self.bind('<<DrawOrient>>', OCV.CANVAS_F.canvas.drawOrient)
+
+        OCV.CANVAS_F.canvas.bind(
+            "<Control-Key-Prior>", self.editor.orderUp)
+        OCV.CANVAS_F.canvas.bind(
+            "<Control-Key-Next>", self.editor.orderDown)
+        OCV.CANVAS_F.canvas.bind('<Control-Key-c>', self.copy)
+        OCV.CANVAS_F.canvas.bind('<Control-Key-d>', self.editor.clone)
+        OCV.CANVAS_F.canvas.bind('<Control-Key-x>', self.cut)
+        OCV.CANVAS_F.canvas.bind('<Control-Key-v>', self.paste)
+        OCV.CANVAS_F.canvas.bind("<Delete>", self.editor.deleteBlock)
+        OCV.CANVAS_F.canvas.bind("<BackSpace>", self.editor.deleteBlock)
+
+        try:
+            OCV.CANVAS_F.canvas.bind(
+                "<KP_Delete>", self.editor.deleteBlock)
+        except:
+            pass
+
+    #--- Probe Bindings
+
+        frame = Page.frames["Probe:Tool"]
+
+        self.bind('<<ToolCalibrate>>', frame.calibrate)
+        self.bind('<<ToolChange>>', frame.change)
+
+        alevel = Page.frames["Probe:Autolevel"]
+
+        self.bind('<<AutolevelMargins>>', alevel.getMargins)
+        self.bind('<<AutolevelZero>>', alevel.setZero)
+        self.bind('<<AutolevelClear>>', alevel.clear)
+        self.bind('<<AutolevelScan>>', alevel.scan)
+        self.bind('<<AutolevelScanMargins>>', alevel.scanMargins)
+
+    #--- Misc Bindings
+
+        self.bind('<<CanvasFocus>>', self.canvasFocus)
+        self.bind('<<Draw>>', self.draw)
+
+
+        self.bind('<Control-Key-n>', self.showInfo)
+        self.bind('<<ShowInfo>>', self.showInfo)
+        self.bind('<Control-Key-q>', self.quit)
+        self.bind('<Control-Key-o>', self.loadDialog)
+        self.bind('<Control-Key-r>', self.drawAfter)
+        self.bind("<Control-Key-s>", self.saveAll)
+        self.bind('<Control-Key-y>', self.redo)
+        self.bind('<Control-Key-z>', self.undo)
+        self.bind('<Control-Key-Z>', self.redo)
+        OCV.CANVAS_F.canvas.bind('<Key-space>', self.commandFocus)
+        self.bind('<Control-Key-space>', self.commandFocus)
+        self.bind('<<CommandFocus>>', self.commandFocus)
+
+    #--- Tools Bindings
+
+        self.bind('<<ToolAdd>>', self.pages["Tools"].add)
+        self.bind('<<ToolDelete>>', self.pages["Tools"].delete)
+        self.bind('<<ToolClone>>', self.pages["Tools"].clone)
+        self.bind('<<ToolRename>>', self.pages["Tools"].rename)
+
+    #--- Command Line Bindings
+
+        OCV.CMD_W.bind("<Return>", self.cmdExecute)
+        OCV.CMD_W.bind("<Up>", self.commandHistoryUp)
+        OCV.CMD_W.bind("<Down>", self.commandHistoryDown)
+        OCV.CMD_W.bind("<FocusIn>", self.commandFocusIn)
+        OCV.CMD_W.bind("<FocusOut>", self.commandFocusOut)
+        OCV.CMD_W.bind("<Key>", self.commandKey)
+        OCV.CMD_W.bind("<Control-Key-z>", self.undo)
+        OCV.CMD_W.bind("<Control-Key-Z>", self.redo)
+        OCV.CMD_W.bind("<Control-Key-y>", self.redo)
+
+    #--- END Bindings
 
         OCV.CANVAS_F.canvas.focus_set()
 
@@ -639,8 +659,39 @@ class Application(Tk.Toplevel, Sender):
         OCV.stepz = OCV.pslist_z[OCV.pstep_z]
         self.control.set_step_view(OCV.stepxy, OCV.stepz)
     
-    #--- END JOG MOTION COMMANDS 
+    #--- CAM COMMANDS
 
+    def mop_ok(self, event=None):
+        if OCV.mop_vars["type"] == "PK":
+            print("MOP Pocket")
+            print(OCV.mop_vars["tdia"])
+            print(OCV.mop_vars["mso"])
+            print(OCV.mop_vars["msd"])
+            print(OCV.mop_vars["tdp"])
+        elif OCV.mop_vars["type"] == "LN":
+            print("MOP Line")
+        else:
+            return 
+ 
+        
+        """
+        end_depth = Utils.ask_for_value(OCV.APP, "TD")
+
+        if end_depth is None:
+            return
+
+        CAMGen.pocket(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        """
+
+        # LINE
+        """
+        end_depth = Utils.ask_for_value(OCV.APP, "TD")
+
+        if end_depth is None:
+            return
+
+        CAMGen.line(self, OCV.APP, end_depth, "mem_0", "mem_1")
+        """
 
     #--- Debug Panel
 
@@ -1196,6 +1247,7 @@ class Application(Tk.Toplevel, Sender):
             msg = "This controller has no error list"
             
         panel = Utils.ErrorWindow(OCV.APP, _("Error Help"))
+        panel.m_txt["height"] = 30
         panel.show_message(msg)
 
     def show_settings_panel(self, event=None):
@@ -1206,6 +1258,7 @@ class Application(Tk.Toplevel, Sender):
             msg = "This controller has no setting list yet"
             
         panel = Utils.ErrorWindow(OCV.APP, _("Settings Help"))
+        panel.m_txt["height"] = 30        
         panel.show_message(msg)
 
     def viewChange(self, event=None):
@@ -2037,7 +2090,8 @@ class Application(Tk.Toplevel, Sender):
         Sender.load(self, filename)
 
         if ext == ".probe":
-            Page.frames["Probe:Autolevel"].setValues()
+            # Page.frames["Probe:Autolevel"] = alevel
+            alevel.setValues()
             self.event_generate("<<DrawProbe>>")
 
         elif ext == ".orient":
