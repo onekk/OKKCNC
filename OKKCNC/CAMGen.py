@@ -139,8 +139,11 @@ def line(self, app, end_depth, mem_0, mem_1):
         OCV.APP.setStatus(_("Line Cut: Generated line cut code"))
 
 
-def pocket(self, app, end_depth, mem_0, mem_1):
-    """create GCode for a pocket"""
+def pocket(self, app, mem_0, mem_1):
+    """create GCode for a pocket
+    Values are stored in OCV.mop_vars as a dictionary"""
+    
+    end_depth = OCV.mop_vars["tdp"]
     x_start = min(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
     y_start = min(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
@@ -149,12 +152,12 @@ def pocket(self, app, end_depth, mem_0, mem_1):
 
     z_start = OCV.WK_mems[mem_1][2]
 
-    tool_dia = OCV.CD['diameter']
+    tool_dia = OCV.mop_vars["tdia"]
     tool_rad = tool_dia / 2.
 
-    xy_stepover = tool_dia * OCV.CD['stepover'] / 100.0
+    xy_stepover = OCV.mop_vars["mso"]
 
-    z_stepover = OCV.CD['stepz']
+    z_stepover = OCV.mop_vars["msd"]
 
     # avoid infinite while loop
     if z_stepover == 0:
@@ -174,6 +177,8 @@ def pocket(self, app, end_depth, mem_0, mem_1):
         return
 
     # Set the Initialization file
+    OCV.APP.clear_gcode()
+    OCV.APP.clear_editor()
     blocks = []
     block = Block.Block("Init")
     # Get the current WCS as the mem are related to it

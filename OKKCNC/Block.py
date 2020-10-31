@@ -111,20 +111,6 @@ class Block(list):
                     return t[1]
         return None
 
-    def operationSide(self, name=None):
-        """Tests if block contains operation on
-        inside of the part (-1), outside (1), or can't decide (0)
-        """
-        # if self.operationTest('pocket', name): return -1
-
-        if self.operationTest('in', name) and not self.operationTest('out', name):
-            return -1
-
-        if self.operationTest('out', name) and not self.operationTest('in', name):
-            return 1
-
-        return 0
-
     @staticmethod
     def operationName(name, operation, remove=None):
         """@return the new name with an operation (static)"""

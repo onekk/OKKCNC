@@ -73,11 +73,12 @@ import tkDialogs
 import CAMGen
 import CNCCanvas
 import Commands as cmd
+import GCode
 import Heuristic
 import Interface
 
 from CNC import CNC
-from GCode import GCode
+
 # import Ribbon
 import Pendant
 from Sender import Sender
@@ -126,7 +127,14 @@ class Application(Tk.Toplevel, Sender):
 
         #print("Application > ", self)
 
+        # Initialisation of Sender cause come variable to be loaded also
+        # here as OCV.APP (this class) is declared as self in Sender.__init__
+        # all the variables set as self.VARNAME in Sender are useable in this
+        # class and through OCV.APP as they where defined here.
+        # this is valid also for the method in Sender.Sender
+                
         Sender.__init__(OCV.APP)
+        
 
         if sys.platform == "win32":
             self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
@@ -662,36 +670,15 @@ class Application(Tk.Toplevel, Sender):
     #--- CAM COMMANDS
 
     def mop_ok(self, event=None):
+        """Execute CAM Commands
+        Validation checks are done in Utils.MOPWindow"""
+        
         if OCV.mop_vars["type"] == "PK":
-            print("MOP Pocket")
-            print(OCV.mop_vars["tdia"])
-            print(OCV.mop_vars["mso"])
-            print(OCV.mop_vars["msd"])
-            print(OCV.mop_vars["tdp"])
+            CAMGen.pocket(self, OCV.APP, "mem_0", "mem_1")
         elif OCV.mop_vars["type"] == "LN":
-            print("MOP Line")
+            CAMGen.line(self, OCV.APP, "mem_0", "mem_1")
         else:
             return 
- 
-        
-        """
-        end_depth = Utils.ask_for_value(OCV.APP, "TD")
-
-        if end_depth is None:
-            return
-
-        CAMGen.pocket(self, OCV.APP, end_depth, "mem_0", "mem_1")
-        """
-
-        # LINE
-        """
-        end_depth = Utils.ask_for_value(OCV.APP, "TD")
-
-        if end_depth is None:
-            return
-
-        CAMGen.line(self, OCV.APP, end_depth, "mem_0", "mem_1")
-        """
 
     #--- Debug Panel
 
@@ -2101,10 +2088,7 @@ class Application(Tk.Toplevel, Sender):
 
         else:
             self.editor.selectClear()
-            self.editor.fill()
-            OCV.CANVAS_F.canvas.reset()
-            self.draw()
-            OCV.CANVAS_F.canvas.fit2Screen()
+            self.clear_editor()
             Page.frames["Tools"].populate()
 
         if autoloaded:
@@ -2154,21 +2138,38 @@ class Application(Tk.Toplevel, Sender):
         if filename:
             fn, ext = os.path.splitext(filename)
             ext = ext.lower()
-            gcode = GCode()
+            gcode = GCode.GCode()
             gcode.load(filename)
             sel = self.editor.getSelectedBlocks()
+            
             if not sel:
                 pos = None
             else:
                 pos = sel[-1]
+            
             self.addUndo(self.gcode.insBlocksUndo(pos, gcode.blocks))
             del gcode
-            self.editor.fill()
-            self.draw()
-            OCV.CANVAS_F.canvas.fit2Screen()
+            self.clear_editor()
+
+    def clear_gcode(self):
+        """Clear GCode lines stored after parsing a filename.
+        mainly used to avoid importing GCode in CAMGen
+        """
+
+        self.gcode = GCode.GCode()
+
+    def clear_editor(self):
+        """Clear editor and reset Canvas
+        used here in in CAMGen"""
+
+        self.editor.fill()
+        OCV.CANVAS_F.canvas.reset()
+        self.draw()
+        OCV.CANVAS_F.canvas.fit2Screen()
 
     def focus_in(self, event):
         """manage focus in..."""
+
         if self._inFocus:
             return
         # FocusIn is generated for all sub-windows, handle only the main window
@@ -2193,6 +2194,7 @@ class Application(Tk.Toplevel, Sender):
 
     def openClose(self, event=None):
         """Open/Close action called by button"""
+        
         serialPage = Page.frames["Serial"]
         print("OpenClose Reached")
         if OCV.serial_open is True:
@@ -2216,6 +2218,7 @@ class Application(Tk.Toplevel, Sender):
 
     def device_open(self, device, baudrate):
         """open serial device"""
+        
         try:
             return Sender.open(self, device, baudrate)
         except:
