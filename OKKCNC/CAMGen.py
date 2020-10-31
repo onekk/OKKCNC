@@ -39,8 +39,10 @@ def rect_path(x_0, y_0, r_w, r_h):
     return (x_r, y_r)
 
 
-def line(self, app, end_depth, mem_0, mem_1):
+def line(self, app, mem_0, mem_1):
     """Create GCode for a Line"""
+        
+    end_depth = OCV.mop_vars["tdp"]
     x_start = min(OCV.WK_mems[mem_0][0], OCV.WK_mems[mem_1][0])
     y_start = min(OCV.WK_mems[mem_0][1], OCV.WK_mems[mem_1][1])
 
@@ -49,11 +51,12 @@ def line(self, app, end_depth, mem_0, mem_1):
 
     z_start = OCV.WK_mems[mem_1][2]
 
-    tool_dia = OCV.CD['diameter']
-    # tool_rad = tool_dia / 2.
-    xy_stepover = tool_dia * OCV.CD['stepover'] / 100.0
+    tool_dia = OCV.mop_vars["tdia"]
+    # tool_rad = tool_dia / 2. # not needed for a line
 
-    z_stepover = OCV.CD['stepz']
+    xy_stepover = OCV.mop_vars["mso"]
+
+    z_stepover = OCV.mop_vars["msd"]
 
     # avoid infinite while loop
     if z_stepover == 0:
@@ -78,7 +81,10 @@ def line(self, app, end_depth, mem_0, mem_1):
     # Reset the Gcode in the Editor
     # Loading an empty file
 
-    # Set the Initialization file
+    # Reset the editor and write the Gcode generated Here
+    OCV.APP.clear_gcode()
+    OCV.APP.clear_editor()
+    OCV.APP.reset_canvas()
     blocks = []
     block = Block.Block("Init")
     # Get the current WCS as the mem are related to it
@@ -176,9 +182,10 @@ def pocket(self, app, mem_0, mem_1):
     if retval is False:
         return
 
-    # Set the Initialization file
+    # Reset the editor and write the Gcode generated Here
     OCV.APP.clear_gcode()
     OCV.APP.clear_editor()
+    OCV.APP.reset_canvas()
     blocks = []
     block = Block.Block("Init")
     # Get the current WCS as the mem are related to it
@@ -307,6 +314,6 @@ def pocket(self, app, mem_0, mem_1):
         if active == 0:
             active = 1
 
-        OCV.APP.gcode.insBlocks(active, blocks, "Line Cut")
+        OCV.APP.gcode.insBlocks(active, blocks, "Pocket Cut")
         OCV.APP.refresh()
-        OCV.APP.setStatus(_("Line Cut: Generated line cut code"))
+        OCV.APP.setStatus(_("Pocket Cut: Generated line cut code"))

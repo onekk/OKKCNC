@@ -41,8 +41,6 @@ class GCode(object):
 
     def __init__(self):
         self.cnc = CNC()
-        self.header = ""
-        self.footer = ""
         self.undoredo = undo.UndoRedo()
         self.probe = Probe.Probe()
         self.orient = Orient()
@@ -50,8 +48,11 @@ class GCode(object):
         self.init()
 
     def init(self):
-        """init part this part could be reused"""
+        """Reusable part of GCode initialisation"""
         self.filename = ""
+        self.header = ""
+        self.footer = ""
+
         OCV.blocks = []  # list of blocks
         # dummy values for min_z and max_z to correctly test when setted
         OCV.max_z = -9999

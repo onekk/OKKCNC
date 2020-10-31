@@ -802,18 +802,17 @@ class MOPWindow(Tk.Toplevel):
         self.fr1 = Tk.Frame(self)
         self.fr1.pack(fill=Tk.BOTH, expand=True)
 
-        butOK = Tk.Button(self, text="OK")
-        butOK.bind("<Button-1>",
-                   lambda event, obj=tipo: self.validate_mop(event, obj))
-        butOK.pack(side=Tk.LEFT) 
-
-        butKO = Tk.Button(self, text="KO")
+        butKO = Tk.Button(self, text=_("Cancel"))
         butKO.bind("<Button-1>",
                    lambda event, obj=tipo: self.exit_mop(event, obj))
-        butKO.pack(side=Tk.LEFT) 
+        butKO.pack(side=Tk.RIGHT, padx=10, pady=5) 
+
+        butOK = Tk.Button(self, text=_("OK"))
+        butOK.bind("<Button-1>",
+                   lambda event, obj=tipo: self.validate_mop(event, obj))
+        butOK.pack(side=Tk.RIGHT, padx=10, pady=5) 
     
         self.f_row = 0
-        self.f_col = 0
         self.values = []
         
     def create_form(self, tipo):
@@ -824,43 +823,75 @@ class MOPWindow(Tk.Toplevel):
                 ("Diameter", "en", "fl", "tdi"),
                 ("StepOver", "en", "pc", "mso"),
                 ("StepDown", "en", "fl", "msd"),
+                ("Target Depth", "en", "fl", "tdp"),
+                ("Spiral Pocket", "cb", "bl", "pks")
+                ))
+        elif tipo == "LN":
+            OCV.mop_vars["type"] = "LN"
+            self.populate_form((
+                ("ToolsDb", "db", "tt"),
+                ("Diameter", "en", "fl", "tdi"),
+                ("StepOver", "en", "pc", "mso"),
+                ("StepDown", "en", "fl", "msd"),
                 ("Target Depth", "en", "fl", "tdp")
                 ))
+        else:
+            return
  
     def populate_form(self, data):
         print("Create Form")
         for field in data:
             if field[1] == "db":
                 self.create_db_field(field[0], field[2])
-            if field[1] == "en":
+            elif field[1] == "en":
                 self.create_en_field(field[0], field[2], field[3])
+            elif field[1] == "cb":
+                self.create_cb_field(field[0], field[2], field[3])
+        
+        # Add a blank line to the form 
+        label = Tk.Label(self.fr1, text="")
+        label.grid(row=self.f_row, column=0, sticky=Tk.EW)
+        
+        # set frame resize priorities
+        self.fr1.columnconfigure(0, weight=2)
+        self.fr1.columnconfigure(1, weight=1)
+                
                 
     def create_db_field(self, name, db_name):
-        print("name {} - row {}, col{}".format(name, self.f_row, self.f_col))
-        label = Tk.Label(
-                    self.fr1,
-                    text=name, width=1)
-        label.grid(row=self.f_row, column=self.f_col, sticky=Tk.EW)
+        """Create Database Field"""
+        label = Tk.Label(self.fr1, text=name)
+        label.grid(row=self.f_row, column=0, sticky="w", padx=5, pady=3)
 
         if db_name == "tt":
-            self.tcb = ttk.Combobox(self.fr1, width=15)
+            self.tcb = ttk.Combobox(self.fr1)
             cbitems = []
 
             for item in OCV.tooltable:
                 cbitems.append("n: {} dia: {}".format(item[0], item[1]))
 
             self.tcb['values'] = cbitems     
-            self.tcb.grid(row=self.f_row, column=self.f_col +1, sticky=Tk.EW)
+            self.tcb.grid(row=self.f_row, column=1, sticky="ew")
        
             self.tcb.bind("<<ComboboxSelected>>", self.fill_dia)
- 
-       # set frame resize priorities
-        self.fr1.rowconfigure(self.f_row, weight=1)
-        self.fr1.columnconfigure(self.f_col, weight=1)
+
+        self.f_row +=1
+
+    def create_cb_field(self, name, var_type, var_name):
+        """Create CheckBox Field"""
+
+        ret_val = Tk.BooleanVar()
+        cb = Tk.Checkbutton(
+            self.fr1,
+            text=name,
+            variable=ret_val,
+            onvalue=1, offvalue=0)
+        cb.grid(row=self.f_row, column=0, pady=3, sticky="w")
+
+        self.values.append((var_name, var_type, ret_val))
         self.f_row +=1
 
     def create_en_field(self, name, var_type, var_name):
-        print("name {} - row {}, col{}".format(name, self.f_row, self.f_col))
+        """Create value Field"""
 
         if var_type == "pc":
             lab_name = name + " (0-100)"
@@ -869,25 +900,21 @@ class MOPWindow(Tk.Toplevel):
             lab_name = name
             f_width = 10
             
-        label = Tk.Label(self.fr1, text=lab_name, width=1)
-        label.grid(row=self.f_row, column=self.f_col, sticky="ew")
+        label = Tk.Label(self.fr1, text=lab_name)
+        label.grid(row=self.f_row, column=0, padx=5, pady=3, sticky="w")
 
         ret_val = Tk.StringVar()
         value = Tk.Entry(self.fr1, name=var_name, width=f_width,
                          textvariable=ret_val, justify="right")
-        value.grid(row=self.f_row, column=self.f_col + 1, sticky="e")
+        value.grid(row=self.f_row, column=1, sticky="e")
 
         self.values.append((var_name, var_type, ret_val))
          
-        # set frame resize priorities
-        self.fr1.rowconfigure(self.f_row, weight=1)
-        self.fr1.columnconfigure(self.f_col, weight=2)
-        self.fr1.columnconfigure(self.f_col + 1, weight=1) 
-
         self.f_row +=1
 
-    def fill_dia(self, event):    
-        print(self.tcb.get())
+    def fill_dia(self, event):
+        """Auto fill Endmill diameter field with values from ListBox"""
+        #print(self.tcb.get())
         ret_val = self.tcb.get()
         s_pat = re.search("dia: ", ret_val)
         value = ret_val[s_pat.span()[1]:] 
@@ -896,7 +923,8 @@ class MOPWindow(Tk.Toplevel):
         wdg[0].set(value)
 
     def validate_mop(self, event, tipo):
-        print("MOP validate")
+        """Validate MOP data"""
+        #print("MOP validate")
         tdia =  self.get_value("tdi")
 
         if tdia > 0 and tdia < 100:
@@ -938,24 +966,34 @@ class MOPWindow(Tk.Toplevel):
         t_depth = self.get_value("tdp")
         
         if t_depth < 0:
-            OCV.mop_vars["tdp"] = self.get_value("tdp")            
+            OCV.mop_vars["tdp"] = t_depth            
         else:
              e_win = ErrorWindow(self, _("Data Invalid"))
              e_win.show_message(_("Target Depth has to be negative"))
              return
         
         if tipo == "PK":
+            pocket_type = self.get_value("pks", "bl")
+            OCV.mop_vars["pks"] = pocket_type
+        elif tipo == "LN":
+            pass
+        else:
             pass
         
         OCV.APP.event_generate("<<MOP_OK>>")    
         self.destroy()    
   
-    def get_value(self, var_name):
+    def get_value(self, var_name, var_type="fl"):
         ret_val = [value for value in self.values if value[0] == var_name]
         value = ret_val[0][2].get()
         
         try:
-            return float(value) 
+            if var_type == "fl":
+                return float(value)
+            elif var_type == "bl":
+                return value
+            else:
+                return value
         except ValueError:
             return 0
             

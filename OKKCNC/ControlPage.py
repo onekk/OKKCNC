@@ -596,7 +596,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:        
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                pass
+                OCV.MOP = Utils.MOPWindow(OCV.APP, "LN", _("Line"))
+                OCV.MOP.create_form("LN")
         else:
             pass
 

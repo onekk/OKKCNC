@@ -57,7 +57,7 @@ except ImportError:
     from queue import *
 
 # Load configuration before anything else
-# and if needed replace the  translate function _()
+# and if needed replace the translate function _()
 # before any string is initialized
 OCV.config = ConfigParser.ConfigParser()
 # This is here to debug the fact that config is sometimes instantiated twice
@@ -894,9 +894,7 @@ class Application(Tk.Toplevel, Sender):
         return "break"
 
     def ClearEditor(self, event=None):
-        self.editor.selectClear()
-        self.editor.selectAll()
-        self.editor.deleteBlock()
+        self.clear_editor()
 
     def addUndo(self, undoinfo):
         self.gcode.addUndo(undoinfo)
@@ -2027,6 +2025,7 @@ class Application(Tk.Toplevel, Sender):
         return "break"
 
     def fileModified(self):
+        """Ask to save the file if Gcode is modified after loaded """
         if self.gcode.isModified():
             ans = tkMessageBox.askquestion(
                 _("File modified"),
@@ -2088,7 +2087,8 @@ class Application(Tk.Toplevel, Sender):
 
         else:
             self.editor.selectClear()
-            self.clear_editor()
+            self.editor.fill()
+            self.reset_canvas()
             Page.frames["Tools"].populate()
 
         if autoloaded:
@@ -2149,7 +2149,8 @@ class Application(Tk.Toplevel, Sender):
             
             self.addUndo(self.gcode.insBlocksUndo(pos, gcode.blocks))
             del gcode
-            self.clear_editor()
+            self.editor.fill()
+            self.reset_canvas()
 
     def clear_gcode(self):
         """Clear GCode lines stored after parsing a filename.
@@ -2158,14 +2159,19 @@ class Application(Tk.Toplevel, Sender):
 
         self.gcode = GCode.GCode()
 
-    def clear_editor(self):
-        """Clear editor and reset Canvas
+    def reset_canvas(self):
+        """Reset Canvas
         used here in in CAMGen"""
 
-        self.editor.fill()
         OCV.CANVAS_F.canvas.reset()
         self.draw()
         OCV.CANVAS_F.canvas.fit2Screen()
+
+    def clear_editor(self):
+        self.editor.selectClear()
+        self.editor.selectAll()
+        self.editor.deleteBlock()
+
 
     def focus_in(self, event):
         """manage focus in..."""
@@ -2251,9 +2257,7 @@ class Application(Tk.Toplevel, Sender):
         return OCV.s_stop
 
     def run(self, lines=None):
-        """
-        Send enabled gcode file to the CNC machine
-        """
+        """Send enabled gcode file to the CNC machine """
 
         if OCV.HAS_SERIAL is False and not OCV.developer:
             tkMessageBox.showerror(
