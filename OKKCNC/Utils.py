@@ -824,6 +824,7 @@ class MOPWindow(Tk.Toplevel):
                 ("StepOver", "en", "pc", "mso"),
                 ("StepDown", "en", "fl", "msd"),
                 ("Target Depth", "en", "fl", "tdp"),
+                ("Start internally", "cb", "bl", "sin"),
                 ("Spiral Pocket", "cb", "bl", "pks")
                 ))
         elif tipo == "LN":
@@ -975,6 +976,9 @@ class MOPWindow(Tk.Toplevel):
         if tipo == "PK":
             pocket_type = self.get_value("pks", "bl")
             OCV.mop_vars["pks"] = pocket_type
+            pocket_int = self.get_value("sin", "bl")
+            OCV.mop_vars["sin"] = pocket_int
+            
         elif tipo == "LN":
             pass
         else:

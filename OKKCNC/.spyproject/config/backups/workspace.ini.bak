@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['OCV.py', '__main__.py', 'Sender.py', 'Interface.py', 'Utils.py', '../../../../common/Remote/OKKCNC/OKKCNC/ControlPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/OKKCNC.ini', 'CAMGen.py', 'EditorPage.py']
+recent_files = ['OCV.py', '__main__.py', 'Sender.py', 'Interface.py', 'Utils.py', '../../../../common/Remote/OKKCNC/OKKCNC/ControlPage.py', '../../../../common/Remote/OKKCNC/OKKCNC/OKKCNC.ini', 'CAMGen.py', 'EditorPage.py', 'GCode.py']
 
