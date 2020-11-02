@@ -423,13 +423,13 @@ def addException():
 
 
 def about_win(timer = None):
-    OCV.ABOUT = Tk.Toplevel(OCV.APP)
-    OCV.ABOUT.transient(OCV.APP)
-    OCV.ABOUT.title(_("About {0}").format(OCV.PRG_NAME))
+    OCV.TK_ABOUT = Tk.Toplevel(OCV.TK_APP)
+    OCV.TK_ABOUT.transient(OCV.TK_APP)
+    OCV.TK_ABOUT.title(_("About {0}").format(OCV.PRG_NAME))
     if sys.platform == "win32":
-        OCV.APP.iconbitmap("OKKCNC.ico")
+        OCV.TK_APP.iconbitmap("OKKCNC.ico")
     else:
-        OCV.APP.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
+        OCV.TK_APP.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
 
     bg = "#707070"
     fg = "#ffffff"
@@ -448,7 +448,7 @@ def about_win(timer = None):
         ]
 
     frame = Tk.Frame(
-        OCV.ABOUT,
+        OCV.TK_ABOUT,
         borderwidth=2,
         relief=Tk.SUNKEN,
         background=bg)
@@ -508,7 +508,7 @@ def about_win(timer = None):
     scrollb.grid(row=row, column=3, sticky= Tk.NSEW, padx=0, pady=0)
     m_txt['yscrollcommand'] = scrollb.set
 
-    closeAbout = lambda e=None, t=OCV.ABOUT: t.destroy()
+    closeAbout = lambda e=None, t=OCV.TK_ABOUT: t.destroy()
 
     row += 1
 
@@ -517,26 +517,26 @@ def about_win(timer = None):
 
     frame.grid_columnconfigure(0, weight=1)
 
-    OCV.ABOUT.bind('<Escape>', closeAbout)
-    OCV.ABOUT.bind('<Return>', closeAbout)
-    OCV.ABOUT.bind('<KP_Enter>', closeAbout)
+    OCV.TK_ABOUT.bind('<Escape>', closeAbout)
+    OCV.TK_ABOUT.bind('<Return>', closeAbout)
+    OCV.TK_ABOUT.bind('<KP_Enter>', closeAbout)
 
-    OCV.ABOUT.deiconify()
-    OCV.ABOUT.wait_visibility()
-    OCV.ABOUT.resizable(False, False)
+    OCV.TK_ABOUT.deiconify()
+    OCV.TK_ABOUT.wait_visibility()
+    OCV.TK_ABOUT.resizable(False, False)
 
     try:
-        OCV.ABOUT.grab_set()
+        OCV.TK_ABOUT.grab_set()
     except:
         pass
 
     but.focus_set()
-    OCV.ABOUT.lift()
+    OCV.TK_ABOUT.lift()
 
     if timer:
-        OCV.ABOUT.after(timer, closeAbout)
+        OCV.TK_ABOUT.after(timer, closeAbout)
 
-    OCV.ABOUT.wait_window()
+    OCV.TK_ABOUT.wait_window()
 
 
 class CallWrapper(object):
@@ -984,7 +984,7 @@ class MOPWindow(Tk.Toplevel):
         else:
             pass
         
-        OCV.APP.event_generate("<<MOP_OK>>")    
+        OCV.TK_APP.event_generate("<<MOP_OK>>")    
         self.destroy()    
   
     def get_value(self, var_name, var_type="fl"):

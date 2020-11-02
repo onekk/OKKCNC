@@ -46,8 +46,8 @@ def main_interface(self):
     """
 
     # --- Ribbon ---
-    OCV.RIBBON = Ribbon.TabRibbonFrame(self)
-    OCV.RIBBON.pack(side=Tk.TOP, fill=Tk.X)
+    OCV.TK_RIBBON = Ribbon.TabRibbonFrame(self)
+    OCV.TK_RIBBON.pack(side=Tk.TOP, fill=Tk.X)
 
     # Main frame
     self.paned = Tk.PanedWindow(self, orient=Tk.HORIZONTAL)
@@ -56,17 +56,17 @@ def main_interface(self):
     # Status bar
     frame = Tk.Frame(self)
     frame.pack(side=Tk.BOTTOM, fill=Tk.X)
-    OCV.STATUSBAR = tkExtra.ProgressBar(
+    OCV.TK_STATUSBAR = tkExtra.ProgressBar(
         frame,
         height=20,
         relief=Tk.SUNKEN)
 
-    OCV.STATUSBAR.pack(
+    OCV.TK_STATUSBAR.pack(
         side=Tk.LEFT,
         fill=Tk.X,
         expand=Tk.YES)
 
-    OCV.STATUSBAR.configText(
+    OCV.TK_STATUSBAR.configText(
         fill="DarkBlue",
         justify=Tk.LEFT,
         anchor=Tk.W)
@@ -99,17 +99,17 @@ def main_interface(self):
     self.statusx.pack(side=Tk.RIGHT)
 
     # Buffer bar
-    OCV.BUFFERBAR = tkExtra.ProgressBar(
+    OCV.TK_BUFFERBAR = tkExtra.ProgressBar(
         frame,
         height=20,
         width=40,
         relief=Tk.SUNKEN)
 
-    OCV.BUFFERBAR.pack(side=Tk.RIGHT, expand=Tk.NO)
+    OCV.TK_BUFFERBAR.pack(side=Tk.RIGHT, expand=Tk.NO)
 
-    OCV.BUFFERBAR.setLimits(0, 100)
+    OCV.TK_BUFFERBAR.setLimits(0, 100)
 
-    tkExtra.Balloon.set(OCV.BUFFERBAR, _("Controller buffer fill"))
+    tkExtra.Balloon.set(OCV.TK_BUFFERBAR, _("Controller buffer fill"))
 
     # --- Left side ---
     self.Lframe = Tk.Frame(self.paned)
@@ -120,7 +120,7 @@ def main_interface(self):
 
     self.pageframe.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.BOTH)
 
-    OCV.RIBBON.setPageFrame(self.pageframe)
+    OCV.TK_RIBBON.setPageFrame(self.pageframe)
 
     # Command bar
     cmd_f = Tk.Frame(self.Lframe)
@@ -129,12 +129,12 @@ def main_interface(self):
     self.cmdlabel = Tk.Label(cmd_f, text=_("Command:"))
     self.cmdlabel.pack(side=Tk.LEFT)
 
-    OCV.CMD_W = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
+    OCV.TK_CMD_W = Tk.Entry(cmd_f, relief=Tk.SUNKEN, background="White")
 
-    OCV.CMD_W.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
+    OCV.TK_CMD_W.pack(side=Tk.RIGHT, fill=Tk.X, expand=Tk.YES)
 
     tkExtra.Balloon.set(
-        OCV.CMD_W,
+        OCV.TK_CMD_W,
         _("MDI Command line: Accept g-code commands or macro " \
           "commands (RESET/HOME...) or editor commands " \
           "(move,inkscape, round...) [Space or Ctrl-Space]"))
@@ -144,9 +144,9 @@ def main_interface(self):
     self.paned.add(self.Rframe)
 
     # --- Canvas ---
-    OCV.CANVAS_F = CNCCanvas.CanvasFrame(self.Rframe, self)
+    OCV.TK_CANVAS_F = CNCCanvas.CanvasFrame(self.Rframe, self)
 
-    OCV.CANVAS_F.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+    OCV.TK_CANVAS_F.pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
 
     self.linebuffer = Tk.Label(self.Rframe, background="khaki")
 
@@ -164,7 +164,7 @@ def main_interface(self):
     for cls in (ControlPage, EditorPage, FilePage, ProbePage,
                 TerminalPage, ToolsPage):
 
-        page = cls(OCV.RIBBON, self)
+        page = cls(OCV.TK_RIBBON, self)
 
         self.pages[page.name] = page
 
@@ -491,7 +491,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     def update_state(self):
         """update State label"""
-        msg = OCV.APP._msg or OCV.c_state
+        msg = OCV.TK_APP._msg or OCV.c_state
         if OCV.CD["pins"] is not None and OCV.CD["pins"] != "":
             msg += " ["+OCV.CD["pins"]+"]"
         self.state.config(text=msg, background=OCV.CD["color"])
@@ -523,7 +523,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.xwork.get(), None, OCV.CD), 3)
-            OCV.MCTRL.wcs_set(value, None, None)
+            OCV.TK_MCTRL.wcs_set(value, None, None)
         except:
             pass
 
@@ -534,7 +534,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.ywork.get(), None, OCV.CD), 3)
-            OCV.MCTRL.wcs_set(None, value, None)
+            OCV.TK_MCTRL.wcs_set(None, value, None)
         except:
             pass
 
@@ -545,7 +545,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
         try:
             value = round(eval(self.zwork.get(), None, OCV.CD), 3)
-            OCV.MCTRL.wcs_set(None, None, value)
+            OCV.TK_MCTRL.wcs_set(None, None, value)
         except:
             pass
 
@@ -561,7 +561,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         for idx in range(1, b_num):
             but = Utils.UserButton(
                 self.frame,
-                OCV.APP,
+                OCV.TK_APP,
                 idx,
                 anchor=Tk.W,
                 background=OCV.COLOR_BACKGROUND)
@@ -576,7 +576,7 @@ class RunGroup(CNCRibbon.ButtonGroup):
     """Run Group"""
     def __init__(self, master, app):
         CNCRibbon.ButtonGroup.__init__(self, master, "Run", app)
-        OCV.RUN_GROUP = self
+        OCV.TK_RUN_GROUP = self
 
         but = Ribbon.LabelButton(
             self.frame,
@@ -633,7 +633,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", OCV.MCTRL.hardReset),
+            [(_("Hard Reset"), "reset", OCV.TK_MCTRL.hardReset),
              (_("Toggle Sender Dbg"), "toggle", self.toggleDbgSnd),
              (_("Toggle Com Dbg"), "toggle", self.toggleDbgCom),
              (_("View Flags"), "toggle", self.viewFlags)
@@ -904,7 +904,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # Right Button Clicked, set mem
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
-                mem_name = Utils.ask_for_value(OCV.APP, "ME")
+                mem_name = Utils.ask_for_value(OCV.TK_APP, "ME")
                 # print("MG mem_name = ", mem_name)
                 if mem_name is None:
                     mem_name = mem_key
@@ -977,7 +977,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def clr_mem(self):
         """clear memory - asking for memory number"""
-        mem_num = Utils.ask_for_value(OCV.APP, "MN")
+        mem_num = Utils.ask_for_value(OCV.TK_APP, "MN")
 
         # print("clr_mem >", mem_num)
 
@@ -1035,9 +1035,9 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                     OCV.WK_mem = mem_num
 
                     if OCV.WK_active_mems[OCV.WK_mem] == 2:
-                        OCV.APP.event_generate("<<ClrMem>>")
+                        OCV.TK_APP.event_generate("<<ClrMem>>")
                     else:
-                        OCV.APP.event_generate("<<SetMem>>")
+                        OCV.TK_APP.event_generate("<<SetMem>>")
 
     @staticmethod
     def reset_all_displayed_mem():
@@ -1047,4 +1047,4 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         for mem in indices:
             print("reset_all_displayed_mem index = ", mem)
             OCV.WK_mem = mem
-            OCV.APP.event_generate("<<ClrMem>>")
+            OCV.TK_APP.event_generate("<<ClrMem>>")

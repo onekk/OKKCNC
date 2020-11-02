@@ -75,7 +75,7 @@ class Block(list):
     def nameNop(self):
         """@return name without the operation"""
         name = self.name()
-        pat = OCV.OPPAT.match(name)
+        pat = OCV.RE_OP.match(name)
         if pat is None:
             return name
         else:
@@ -86,7 +86,7 @@ class Block(list):
         if name is None:
             name = self.name()
 
-        pat = OCV.OPPAT.match(name)
+        pat = OCV.RE_OP.match(name)
         if pat is not None:
             ops = pat.group(2)
             ops = re.split('\W+', ops)
@@ -100,7 +100,7 @@ class Block(list):
         if name is None:
             name = self.name()
 
-        pat = OCV.OPPAT.match(name)
+        pat = OCV.RE_OP.match(name)
         if pat is not None:
             ops = pat.group(2)
             ops = re.split(',', ops)
@@ -114,7 +114,7 @@ class Block(list):
     @staticmethod
     def operationName(name, operation, remove=None):
         """@return the new name with an operation (static)"""
-        pat = OCV.OPPAT.match(name)
+        pat = OCV.RE_OP.match(name)
         if pat is None:
             return "{0} [{1}]".format(name, operation)
         else:
@@ -216,7 +216,7 @@ class Block(list):
 
     def append(self, line):
         if line.startswith("(Block-"):
-            pat = OCV.BLOCKPAT.match(line)
+            pat = OCV.RE_BLOCK.match(line)
             if pat:
                 name, value = pat.groups()
                 value = value.strip()
@@ -243,7 +243,7 @@ class Block(list):
                     return
 
         if self.b_name is None and ("id:" in line) and ("End" not in line):
-            pat = OCV.IDPAT.match(line)
+            pat = OCV.RE_ID.match(line)
 
             if pat:
                 self.b_name = pat.group(1)

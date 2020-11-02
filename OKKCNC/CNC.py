@@ -477,7 +477,7 @@ class CNC(object):
         self.arcabsolute = False  # G90.1/G91.1 absolute/relative arc
         self.retractz = True  # G98/G99     retract to Z or R
         self.gcode = None
-        self.plane = OCV.XY
+        self.plane = OCV.CNC_XY
         self.feed = 0  # Actual gcode feed rate (not to confuse with cutfeed
         self.totalLength = 0.0
         self.totalTime = 0.0
@@ -636,7 +636,7 @@ class CNC(object):
         # execute literally the line after the first character
         if line[0] == '%':
             # special command
-            pat = OCV.AUXPAT.match(line.strip())
+            pat = OCV.RE_AUX.match(line.strip())
 
             if pat:
                 cmd = pat.group(1)
@@ -646,15 +646,15 @@ class CNC(object):
                 args = None
 
             if cmd == "%wait":
-                return (OCV.WAIT,)
+                return (OCV.GSTATE_WAIT,)
             elif cmd == "%msg":
 
                 if not args:
                     args = None
 
-                return (OCV.MSG, args)
+                return (OCV.GSTATE_MSG, args)
             elif cmd == "%update":
-                return (OCV.UPDATE, args)
+                return (OCV.GSTATE_UPDATE, args)
             elif line.startswith("%if running") and not OCV.CD["running"]:
                 # ignore if running lines when not running
                 return None
@@ -792,7 +792,7 @@ class CNC(object):
         if line is None:
             return None
         # Insert space before each command
-        line = OCV.CMDPAT.sub(r" \1", line).lstrip()
+        line = OCV.RE_CMD.sub(r" \1", line).lstrip()
         return line.split()
 
     def motionStart(self, cmds):
@@ -842,13 +842,13 @@ class CNC(object):
                 if gcode in (4, 10, 53):
                     pass  # do nothing but don't record to motion
                 elif gcode == 17:
-                    self.plane = OCV.XY
+                    self.plane = OCV.CNC_XY
 
                 elif gcode == 18:
-                    self.plane = OCV.XZ
+                    self.plane = OCV.CNC_XZ
 
                 elif gcode == 19:
-                    self.plane = OCV.YZ
+                    self.plane = OCV.CNC_YZ
 
                 elif gcode == 20:  # Switch to inches
                     if OCV.inch:
@@ -941,12 +941,12 @@ class CNC(object):
         """Return center x,y,z,r for arc motions 2,3 and set self.rval"""
 
         if self.rval > 0.0:
-            if self.plane == OCV.XY:
+            if self.plane == OCV.CNC_XY:
                 x = self.x
                 y = self.y
                 xv = self.xval
                 yv = self.yval
-            elif self.plane == OCV.XZ:
+            elif self.plane == OCV.CNC_XZ:
                 x = self.x
                 y = self.z
                 xv = self.xval
@@ -983,9 +983,9 @@ class CNC(object):
             zc = self.z + self.kval
             self.rval = math.sqrt(self.ival**2 + self.jval**2 + self.kval**2)
 
-            if self.plane == OCV.XY:
+            if self.plane == OCV.CNC_XY:
                 return xc, yc
-            elif self.plane == OCV.XZ:
+            elif self.plane == OCV.CNC_XZ:
                 return xc, zc
             else:
                 return yc, zc
@@ -1015,14 +1015,14 @@ class CNC(object):
             uc, vc = self.motionCenter()
 
             gcode = self.gcode
-            if self.plane == OCV.XY:
+            if self.plane == OCV.CNC_XY:
                 u0 = self.x
                 v0 = self.y
                 w0 = self.z
                 u1 = self.xval
                 v1 = self.yval
                 w1 = self.zval
-            elif self.plane == OCV.XZ:
+            elif self.plane == OCV.CNC_XZ:
                 u0 = self.x
                 v0 = self.z
                 w0 = self.y
@@ -1060,9 +1060,9 @@ class CNC(object):
                     v = vc + self.rval*math.sin(phi)
                     w = w0 + (phi-phi0)*ws
                     phi -= df
-                    if self.plane == OCV.XY:
+                    if self.plane == OCV.CNC_XY:
                         xyz.append((u, v, w))
-                    elif self.plane == OCV.XZ:
+                    elif self.plane == OCV.CNC_XZ:
                         xyz.append((u, w, v))
                     else:
                         xyz.append((w, u, v))
@@ -1079,9 +1079,9 @@ class CNC(object):
                     w = w0 + (phi-phi0)*ws
                     phi += df
 
-                    if self.plane == OCV.XY:
+                    if self.plane == OCV.CNC_XY:
                         xyz.append((u, v, w))
-                    elif self.plane == OCV.XZ:
+                    elif self.plane == OCV.CNC_XZ:
                         xyz.append((u, w, v))
                     else:
                         xyz.append((w, u, v))
@@ -1288,7 +1288,7 @@ class CNC(object):
                 else:
                     opt = OCV.ERROR_HANDLING.get(cmd.upper(), 0)
 
-                    if opt == OCV.SKIP:
+                    if opt == OCV.GSTATE_SKIP:
                         cmd = None
 
                 if cmd is not None:

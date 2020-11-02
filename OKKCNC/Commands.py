@@ -21,34 +21,34 @@ import OCV
 from _GenericGRBL import ERROR_CODES, SETTINGS_CODES
 
 def set_x0():
-    OCV.MCTRL.wcs_set("0", None, None)
+    OCV.TK_MCTRL.wcs_set("0", None, None)
     RefreshMemories()
 
 
 def set_y0():
-    OCV.MCTRL.wcs_set(None, "0", None)
+    OCV.TK_MCTRL.wcs_set(None, "0", None)
     RefreshMemories()
 
 
 def set_z0():
-    OCV.MCTRL.wcs_set(None, None, "0")
+    OCV.TK_MCTRL.wcs_set(None, None, "0")
     RefreshMemories()
 
 
 def set_xy0():
-    OCV.MCTRL.wcs_set("0", "0", None)
+    OCV.TK_MCTRL.wcs_set("0", "0", None)
     RefreshMemories()
 
 
 def set_xyz0():
-    OCV.MCTRL.wcs_set("0", "0", "0")
+    OCV.TK_MCTRL.wcs_set("0", "0", "0")
     RefreshMemories()
 
 
 def work_focus():
     """Do not give the focus while we are running"""
     if OCV.s_running:
-        OCV.APP.focus_set()
+        OCV.TK_APP.focus_set()
 
 
 def showState():
@@ -64,12 +64,12 @@ def showState():
         _("No info available.\nPlease contact the author."))
 
     tkMessageBox.showinfo(_("State: {0}").format(OCV.c_state),
-                          msg, parent=OCV.APP)
+                          msg, parent=OCV.TK_APP)
 
 def RefreshMemories():
     for i in range(2, OCV.WK_mem_num):
         if OCV.WK_active_mems[i] == 2:
-            OCV.CANVAS.memDraw(i)
+            OCV.TK_CANVAS.memDraw(i)
 
 #
 # Misc functions

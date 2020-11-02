@@ -126,15 +126,20 @@ def save_lastfile(filename):
 
 def conf_file_load(only_from_system_ini=False):
     """Load configuration file(s)
-    it load both the system config OKKCNC.ini file located in the program dir
+    Old behaviour was to load both the system config OKKCNC.ini file located in the program dir
     and the user file .OKKCNC located in the HOME dir
     configuration items are merged with a precedence of those in the user file
+
+    New beahviour it to use only USER_CONFIG
+    at first run SYS_CONFIG is copied into USER_CONFIG
     """
 
     if only_from_system_ini is True:
         OCV.config.read(OCV.SYS_CONFIG)
     else:
-        OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
+        # old behaviour is to merge configuration files
+        #OCV.config.read([OCV.SYS_CONFIG, OCV.USER_CONFIG])
+        OCV.config.read(OCV.USER_CONFIG)        
         OCV.error_report = get_int("Connection", "errorreport", 1)
 
         OCV.language = get_str(OCV.PRG_NAME, "language")
@@ -149,7 +154,8 @@ def conf_file_load(only_from_system_ini=False):
 
 def save_user_conf_file():
     """Save configuration file to disk"""
-    clean_configuration()
+    # remove configuration file merge as the system config is copied 
+    #clean_configuration()
     file_handler = open(OCV.USER_CONFIG, "w")
     OCV.config.write(file_handler)
     file_handler.close()
@@ -192,7 +198,7 @@ def loadHistory():
     except Exception:
         return
     OCV.history = [x.strip() for x in f]
-    OCV.APP._historySearch = None
+    OCV.TK_APP._historySearch = None
     f.close()
 
 

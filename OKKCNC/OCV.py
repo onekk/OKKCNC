@@ -27,8 +27,9 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.37-t1"
-PRG_DATE = "26 oct 2020"
+PRG_VER = "0.3.38-t1"
+PRG_DATE = "02 nov 2020"
+CONF_VER = "1.0"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -37,6 +38,40 @@ if getattr(sys, 'frozen', False):
     # When being bundled by pyinstaller, paths are different
     print("Running as pyinstaller bundle!", sys.argv[0])
     PRG_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+
+init_msg = []
+
+if sys.version_info[0] == 3:
+    IS_PY3 = True
+    init_msg.append("OKKCNC Python v3.x version.\n")
+    init_msg.append(
+        "Please report any error through github page {0}\n".format(
+            PRG_DEV_HOME))
+
+    warn_msg = "".join(init_msg)
+
+    sys.stdout.write("="*80+"\n")
+    sys.stdout.write(warn_msg)
+    sys.stdout.write("="*80+"\n")
+
+    TITLE_MSG = ""
+
+else:
+    IS_PY3 = False
+    init_msg.append("END OF LIFE WARNING!!!\n")
+    init_msg.append("OKKCNC Python v2.x version ")
+    init_msg.append("is at his end of life.\n")
+    init_msg.append("As python 2.x is offcially")
+    init_msg.append("no longer mantained.\n")
+    init_msg.append("see: \n{0} \nfor more info \n".format(PRG_DEV_HOME))
+
+    warn_msg = "".join(init_msg)
+
+    sys.stdout.write("="*80+"\n")
+    sys.stdout.write(warn_msg)
+    sys.stdout.write("="*80+"\n")
+
+    TITLE_MSG = "end of life"
 
 HOME_DIR = os.path.expanduser("~/")
 CONF_DIR = os.path.expanduser("~/.config/{0}".format(PRG_NAME))
@@ -49,146 +84,26 @@ else:
     U_CONF_NAME = ".{0}".format(PRG_NAME)
     U_HIST_NAME = ".{0}.history".format(PRG_NAME)
 
-
 SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
 USER_CONFIG = os.path.join(CONF_DIR, U_CONF_NAME)
 COM_HIST_FILE = os.path.join(CONF_DIR, U_HIST_NAME)
 
-# String related to About window
-PRG_CREDITS = \
-    "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
-    "@effer Filippo Rivato , " \
-    "@harvie Tomas Mudrunka\n\n" \
-    "And all the contributors of bCNC"
+if os.path.isfile(USER_CONFIG):
+    print("User configuration file: {}".format(USER_CONFIG))
+else:
+    print("Creating User configuration File: {}".format(USER_CONFIG))
+    orig = open(SYS_CONFIG, 'r')
+    dest = open(USER_CONFIG, 'w')
+    
+    for line in orig:
+        dest.writelines(line)
 
-PRG_CONTRIB = ""
+    orig.close()
+    dest.close()    
 
-PRG_LANGUAGES = {
-    "": "<system>",
-    "en": "English",
-    "it": "Italiano",
-    }
-
-PRG_SITE = "https://github.com/onekk/OKKCNC"
-
-PRG_TRANS = \
-    "Italian - @onekk\n" \
-# INTERFACE COLORS
-"""See Inifile.py/load_colors()
-values with comments Above are the corresponding item names in IniFile
-"""
-# "ribbon.active"
-COLOR_ACTIVE = "LightYellow"
-COLOR_BACKGROUND = "#E6E2E0"
-COLOR_BACKGROUND_LABELS = "pale green"
-COLOR_BACKGROUND_DISABLE = "#A6A2A0"
-
-COLOR_BLOCK = "LightYellow"
-# "canvas.camera"
-COLOR_CAMERA = "Cyan"
-# "canvas.background"
-COLOR_CANVAS = "White"
-
-COLOR_COMMENT = "Blue"
-# "canvas.disable"
-COLOR_DISABLE = "LightGray"
-# "canvas.enable"
-COLOR_ENABLE = "Black"
-# "canvas.gantry"
-COLOR_GANTRY = "Red"
-# "canvas.grid"
-COLOR_GRID = "Gray"
-COLOR_GROUP_BACKGROUND = "#B6B2B0"
-COLOR_GROUP_BACKGROUND2 = "#B0C0C0"
-# COLOR_GROUP_BACKGROUND3 = "#A0C0A0"
-# COLOR_GROUP_BACKGROUND4 = "#B0C0A0"
-COLOR_GROUP_FOREGROUND = "White"
-COLOR_INFO = "Gold"
-COLOR_INSERT = "Blue"  # CHECK set but unused
-COLOR_LSTB_NUMBER = "khaki1"
-COLOR_LSTB_SEP = "aquamarine"
-COLOR_LSTB_TEXT = "azure"
-COLOR_LSTB_VAL = "AntiqueWhite1"
-# "canvas.margin"
-COLOR_MARGIN = "Magenta"
-COLOR_MEM = "Orchid1"
-# "canvas.move"
-COLOR_MOVE = "DarkCyan"
-# "canvas.probetext"
-COLOR_PROBE_TEXT = "Green"
-# "canvas.process"
-COLOR_PROCESS = "Green"
-# "canvas.ruler"
-COLOR_RULER = "Green"
-# "canvas.select"
-COLOR_SELECT = "Blue"
-# "canvas.select2"
-COLOR_SELECT2 = "DarkCyan"
-# "canvas.selectbox"
-COLOR_SELECT_BOX = "Cyan"
-# "ribbon.select"
-COLOR_SELECT_LABEL = "#C0FFC0"
-COLOR_TAB = "DarkOrange"
-# TODO we need this color?
-COLOR_TABS = "Orange"
-COLOR_WORK = "Orange"
-
-#
-# -- Regular expressions
-AUXPAT = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
-BLOCKPAT = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
-CMDPAT = re.compile(r"([A-Za-z]+)")
-FEEDPAT = re.compile(r"^(.*)[fF](\d+\.?\d+)(.*)$")
-GPAT = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
-IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
-OPPAT = re.compile(r"(.*)\[(.*)\]")
-PARENPAT = re.compile(r"(\(.*?\))")
-# [\+\-]?[\d\.]+)\D?
-POSPAT = re.compile(r"([XYZ]+):\s*([\+\-]?[\d\.]+)\D")
-SEMIPAT = re.compile(r"(;.*)")
-
-# -- GRBL States
-STOP = 0
-SKIP = 1
-ASK = 2
-MSG = 3
-WAIT = 4
-UPDATE = 5
-
-XY = 0
-XZ = 1
-YZ = 2
-
-CW = 2
-CCW = 3
-
-"""these group of variable holds Tk references to various object
-across the program, to simplify and make clear the code:
-    One name for one entity not var or self var or Module.var
-"""
-
-root = None
-# Main window
-APP = None
-# About window, needed to have a reference for the close function
-ABOUT = None
-# Bufferbar
-BUFFERBAR = None
-# Canvas
-CANVAS = None
-# CanvaFrame
-CANVAS_F = None
-# Command Entry
-CMD_W = None
-# Machine controller instance
-MCTRL = None
-# MOP window
-MOP = None
-# Main interface Ribbon
-RIBBON = None
-RUN_GROUP = None
-# Statusbar
-STATUSBAR = None
+#--- Direction seems not needed anymore
+#CW = 2
+#CCW = 3
 
 """ used to unify most of coordinates printout in Gcode and text strings
 note the {3} parameter holding decimal precision """
@@ -306,6 +221,73 @@ CD = {
     "running": False,
     }
 
+#--- Planes
+CNC_XY = 0
+CNC_XZ = 1
+CNC_YZ = 2
+
+
+# INTERFACE COLORS
+"""See Inifile.py/load_colors()
+values with comments Above are the corresponding item names in IniFile
+"""
+# "ribbon.active"
+COLOR_ACTIVE = "LightYellow"
+COLOR_BACKGROUND = "#E6E2E0"
+COLOR_BACKGROUND_LABELS = "pale green"
+COLOR_BACKGROUND_DISABLE = "#A6A2A0"
+
+COLOR_BLOCK = "LightYellow"
+# "canvas.camera"
+COLOR_CAMERA = "Cyan"
+# "canvas.background"
+COLOR_CANVAS = "White"
+
+COLOR_COMMENT = "Blue"
+# "canvas.disable"
+COLOR_DISABLE = "LightGray"
+# "canvas.enable"
+COLOR_ENABLE = "Black"
+# "canvas.gantry"
+COLOR_GANTRY = "Red"
+# "canvas.grid"
+COLOR_GRID = "Gray"
+COLOR_GROUP_BACKGROUND = "#B6B2B0"
+COLOR_GROUP_BACKGROUND2 = "#B0C0C0"
+# COLOR_GROUP_BACKGROUND3 = "#A0C0A0"
+# COLOR_GROUP_BACKGROUND4 = "#B0C0A0"
+COLOR_GROUP_FOREGROUND = "White"
+COLOR_INFO = "Gold"
+COLOR_INSERT = "Blue"  # CHECK set but unused
+COLOR_LSTB_NUMBER = "khaki1"
+COLOR_LSTB_SEP = "aquamarine"
+COLOR_LSTB_TEXT = "azure"
+COLOR_LSTB_VAL = "AntiqueWhite1"
+# "canvas.margin"
+COLOR_MARGIN = "Magenta"
+COLOR_MEM = "Orchid1"
+# "canvas.move"
+COLOR_MOVE = "DarkCyan"
+# "canvas.probetext"
+COLOR_PROBE_TEXT = "Green"
+# "canvas.process"
+COLOR_PROCESS = "Green"
+# "canvas.ruler"
+COLOR_RULER = "Green"
+# "canvas.select"
+COLOR_SELECT = "Blue"
+# "canvas.select2"
+COLOR_SELECT2 = "DarkCyan"
+# "canvas.selectbox"
+COLOR_SELECT_BOX = "Cyan"
+# "ribbon.select"
+COLOR_SELECT_LABEL = "#C0FFC0"
+COLOR_TAB = "DarkOrange"
+# TODO we need this color?
+COLOR_TABS = "Orange"
+COLOR_WORK = "Orange"
+
+
 comment = ""  # last parsed comment
 config = None
 c_pgm_end = False
@@ -406,6 +388,14 @@ g_code_precision = 4
 # OKKCNC/controllers dir that is taylored to supply some relevant metadata
 g_code_pp = "Generic"
 
+#--- GRBL States some seems not needed
+#GSTATE_STOP = 0
+GSTATE_SKIP = 1
+#GSTATE_ASK = 2
+GSTATE_MSG = 3
+GSTATE_WAIT = 4
+GSTATE_UPDATE = 5
+
 #--- H #
 HAS_SERIAL = None  # flag
 history = []
@@ -416,10 +406,8 @@ icons = {}
 iface_widgets = []
 images = {}
 inch = False
-init_msg = []
 # hold infos used to display values
 infos = []
-IS_PY3 = False  # flag
 
 #--- L #
 language = ""
@@ -446,12 +434,47 @@ PLANE = {
     "G19": "YZ"}
 post_proc = False
 post_temp_fname = ""
+# String related to About window
+PRG_CREDITS = \
+    "bCNC Creator @vvlachoudis vvlachoudis@gmail.com\n" \
+    "@effer Filippo Rivato , " \
+    "@harvie Tomas Mudrunka\n\n" \
+    "And all the contributors of bCNC"
+
+PRG_CONTRIB = ""
+
+PRG_LANGUAGES = {
+    "": "<system>",
+    "en": "English",
+    "it": "Italiano",
+    }
+
+PRG_SITE = "https://github.com/onekk/OKKCNC"
+
+PRG_TRANS = \
+    "Italian - @onekk\n" # \ for continuation
+
 # positional index for the step cycling xy
 pstep_xy = 0
 # positional index for the step cycling z
 pstep_z = 0
 pslist_xy = []
 pslist_z= []
+
+#--- R #
+#--- Regular expressions
+RE_AUX = re.compile(r"^(%[A-Za-z0-9]+)\b *(.*)$")
+RE_BLOCK = re.compile(r"^\(Block-([A-Za-z]+):\s*(.*)\)")
+RE_CMD = re.compile(r"([A-Za-z]+)")
+RE_FEED = re.compile(r"^(.*)[fF](\d+\.?\d+)(.*)$")
+RE_GCODE = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
+RE_ID = re.compile(r".*\bid:\s*(.*?)\)")
+RE_OP = re.compile(r"(.*)\[(.*)\]")
+# These seems not needed anymore
+#RE_PAREN = re.compile(r"(\(.*?\))")
+# [\+\-]?[\d\.]+)\D?
+#RE_POS = re.compile(r"([XYZ]+):\s*([\+\-]?[\d\.]+)\D")
+#RE_SEMI = re.compile(r"(;.*)")
 
 #--- S #
 serial_open = False
@@ -501,7 +524,34 @@ s_stop = None
 s_stop_req = None
 
 #--- T #
-TITLE_MSG = ""
+"""these group of variable holds Tk references to various object
+across the program, to simplify and make clear the code:
+    One name for one entity not var or self var or Module.var
+"""
+
+TK_ROOT = None
+# Main window
+TK_MAIN = None
+# About window, needed to have a reference for the close function
+TK_ABOUT = None
+# Bufferbar
+TK_BUFFERBAR = None
+# Canvas
+TK_CANVAS = None
+# CanvasFrame
+TK_CANVAS_F = None
+# Command Entry
+TK_CMD_W = None
+# Machine controller instance
+TK_MCTRL = None
+# MOP window
+TK_MOP = None
+# Main interface Ribbon
+TK_RIBBON = None
+TK_RUN_GROUP = None
+# Statusbar
+TK_STATUSBAR = None
+
 TOLERANCE = 1e-7
 
 """

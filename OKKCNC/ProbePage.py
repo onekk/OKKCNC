@@ -320,7 +320,7 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
             self.sendGCode(cmd)
         except:
             pass
-        OCV.MCTRL.viewParameters()
+        OCV.TK_MCTRL.viewParameters()
 
     @staticmethod
     def probeUpdate():
@@ -822,19 +822,19 @@ class ProbeFrame(CNCRibbon.PageFrame):
         lines.append("g53 g0 y[0.5*(tmp+prby)]")
         lines.append("%wait")
         lines.append("g90")
-        OCV.APP.run(lines=lines)
+        OCV.TK_APP.run(lines=lines)
 
     #-----------------------------------------------------------------------
     # Solve the system and update fields
     #-----------------------------------------------------------------------
     def orientSolve(self, event=None):
         try:
-            phi, xo, yo = OCV.APP.gcode.orient.solve()
+            phi, xo, yo = OCV.TK_APP.gcode.orient.solve()
             self.angle_orient["text"]="%*f"%(OCV.digits, math.degrees(phi))
             self.xo_orient["text"]="%*f"%(OCV.digits, xo)
             self.yo_orient["text"]="%*f"%(OCV.digits, yo)
 
-            minerr, meanerr, maxerr = OCV.APP.gcode.orient.error()
+            minerr, meanerr, maxerr = OCV.TK_APP.gcode.orient.error()
             self.err_orient["text"] = "Avg:%*f  Max:%*f  Min:%*f"%\
                 (OCV.digits, meanerr, OCV.digits, maxerr, OCV.digits, minerr)
 
@@ -849,8 +849,8 @@ class ProbeFrame(CNCRibbon.PageFrame):
     #-----------------------------------------------------------------------
     def orientDelete(self, event=None):
         marker = self.scale_orient.get()-1
-        if marker<0 or marker >= len(OCV.APP.gcode.orient): return
-        OCV.APP.gcode.orient.clear(marker)
+        if marker<0 or marker >= len(OCV.TK_APP.gcode.orient): return
+        OCV.TK_APP.gcode.orient.clear(marker)
         self.orientUpdateScale()
         self.changeMarker(marker+1)
         self.orientSolve()
@@ -865,7 +865,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
             _("Do you want to delete all orientation markers?"),
             parent=self.winfo_toplevel())
         if ans!=tkMessageBox.YES: return
-        OCV.APP.gcode.orient.clear()
+        OCV.TK_APP.gcode.orient.clear()
         self.orientUpdateScale()
         self.event_generate("<<DrawOrient>>")
 
@@ -873,7 +873,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
     # Update orientation scale
     #-----------------------------------------------------------------------
     def orientUpdateScale(self):
-        n = len(OCV.APP.gcode.orient)
+        n = len(OCV.TK_APP.gcode.orient)
         if n:
             self.scale_orient.config(state=NORMAL, from_=1, to_=n)
         else:
@@ -895,10 +895,10 @@ class ProbeFrame(CNCRibbon.PageFrame):
     #-----------------------------------------------------------------------
     def orientUpdate(self, event=None):
         marker = self.scale_orient.get()-1
-        if marker<0 or marker >= len(OCV.APP.gcode.orient):
+        if marker<0 or marker >= len(OCV.TK_APP.gcode.orient):
             self.orientClearFields()
             return
-        xm,ym,x,y = OCV.APP.gcode.orient[marker]
+        xm,ym,x,y = OCV.TK_APP.gcode.orient[marker]
         try:    x = float(self.x_orient.get())
         except: pass
         try:    y = float(self.y_orient.get())
@@ -907,7 +907,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         except: pass
         try:    ym = float(self.ym_orient.get())
         except: pass
-        OCV.APP.gcode.orient.markers[marker] = xm,ym,x,y
+        OCV.TK_APP.gcode.orient.markers[marker] = xm,ym,x,y
 
         self.orientUpdateScale()
         self.changeMarker(marker+1)
@@ -919,12 +919,12 @@ class ProbeFrame(CNCRibbon.PageFrame):
     #-----------------------------------------------------------------------
     def changeMarker(self, marker):
         marker = int(marker)-1
-        if marker<0 or marker >= len(OCV.APP.gcode.orient):
+        if marker<0 or marker >= len(OCV.TK_APP.gcode.orient):
             self.orientClearFields()
             self.event_generate("<<OrientChange>>", data=-1)
             return
 
-        xm,ym,x,y = OCV.APP.gcode.orient[marker]
+        xm,ym,x,y = OCV.TK_APP.gcode.orient[marker]
         #self.x_orient.set("%*f"%(d,x))
         self.x_orient.set("{0:.{1}%}".format(x, OCV.digits))
         #self.y_orient.set("%*f"%(d,y))
@@ -945,22 +945,22 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
     def recordAppend(self, line):
         hasblock = None
-        for bid,block in enumerate(OCV.APP.gcode):
+        for bid,block in enumerate(OCV.TK_APP.gcode):
             if block.b_name == 'recording':
                 hasblock = bid
                 eblock = block
 
         if hasblock is None:
             hasblock = -1
-            eblock = Block('recording')
-            OCV.APP.gcode.insBlocks(hasblock, [eblock], "Recorded point")
+            eblock = Block.Block('recording')
+            OCV.TK_APP.gcode.insBlocks(hasblock, [eblock], "Recorded point")
 
         eblock.append(line)
-        OCV.APP.refresh()
-        OCV.APP.setStatus(_("Pointrec"))
+        OCV.TK_APP.refresh()
+        OCV.TK_APP.setStatus(_("Pointrec"))
 
         #print "hello",x,y,z
-        #print OCV.APP.editor.getSelectedBlocks()
+        #print OCV.TK_APP.editor.getSelectedBlocks()
 
     def recordCoords(self, gcode='G0', point=False):
         #print "Z",self.recz.get()
@@ -1003,11 +1003,11 @@ class ProbeFrame(CNCRibbon.PageFrame):
         self.recordAppend('G02 %s I%s'%(coords, r))
 
     def recordFinishAll(self):
-        for bid,block in enumerate(OCV.APP.gcode):
+        for bid,block in enumerate(OCV.TK_APP.gcode):
             if block.b_name == 'recording':
-                OCV.APP.gcode.setBlockNameUndo(bid, 'recorded')
-        OCV.APP.refresh()
-        OCV.APP.setStatus(_("Finished recording"))
+                OCV.TK_APP.gcode.setBlockNameUndo(bid, 'recorded')
+        OCV.TK_APP.refresh()
+        OCV.TK_APP.setStatus(_("Finished recording"))
 
 
 #===============================================================================
@@ -1119,7 +1119,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         self.loadConfig()
 
     def setValues(self):
-        probe = OCV.APP.gcode.probe
+        probe = OCV.TK_APP.gcode.probe
         self.probeXmin.set(str(probe.xmin))
         self.probeXmax.set(str(probe.xmax))
         self.probeXbins.delete(0,END)
@@ -1171,7 +1171,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
     #-----------------------------------------------------------------------
     def change(self, verbose=True):
-        probe = OCV.APP.gcode.probe
+        probe = OCV.TK_APP.gcode.probe
         error = False
         try:
             probe.xmin = float(self.probeXmin.get())
@@ -1248,7 +1248,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
     def setZero(self, event=None):
         x = OCV.CD["wx"]
         y = OCV.CD["wy"]
-        OCV.APP.gcode.probe.setZero(x,y)
+        OCV.TK_APP.gcode.probe.setZero(x,y)
         self.draw()
 
     #-----------------------------------------------------------------------
@@ -1257,7 +1257,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
             _("Do you want to delete all autolevel in formation?"),
             parent=self.winfo_toplevel())
         if ans!=tkMessageBox.YES: return
-        OCV.APP.gcode.probe.clear()
+        OCV.TK_APP.gcode.probe.clear()
         self.draw()
 
     #-----------------------------------------------------------------------
@@ -1267,14 +1267,14 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         if self.change(): return
         self.event_generate("<<DrawProbe>>")
         # absolute
-        OCV.APP.run(lines=OCV.APP.gcode.probe.scan())
+        OCV.TK_APP.run(lines=OCV.TK_APP.gcode.probe.scan())
 
     #-----------------------------------------------------------------------
     # Scan autolevel margins
     #-----------------------------------------------------------------------
     def scanMargins(self, event=None):
         if self.change(): return
-        OCV.APP.run(lines=OCV.APP.gcode.probe.scanMargins())
+        OCV.TK_APP.run(lines=OCV.TK_APP.gcode.probe.scanMargins())
 
 
 #===============================================================================
@@ -1335,17 +1335,17 @@ class CameraGroup(CNCRibbon.ButtonGroup):
     def switchCommand(self, event=None):
         wx = OCV.CD["wx"]
         wy = OCV.CD["wy"]
-        dx = OCV.CANVAS_F.canvas.cameraDx
-        dy = OCV.CANVAS_F.canvas.cameraDy
-        z  = OCV.CANVAS_F.canvas.cameraZ
+        dx = OCV.TK_CANVAS_F.canvas.cameraDx
+        dy = OCV.TK_CANVAS_F.canvas.cameraDy
+        z  = OCV.TK_CANVAS_F.canvas.cameraZ
         if self.switch.get():
             self.switchButton.config(image=OCV.icons["endmill32"])
             self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-            OCV.CANVAS_F.canvas.cameraSwitch = True
+            OCV.TK_CANVAS_F.canvas.cameraSwitch = True
         else:
             self.switchButton.config(image=OCV.icons["camera32"])
             self.sendGCode("G92.1")
-            OCV.CANVAS_F.canvas.cameraSwitch = False
+            OCV.TK_CANVAS_F.canvas.cameraSwitch = False
         if z is None:
             self.sendGCode("G0X%gY%g"%(wx,wy))
         else:
@@ -1358,11 +1358,11 @@ class CameraGroup(CNCRibbon.ButtonGroup):
 
     #-----------------------------------------------------------------------
     def edgeDetection(self):
-        OCV.CANVAS_F.canvas.cameraEdge = self.edge.get()
+        OCV.TK_CANVAS_F.canvas.cameraEdge = self.edge.get()
 
     #-----------------------------------------------------------------------
     def freezeImage(self):
-        OCV.CANVAS_F.canvas.cameraFreeze(self.freeze.get())
+        OCV.TK_CANVAS_F.canvas.cameraFreeze(self.freeze.get())
 
 
 #===============================================================================
@@ -1520,26 +1520,26 @@ class CameraFrame(CNCRibbon.PageFrame):
     # Update canvas with values
     #-----------------------------------------------------------------------
     def updateValues(self, *args):
-        OCV.CANVAS_F.canvas.cameraAnchor = self.cameraAnchor()
-        try: OCV.CANVAS_F.canvas.cameraRotation = float(self.rotation.get())
+        OCV.TK_CANVAS_F.canvas.cameraAnchor = self.cameraAnchor()
+        try: OCV.TK_CANVAS_F.canvas.cameraRotation = float(self.rotation.get())
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraXCenter = float(self.xcenter.get())
+        try: OCV.TK_CANVAS_F.canvas.cameraXCenter = float(self.xcenter.get())
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraYCenter = float(self.ycenter.get())
+        try: OCV.TK_CANVAS_F.canvas.cameraYCenter = float(self.ycenter.get())
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraScale = max(0.0001, float(self.scale.get()))
+        try: OCV.TK_CANVAS_F.canvas.cameraScale = max(0.0001, float(self.scale.get()))
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraR = float(self.diameter.get())/2.0
+        try: OCV.TK_CANVAS_F.canvas.cameraR = float(self.diameter.get())/2.0
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraDx = float(self.dx.get())
+        try: OCV.TK_CANVAS_F.canvas.cameraDx = float(self.dx.get())
         except ValueError: pass
-        try: OCV.CANVAS_F.canvas.cameraDy = float(self.dy.get())
+        try: OCV.TK_CANVAS_F.canvas.cameraDy = float(self.dy.get())
         except ValueError: pass
         try:
-            OCV.CANVAS_F.canvas.cameraZ  = float(self.z.get())
+            OCV.TK_CANVAS_F.canvas.cameraZ  = float(self.z.get())
         except ValueError:
-            OCV.CANVAS_F.canvas.cameraZ  = None
-        OCV.CANVAS_F.canvas.cameraUpdate()
+            OCV.TK_CANVAS_F.canvas.cameraZ  = None
+        OCV.TK_CANVAS_F.canvas.cameraUpdate()
 
     #-----------------------------------------------------------------------
     # Register spindle position
@@ -1909,7 +1909,7 @@ class ToolFrame(CNCRibbon.PageFrame):
         lines.append("g53 g0 z[toolchangez]")
         lines.append("g53 g0 x[toolchangex] y[toolchangey]")
         lines.append("g90")
-        OCV.APP.run(lines=lines)
+        OCV.TK_APP.run(lines=lines)
 
     #-----------------------------------------------------------------------
     # FIXME should be replaced with the CNC.toolChange()
@@ -1917,8 +1917,8 @@ class ToolFrame(CNCRibbon.PageFrame):
     def change(self, event=None):
         self.set()
         if self.check4Errors(): return
-        lines = OCV.APP.cnc.toolChange(0)
-        OCV.APP.run(lines=lines)
+        lines = OCV.TK_APP.cnc.toolChange(0)
+        OCV.TK_APP.run(lines=lines)
 
 ##===============================================================================
 ## Help Frame

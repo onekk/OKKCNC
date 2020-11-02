@@ -56,7 +56,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         """
         print("ControlFrame self.app > ", self.app)
-        print("OCV.APP > ", OCV.APP)
+        print("OCV.TK_APP > ", OCV.TK_APP)
         """
 
         Tk.Label(self, text="", width=1).grid(row=1, column=17)
@@ -284,7 +284,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Utils.UserButton(
             self,
-            OCV.APP,
+            OCV.TK_APP,
             0,
             text=Unicode.LARGE_CIRCLE,
             command=self.go_to_origin,
@@ -421,6 +421,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but.grid(row=1, column=column, columnspan=2, rowspan=1, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Mem A"))
+        but.bind("<Enter>", lambda event: self.referesh_mems())       
         self.addWidget(but)
 
         but = Tk.Button(
@@ -435,6 +436,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but.grid(row=2, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Mem B"))
+        but.bind("<Enter>", lambda event: self.referesh_mems())          
         self.addWidget(but)
 
         but = Tk.Button(
@@ -591,13 +593,36 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         else:
             pass
 
+    def referesh_mems(self):
+       """Refresh the memory, used to set the widget when starting""" 
+       # mem_A 
+       if "mem_0" in OCV.WK_mems:
+           pos_x, pos_y, pos_z, sh, mem_name  =  OCV.WK_mems["mem_0"] 
+           wid = self.nametowidget("memA")
+           wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
+                    mem_name, pos_x, pos_y, pos_z)
+    
+           tkExtra.Balloon.set(wid, wdata)
+           wid.configure(background="aquamarine")        
+        
+       # mem B
+       if "mem_1" in OCV.WK_mems:
+           pos_x, pos_y, pos_z, sh, mem_name  =  OCV.WK_mems["mem_1"] 
+           wid = self.nametowidget("memB")
+           wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
+                   mem_name, pos_x, pos_y, pos_z)
+    
+           tkExtra.Balloon.set(wid, wdata)
+           wid.configure(background="aquamarine")        
+    
+
     def line(self):
         """generate a line from mem_a to mem_b"""
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:        
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                OCV.MOP = Utils.MOPWindow(OCV.APP, "LN", _("Line"))
-                OCV.MOP.create_form("LN")
+                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_APP, "LN", _("Line"))
+                OCV.TK_MOP.create_form("LN")
         else:
             pass
 
@@ -606,8 +631,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                OCV.MOP = Utils.MOPWindow(OCV.APP, "PK", _("Pocket"))
-                OCV.MOP.create_form("PK")
+                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_APP, "PK", _("Pocket"))
+                OCV.TK_MOP.create_form("PK")
         else:
             pass
 

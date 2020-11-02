@@ -134,12 +134,12 @@ class CNCCanvas(Tk.Canvas, object):
 
     def __init__(self, master, app, *kw, **kwargs):
         Tk.Canvas.__init__(self, master, *kw, **kwargs)
-        OCV.CANVAS = self
+        OCV.TK_CANVAS = self
 
         # Global variables
         self.view = 0
-        self.cnc = OCV.APP.cnc
-        self.gcode = OCV.APP.gcode
+        self.cnc = OCV.TK_APP.cnc
+        self.gcode = OCV.TK_APP.gcode
         self.actionVar = Tk.IntVar()
 
         # Canvas binding
@@ -439,14 +439,14 @@ class CNCCanvas(Tk.Canvas, object):
     def actionGantry(self, x, y):
         """Move gantry to mouse location"""
         u, v, w = self.image2Machine(x, y)
-        OCV.MCTRL.goto(u, v, w)
+        OCV.TK_MCTRL.goto(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionWPOS(self, x, y):
         """Set the work coordinates to mouse location"""
         u, v, w = self.image2Machine(x, y)
         # print("X: {0} Y: {1} U: {2} V: {3} W: {4}".format(x, y, u, v, w))
-        OCV.MCTRL.wcs_set(u, v, w)
+        OCV.TK_MCTRL.wcs_set(u, v, w)
         self.setAction(ACTION_SELECT)
 
     def actionAddOrient(self, x, y):
@@ -553,7 +553,7 @@ class CNCCanvas(Tk.Canvas, object):
             i = self.canvasx(event.x)
             j = self.canvasy(event.y)
             x, y, z = self.canvas2xyz(i, j)
-            OCV.APP.insertCommand(
+            OCV.TK_APP.insertCommand(
                 _("origin {0:f} {1:f} {2:f}").format(x, y, z),
                 True)
 
@@ -673,7 +673,7 @@ class CNCCanvas(Tk.Canvas, object):
             if not items:
                 return
 
-            OCV.APP.select(
+            OCV.TK_APP.select(
                 items,
                 self._mouseAction == ACTION_SELECT_DOUBLE,
                 event.state & CONTROL_MASK == 0)
@@ -689,7 +689,7 @@ class CNCCanvas(Tk.Canvas, object):
             dz = self._vz1-self._vz0
             self.status(_("Move by {0:f}, {1:f}, {2:f}").format(dx, dy, dz))
 
-            OCV.APP.insertCommand(
+            OCV.TK_APP.insertCommand(
                 ("move {0:f} {1:f} {2:f}").format(dx, dy, dz), True)
 
         elif self._mouseAction == ACTION_PAN:
@@ -2053,7 +2053,7 @@ class CNCCanvas(Tk.Canvas, object):
             startTime = before = time.time()
             self.cnc.resetAllMargins()
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
-            bid = OCV.APP.editor.getSelectedBlocks()
+            bid = OCV.TK_APP.editor.getSelectedBlocks()
 
             for i, block in enumerate(OCV.blocks):
 

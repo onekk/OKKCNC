@@ -349,7 +349,7 @@ class GCode(object):
 
         if line.startswith("(Block-name:"):
             self._blocksExist = True
-            pat = OCV.BLOCKPAT.match(line)
+            pat = OCV.RE_BLOCK.match(line)
             if pat:
                 value = pat.group(2).strip()
                 if not OCV.blocks or len(OCV.blocks[-1]):
@@ -1174,10 +1174,10 @@ class GCode(object):
             i = get_dict_value('I', new, old)
             j = get_dict_value('J', new, old)
 
-            if self.cnc.plane in (OCV.XY, OCV.XZ):
+            if self.cnc.plane in (OCV.CNC_XY, OCV.CNC_XZ):
                 new['I'] = c*i - s*j
 
-            if self.cnc.plane in (OCV.XY, OCV.YZ):
+            if self.cnc.plane in (OCV.CNC_XY, OCV.CNC_YZ):
                 new['J'] = s*i + c*j
 
         return True
@@ -1495,7 +1495,7 @@ class GCode(object):
                     else:
                         opt = OCV.ERROR_HANDLING.get(cmd.upper(), 0)
 
-                        if opt == OCV.SKIP:
+                        if opt == OCV.GSTATE_SKIP:
                             cmd = None
 
                     if cmd is not None:
