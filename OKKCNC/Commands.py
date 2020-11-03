@@ -48,7 +48,7 @@ def set_xyz0():
 def work_focus():
     """Do not give the focus while we are running"""
     if OCV.s_running:
-        OCV.TK_APP.focus_set()
+        OCV.TK_MAIN.focus_set()
 
 
 def showState():
@@ -64,7 +64,7 @@ def showState():
         _("No info available.\nPlease contact the author."))
 
     tkMessageBox.showinfo(_("State: {0}").format(OCV.c_state),
-                          msg, parent=OCV.TK_APP)
+                          msg, parent=OCV.TK_MAIN)
 
 def RefreshMemories():
     for i in range(2, OCV.WK_mem_num):

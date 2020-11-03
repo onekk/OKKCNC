@@ -135,9 +135,9 @@ def mop(self, app, mem_0, mem_1, mop_type):
             y_p.reverse()
 
     # Reset the editor and write the Gcode generated Here
-    OCV.TK_APP.clear_gcode()
-    OCV.TK_APP.clear_editor()
-    OCV.TK_APP.reset_canvas()
+    OCV.TK_MAIN.clear_gcode()
+    OCV.TK_MAIN.clear_editor()
+    OCV.TK_MAIN.reset_canvas()
     blocks = []
     block = Block.Block("Init")
     # Get the current WCS as the mem are related to it
@@ -203,14 +203,14 @@ def mop(self, app, mem_0, mem_1, mop_type):
     blocks.append(block)
 
     if blocks is not None:
-        active = OCV.TK_APP.activeBlock()
+        active = OCV.TK_MAIN.activeBlock()
 
         if active == 0:
             active = 1
 
-        OCV.TK_APP.gcode.insBlocks(active, blocks, op_name)
-        OCV.TK_APP.refresh()
-        OCV.TK_APP.setStatus(_("{}: GCode Generated".format(op_name)))
+        OCV.TK_MAIN.gcode.insBlocks(active, blocks, op_name)
+        OCV.TK_MAIN.refresh()
+        OCV.TK_MAIN.setStatus(_("{}: GCode Generated".format(op_name)))
 
 #--- Generation Methods
 

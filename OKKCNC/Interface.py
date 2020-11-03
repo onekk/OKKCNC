@@ -198,6 +198,377 @@ def main_interface(self):
             "which are either spelled wrongly or " \
             "no longer exist in OKKCNC".format(" ".join(errors)), parent=self)
 
+def set_debug_flags():
+    
+        if IniFile.get_bool("Debug", "generic"):
+             OCV.DEBUG = True
+
+        if IniFile.get_bool("Debug", "graph"):
+             OCV.DEBUG_GRAPH = True
+
+        if IniFile.get_bool("Debug", "interface"):
+             OCV.DEBUG_INT = True
+
+        if IniFile.get_bool("Debug", "coms"):
+             OCV.DEBUG_COM = True
+
+        if IniFile.get_bool("Debug", "sio"):
+             OCV.DEBUG_SER = True
+
+        if IniFile.get_bool("Debug", "gpar"):
+             OCV.DEBUG_PAR = True
+             OCV.DEBUG_HEUR = IniFile.get_bool("Debug", "heur")    
+
+
+def show_stats():
+    """Display statistics on enabled blocks"""    
+    toplevel = Tk.Toplevel(OCV.TK_MAIN)
+    toplevel.transient(OCV.TK_MAIN)
+    toplevel.title(_("Statistics"))
+
+    if OCV.inch:
+        unit = "in"
+    else:
+        unit = "mm"
+
+    infostr = "{0:.3f} .. {1:.3f} [{2:.3f}] {3}"
+    infostr1 = "{0:.3f} {1}"
+    time_str = "H:{0:d} M:{1:02d} S:{2:02d}"
+
+    # count enabled blocks
+    e = 0
+    b_l = 0
+    b_r = 0
+    b_t = 0
+
+    for block in OCV.blocks:
+        if block.enable:
+            e += 1
+            b_l += block.length
+            b_r += block.rapid
+            b_t += block.time
+
+    frame = Tk.LabelFrame(
+        toplevel,
+        text=_("Enabled GCode"),
+        foreground="DarkRed")
+
+    frame.pack(fill=Tk.BOTH)
+
+    row, col = 0, 0
+
+    lab = Tk.Label(
+        frame,
+        text=_("Margins X:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["xmin"], OCV.CD["xmax"],
+            OCV.CD["xmax"] -OCV.CD["xmin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text="... Y:")
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["ymin"], OCV.CD["ymax"],
+            OCV.CD["ymax"] -OCV.CD["ymin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text="... Z:")
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["zmin"], OCV.CD["zmax"],
+            OCV.CD["zmax"] -OCV.CD["zmin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(
+        frame,
+        text=_("# Blocks:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame, text=str(e),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text=_("Length:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr1.format(b_l, unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text=_("Rapid:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr1.format(b_r, unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text=_("Time:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    bt_h, bt_m = divmod(b_t, 60)  # t in min
+    bt_s = (bt_m-int(bt_m))*60
+
+    lab = Tk.Label(
+        frame,
+        text=time_str.format(int(bt_h), int(bt_m), int(bt_s)),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    frame.grid_columnconfigure(1, weight=1)
+
+
+    frame = Tk.LabelFrame(
+        toplevel,
+        text=_("All GCode"),
+        foreground="DarkRed")
+
+    frame.pack(fill=Tk.BOTH)
+
+    row, col = 0, 0
+
+    lab = Tk.Label(frame, text=_("Margins X:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["axmin"], OCV.CD["axmax"],
+            OCV.CD["axmax"] -OCV.CD["axmin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text="... Y:")
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["aymin"], OCV.CD["aymax"],
+            OCV.CD["aymax"] - OCV.CD["aymin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text="... Z:")
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr.format(
+            OCV.CD["azmin"], OCV.CD["azmax"],
+            OCV.CD["azmax"] - OCV.CD["azmin"],
+            unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(
+        frame,
+        text=_("# Blocks:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=str(len(OCV.blocks)),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(
+        frame,
+        text=_("Length:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    lab = Tk.Label(
+        frame,
+        text=infostr1.format(OCV.TK_MAIN.cnc.totalLength, unit),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    row += 1
+    col = 0
+
+    lab = Tk.Label(frame, text=_("Time:"))
+
+    lab.grid(row=row, column=col, sticky=Tk.E)
+
+    col += 1
+
+    tt_h, tt_m = divmod(OCV.TK_MAIN.cnc.totalTime, 60) # t in min
+    tt_s = (tt_m-int(tt_m))*60
+
+    lab = Tk.Label(
+        frame,
+        text=time_str.format(int(tt_h), int(tt_m), int(tt_s)),
+        foreground="DarkBlue")
+
+    lab.grid(row=row, column=col, sticky=Tk.W)
+
+    frame.grid_columnconfigure(1, weight=1)
+
+    frame = Tk.Frame(toplevel)
+    frame.pack(fill=Tk.X)
+
+    closeFunc = lambda e=None, t=toplevel: t.destroy()
+
+    but = Tk.Button(frame, text=_("Close"), command=closeFunc)
+    but.pack(pady=5)
+
+    frame.grid_columnconfigure(1, weight=1)
+
+    toplevel.bind("<Escape>", closeFunc)
+    toplevel.bind("<Return>", closeFunc)
+    toplevel.bind("<KP_Enter>", closeFunc)
+
+    toplevel.deiconify()
+    toplevel.wait_visibility()
+    toplevel.resizable(False, False)
+
+    try:
+        toplevel.grab_set()
+    except:
+        pass
+
+    but.focus_set()
+    toplevel.lift()
+    toplevel.wait_window()    
+
+def show_error_panel():
+    """Show controller error panel"""
+    msg = "Messages"
+    if len(OCV.CTL_ERRORS) > 1:
+        msg = " \n\n".join(OCV.CTL_ERRORS)
+    else:
+        msg = "This controller has no error list"
+
+    panel = Utils.ErrorWindow(OCV.TK_MAIN, _("Error Help"))
+    panel.m_txt["height"] = 30
+    panel.show_message(msg)
+
+def show_settings_panel():
+    """Show settings panel"""
+    msg = "Messages"
+    if len(OCV.CTL_SHELP) > 1:
+        msg = " \n\n".join(OCV.CTL_SHELP)
+    else:
+        msg = "This controller has no setting list yet"
+
+    panel = Utils.ErrorWindow(OCV.TK_MAIN, _("Settings Help"))
+    panel.m_txt["height"] = 30
+    panel.show_message(msg)
+
+def showUserFile():
+    """Show user file"""
+    #TODO: find a way to show the user file
+    #webbrowser.open(OCV.USER_CONFIG)
+    pass
+
+def checkUpdates():
+    """Check for updates"""
+    # Find OKKCNC version
+    # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
+    pass
+
+
 
 class DROFrame(CNCRibbon.PageFrame):
     """DRO Frame"""
@@ -491,7 +862,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     def update_state(self):
         """update State label"""
-        msg = OCV.TK_APP._msg or OCV.c_state
+        msg = OCV.TK_MAIN._msg or OCV.c_state
         if OCV.CD["pins"] is not None and OCV.CD["pins"] != "":
             msg += " ["+OCV.CD["pins"]+"]"
         self.state.config(text=msg, background=OCV.CD["color"])
@@ -561,7 +932,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         for idx in range(1, b_num):
             but = Utils.UserButton(
                 self.frame,
-                OCV.TK_APP,
+                OCV.TK_MAIN,
                 idx,
                 anchor=Tk.W,
                 background=OCV.COLOR_BACKGROUND)
@@ -904,7 +1275,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
             # Right Button Clicked, set mem
             if event.num == 3:
                 OCV.WK_mem = mem_clicked
-                mem_name = Utils.ask_for_value(OCV.TK_APP, "ME")
+                mem_name = Utils.ask_for_value(OCV.TK_MAIN, "ME")
                 # print("MG mem_name = ", mem_name)
                 if mem_name is None:
                     mem_name = mem_key
@@ -977,7 +1348,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
     def clr_mem(self):
         """clear memory - asking for memory number"""
-        mem_num = Utils.ask_for_value(OCV.TK_APP, "MN")
+        mem_num = Utils.ask_for_value(OCV.TK_MAIN, "MN")
 
         # print("clr_mem >", mem_num)
 
@@ -1021,23 +1392,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
     @staticmethod
     def display_bank_mems():
         """display/hide all bank "active" memory on canvas"""
-        # print("sBM Bank >> ", OCV.WK_bank)
-        for idx in range(0, OCV.WK_bank_mem):
-            mem_num = OCV.WK_bank_start + idx
-            mem_addr = "mem_{0}".format(mem_num)
-
-            # check the presence of the key in dictionary
-            if mem_addr in OCV.WK_mems:
-                # chek if the memory is valid
-                mem_data = OCV.WK_mems[mem_addr]
-                # print("sBM mem_data >> ", mem_data)
-                if mem_data[3] == 1:
-                    OCV.WK_mem = mem_num
-
-                    if OCV.WK_active_mems[OCV.WK_mem] == 2:
-                        OCV.TK_APP.event_generate("<<ClrMem>>")
-                    else:
-                        OCV.TK_APP.event_generate("<<SetMem>>")
+        OCV.TK_MAIN.ToggleMems()
 
     @staticmethod
     def reset_all_displayed_mem():
@@ -1047,4 +1402,4 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         for mem in indices:
             print("reset_all_displayed_mem index = ", mem)
             OCV.WK_mem = mem
-            OCV.TK_APP.event_generate("<<ClrMem>>")
+            OCV.TK_MAIN.event_generate("<<ClrMem>>")

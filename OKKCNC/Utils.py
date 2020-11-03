@@ -423,13 +423,13 @@ def addException():
 
 
 def about_win(timer = None):
-    OCV.TK_ABOUT = Tk.Toplevel(OCV.TK_APP)
-    OCV.TK_ABOUT.transient(OCV.TK_APP)
+    OCV.TK_ABOUT = Tk.Toplevel(OCV.TK_MAIN)
+    OCV.TK_ABOUT.transient(OCV.TK_MAIN)
     OCV.TK_ABOUT.title(_("About {0}").format(OCV.PRG_NAME))
     if sys.platform == "win32":
-        OCV.TK_APP.iconbitmap("OKKCNC.ico")
+        OCV.TK_MAIN.iconbitmap("OKKCNC.ico")
     else:
-        OCV.TK_APP.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
+        OCV.TK_MAIN.iconbitmap("@{0}/OKKCNC.xbm".format(OCV.PRG_PATH))
 
     bg = "#707070"
     fg = "#ffffff"
@@ -984,7 +984,7 @@ class MOPWindow(Tk.Toplevel):
         else:
             pass
         
-        OCV.TK_APP.event_generate("<<MOP_OK>>")    
+        OCV.TK_MAIN.event_generate("<<MOP_OK>>")    
         self.destroy()    
   
     def get_value(self, var_name, var_type="fl"):

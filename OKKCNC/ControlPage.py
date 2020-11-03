@@ -56,7 +56,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         """
         print("ControlFrame self.app > ", self.app)
-        print("OCV.TK_APP > ", OCV.TK_APP)
+        print("OCV.TK_MAIN > ", OCV.TK_MAIN)
         """
 
         Tk.Label(self, text="", width=1).grid(row=1, column=17)
@@ -284,7 +284,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Utils.UserButton(
             self,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             0,
             text=Unicode.LARGE_CIRCLE,
             command=self.go_to_origin,
@@ -621,7 +621,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:        
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_APP, "LN", _("Line"))
+                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_MAIN, "LN", _("Line"))
                 OCV.TK_MOP.create_form("LN")
         else:
             pass
@@ -631,7 +631,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         # avoid a dry run if both mem pos are not set
         if "mem_0" in OCV.WK_mems and "mem_1" in OCV.WK_mems:
             if OCV.WK_mems["mem_0"][3] > 0 and OCV.WK_mems["mem_1"][3] > 0:
-                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_APP, "PK", _("Pocket"))
+                OCV.TK_MOP = Utils.MOPWindow(OCV.TK_MAIN, "PK", _("Pocket"))
                 OCV.TK_MOP.create_form("PK")
         else:
             pass

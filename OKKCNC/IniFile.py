@@ -198,7 +198,7 @@ def loadHistory():
     except Exception:
         return
     OCV.history = [x.strip() for x in f]
-    OCV.TK_APP._historySearch = None
+    OCV.TK_MAIN._historySearch = None
     f.close()
 
 

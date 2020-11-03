@@ -192,7 +192,7 @@ class SelectGroup(CNCRibbon.ButtonMenuGroup):
 
     def filter(self, event=None):
         txt = self.filterString.get()
-        OCV.TK_APP.insertCommand("FILTER {0}".format(txt), True)
+        OCV.TK_MAIN.insertCommand("FILTER {0}".format(txt), True)
 
 
 class EditGroup(CNCRibbon.ButtonMenuGroup):
@@ -217,7 +217,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<Add>>",
             image=OCV.icons["add"],
             anchor=Tk.W,
@@ -234,10 +234,10 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         menulist = [
             (_("Line"),
              "add",
-             lambda a=OCV.TK_APP: a.event_generate("<<AddLine>>")),
+             lambda a=OCV.TK_MAIN: a.event_generate("<<AddLine>>")),
             (_("Block"),
              "add",
-             lambda a=OCV.TK_APP: a.event_generate("<<AddBlock>>"))]
+             lambda a=OCV.TK_MAIN: a.event_generate("<<AddBlock>>"))]
 
         b = Ribbon.MenuButton(
             self.frame,
@@ -303,7 +303,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<EnableToggle>>",
             image=OCV.icons["toggle"],
             # text=_("Toggle"),
@@ -321,9 +321,9 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         menulist = [
             (_("Enable"), "enable",
-             lambda a=OCV.TK_APP: a.event_generate("<<Enable>>")),
+             lambda a=OCV.TK_MAIN: a.event_generate("<<Enable>>")),
             (_("Disable"), "disable",
-             lambda a=OCV.TK_APP: a.event_generate("<<Disable>>"))]
+             lambda a=OCV.TK_MAIN: a.event_generate("<<Disable>>"))]
 
         b = Ribbon.MenuButton(
             self.frame,
@@ -344,7 +344,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<Expand>>",
             image=OCV.icons["expand"],
             text=_("Expand"),
@@ -367,7 +367,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<Comment>>",
             image=OCV.icons["comment"],
             text=_("Comment"),
@@ -385,7 +385,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
         row = 0
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<Join>>",
             image=OCV.icons["union"],
             text=_("Join"),
@@ -403,7 +403,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<Split>>",
             image=OCV.icons["cut"],
             text=_("Split"),
@@ -421,7 +421,7 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         b = Ribbon.LabelButton(
             self.frame,
-            OCV.TK_APP,
+            OCV.TK_MAIN,
             "<<ClearEditor>>",
             image=OCV.icons["clear"],
             text=_("Clear All"),
@@ -502,7 +502,7 @@ class MoveGroup(CNCRibbon.ButtonMenuGroup):
                 label=n,
                 image=OCV.icons[i],
                 compound=Tk.LEFT,
-                command=lambda a=OCV.TK_APP, c=c: a.insertCommand(c, True))
+                command=lambda a=OCV.TK_MAIN, c=c: a.insertCommand(c, True))
 
         return menu
 
@@ -675,22 +675,22 @@ class EditorFrame(CNCRibbon.PageFrame):
     """Main Frame of Editor"""
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "Editor", app)
-        self.editor = CNCList.CNCListbox(
+        OCV.TK_EDITOR = CNCList.CNCListbox(
             self,
             app,
             selectmode=Tk.EXTENDED,
             exportselection=0,
             background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
 
-        self.editor.pack(side=Tk.LEFT, expand=Tk.TRUE, fill=Tk.BOTH)
+        OCV.TK_EDITOR.pack(side=Tk.LEFT, expand=Tk.TRUE, fill=Tk.BOTH)
 
-        self.addWidget(self.editor)
+        self.addWidget(OCV.TK_EDITOR)
 
-        sb = Tk.Scrollbar(self, orient=Tk.VERTICAL, command=self.editor.yview)
+        sb = Tk.Scrollbar(self, orient=Tk.VERTICAL, command=OCV.TK_EDITOR.yview)
 
         sb.pack(side=Tk.RIGHT, fill=Tk.Y)
 
-        self.editor.config(yscrollcommand=sb.set)
+        OCV.TK_EDITOR.config(yscrollcommand=sb.set)
 
 
 class EditorPage(CNCRibbon.Page):

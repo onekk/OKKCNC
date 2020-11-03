@@ -75,7 +75,7 @@ def process_blocks():
     OCV.blocks_ev = []
     process_z_pass()
     # refresh block in editor
-    OCV.TK_APP.event_generate("<<Modified>>")
+    OCV.TK_MAIN.event_generate("<<Modified>>")
 
 
 def print_events(l_idx, ev_msg):
@@ -598,7 +598,7 @@ def modify_block(b_idx, l_idx, action, ac_data, mop_name, shape_num):
         cur_block.insert(0, "( FZP at " + label + " pos " + label2 + ")")
         cur_block.set_name(block_new_name)
 
-    OCV.TK_APP.event_generate("<<Modified>>")
+    OCV.TK_MAIN.event_generate("<<Modified>>")
 
 
 def create_new_block(b_idx, l_idx, block_name):
@@ -736,7 +736,7 @@ def process_z_pass():
         if OCV.DEBUG_HEUR > 0:
             OCV.printout_header("{0}", "END PROCESS_SHAPES")
 
-    OCV.TK_APP.event_generate("<<Modified>>")
+    OCV.TK_MAIN.event_generate("<<Modified>>")
 
 
 def extract_rapid_move_value(md_string):

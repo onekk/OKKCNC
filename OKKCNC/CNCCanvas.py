@@ -138,8 +138,8 @@ class CNCCanvas(Tk.Canvas, object):
 
         # Global variables
         self.view = 0
-        self.cnc = OCV.TK_APP.cnc
-        self.gcode = OCV.TK_APP.gcode
+        self.cnc = OCV.TK_MAIN.cnc
+        self.gcode = OCV.TK_MAIN.gcode
         self.actionVar = Tk.IntVar()
 
         # Canvas binding
@@ -553,7 +553,7 @@ class CNCCanvas(Tk.Canvas, object):
             i = self.canvasx(event.x)
             j = self.canvasy(event.y)
             x, y, z = self.canvas2xyz(i, j)
-            OCV.TK_APP.insertCommand(
+            OCV.TK_MAIN.insertCommand(
                 _("origin {0:f} {1:f} {2:f}").format(x, y, z),
                 True)
 
@@ -673,7 +673,7 @@ class CNCCanvas(Tk.Canvas, object):
             if not items:
                 return
 
-            OCV.TK_APP.select(
+            OCV.TK_MAIN.select(
                 items,
                 self._mouseAction == ACTION_SELECT_DOUBLE,
                 event.state & CONTROL_MASK == 0)
@@ -689,7 +689,7 @@ class CNCCanvas(Tk.Canvas, object):
             dz = self._vz1-self._vz0
             self.status(_("Move by {0:f}, {1:f}, {2:f}").format(dx, dy, dz))
 
-            OCV.TK_APP.insertCommand(
+            OCV.TK_MAIN.insertCommand(
                 ("move {0:f} {1:f} {2:f}").format(dx, dy, dz), True)
 
         elif self._mouseAction == ACTION_PAN:
@@ -2053,7 +2053,7 @@ class CNCCanvas(Tk.Canvas, object):
             startTime = before = time.time()
             self.cnc.resetAllMargins()
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
-            bid = OCV.TK_APP.editor.getSelectedBlocks()
+            bid = OCV.TK_EDITOR.getSelectedBlocks()
 
             for i, block in enumerate(OCV.blocks):
 
@@ -2262,6 +2262,7 @@ class CanvasFrame(Tk.Frame):
         self.draw_rapid = Tk.BooleanVar()
         self.draw_workarea = Tk.BooleanVar()
         self.draw_camera = Tk.BooleanVar()
+        self.draw_mems = Tk.BooleanVar()
         self.view = Tk.StringVar()
 
         self.loadConfig()
@@ -2471,6 +2472,17 @@ class CanvasFrame(Tk.Frame):
 
         but = Tk.Checkbutton(
             toolbar,
+            image=OCV.icons["memory"],
+            indicatoron=0,
+            variable=self.draw_mems,
+            command=self.drawMemories)
+
+        tkExtra.Balloon.set(but, _("Toggle display of memories"))
+
+        but.pack(side=Tk.LEFT)
+
+        but = Tk.Checkbutton(
+            toolbar,
             image=OCV.icons["camera"],
             indicatoron=0,
             variable=self.draw_camera,
@@ -2619,6 +2631,11 @@ class CanvasFrame(Tk.Frame):
         if value is not None: self.draw_workarea.set(value)
         self.canvas.draw_workarea = self.draw_workarea.get()
         self.canvas.drawWorkarea()
+
+    def drawMemories(self, value=None):
+        if value is not None:
+            self.draw_mems.set(value)
+        OCV.TK_MAIN.ToggleMems()
 
 
     def drawCamera(self, value=None):

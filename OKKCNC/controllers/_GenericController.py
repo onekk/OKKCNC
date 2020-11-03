@@ -240,7 +240,6 @@ class _GenericController:
         elif line.find("ok")>=0:
             self.master.log.put((self.master.MSG_OK, line))
             self.master._gcount += 1
-            print("GC+ CTRL")
             if cline:
                 del cline[0]
             if sline:

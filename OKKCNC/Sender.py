@@ -208,7 +208,7 @@ class Sender(object):
         # OPEN: open serial connection to grbl
         # CLOSE: close serial connection to grbl
         elif cmd in ("OPEN", "CLOSE"):
-            OCV.TK_APP.openClose()
+            OCV.TK_MAIN.openClose()
 
         # QU*IT: quit program
         # EX*IT: exit program
@@ -237,7 +237,7 @@ class Sender(object):
 
         # RUN: run g-code
         elif cmd == "RUN":
-            OCV.TK_APP.run()
+            OCV.TK_MAIN.run()
 
         # SAFE [z]: safe z to move
         elif cmd == "SAFE":
@@ -558,7 +558,7 @@ class Sender(object):
         OCV.s_pause = False
         OCV.s_running = True
         self._paths = None
-        OCV.TK_APP.disable()
+        OCV.TK_MAIN.disable()
         self.emptyQueue()
         time.sleep(1)
 
@@ -592,7 +592,7 @@ class Sender(object):
         OCV.CD["running"] = False
         OCV.s_stop = False
         OCV.s_stop_req = False    
-        OCV.TK_APP.enable()
+        OCV.TK_MAIN.enable()
         print("runEnded End")
 
 

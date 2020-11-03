@@ -59,7 +59,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
         self.grid3rows()
 
         # Disable state for some SMOOTHIE commands
-        state = OCV.TK_APP.controller in ("GRBL0", "GRBL1") and Tk.NORMAL or Tk.DISABLED,
+        state = OCV.TK_MAIN.controller in ("GRBL0", "GRBL1") and Tk.NORMAL or Tk.DISABLED,
 
         # ---
         col, row = 0, 0
@@ -213,54 +213,56 @@ class TerminalFrame(CNCRibbon.PageFrame):
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, N_("Terminal"), app)
 
-        self.terminal = Tk.Listbox(
+        OCV.TK_TERMINAL = Tk.Listbox(
             self,
             background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
             selectmode=Tk.EXTENDED,
             height=5)
 
-        self.terminal.grid(row=0, column=0, sticky=Tk.NSEW)
+        OCV.TK_TERMINAL.grid(row=0, column=0, sticky=Tk.NSEW)
 
         scb = Tk.Scrollbar(
             self,
             orient=Tk.VERTICAL,
-            command=self.terminal.yview)
+            command=OCV.TK_TERMINAL.yview)
 
         scb.grid(row=0, column=1, sticky=Tk.NS)
 
-        self.terminal.config(yscrollcommand=scb.set)
-        self.terminal.bind("<<Copy>>", self.copy)
-        self.terminal.bind("<Control-Key-c>", self.copy)
-        tkExtra.Balloon.set(self.terminal, _("Terminal communication with controller"))
+        OCV.TK_TERMINAL.config(yscrollcommand=scb.set)
+        OCV.TK_TERMINAL.bind("<<Copy>>", self.copy)
+        OCV.TK_TERMINAL.bind("<Control-Key-c>", self.copy)
+        tkExtra.Balloon.set(
+            OCV.TK_TERMINAL,
+            _("Terminal communication with controller"))
 
-        self.buffer = Tk.Listbox(
+        OCV.TK_TERMBUF = Tk.Listbox(
             self,
             background="LightYellow",
             selectmode=Tk.EXTENDED,
             height=5)
 
-        self.buffer.grid(row=1, column=0, sticky=Tk.NSEW)
+        OCV.TK_TERMBUF.grid(row=1, column=0, sticky=Tk.NSEW)
 
         scb = Tk.Scrollbar(
             self,
             orient=Tk.VERTICAL,
-            command=self.buffer.yview)
+            command=OCV.TK_TERMBUF.yview)
 
         scb.grid(row=1, column=1, sticky=Tk.NS)
 
-        self.buffer.config(yscrollcommand=scb.set)
+        OCV.TK_TERMBUF.config(yscrollcommand=scb.set)
 
-        tkExtra.Balloon.set(self.buffer, _("Buffered commands"))
+        tkExtra.Balloon.set(OCV.TK_TERMBUF, _("Buffered commands"))
 
-        self.buffer.bind("<<Copy>>", self.copy)
-        self.buffer.bind("<Control-Key-c>", self.copy)
+        OCV.TK_TERMBUF.bind("<<Copy>>", self.copy)
+        OCV.TK_TERMBUF.bind("<Control-Key-c>", self.copy)
 
         # ---
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
     def clear(self, event=None):
-        self.terminal.delete(0, Tk.END)
+        OCV.TK_TERMINAL.delete(0, Tk.END)
 
     def copy(self, event):
         self.clipboard_clear()

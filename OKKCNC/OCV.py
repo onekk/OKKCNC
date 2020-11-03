@@ -470,11 +470,10 @@ RE_FEED = re.compile(r"^(.*)[fF](\d+\.?\d+)(.*)$")
 RE_GCODE = re.compile(r"[A-Za-z]\s*[-+]?\d+.*")
 RE_ID = re.compile(r".*\bid:\s*(.*?)\)")
 RE_OP = re.compile(r"(.*)\[(.*)\]")
-# These seems not needed anymore
-#RE_PAREN = re.compile(r"(\(.*?\))")
+RE_PAREN = re.compile(r"(\(.*?\))")
 # [\+\-]?[\d\.]+)\D?
-#RE_POS = re.compile(r"([XYZ]+):\s*([\+\-]?[\d\.]+)\D")
-#RE_SEMI = re.compile(r"(;.*)")
+RE_POS = re.compile(r"([XYZ]+):\s*([\+\-]?[\d\.]+)\D")
+RE_SEMI = re.compile(r"(;.*)")
 
 #--- S #
 serial_open = False
@@ -542,6 +541,8 @@ TK_CANVAS = None
 TK_CANVAS_F = None
 # Command Entry
 TK_CMD_W = None
+# EditorFrame.editor 
+TK_EDITOR = None
 # Machine controller instance
 TK_MCTRL = None
 # MOP window
@@ -551,6 +552,12 @@ TK_RIBBON = None
 TK_RUN_GROUP = None
 # Statusbar
 TK_STATUSBAR = None
+# TerminalFrame.buffer
+TK_TERMBUF = None
+# TerminalFrame.terminal
+TK_TERMINAL = None
+
+
 
 TOLERANCE = 1e-7
 

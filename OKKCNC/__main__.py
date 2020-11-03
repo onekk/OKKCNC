@@ -57,16 +57,12 @@ except ImportError:
     from queue import *
 
 # Load configuration before anything else
-# and if needed replace the translate function _()
-# before any string is initialized
 OCV.config = ConfigParser.ConfigParser()
 # This is here to debug the fact that config is sometimes instantiated twice
 #print("new-config", __name__, OCV.config)
 
 import IniFile
 IniFile.conf_file_load()
-
-
 
 import rexx
 import tkExtra
@@ -85,14 +81,10 @@ from CNC import CNC
 import Pendant
 from Sender import Sender
 import Utils
-
+import Bindings
 from CNCRibbon import Page
-from ToolsPage import Tools, ToolsPage
-from FilePage import FilePage
-from ControlPage import ControlPage, ControlFrame
-from TerminalPage import TerminalPage
-from ProbePage import ProbePage
-from EditorPage import EditorPage
+from ToolsPage import Tools
+#from ControlPage import ControlPage, ControlFrame
 
 _openserial = True # override ini parameters
 _device = None
@@ -123,19 +115,19 @@ class Application(Tk.Toplevel, Sender):
     def __init__(self, master, **kw):
         Tk.Toplevel.__init__(self, master, **kw)
 
-        # Set OCV.TK_APP to hold the Tk Object reference to reuse through
+        # Set OCV.TK_MAIN to hold the Tk Object reference to reuse through
         # all interface, quick and dirty method to add clarity
-        OCV.TK_APP = self
+        OCV.TK_MAIN = self
 
         #print("Application > ", self)
 
         # Initialisation of Sender loaded also some variables and methods
-        # as OCV.TK_APP (this class as defined above) is declared also
+        # as OCV.TK_MAIN (this class as defined above) is declared also
         # as self in Sender.__init__.
         # all variables and methods of Sender defined as self.VARNAME or
-        # self.METHOD are accessible through OCV.TK_APP across all the modules.
+        # self.METHOD are accessible through OCV.TK_MAIN across all the modules.
 
-        Sender.__init__(OCV.TK_APP)
+        Sender.__init__(OCV.TK_MAIN)
 
         if sys.platform == "win32":
             self.iconbitmap("{0}\\OKKCNC.ico".format(OCV.PRG_PATH))
@@ -146,15 +138,16 @@ class Application(Tk.Toplevel, Sender):
                 OCV.PRG_NAME, OCV.PRG_VER, OCV.PLATFORM, OCV.TITLE_MSG))
         OCV.iface_widgets = []
 
-    #--- GLOBAL VARIABLES
+        #--- GLOBAL VARIABLES
 
         self.tools = Tools(self.gcode)
         self.controller = None
         self.load_main_config()
-        #print(OCV.TK_MCTRL)
+        
+        #Load main_interface where some code has been moved
         # self.pages, OCV.TK_RIBBON, OCV.TK_CMD_W and many widget
         # are defined in Interface.py
-        Interface.main_interface(OCV.TK_APP)
+        Interface.main_interface(OCV.TK_MAIN)
 
         ctl = OCV.CD["controller"]
         if ctl in ("GRBL1", "GRBL0"):
@@ -170,9 +163,6 @@ class Application(Tk.Toplevel, Sender):
         self.dro = Page.frames["DRO"]
         self.gstate = Page.frames["State"]
         self.control = Page.frames["Control"]
-        self.editor = Page.frames["Editor"].editor
-        self.terminal = Page.frames["Terminal"].terminal
-        self.buffer = Page.frames["Terminal"].buffer
 
         # Left side
         for name in IniFile.get_str(OCV.PRG_NAME, "ribbon").split():
@@ -182,15 +172,13 @@ class Application(Tk.Toplevel, Sender):
                 side = Tk.RIGHT
             else:
                 side = Tk.LEFT
+                
             OCV.TK_RIBBON.addPage(self.pages[name], side)
 
         # Restore last page
         # Select "Probe:Probe" tab to show the dialogs!
         self.pages["Probe"].tabChange()
         OCV.TK_RIBBON.changePage(IniFile.get_str(OCV.PRG_NAME, "page", "File"))
-
-        # FIXME: see that this is needed anymore
-        #probe = Page.frames["Probe:Probe"]
 
         tkExtra.bindEventData(
             self, "<<OrientSelect>>",
@@ -203,205 +191,19 @@ class Application(Tk.Toplevel, Sender):
 
         self.bind('<<OrientUpdate>>', Page.frames["Probe:Probe"].orientUpdate)
 
-    #--- Global bindings
-        self.bind('<<Undo>>', self.undo)
-        self.bind('<<Redo>>', self.redo)
-        self.bind('<<Copy>>', self.copy)
-        self.bind('<<Cut>>', self.cut)
-        self.bind('<<Paste>>', self.paste)
-
-        self.bind('<<Connect>>', self.openClose)
-
-        self.bind('<<New>>', self.newFile)
-        self.bind('<<Open>>', self.loadDialog)
-        self.bind('<<Import>>', lambda x, s=self: s.importFile())
-        self.bind('<<Save>>', self.saveAll)
-        self.bind('<<SaveAs>>', self.saveDialog)
-        self.bind('<<Reload>>', self.reload)
-
-        self.bind('<<Recent0>>', self._loadRecent0)
-        self.bind('<<Recent1>>', self._loadRecent1)
-        self.bind('<<Recent2>>', self._loadRecent2)
-        self.bind('<<Recent3>>', self._loadRecent3)
-        self.bind('<<Recent4>>', self._loadRecent4)
-        self.bind('<<Recent5>>', self._loadRecent5)
-        self.bind('<<Recent6>>', self._loadRecent6)
-        self.bind('<<Recent7>>', self._loadRecent7)
-        self.bind('<<Recent8>>', self._loadRecent8)
-        self.bind('<<Recent9>>', self._loadRecent9)
-        self.bind('<<AlarmClear>>', self.alarmClear)
-        self.bind('<<About>>', self.about)
-        self.bind('<<Help>>', self.help)
+        #--- Bindings
+        # most of assignements are done in Bindings.
+        # Some are here due to the way they are defined
+        
+        Bindings.Bindings()
 
         for i_wdg in OCV.iface_widgets:
             if isinstance(i_wdg, Tk.Entry):
                 i_wdg.bind("<Escape>", self.canvasFocus)
 
-        self.bind('<FocusIn>', self.focus_in)
-        self.protocol("WM_DELETE_WINDOW", self.quit)
-
-    #--- Machine control Bindings
-        self.bind('<<Home>>', self.ctrl_home)
-        self.bind('<<FeedHold>>', self.ctrl_feedhold)
-        self.bind('<<SoftReset>>', self.ctrl_softreset)
-        self.bind('<<Unlock>>', self.ctrl_unlock)
-
-        self.bind('<<JOG-XUP>>', self.jog_x_up)
-        self.bind('<<JOG-XDW>>', self.jog_x_down)
-        self.bind('<<JOG-YUP>>', self.jog_y_up)
-        self.bind('<<JOG-YDW>>', self.jog_y_down)
-        self.bind('<<JOG-ZUP>>', self.jog_z_up)
-        self.bind('<<JOG-ZDW>>', self.jog_z_down)
-
-        self.bind('<<JOG-XYUP>>', self.jog_x_up_y_up)
-        self.bind('<<JOG-XUPYDW>>', self.jog_x_up_y_down)
-        self.bind('<<JOG-XYDW>>', self.jog_x_down_y_down)
-        self.bind('<<JOG-XDWYUP>>', self.jog_x_down_y_up)
-
-        if self._swapKeyboard == 1:
-            self.bind('<Right>', self.jog_y_up)
-            self.bind('<Left>', self.jog_y_down)
-            self.bind('<Up>', self.jog_x_down)
-            self.bind('<Down>', self.jog_x_up)
-        elif self._swapKeyboard == -1:
-            self.bind('<Right>', self.jog_y_down)
-            self.bind('<Left>', self.jog_y_up)
-            self.bind('<Up>', self.jog_x_up)
-            self.bind('<Down>', self.jog_x_down)
-        else:
-            self.bind('<Right>', self.jog_x_up)
-            self.bind('<Left>', self.jog_x_down)
-            self.bind('<Up>', self.jog_y_up)
-            self.bind('<Down>', self.jog_y_down)
-
-        self.bind('<Prior>', self.jog_z_up)
-        self.bind('<Next>', self.jog_z_down)
-
-        ## KEYPAD Controls
-
-        self.bind('<KP_Prior>', self.jog_z_up)
-        self.bind('<KP_Next>', self.jog_z_down)
-
-        try:
-            if self._swapKeyboard == 1:
-                self.bind('<KP_Right>', self.jog_y_up)
-                self.bind('<KP_Left>', self.jog_y_down)
-                self.bind('<KP_Up>', self.jog_x_down)
-                self.bind('<KP_Down>', self.jog_x_up)
-            elif self._swapKeyboard == -1:
-                self.bind('<KP_Right>', self.jog_y_down)
-                self.bind('<KP_Left>', self.jog_y_up)
-                self.bind('<KP_Up>', self.jog_x_up)
-                self.bind('<KP_Down>', self.jog_x_down)
-            else:
-                self.bind('<KP_Right>', self.jog_x_up)
-                self.bind('<KP_Left>', self.jog_x_down)
-                self.bind('<KP_Up>', self.jog_y_up)
-                self.bind('<KP_Down>', self.jog_y_down)
-        except Tk.TclError:
-            pass
-
-        self.bind('<Key-plus>', self.cycle_up_step_xy)
-        self.bind('<KP_Add>', self.cycle_up_step_xy)
-
-        self.bind('<Key-minus>', self.cycle_dw_step_xy)
-        self.bind('<KP_Subtract>', self.cycle_dw_step_xy)
-
-        self.bind('<Key-asterisk>', self.cycle_up_step_z)
-        self.bind('<KP_Multiply>', self.cycle_up_step_z)
-
-        self.bind('<Key-slash>', self.cycle_dw_step_z)
-        self.bind('<KP_Divide>', self.cycle_dw_step_z)
-
-
-    # END machine control
-
-        self.bind('<<Resume>>', lambda e, s=self: s.resume())
-        self.bind('<<Run>>', lambda e, s=self: s.run())
-        self.bind('<<Stop>>', self.stopRun)
-        self.bind('<<Pause>>', self.pause)
-
-    #--- Memory Bindings
-        self.bind('<<SetMem>>', self.setMem)
-        self.bind('<<ClrMem>>', self.clrMem)
-        self.bind('<<SaveMems>>', self.saveMems)
-        self.bind("<<ListboxSelect>>", self.selectionChange)
-        self.bind("<<Modified>>", self.drawAfter)
-
-    #--- CAMGen Bindings
-        self.bind("<<MOP_OK>>", self.mop_ok)
-
-    #--- Selection Binding
-
-        self.bind('<Control-Key-a>', self.selectAll)
-        self.bind('<Control-Key-A>', self.unselectAll)
-        self.bind('<Escape>', self.unselectAll)
-        self.bind('<Control-Key-i>', self.selectInvert)
-
-        self.bind('<<SelectAll>>', self.selectAll)
-        self.bind('<<SelectNone>>', self.unselectAll)
-        self.bind('<<SelectInvert>>', self.selectInvert)
-        self.bind('<<SelectLayer>>', self.selectLayer)
-        self.bind('<<ShowInfo>>', self.showInfo)
-        self.bind('<<ShowStats>>', self.showStats)
-
-
-        self.bind("<<ERR_HELP>>", self.show_error_panel)
-        self.bind("<<SET_HELP>>", self.show_settings_panel)
         self.bind('<<TerminalClear>>', Page.frames["Terminal"].clear)
 
-        tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
-        tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
-
-    #--- Editor bindings
-        self.bind("<<Add>>", self.editor.insertItem)
-        self.bind("<<AddBlock>>", self.editor.insertBlock)
-        self.bind("<<AddLine>>", self.editor.insertLine)
-        self.bind("<<Clone>>", self.editor.clone)
-        self.bind("<<ClearEditor>>", self.ClearEditor)
-        self.bind("<<Delete>>", self.editor.deleteBlock)
-        self.bind('<<Invert>>', self.editor.invertBlocks)
-        self.bind('<<Expand>>', self.editor.toggleExpand)
-        self.bind('<<EnableToggle>>', self.editor.toggleEnable)
-        self.bind('<<Enable>>', self.editor.enable)
-        self.bind('<<Disable>>', self.editor.disable)
-        self.bind('<<ChangeColor>>', self.editor.changeColor)
-        self.bind('<<Comment>>', self.editor.commentRow)
-        self.bind('<<Join>>', self.editor.joinBlocks)
-        self.bind('<<Split>>', self.editor.splitBlocks)
-
-        self.bind('<Control-Key-e>', self.editor.toggleExpand)
-        self.bind('<Control-Key-l>', self.editor.toggleEnable)
-
-    #--- Canvas X-bindings
-        self.bind("<<ViewChange>>", self.viewChange)
-        self.bind("<<AddMarker>>", OCV.TK_CANVAS_F.canvas.setActionAddMarker)
-        self.bind('<<MoveGantry>>', OCV.TK_CANVAS_F.canvas.setActionGantry)
-        self.bind('<<SetWPOS>>', OCV.TK_CANVAS_F.canvas.setActionWPOS)
-        self.bind('<<CameraOn>>', OCV.TK_CANVAS_F.canvas.cameraOn)
-        self.bind('<<CameraOff>>', OCV.TK_CANVAS_F.canvas.cameraOff)
-        self.bind('<<DrawProbe>>',
-                  lambda e, c=OCV.TK_CANVAS_F: c.drawProbe(True))
-        self.bind('<<DrawOrient>>', OCV.TK_CANVAS_F.canvas.drawOrient)
-
-        OCV.TK_CANVAS_F.canvas.bind(
-            "<Control-Key-Prior>", self.editor.orderUp)
-        OCV.TK_CANVAS_F.canvas.bind(
-            "<Control-Key-Next>", self.editor.orderDown)
-        OCV.TK_CANVAS_F.canvas.bind('<Control-Key-c>', self.copy)
-        OCV.TK_CANVAS_F.canvas.bind('<Control-Key-d>', self.editor.clone)
-        OCV.TK_CANVAS_F.canvas.bind('<Control-Key-x>', self.cut)
-        OCV.TK_CANVAS_F.canvas.bind('<Control-Key-v>', self.paste)
-        OCV.TK_CANVAS_F.canvas.bind("<Delete>", self.editor.deleteBlock)
-        OCV.TK_CANVAS_F.canvas.bind("<BackSpace>", self.editor.deleteBlock)
-
-        try:
-            OCV.TK_CANVAS_F.canvas.bind(
-                "<KP_Delete>", self.editor.deleteBlock)
-        except:
-            pass
-
-    #--- Probe Bindings
+        #--- Probe Bindings
         frame = Page.frames["Probe:Tool"]
 
         self.bind('<<ToolCalibrate>>', frame.calibrate)
@@ -415,42 +217,7 @@ class Application(Tk.Toplevel, Sender):
         self.bind('<<AutolevelScan>>', alevel.scan)
         self.bind('<<AutolevelScanMargins>>', alevel.scanMargins)
 
-    #--- Misc Bindings
-        self.bind('<<CanvasFocus>>', self.canvasFocus)
-        self.bind('<<Draw>>', self.draw)
-
-
-        self.bind('<Control-Key-n>', self.showInfo)
-        self.bind('<<ShowInfo>>', self.showInfo)
-        self.bind('<Control-Key-q>', self.quit)
-        self.bind('<Control-Key-o>', self.loadDialog)
-        self.bind('<Control-Key-r>', self.drawAfter)
-        self.bind("<Control-Key-s>", self.saveAll)
-        self.bind('<Control-Key-y>', self.redo)
-        self.bind('<Control-Key-z>', self.undo)
-        self.bind('<Control-Key-Z>', self.redo)
-        OCV.TK_CANVAS_F.canvas.bind('<Key-space>', self.commandFocus)
-        self.bind('<Control-Key-space>', self.commandFocus)
-        self.bind('<<CommandFocus>>', self.commandFocus)
-
-    #--- Tools Bindings
-        self.bind('<<ToolAdd>>', self.pages["Tools"].add)
-        self.bind('<<ToolDelete>>', self.pages["Tools"].delete)
-        self.bind('<<ToolClone>>', self.pages["Tools"].clone)
-        self.bind('<<ToolRename>>', self.pages["Tools"].rename)
-
-    #--- Command Line Bindings
-        OCV.TK_CMD_W.bind("<Return>", self.cmdExecute)
-        OCV.TK_CMD_W.bind("<Up>", self.commandHistoryUp)
-        OCV.TK_CMD_W.bind("<Down>", self.commandHistoryDown)
-        OCV.TK_CMD_W.bind("<FocusIn>", self.commandFocusIn)
-        OCV.TK_CMD_W.bind("<FocusOut>", self.commandFocusOut)
-        OCV.TK_CMD_W.bind("<Key>", self.commandKey)
-        OCV.TK_CMD_W.bind("<Control-Key-z>", self.undo)
-        OCV.TK_CMD_W.bind("<Control-Key-Z>", self.redo)
-        OCV.TK_CMD_W.bind("<Control-Key-y>", self.redo)
-
-    #--- END Bindings
+        # END Bindings
 
         OCV.TK_CANVAS_F.canvas.focus_set()
 
@@ -463,6 +230,7 @@ class Application(Tk.Toplevel, Sender):
         self._insertCount = 0
         self._selectI = 0
         self.monitorSerial()
+
         OCV.TK_CANVAS_F.toggleDrawFlag()
 
         self.paned.sash_place(0, IniFile.get_int(OCV.PRG_NAME, "sash", 340), 0)
@@ -471,24 +239,7 @@ class Application(Tk.Toplevel, Sender):
         if IniFile.get_bool("Connection", "pendant"):
             self.startPendant(False)
 
-        if IniFile.get_bool("Debug", "generic"):
-             OCV.DEBUG = True
-
-        if IniFile.get_bool("Debug", "graph"):
-             OCV.DEBUG_GRAPH = True
-
-        if IniFile.get_bool("Debug", "interface"):
-             OCV.DEBUG_INT = True
-
-        if IniFile.get_bool("Debug", "coms"):
-             OCV.DEBUG_COM = True
-
-        if IniFile.get_bool("Debug", "sio"):
-             OCV.DEBUG_SER = True
-
-        if IniFile.get_bool("Debug", "gpar"):
-             OCV.DEBUG_PAR = True
-             OCV.DEBUG_HEUR = IniFile.get_bool("Debug", "heur")
+        Interface.set_debug_flags()
 
         if _openserial and IniFile.get_bool("Connection", "openserial"):
             self.openClose()
@@ -501,8 +252,6 @@ class Application(Tk.Toplevel, Sender):
                 break
 
             bFileDialog.append2History(os.path.dirname(filename))
-
-#--- End Init
 
     #--- CTRL COMMANDS HERE to make them work
 
@@ -659,7 +408,7 @@ class Application(Tk.Toplevel, Sender):
         """Execute CAM Commands
         Validation checks are done in Utils.MOPWindow"""
 
-        CAMGen.mop(self, OCV.TK_APP, "mem_0", "mem_1", OCV.mop_vars["type"])
+        CAMGen.mop(self, OCV.TK_MAIN, "mem_0", "mem_1", OCV.mop_vars["type"])
  
     #---
 
@@ -690,6 +439,26 @@ class Application(Tk.Toplevel, Sender):
         """Save memories in Ini file"""
         IniFile.save_memories()
 
+    def ToggleMems(self):
+        """display/hide all bank "active" memory on canvas"""
+        # print("sBM Bank >> ", OCV.WK_bank)
+        for idx in range(0, OCV.WK_bank_mem):
+            mem_num = OCV.WK_bank_start + idx
+            mem_addr = "mem_{0}".format(mem_num)
+
+            # check the presence of the key in dictionary
+            if mem_addr in OCV.WK_mems:
+                # chek if the memory is valid
+                mem_data = OCV.WK_mems[mem_addr]
+                # print("sBM mem_data >> ", mem_data)
+                if mem_data[3] == 1:
+                    OCV.WK_mem = mem_num
+
+                    if OCV.WK_active_mems[OCV.WK_mem] == 2:
+                        OCV.TK_MAIN.event_generate("<<ClrMem>>")
+                    else:
+                        OCV.TK_MAIN.event_generate("<<SetMem>>")        
+
     #--- Canvas Actions
 
     def updateCanvasCoords(self, event):
@@ -707,7 +476,7 @@ class Application(Tk.Toplevel, Sender):
 
     def refresh(self, event=None):
         """Refresh Canvas"""
-        self.editor.fill()
+        OCV.TK_EDITOR.fill()
         self.draw()
 
     def draw(self):
@@ -796,47 +565,34 @@ class Application(Tk.Toplevel, Sender):
         """Disable Widget"""
         self.configWidgets("state", Tk.DISABLED)
 
-    def checkUpdates(self):
-        """Check for updates"""
-        # Find OKKCNC version
-        # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
-        pass
-
-    @staticmethod
-    def showUserFile():
-        """Show user file"""
-        #TODO: find a way to show the user file
-        #webbrowser.open(OCV.USER_CONFIG)
-        pass
-
     #--- Editor Actions
 
     def cut(self, event=None):
         """Editor cut"""
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
-            self.editor.cut()
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
+            OCV.TK_EDITOR.cut()
             return "break"
 
     def copy(self, event=None):
         """Editor copy"""
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
-            self.editor.copy()
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
+            OCV.TK_EDITOR.copy()
             return "break"
 
     def paste(self, event=None):
         """Editor paste"""
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
-            self.editor.paste()
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
+            OCV.TK_EDITOR.paste()
             return "break"
 
     def undo(self, event=None):
         """Editor undo"""
         if not OCV.s_running and self.gcode.canUndo():
             self.gcode.undo()
-            self.editor.fill()
+            OCV.TK_EDITOR.fill()
             self.drawAfter()
         return "break"
 
@@ -844,7 +600,7 @@ class Application(Tk.Toplevel, Sender):
         """Editor redo"""
         if not OCV.s_running and self.gcode.canRedo():
             self.gcode.redo()
-            self.editor.fill()
+            OCV.TK_EDITOR.fill()
             self.drawAfter()
         return "break"
 
@@ -862,7 +618,7 @@ class Application(Tk.Toplevel, Sender):
 
     def closeFunc(self, event=None):
         """Calls destroy in Main Window"""
-        OCV.TK_APP.destroy()
+        OCV.TK_MAIN.destroy()
 
     def quit(self, event=None):
         """Exit from Program"""
@@ -897,404 +653,80 @@ class Application(Tk.Toplevel, Sender):
 
     def showInfo(self, event=None):
         """Display information on selected blocks"""
-        OCV.TK_CANVAS_F.canvas.showInfo(self.editor.getSelectedBlocks())
+        OCV.TK_CANVAS_F.canvas.showInfo(OCV.TK_EDITOR.getSelectedBlocks())
         return "break"
 
     def showStats(self, event=None):
         """Display statistics on enabled blocks"""
-        toplevel = Tk.Toplevel(self)
-        toplevel.transient(self)
-        toplevel.title(_("Statistics"))
-
-        if OCV.inch:
-            unit = "in"
-        else:
-            unit = "mm"
-
-        infostr = "{0:.3f} .. {1:.3f} [{2:.3f}] {3}"
-        infostr1 = "{0:.3f} {1}"
-        time_str = "H:{0:d} M:{1:02d} S:{2:02d}"
-
-        # count enabled blocks
-        e = 0
-        b_l = 0
-        b_r = 0
-        b_t = 0
-
-        for block in OCV.blocks:
-            if block.enable:
-                e += 1
-                b_l += block.length
-                b_r += block.rapid
-                b_t += block.time
-
-        frame = Tk.LabelFrame(
-            toplevel,
-            text=_("Enabled GCode"),
-            foreground="DarkRed")
-
-        frame.pack(fill=Tk.BOTH)
-
-        row, col = 0, 0
-
-        lab = Tk.Label(
-            frame,
-            text=_("Margins X:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["xmin"], OCV.CD["xmax"],
-                OCV.CD["xmax"] -OCV.CD["xmin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text="... Y:")
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["ymin"], OCV.CD["ymax"],
-                OCV.CD["ymax"] -OCV.CD["ymin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text="... Z:")
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["zmin"], OCV.CD["zmax"],
-                OCV.CD["zmax"] -OCV.CD["zmin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(
-            frame,
-            text=_("# Blocks:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame, text=str(e),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text=_("Length:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr1.format(b_l, unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text=_("Rapid:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr1.format(b_r, unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text=_("Time:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        bt_h, bt_m = divmod(b_t, 60)  # t in min
-        bt_s = (bt_m-int(bt_m))*60
-
-        lab = Tk.Label(
-            frame,
-            text=time_str.format(int(bt_h), int(bt_m), int(bt_s)),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        frame.grid_columnconfigure(1, weight=1)
-
-
-        frame = Tk.LabelFrame(
-            toplevel,
-            text=_("All GCode"),
-            foreground="DarkRed")
-
-        frame.pack(fill=Tk.BOTH)
-
-        row, col = 0, 0
-
-        lab = Tk.Label(frame, text=_("Margins X:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["axmin"], OCV.CD["axmax"],
-                OCV.CD["axmax"] -OCV.CD["axmin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text="... Y:")
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["aymin"], OCV.CD["aymax"],
-                OCV.CD["aymax"] -OCV.CD["aymin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text="... Z:")
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr.format(
-                OCV.CD["azmin"], OCV.CD["azmax"],
-                OCV.CD["azmax"] -OCV.CD["azmin"],
-                unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(
-            frame,
-            text=_("# Blocks:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=str(len(OCV.blocks)),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(
-            frame,
-            text=_("Length:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        lab = Tk.Label(
-            frame,
-            text=infostr1.format(self.cnc.totalLength, unit),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        row += 1
-        col = 0
-
-        lab = Tk.Label(frame, text=_("Time:"))
-
-        lab.grid(row=row, column=col, sticky=Tk.E)
-
-        col += 1
-
-        tt_h, tt_m = divmod(self.cnc.totalTime, 60) # t in min
-        tt_s = (tt_m-int(tt_m))*60
-
-        lab = Tk.Label(
-            frame,
-            text=time_str.format(int(tt_h), int(tt_m), int(tt_s)),
-            foreground="DarkBlue")
-
-        lab.grid(row=row, column=col, sticky=Tk.W)
-
-        frame.grid_columnconfigure(1, weight=1)
-
-        frame = Tk.Frame(toplevel)
-        frame.pack(fill=Tk.X)
-
-        closeFunc = lambda e=None, t=toplevel: t.destroy()
-
-        but = Tk.Button(frame, text=_("Close"), command=closeFunc)
-        but.pack(pady=5)
-
-        frame.grid_columnconfigure(1, weight=1)
-
-        toplevel.bind("<Escape>", closeFunc)
-        toplevel.bind("<Return>", closeFunc)
-        toplevel.bind("<KP_Enter>", closeFunc)
-
-        toplevel.deiconify()
-        toplevel.wait_visibility()
-        toplevel.resizable(False, False)
-
-        try:
-            toplevel.grab_set()
-        except:
-            pass
-
-        but.focus_set()
-        toplevel.lift()
-        toplevel.wait_window()
+        Interface.show_stats()
 
     def show_error_panel(self, event=None):
         """Show controller error panel"""
-        msg = "Messages"
-        if len(OCV.CTL_ERRORS) > 1:
-            msg = " \n\n".join(OCV.CTL_ERRORS)
-        else:
-            msg = "This controller has no error list"
-
-        panel = Utils.ErrorWindow(OCV.TK_APP, _("Error Help"))
-        panel.m_txt["height"] = 30
-        panel.show_message(msg)
+        Interface.show_error_panel()
 
     def show_settings_panel(self, event=None):
         """Show settings panel"""
-        msg = "Messages"
-        if len(OCV.CTL_SHELP) > 1:
-            msg = " \n\n".join(OCV.CTL_SHELP)
-        else:
-            msg = "This controller has no setting list yet"
-
-        panel = Utils.ErrorWindow(OCV.TK_APP, _("Settings Help"))
-        panel.m_txt["height"] = 30
-        panel.show_message(msg)
-
+        Interface.show_settings_panel()
+        
     def selectAll(self, event=None):
         """Editor Select All"""
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
-            self.editor.copy()
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
+            OCV.TK_EDITOR.copy()
             OCV.TK_RIBBON.changePage("Editor")
-            self.editor.selectAll()
+            OCV.TK_EDITOR.selectAll()
             self.selectionChange()
             return "break"
 
     def unselectAll(self, event=None):
         """Editor Unselect All"""
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
             OCV.TK_RIBBON.changePage("Editor")
-            self.editor.selectClear()
+            OCV.TK_EDITOR.selectClear()
             self.selectionChange()
             return "break"
 
     def selectInvert(self, event=None):
         """EditorIvert  selection"""        
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
             OCV.TK_RIBBON.changePage("Editor")
-            self.editor.selectInvert()
+            OCV.TK_EDITOR.selectInvert()
             self.selectionChange()
             return "break"
 
     def selectLayer(self, event=None):
         """Editor Select Layer"""        
         focus = self.focus_get()
-        if focus in (OCV.TK_CANVAS_F.canvas, self.editor):
+        if focus in (OCV.TK_CANVAS_F.canvas, OCV.TK_EDITOR):
             OCV.TK_RIBBON.changePage("Editor")
-            self.editor.selectLayer()
+            OCV.TK_EDITOR.selectLayer()
             self.selectionChange()
             return "break"
 
     def find(self, event=None):
         """Editor Find TO BE DONE"""        
         OCV.TK_RIBBON.changePage("Editor")
-#        self.editor.findDialog()
+#        OCV.TK_EDITOR.findDialog()
 #        return "break"
 
     def findNext(self, event=None):
         """Editor Find Next TO BE DONE"""                
         OCV.TK_RIBBON.changePage("Editor")
-#        self.editor.findNext()
+#        OCV.TK_EDITOR.findNext()
 #        return "break"
 
     def replace(self, event=None):
         """Editor Replace TO BE DONE"""                
         OCV.TK_RIBBON.changePage("Editor")
-#        self.editor.replaceDialog()
+#        OCV.TK_EDITOR.replaceDialog()
 #        return "break"
 
     def activeBlock(self):
         """Return editor active Block
         Used in CAMGen"""                
-        return self.editor.activeBlock()
+        return OCV.TK_EDITOR.activeBlock()
 
     def cmdExecute(self, event):
         """Keyboard binding to <Return> in Command Window"""
@@ -1414,9 +846,9 @@ class Application(Tk.Toplevel, Sender):
         # DOWN: move downward in cutting order the selected blocks
         # UP: move upwards in cutting order the selected blocks
         elif cmd == "DOWN":
-            self.editor.orderDown()
+            OCV.TK_EDITOR.orderDown()
         elif cmd == "UP":
-            self.editor.orderUp()
+            OCV.TK_EDITOR.orderUp()
 
         # DIR*ECTION
         elif rexx.abbrev("DIRECTION", cmd, 3):
@@ -1469,7 +901,7 @@ class Application(Tk.Toplevel, Sender):
 
         # INV*ERT: invert selected blocks
         elif rexx.abbrev("INVERT", cmd, 3):
-            self.editor.invertBlocks()
+            OCV.TK_EDITOR.invertBlocks()
 
         # MSG|MESSAGE <msg>: echo message
         elif cmd in ("MSG", "MESSAGE"):
@@ -1481,10 +913,10 @@ class Application(Tk.Toplevel, Sender):
         # FIL*TER: filter editor blocks with text
         elif rexx.abbrev("FILTER", cmd, 3) or cmd == "ALL":
             try:
-                self.editor.filter = line[1]
+                OCV.TK_EDITOR.filter = line[1]
             except:
-                self.editor.filter = None
-            self.editor.fill()
+                OCV.TK_EDITOR.filter = None
+            OCV.TK_EDITOR.fill()
 
         # ED*IT: edit current line or item
         elif rexx.abbrev("EDIT", cmd, 2):
@@ -1501,7 +933,7 @@ class Application(Tk.Toplevel, Sender):
         # INK*SCAPE: remove uneccessary Z motion as a result of inkscape gcodetools
         elif rexx.abbrev("INKSCAPE", cmd, 3):
             if len(line) > 1 and rexx.abbrev("ALL", line[1].upper()):
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             self.executeOnSelection("INKSCAPE", True)
 
         # ISO1: switch to ISO1 projection
@@ -1525,8 +957,8 @@ class Application(Tk.Toplevel, Sender):
 
             line1 = line[1].upper()
             # if nothing is selected:
-            if not self.editor.curselection():
-                self.editor.selectAll()
+            if not OCV.TK_EDITOR.curselection():
+                OCV.TK_EDITOR.selectAll()
             if rexx.abbrev("HORIZONTAL", line1):
                 self.executeOnSelection("MIRRORH", False)
             elif rexx.abbrev("VERTICAL", line1):
@@ -1534,9 +966,9 @@ class Application(Tk.Toplevel, Sender):
 
         elif rexx.abbrev("ORDER", cmd, 2):
             if line[1].upper() == "UP":
-                self.editor.orderUp()
+                OCV.TK_EDITOR.orderUp()
             elif line[1].upper() == "DOWN":
-                self.editor.orderDown()
+                OCV.TK_EDITOR.orderDown()
 
         # MO*VE [|CE*NTER|BL|BR|TL|TR|UP|DOWN|x] [[y [z]]]:
         # move selected objects either by mouse or by coordinates
@@ -1549,39 +981,39 @@ class Application(Tk.Toplevel, Sender):
             if rexx.abbrev("CENTER", line1, 2):
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "BL":
                 dx = -OCV.CD["xmin"]
                 dy = -OCV.CD["ymin"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "BC":
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -OCV.CD["ymin"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "BR":
                 dx = -OCV.CD["xmax"]
                 dy = -OCV.CD["ymin"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "TL":
                 dx = -OCV.CD["xmin"]
                 dy = -OCV.CD["ymax"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "TC":
                 dx = -(OCV.CD["xmin"] + OCV.CD["xmax"])/2.0
                 dy = -OCV.CD["ymax"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "TR":
                 dx = -OCV.CD["xmax"]
                 dy = -OCV.CD["ymax"]
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "LC":
                 dx = -OCV.CD["xmin"]
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 == "RC":
                 dx = -OCV.CD["xmax"]
                 dy = -(OCV.CD["ymin"] + OCV.CD["ymax"])/2.0
-                self.editor.selectAll()
+                OCV.TK_EDITOR.selectAll()
             elif line1 in ("UP", "DOWN"):
                 dx = line1
                 dy = dz = line1
@@ -1603,7 +1035,7 @@ class Application(Tk.Toplevel, Sender):
 
         # OPT*IMIZE: reorder selected blocks to minimize rapid motions
         elif rexx.abbrev("OPTIMIZE", cmd, 3):
-            if not self.editor.curselection():
+            if not OCV.TK_EDITOR.curselection():
                 tkMessageBox.showinfo(
                     _("Optimize"),
                     _("Please select the blocks of gcode you want to optimize."),
@@ -1613,8 +1045,8 @@ class Application(Tk.Toplevel, Sender):
 
         # OPT*IMIZE: reorder selected blocks to minimize rapid motions
         elif rexx.abbrev("ORIENT", cmd, 4):
-            if not self.editor.curselection():
-                self.editor.selectAll()
+            if not OCV.TK_EDITOR.curselection():
+                OCV.TK_EDITOR.selectAll()
             self.executeOnSelection("ORIENT", False)
 
         # ORI*GIN x y z: move origin to x,y,z by moving all to -x -y -z
@@ -1632,7 +1064,7 @@ class Application(Tk.Toplevel, Sender):
             except:
                 dz = 0.0
 
-            self.editor.selectAll()
+            OCV.TK_EDITOR.selectAll()
             self.executeOnSelection("MOVE", False, dx, dy, dz)
 
         # ROT*ATE [CCW|CW|FLIP|ang] [x0 [y0]]: rotate selected blocks
@@ -1643,13 +1075,13 @@ class Application(Tk.Toplevel, Sender):
             x0 = y0 = 0.0
             if line1 == "CCW":
                 ang = 90.0
-                # self.editor.selectAll()
+                # OCV.TK_EDITOR.selectAll()
             elif line1 == "CW":
                 ang = -90.0
-                # self.editor.selectAll()
+                # OCV.TK_EDITOR.selectAll()
             elif line1 == "FLIP":
                 ang = 180.0
-                # self.editor.selectAll()
+                # OCV.TK_EDITOR.selectAll()
             else:
                 try:
                     ang = float(line[1])
@@ -1671,7 +1103,7 @@ class Application(Tk.Toplevel, Sender):
             acc = None
             if len(line) > 1:
                 if rexx.abbrev("ALL", line[1].upper()):
-                    self.editor.selectAll()
+                    OCV.TK_EDITOR.selectAll()
                 else:
                     try:
                         acc = int(line[1])
@@ -1809,9 +1241,9 @@ class Application(Tk.Toplevel, Sender):
     def executeOnSelection(self, cmd, blocksonly, *args):
         """Execute a command over the selected lines"""
         if blocksonly:
-            items = self.editor.getSelectedBlocks()
+            items = OCV.TK_EDITOR.getSelectedBlocks()
         else:
-            items = self.editor.getCleanSelection()
+            items = OCV.TK_EDITOR.getCleanSelection()
         if not items:
             tkMessageBox.showwarning(
                 _("Nothing to do"),
@@ -1850,12 +1282,12 @@ class Application(Tk.Toplevel, Sender):
             self.gcode.rotateLines(items, *args)
 
         # Fill listbox and update selection
-        self.editor.fill()
+        OCV.TK_EDITOR.fill()
         if sel is not None:
             if isinstance(sel, str):
                 tkMessageBox.showerror(_("Operation error"), sel, parent=self)
             else:
-                self.editor.select(sel, clear=True)
+                OCV.TK_EDITOR.select(sel, clear=True)
         self.drawAfter()
         self.notBusy()
         self.setStatus("{0} {1}".format(cmd, " ".join(
@@ -1865,7 +1297,7 @@ class Application(Tk.Toplevel, Sender):
         """Edit event for "Editor" and "Tools"  Pages """
         page = OCV.TK_RIBBON.getActivePage()
         if page.name == "Editor":
-            self.editor.edit()
+            OCV.TK_EDITOR.edit()
         elif page.name == "Tools":
             page.edit()
 
@@ -1936,19 +1368,19 @@ class Application(Tk.Toplevel, Sender):
 
     def select(self, items, double, clear, toggle=True):
         """Editor Selection"""
-        self.editor.select(items, double, clear, toggle)
+        OCV.TK_EDITOR.select(items, double, clear, toggle)
         self.selectionChange()
 
     def selectionChange(self, event=None):
         """Selection has changed highlight the canvas"""
-        items = self.editor.getSelection()
+        items = OCV.TK_EDITOR.getSelection()
         OCV.TK_CANVAS_F.canvas.clearSelection()
 
         if not items:
             return
 
         OCV.TK_CANVAS_F.canvas.select(items)
-        OCV.TK_CANVAS_F.canvas.activeMarker(self.editor.getActive())
+        OCV.TK_CANVAS_F.canvas.activeMarker(OCV.TK_EDITOR.getActive())
 
     def newFile(self, event=None):
         """Create a new file"""
@@ -1960,7 +1392,7 @@ class Application(Tk.Toplevel, Sender):
 
         self.gcode.init()
         self.gcode.headerFooter()
-        self.editor.fill()
+        OCV.TK_EDITOR.fill()
         self.draw()
         self.title("{0}{1}".format(OCV.PRG_NAME, OCV.PRG_VER))
 
@@ -2068,7 +1500,7 @@ class Application(Tk.Toplevel, Sender):
             self.event_generate("<<OrientUpdate>>")
 
         else:
-            self.editor.selectClear()
+            OCV.TK_EDITOR.selectClear()
             self.reset_canvas()
             Page.frames["Tools"].populate()
 
@@ -2121,7 +1553,7 @@ class Application(Tk.Toplevel, Sender):
             ext = ext.lower()
             gcode = GCode.GCode()
             gcode.load(filename)
-            sel = self.editor.getSelectedBlocks()
+            sel = OCV.TK_EDITOR.getSelectedBlocks()
 
             if not sel:
                 pos = None
@@ -2142,16 +1574,16 @@ class Application(Tk.Toplevel, Sender):
     def reset_canvas(self):
         """Reset Canvas
         used here and in CAMGen"""
-        self.editor.fill()
+        OCV.TK_EDITOR.fill()
         OCV.TK_CANVAS_F.canvas.reset()
         self.draw()
         OCV.TK_CANVAS_F.canvas.fit2Screen()
 
     def clear_editor(self):
-        self.editor.selectClear()
-        self.editor.selectAll()
+        OCV.TK_EDITOR.selectClear()
+        OCV.TK_EDITOR.selectAll()
         if len(OCV.blocks) > 0:
-            self.editor.deleteBlock()
+            OCV.TK_EDITOR.deleteBlock()
 
     def focus_in(self, event):
         """manage focus in..."""
@@ -2218,7 +1650,7 @@ class Application(Tk.Toplevel, Sender):
         self.cleanAfter = True  # Clean when this operation stops
         print("RUN: Will clean after this operation")
 
-        self.editor.selectClear()
+        OCV.TK_EDITOR.selectClear()
         self.selectionChange()
 
         # the buffer of the machine should be empty?
@@ -2400,23 +1832,24 @@ class Application(Tk.Toplevel, Sender):
 
         # dump in the terminal what ever you can in less than 0.1s
         inserted = False
+        _last_sent = ""
 
         while self.log.qsize() > 0 and time.time()-t < 0.1:
             try:
                 msg, line = self.log.get_nowait()
                 line = str(line).rstrip("\n")
                 inserted = True
-                #print "<<<",msg,line,"\n" in line
+                #print("msg >> ", msg)
 
                 if msg == Sender.MSG_BUFFER:
-                    self.buffer.insert(Tk.END, line)
+                    OCV.TK_TERMBUF.insert(Tk.END, line)
 
                 elif msg == Sender.MSG_SEND:
-                    self.terminal.insert(Tk.END, line)
-                    self.terminal.itemconfig(Tk.END, foreground="Blue")
+                    OCV.TK_TERMINAL.insert(Tk.END, line)
+                    OCV.TK_TERMINAL.itemconfig(Tk.END, foreground="Blue")
 
                 elif msg == Sender.MSG_RECEIVE:
-                    self.terminal.insert(Tk.END, line)
+                    OCV.TK_TERMINAL.insert(Tk.END, line)
                     if self._insertCount:
                         # when counting is started, then continue
                         self._insertCount += 1
@@ -2426,51 +1859,61 @@ class Application(Tk.Toplevel, Sender):
                         self._insertCount = 1
 
                 elif msg == Sender.MSG_OK:
-                    if self.terminal.size() > 0:
+                    if OCV.TK_TERMINAL.size() > 0:
                         if self._insertCount:
-                            pos = self.terminal.size()-self._insertCount
+                            pos = OCV.TK_TERMINAL.size() - self._insertCount
                             self._insertCount = 0
                         else:
                             pos = Tk.END
-                        self.terminal.insert(pos, self.buffer.get(0))
-                        self.terminal.itemconfig(pos, foreground="Blue")
-                        self.buffer.delete(0)
-                    self.terminal.insert(Tk.END, line)
+                            
+                        _last_sent = OCV.TK_TERMBUF.get(0)
+                        print("MSG_OK >> {} gc > {}".format(
+                            _last_sent, self._gcount))
+                        OCV.TK_TERMINAL.insert(pos, _last_sent)
+                        OCV.TK_TERMINAL.itemconfig(pos, foreground="Blue")
+                        OCV.TK_TERMBUF.delete(0)
+
+                    OCV.TK_TERMINAL.insert(Tk.END, line)
 
                 elif msg == Sender.MSG_ERROR:
-                    if self.terminal.size() > 0:
+                    if OCV.TK_TERMINAL.size() > 0:
                         if self._insertCount:
-                            pos = self.terminal.size()-self._insertCount
+                            pos = OCV.TK_TERMINAL.size() - self._insertCount
                             self._insertCount = 0
                         else:
                             pos = Tk.END
-                        self.terminal.insert(pos, self.buffer.get(0))
-                        self.terminal.itemconfig(pos, foreground="Blue")
-                        self.buffer.delete(0)
-                    self.terminal.insert(Tk.END, line)
-                    self.terminal.itemconfig(Tk.END, foreground="Red")
+                            
+                        _last_sent = OCV.TK_TERMBUF.get(0)
+                        print("MSG_ERR >> ", _last_sent)
+                        OCV.TK_TERMINAL.insert(pos, _last_sent)
+                        OCV.TK_TERMINAL.itemconfig(pos, foreground="Blue")
+                        OCV.TK_TERMBUF.delete(0)
+                        
+                    OCV.TK_TERMINAL.insert(Tk.END, line)
+                    OCV.TK_TERMINAL.itemconfig(Tk.END, foreground="Red")
 
                 elif msg == Sender.MSG_RUNEND:
-                    self.terminal.insert(Tk.END, line)
-                    self.terminal.itemconfig(Tk.END, foreground="Magenta")
+                    OCV.TK_TERMINAL.insert(Tk.END, line)
+                    OCV.TK_TERMINAL.itemconfig(Tk.END, foreground="Magenta")
                     self.setStatus(line)
                     self.enable()
 
                 elif msg == Sender.MSG_CLEAR:
-                    self.buffer.delete(0, Tk.END)
+                    OCV.TK_TERMBUF.delete(0, Tk.END)
 
                 else:
                     # Unknown?
-                    self.buffer.insert(Tk.END, line)
-                    self.terminal.itemconfig(Tk.END, foreground="Magenta")
+                    OCV.TK_TERMBUF.insert(Tk.END, line)
+                    OCV.TK_TERMINAL.itemconfig(Tk.END, foreground="Magenta")
 
-                if self.terminal.size() > 1000:
-                    self.terminal.delete(0, 500)
+                if OCV.TK_TERMINAL.size() > 1000:
+                    OCV.TK_TERMINAL.delete(0, 500)
+                    
             except Empty:
                 break
 
         if inserted:
-            self.terminal.see(Tk.END)
+            OCV.TK_TERMINAL.see(Tk.END)
 
         # Check pendant/buttons queue
         try:
@@ -2496,8 +1939,10 @@ class Application(Tk.Toplevel, Sender):
                     OCV.CD["color"] = OCV.STATECOLOR["Default"]
 
             OCV.s_pause = ("Hold" in OCV.c_state)
+
             self.dro.update_state()
             self.dro.update_coords()
+
             OCV.TK_CANVAS_F.canvas.gantry(
                 OCV.CD["wx"],
                 OCV.CD["wy"],
@@ -2538,15 +1983,13 @@ class Application(Tk.Toplevel, Sender):
             b_fill = Sender.getBufferFill(self)
             OCV.TK_BUFFERBAR.setProgress(b_fill)
             OCV.TK_BUFFERBAR.setText("{0:02.2f}".format(b_fill))
-            # print("Queue > ", self.queue.queue)
 
             if self.disp_line != self._gcount and self._gcount < len(OCV.gctos):
-                print("DBG DL {} GC >> {}".format(self.disp_line, self._gcount))
                 show_line = "{0} > {1} ".format(
-                    self._gcount,
-                    OCV.gctos[self._gcount - 1])
+                    self._gcount, OCV.gctos[self._gcount - 1])
                 self.proc_line.set(show_line)
                 self.disp_line = self._gcount
+                print("match ", _last_sent, show_line)
 
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and\
