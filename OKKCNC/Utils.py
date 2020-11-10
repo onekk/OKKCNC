@@ -46,8 +46,7 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
     import tkinter.ttk as ttk
     import configparser as ConfigParser
-
-# import webbrowser
+    from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 try:
     import serial
@@ -1003,3 +1002,121 @@ class MOPWindow(Tk.Toplevel):
             
     def exit_mop(self, event, tipo):
         self.destroy()
+
+class TEditorWindow(Tk.Toplevel):
+    """Simple Editor Window"""
+
+    def __init__(self, master, buttons=0):
+        super().__init__(master)
+        super().minsize(300,100)
+        super().title("Text Editor Window")
+        self.transient(master)
+        
+        self.columnconfigure(0, weight=1, minsize=180)
+        self.rowconfigure(0, weight=1)
+        
+        self.frame = Tk.Frame(self)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+        # button area column 0
+        self.frame.columnconfigure(0, weight=0)
+        # text frame area column 1
+        self.frame.columnconfigure(1, weight=1, minsize=190)
+        # filename area row 0
+        self.frame.rowconfigure(0, weight=0)
+        # 3 row fpr buttons not expanding
+        self.frame.rowconfigure(1, weight=0)
+        self.frame.rowconfigure(2, weight=0)
+        self.frame.rowconfigure(3, weight=0)
+        # weight of the remaining area could span
+        self.frame.rowconfigure(4, weight=1)
+
+        self.txt_edit = Tk.Text(self.frame)
+        
+        self.txt_edit.grid(
+            row=1, column=1, rowspan=5,
+            padx=5, pady=5, sticky="nsew")
+
+        ys = Tk.ttk.Scrollbar(
+            self.frame, orient = 'vertical', command = self.txt_edit.yview)
+        ys.grid(row=1, column=2, rowspan=5, padx=5, pady=5, sticky='ns')
+
+        self.txt_edit['yscrollcommand'] = ys.set
+
+        if buttons != 0:
+            # buttons number as follows:
+            # 0 = display windows only
+            # 1 means "Save As.." i.e. the file could be edited
+            # 2 means "Open File" button for a "normal editor" 
+            if buttons == 2:
+                self.btn_open = Tk.Button(
+                    self.frame, text="Open File", command=self.open_file)
+                self.btn_open.grid(
+                    row=1, column=0, sticky="ew", padx=5, pady=5) 
+            elif buttons in (1,2):    
+                self.btn_save = Tk.Button(self.frame, text="Save As...", command=self.save_file)
+                self.btn_save.grid(row=2, column=0, sticky="ew", padx=5)
+            else:
+                pass
+        else:
+             pass
+        
+        self.fileName = Tk.Label(self.frame)
+        self.fileName.grid(row=0, column=1, sticky="ew")
+
+    
+    def open_file(self, filename=""):
+        """Open a file for editing."""
+
+        if filename == "":
+            filepath = askopenfilename(
+                filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+            )
+            if not filepath:
+                return
+            
+            self.txt_edit.delete(1.0, Tk.END)
+        else:
+            filepath = filename
+
+        with open(filepath, "r") as input_file:
+            text = input_file.read()
+            self.txt_edit.insert(Tk.END, text)
+        
+        self.fileName['text'] = f"File: {filepath}"
+
+
+    def parse_ini(self,filename):
+        """Parse the ini file here for syntax highlighting
+
+        Parameters
+        ----------
+        filename : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        filepath = filename
+            
+        with open(filepath, "r") as input_file:
+            for line in input_file:
+                self.txt_edit.insert(Tk.END, line)
+        
+        self.fileName['text'] = f"File: {filepath}"
+    
+    def save_file(self):
+        """Save the current file as a new file."""
+        filepath = asksaveasfilename(
+            defaultextension="txt",
+            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
+        )
+        if not filepath:
+            return
+        
+        with open(filepath, "w") as output_file:
+            text = self.txt_edit.get(1.0, Tk.END)
+            output_file.write(text)
+        self.FileName['text'] = f"File: {filepath} Saved"
+

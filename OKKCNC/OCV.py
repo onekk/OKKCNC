@@ -557,8 +557,6 @@ TK_TERMBUF = None
 # TerminalFrame.terminal
 TK_TERMINAL = None
 
-
-
 TOLERANCE = 1e-7
 
 """

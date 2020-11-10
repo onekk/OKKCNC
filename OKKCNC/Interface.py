@@ -39,7 +39,6 @@ from TerminalPage import TerminalPage
 from ProbePage import ProbePage
 from EditorPage import EditorPage
 
-
 def main_interface(self):
     """Generate main interface widgets
     moved from __main__.py
@@ -558,16 +557,16 @@ def show_settings_panel():
 
 def showUserFile():
     """Show user file"""
-    #TODO: find a way to show the user file
-    #webbrowser.open(OCV.USER_CONFIG)
-    pass
+    TEditor = Utils.TEditorWindow(OCV.TK_MAIN, 0)
+    TEditor.parse_ini(OCV.USER_CONFIG)
+    TEditor.txt_edit['state'] = 'disabled' # or 'normal'
+    
 
 def checkUpdates():
     """Check for updates"""
     # Find OKKCNC version
     # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
     pass
-
 
 
 class DROFrame(CNCRibbon.PageFrame):

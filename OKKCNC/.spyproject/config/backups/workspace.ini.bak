@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['OCV.py', '__main__.py', 'Sender.py', 'Bindings.py', 'Utils.py', 'Interface.py', 'CAMGen.py', '../../../../common/Remote/OKKCNC/OKKCNC/CNCCanvas.py']
+recent_files = ['OCV.py', '__main__.py', 'Interface.py', 'Sender.py', 'Utils.py', 'CAMGen.py']
 

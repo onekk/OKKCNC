@@ -97,8 +97,6 @@ RX_BUFFER_SIZE = 128
 
 MAX_HISTORY = 500
 
-# ZERO = ["G28", "G30", "G92"]
-
 FILETYPES = [
     (_("All accepted"),
      ("*.ngc", "*.cnc", "*.nc", "*.tap", "*.gcode", "*.probe",
