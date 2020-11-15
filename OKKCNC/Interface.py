@@ -1119,13 +1119,13 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=OCV.icons["start32"],
-            font=OCV.FONT,
+            name="m2a",
             text=_("M2A"),
             background=OCV.COLOR_BACKGROUND,
-            command=None)
+            font=OCV.FONT,
+            command=lambda: self.move_to_mem("MA"))
 
-        but.grid(row=row, column=col)# padx=0, pady=0, sticky=Tk.EW)
+        but.grid(row=row, column=col, columnspan=3)
 
         tkExtra.Balloon.set(but, _("Memory to A"))
 
@@ -1135,13 +1135,14 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=OCV.icons["pause32"],
-            font=OCV.FONT,
+            name="m2b",
             text=_("M2B"),
             background=OCV.COLOR_BACKGROUND,
-            command=None)
+            font=OCV.FONT,
+            command=lambda: self.move_to_mem("MB"))
 
         but.grid(row=row, column=col, columnspan=3)
+
 
         tkExtra.Balloon.set(but, _("Memory to B"))
 
@@ -1151,7 +1152,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            #image=OCV.icons["stop32"],
             font=OCV.FONT,
             text=_("C_M"),
             command=self.clr_mem,
@@ -1181,7 +1181,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            # image=OCV.icons["pause32"],
             font=OCV.FONT,
             text=_("B +"),
             background=OCV.COLOR_BACKGROUND)
@@ -1199,7 +1198,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         but = Tk.Button(
             self.frame,
-            # image=OCV.icons["stop32"],
             font=OCV.FONT,
             text=_("B -"),
             compound=Tk.TOP,
@@ -1222,7 +1220,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
                 # print("creation", but_name)
                 but = Tk.Button(
                     self.frame,
-                    # image=OCV.icons["pause32"],
                     font=OCV.FONT,
                     name=but_name,
                     text="M_{0:02d}".format(sub_i + 2),
@@ -1316,6 +1313,25 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         self.select_bank(mem_bank)
 
+    def move_to_mem(self, obj):
+        """manage the click on "M2A" and "M2B" buttons
+        """
+        mem_num = Utils.ask_for_value(OCV.TK_MAIN, "MN")
+        
+        print("Mem number = ", mem_num)
+
+        print("Obj >>", obj)
+        
+        if obj == "MA":
+            pass
+        elif obj == "MB":
+            pass
+        else:
+           return
+
+    
+
+
     def select_bank(self, mem_bank):
         """actions to select a memory bank"""
         # assign the proper values
@@ -1351,29 +1367,31 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
 
         # print("clr_mem >", mem_num)
 
-        if mem_num is not None:
-            mem_addr = "mem_{0}".format(mem_num)
-            OCV.WK_mems[mem_addr] = [0, 0, 0, 0, "Empty"]
-            # clear the marker on canvas
-            # and the canvas memnory shown list
-            OCV.WK_mem = mem_num
-            self.event_generate("<<ClrMem>>")
-            # check if the button is shown
-            b_check = self.check_btn_value(mem_num)
+        if mem_num is None:
+            return
+    
+        mem_addr = "mem_{0}".format(mem_num)
+        OCV.WK_mems[mem_addr] = [0, 0, 0, 0, "Empty"]
+        # clear the marker on canvas
+        # and the canvas memnory shown list
+        OCV.WK_mem = mem_num
+        self.event_generate("<<ClrMem>>")
+        # check if the button is shown
+        b_check = self.check_btn_value(mem_num)
 
-            # print ("clr_mem check > ",b_check)
+        # print ("clr_mem check > ",b_check)
 
-            if b_check > 0:
-                # reset the button state
-                but_name = "but_m_{0}".format(mem_num - OCV.WK_bank_start)
-                label = "M_{0}".format(mem_num)
+        if b_check > 0:
+            # reset the button state
+            but_name = "but_m_{0}".format(mem_num - OCV.WK_bank_start)
+            label = "M_{0}".format(mem_num)
 
-                # print("clr_mem but_name > ", but_name)
+            # print("clr_mem but_name > ", but_name)
 
-                wdg = self.frame.nametowidget(but_name)
-                but_color = OCV.COLOR_BACKGROUND
-                tkExtra.Balloon.set(wdg, "Empty")
-                wdg.config(text=label, background=but_color)
+            wdg = self.frame.nametowidget(but_name)
+            but_color = OCV.COLOR_BACKGROUND
+            tkExtra.Balloon.set(wdg, "Empty")
+            wdg.config(text=label, background=but_color)
 
         # print(OCV.WK_mems)
 
