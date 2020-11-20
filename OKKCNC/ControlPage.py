@@ -58,6 +58,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         print("ControlFrame self.app > ", self.app)
         print("OCV.TK_MAIN > ", OCV.TK_MAIN)
         """
+        OCV.TK_CONTROL = self
 
         Tk.Label(self, text="", width=1).grid(row=1, column=17)
 

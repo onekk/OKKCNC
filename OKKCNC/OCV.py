@@ -541,6 +541,8 @@ TK_CANVAS = None
 TK_CANVAS_F = None
 # Command Entry
 TK_CMD_W = None
+# ControlPanel used for memory events
+TK_CONTROL = None
 # EditorFrame.editor 
 TK_EDITOR = None
 # Machine controller instance
@@ -609,7 +611,6 @@ WK_bank_start = 0
 WK_bank_mem = 9
 """Toggle used to whow the memory bank"""
 WK_bank_show = []
-
 WK_mem = 0  # pass memory number across the different program part
 WK_mem_name = ""  # pass memory name across the different program part
 

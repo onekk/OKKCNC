@@ -568,6 +568,27 @@ def checkUpdates():
     # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
     pass
 
+def write_memAB(mem_name, trpos_x, trpos_y, trpos_z):
+            
+    if mem_name == "memA":
+        mem_idx = "mem_0"
+        mem_desc = "mem A"        
+    elif mem_name == "memB":
+        mem_idx = "mem_1"
+        mem_desc = "mem B"
+    else:
+        return
+    
+    OCV.WK_mems[mem_idx] = [trpos_x, trpos_y, trpos_z, 1, mem_desc]
+    wid = OCV.TK_CONTROL.nametowidget(mem_name)
+
+    wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
+        mem_name, trpos_x, trpos_y, trpos_z)
+
+    tkExtra.Balloon.set(wid, wdata)
+    wid.configure(background="aquamarine")
+
+
 
 class DROFrame(CNCRibbon.PageFrame):
     """DRO Frame"""
@@ -1317,20 +1338,32 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         """manage the click on "M2A" and "M2B" buttons
         """
         mem_num = Utils.ask_for_value(OCV.TK_MAIN, "MN")
-        
-        print("Mem number = ", mem_num)
+        mem_key = "mem_{0}".format(mem_num)
 
-        print("Obj >>", obj)
+        mpos_x = OCV.WK_mems[mem_key][0]
+        mpos_y = OCV.WK_mems[mem_key][1]
+        mpos_z = OCV.WK_mems[mem_key][2]
+
+        wcs_ox = OCV.CD["wcox"]
+        wcs_oy = OCV.CD["wcoy"]
+        wcs_oz = OCV.CD["wcoz"]
+                
+        trpos_x = mpos_x - wcs_ox
+        trpos_y = mpos_y - wcs_oy
+        trpos_z = mpos_z - wcs_oz
+
+        print("Mem number = ", mem_num)
+        print("mem pos = {} {} {}".format(mpos_x, mpos_y, mpos_z))
+        print("Zero Offset = {} {} {}".format(wcs_ox, wcs_oy, wcs_oz))
+        print("Dest pos = {} {} {}".format(trpos_x, trpos_y, trpos_z))
         
+            
         if obj == "MA":
-            pass
+            write_memAB("memA", trpos_x, trpos_y, trpos_z)
         elif obj == "MB":
-            pass
+            write_memAB("memB", trpos_x, trpos_y, trpos_z)
         else:
            return
-
-    
-
 
     def select_bank(self, mem_bank):
         """actions to select a memory bank"""
