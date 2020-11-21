@@ -1,3 +1,27 @@
-This is the help file: <br>
+<h2 style="color: blue; text-align: center"> OKKCNC Help File </h2>
+</br>
+
+<p>mainly forked from bCNC but some improvement are made
 
 
+TRhis help text is using tkhtmlview to permit a good visualization
+
+ https://github.com/bauripalash/tkhtmlview/
+ 
+
+<p> the improvements are:
+
+ <ul>
+  <li> <a href="#section2">Go to Section 2</a></li>
+  <li>Memory buttons are added to permit some posiziotn memorization:
+
+Left Click on the memory button will make a jog to this position
+Right Click on tthe memory button permit to store the position in this memory
+and to add some meaningful descriptor to the button and canvas marker tooltips</li>
+
+
+  <li>Milk</li>
+</ul> 
+<h3>CAM buttons</h3>
+<a name="section2"> </a> 
+some CAM buttons in the jog window, to do simple operation using two memorized position.

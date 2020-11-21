@@ -616,11 +616,10 @@ class Application(Tk.Toplevel, Sender):
 
     def help_box(self, event=None):
         """Show an help box as an Html Window
-            using the content in OKKCBC,help file"""
-        h_win = Utils.TEditorWindow(OCV.TK_MAIN,0)
+            using the content in OKKCBC.help file"""
+        h_win = Utils.HTMLWindow(OCV.TK_MAIN)
         h_win.open_file(OCV.HELP_FILE)
         h_win.set_title("Help")
-        h_win.fileName['text'] = ""        
 
     def closeFunc(self, event=None):
         """Calls destroy in Main Window"""

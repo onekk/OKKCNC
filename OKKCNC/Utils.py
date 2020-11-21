@@ -66,6 +66,7 @@ import IniFile
 import Ribbon
 import tkExtra
 
+import tkhtmlview
 
 '''
 class Config(object):
@@ -994,6 +995,47 @@ class MOPWindow(Tk.Toplevel):
     def exit_mop(self, event, tipo):
         self.destroy()
 
+class HTMLWindow(Tk.Toplevel):
+    """Simple HTML Window using """
+
+    def __init__(self, master):
+        super().__init__(master)
+        super().minsize(300,100)
+        super().title("HTML Window")
+        self.transient(master)
+        
+        self.columnconfigure(0, weight=1, minsize=180)
+        self.rowconfigure(0, weight=1)
+        
+        self.htmlwin = tkhtmlview.HTMLScrolledText(self)
+        
+        self.htmlwin.grid(
+            row=0, column=0,
+            padx=5, pady=5, sticky="nsew")
+
+    def set_title(self, title):
+        super().title(title)
+    
+    def open_file(self, filename=""):
+        """Open a file for editing."""
+
+        if filename == "":
+            filepath = askopenfilename(
+                filetypes=[("html Files", "*.html"), ("All Files", "*.*")]
+            )
+            if not filepath:
+                return
+            
+            self.htmlwin.delete(1.0, Tk.END)
+        else:
+            filepath = filename
+
+        with open(filepath, "r") as input_file:
+            text = input_file.read()
+        
+        self.htmlwin.set_html(text)
+
+
 class TEditorWindow(Tk.Toplevel):
     """Simple Editor Window"""
 
@@ -1112,4 +1154,3 @@ class TEditorWindow(Tk.Toplevel):
             text = self.txt_edit.get(1.0, Tk.END)
             output_file.write(text)
         self.FileName['text'] = f"File: {filepath} Saved"
-
