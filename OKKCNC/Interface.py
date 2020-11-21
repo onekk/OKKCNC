@@ -560,7 +560,6 @@ def showUserFile():
     TEditor = Utils.TEditorWindow(OCV.TK_MAIN, 0)
     TEditor.parse_ini(OCV.USER_CONFIG)
     TEditor.txt_edit['state'] = 'disabled' # or 'normal'
-    
 
 def checkUpdates():
     """Check for updates"""
@@ -568,27 +567,29 @@ def checkUpdates():
     # Updates.CheckUpdateDialog(self, OCV.PRG_VER)
     pass
 
-def write_memAB(mem_name, trpos_x, trpos_y, trpos_z):
+def write_memAB(mem_name, pos_x, pos_y, pos_z):
             
     if mem_name == "memA":
+        OCV.WK_mem = 0  # 0 = memA
         mem_idx = "mem_0"
         mem_desc = "mem A"        
     elif mem_name == "memB":
+        OCV.WK_mem = 1  # 1 = memB        
         mem_idx = "mem_1"
         mem_desc = "mem B"
     else:
         return
     
-    OCV.WK_mems[mem_idx] = [trpos_x, trpos_y, trpos_z, 1, mem_desc]
+    OCV.WK_mems[mem_idx] = [pos_x, pos_y, pos_z, 1, mem_desc]
     wid = OCV.TK_CONTROL.nametowidget(mem_name)
 
     wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
-        mem_name, trpos_x, trpos_y, trpos_z)
+        mem_name, pos_x, pos_y, pos_z)
 
     tkExtra.Balloon.set(wid, wdata)
     wid.configure(background="aquamarine")
-
-
+            
+    OCV.TK_MAIN.event_generate("<<SetMem>>")
 
 class DROFrame(CNCRibbon.PageFrame):
     """DRO Frame"""
@@ -1356,7 +1357,6 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         print("mem pos = {} {} {}".format(mpos_x, mpos_y, mpos_z))
         print("Zero Offset = {} {} {}".format(wcs_ox, wcs_oy, wcs_oz))
         print("Dest pos = {} {} {}".format(trpos_x, trpos_y, trpos_z))
-        
             
         if obj == "MA":
             write_memAB("memA", trpos_x, trpos_y, trpos_z)
@@ -1417,7 +1417,7 @@ class MemoryGroup(CNCRibbon.ButtonMenuGroup):
         if b_check > 0:
             # reset the button state
             but_name = "but_m_{0}".format(mem_num - OCV.WK_bank_start)
-            label = "M_{0}".format(mem_num)
+            label = "M_{0:02d}".format(mem_num)
 
             # print("clr_mem but_name > ", but_name)
 

@@ -523,23 +523,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         coordinate values are kept in WCS
         """
         if OCV.c_state == "Idle":
-            print("mem_A 1st")
-            pos_x = OCV.CD["wx"]
-            pos_y = OCV.CD["wy"]
-            pos_z = OCV.CD["wz"]
-            OCV.WK_mem = 0  # 1= memB
-
-            mem_name = "memA"
-            OCV.WK_mems["mem_0"] = [pos_x, pos_y, pos_z, 1, "mem A"]
-            wid = self.nametowidget(mem_name)
-
-            wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
-                mem_name, pos_x, pos_y, pos_z)
-
-            tkExtra.Balloon.set(wid, wdata)
-            wid.configure(background="aquamarine")
-
-            self.event_generate("<<SetMem>>")
+            Interface.write_memAB(
+                "memA", OCV.CD["wx"], OCV.CD["wy"], OCV.CD["wz"])
         else:
             pass
 
@@ -549,22 +534,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         coordinate values are kept in WCS
         """
         if OCV.c_state == "Idle":
-            pos_x = OCV.CD["wx"]
-            pos_y = OCV.CD["wy"]
-            pos_z = OCV.CD["wz"]
-            OCV.WK_mem = 1  # 1= memB
-
-            mem_name = "memB"
-            OCV.WK_mems["mem_1"] = [pos_x, pos_y, pos_z, 1, "mem B"]
-            wid = self.nametowidget(mem_name)
-
-            wdata = "{0} = \nX: {1:f} \nY: {2:f} \nZ: {3:f}".format(
-                mem_name, pos_x, pos_y, pos_z)
-
-            tkExtra.Balloon.set(wid, wdata)
-            wid.configure(background="aquamarine")
-
-            self.event_generate("<<SetMem>>")
+            Interface.write_memAB(
+                "memB", OCV.CD["wx"], OCV.CD["wy"], OCV.CD["wz"])
         else:
             pass
 
