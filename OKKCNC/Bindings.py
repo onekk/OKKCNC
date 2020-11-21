@@ -53,8 +53,8 @@ class Bindings():
         OCV.TK_MAIN.bind('<<Recent8>>', OCV.TK_MAIN._loadRecent8)
         OCV.TK_MAIN.bind('<<Recent9>>', OCV.TK_MAIN._loadRecent9)
         OCV.TK_MAIN.bind('<<AlarmClear>>', OCV.TK_MAIN.alarmClear)
-        OCV.TK_MAIN.bind('<<About>>', OCV.TK_MAIN.about)
-        OCV.TK_MAIN.bind('<<Help>>', OCV.TK_MAIN.help)        
+        OCV.TK_MAIN.bind('<<About>>', OCV.TK_MAIN.about_box)
+        OCV.TK_MAIN.bind('<<Help>>', OCV.TK_MAIN.help_box)        
 
 
         OCV.TK_MAIN.bind('<FocusIn>', OCV.TK_MAIN.focus_in)

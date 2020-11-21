@@ -214,73 +214,64 @@ def set_predefined_steps():
     """set pre defined steps used in ControlPage"""
     # Predefined XY steppings
     try:
-        OCV.step1 = IniFile.get_float("Control", "step1")
+        OCV.psxy1 = IniFile.get_float("Control", "psxy1")
     except Exception:
-        OCV.step1 = 1.0
+        OCV.psxy1 = 1.0
 
     try:
-        OCV.step2 = IniFile.get_float("Control", "step2")
+        OCV.psxy2 = IniFile.get_float("Control", "psxy2")
     except Exception:
-        OCV.step2 = 1.0
+        OCV.psxy2 = 1.0
 
     try:
-        OCV.step3 = IniFile.get_float("Control", "step3")
+        OCV.psxy3 = IniFile.get_float("Control", "psxy3")
     except Exception:
-        OCV.step3 = 10.0
+        OCV.psxy3 = 10.0
 
     try:
-        OCV.step4 = IniFile.get_float("Control", "step4")
+        OCV.psxy4 = IniFile.get_float("Control", "psxy4")
     except Exception:
-        OCV.step4 = 90.0
+        OCV.psxy4 = 90.0
 
     # Predefined Z steppings
     try:
-        OCV.zstep1 = IniFile.get_float("Control", "zstep1")
+        OCV.psz1 = IniFile.get_float("Control", "psz1")
     except Exception:
-        OCV.zstep1 = 0.1
+        OCV.psz1 = 0.1
 
     try:
-        OCV.zstep2 = IniFile.get_float("Control", "zstep2")
+        OCV.psz2 = IniFile.get_float("Control", "psz2")
     except Exception:
-        OCV.zstep2 = 1.0
+        OCV.psz2 = 1.0
 
     try:
-        OCV.zstep3 = IniFile.get_float("Control", "zstep3")
+        OCV.psz3 = IniFile.get_float("Control", "psz3")
     except Exception:
-        OCV.zstep3 = 5.0
+        OCV.psz3 = 5.0
 
     try:
-        OCV.zstep4 = IniFile.get_float("Control", "zstep4")
+        OCV.psz4 = IniFile.get_float("Control", "psz4")
     except Exception:
-        OCV.zstep4 = 10.0
+        OCV.psz4 = 10.0
 
 
 def populate_cyclelist():
     """populate steplists with OCV.step(n) values"""
     # Predefined XY steppings
-    OCV.pslist_xy = [OCV.step1, OCV.step2, OCV.step3, OCV.step4]
-    OCV.pslist_z = [OCV.zstep1, OCV.zstep2, OCV.zstep3, OCV.zstep4]
+    OCV.pslist_xy = [OCV.psxy1, OCV.psxy2, OCV.psxy3, OCV.psxy4]
+    OCV.pslist_z = [OCV.psz1, OCV.psz2, OCV.psz3, OCV.psz4]
 
 
 def set_steps():
-    """Set steps and determine if steps are in predefined list
-    if a value is near a predefined step set the correposnding
-    steplist index else leave it to 0"""
+    """Set steps and predefined steps"""
     set_predefined_steps()
     populate_cyclelist()
     # retrieve step from config file.
-    OCV.stepxy = float(OCV.config.get("Control", "step"))
+    OCV.stepxy = float(OCV.config.get("Control", "xystep"))
     OCV.stepz = float(OCV.config.get("Control", "zstep"))
     
-    for idx, val in enumerate(OCV.pslist_xy):
-        distance = abs(OCV.stepxy - val)
-        if distance < 1:
-            OCV.pstep_xy = idx
-        
-    for idx, val in enumerate(OCV.pslist_z):
-        distance = abs(OCV.stepz - val)
-        if distance < 1:
-            OCV.pstep_z = idx
+    OCV.pstep_xy = int(OCV.config.get("Control", "xystep_idx"))
+    OCV.pstep_z = int(OCV.config.get("Control", "zstep_idx"))
  
 def populate_tooltable():
     """Popultae tooltable list for use with CAM Buttons
@@ -1063,6 +1054,8 @@ class TEditorWindow(Tk.Toplevel):
         self.fileName = Tk.Label(self.frame)
         self.fileName.grid(row=0, column=1, sticky="ew")
 
+    def set_title(self, title):
+        super().title(title)
     
     def open_file(self, filename=""):
         """Open a file for editing."""

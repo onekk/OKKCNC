@@ -610,9 +610,17 @@ class Application(Tk.Toplevel, Sender):
         """Add Undoinfo to gcode"""
         self.gcode.addUndo(undoinfo)
 
-    def about(self, event=None, timer=None):
+    def about_box(self, event=None, timer=None):
         """About Window"""
         Utils.about_win(timer)
+
+    def help_box(self, event=None):
+        """Show an help box as an Html Window
+            using the content in OKKCBC,help file"""
+        h_win = Utils.TEditorWindow(OCV.TK_MAIN,0)
+        h_win.open_file(OCV.HELP_FILE)
+        h_win.set_title("Help")
+        h_win.fileName['text'] = ""        
 
     def closeFunc(self, event=None):
         """Calls destroy in Main Window"""
@@ -2039,6 +2047,12 @@ class Application(Tk.Toplevel, Sender):
     def load_main_config(self):
         """Load initial config parameters from ini file"""
 
+        # Check version of inifile
+        if IniFile.get_str(OCV.PRG_NAME,"conf_ver","") != OCV.CONF_VER:
+            print("Warning!!! Configuration file mismatch")
+        else:
+            print("Configuration File Version OK")
+
         if OCV.geometry is None:
             OCV.geometry = "{0:d}x{1:d}".format(
                 IniFile.get_int(OCV.PRG_NAME, "width", 900),
@@ -2053,11 +2067,6 @@ class Application(Tk.Toplevel, Sender):
             self.wm_state(IniFile.get_str(OCV.PRG_NAME, "windowstate", "normal"))
         except:
             pass
-
-        if IniFile.get_str(OCV.PRG_NAME,"conf_ver","") != OCV.CONF_VER:
-            print("Warning!!! Configuration file mismatch")
-        else:
-            print("Configuration File Version OK")
 
         # read Tk fonts to initialize them
         font = Utils.get_font("TkDefaultFont")
@@ -2106,6 +2115,7 @@ class Application(Tk.Toplevel, Sender):
 
         self.tools.saveConfig()
         OCV.TK_CANVAS_F.saveConfig()
+        OCV.TK_CONTROL.saveConfig()
         IniFile.save_command_history()
         IniFile.save_memories()
 

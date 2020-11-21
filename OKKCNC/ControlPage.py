@@ -69,8 +69,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         Utils.set_steps()
         Utils.populate_tooltable()
-       
-
+      
         row = 0
 
         self.zstep = tkExtra.Combobox(
@@ -84,53 +83,53 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.step1),
-            name="step_1",
+            text="{0}".format(OCV.psxy1),
+            name="psxy_1",
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=4, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S1"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S1"))
-        bal_text = _("Step1 = {0}").format(OCV.step1)
+        bal_text = _("Step1 = {0}").format(OCV.psxy1)
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.step2),
-            name="step_2",
+            text="{0}".format(OCV.psxy2),
+            name="psxy_2",
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=7, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S2"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S2"))
-        bal_text = _("Step2 = {0}").format(OCV.step2)
+        bal_text = _("Step2 = {0}").format(OCV.psxy2)
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.step3),
-            name="step_3",
+            text="{0}".format(OCV.psxy3),
+            name="psxy_3",
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=10, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S3"))        
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S3"))
-        bal_text = _("Step3 = {0}").format(OCV.step3)
+        bal_text = _("Step3 = {0}").format(OCV.psxy3)
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
  
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.step4),
-            name="step_4",
+            text="{0}".format(OCV.psxy4),
+            name="psxy_4",
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=13, columnspan=3, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("S4"))        
         but.bind("<Button-3>", lambda event: self.edit_pre_step("S4"))
-        bal_text = _("Step4 = {0}").format(OCV.step4)
+        bal_text = _("Step4 = {0}").format(OCV.psxy4)
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
         row = 1
@@ -247,29 +246,29 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.zstep1),
-            name="zstep_1",
+            text="{0}".format(OCV.psz1),
+            name="psz1",
             font=z_step_font,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=0, columnspan=1, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("ZS1"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS1"))
-        bal_text = _("Z Step1 = {0}".format(OCV.zstep1))
+        bal_text = _("Z Step1 = {0}".format(OCV.psz1))
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.zstep2),
-            name="zstep_2",
+            text="{0}".format(OCV.psz2),
+            name="psz2",
             font=z_step_font,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("ZS2"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS2"))
-        bal_text = _("Z Step2 = {0}".format(OCV.zstep2))
+        bal_text = _("Z Step2 = {0}".format(OCV.psz2))
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
@@ -317,8 +316,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.zstep3),
-            name="zstep_3",
+            text="{0}".format(OCV.psz3),
+            name="psz3",
             font=z_step_font,
             width=2,
             padx=1, pady=1)
@@ -326,7 +325,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but.bind("<Button-1>", lambda event: self.apply_preset("ZS3"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS3"))
 
-        bal_text = _("Z Step3 = {0}".format(OCV.zstep3))
+        bal_text = _("Z Step3 = {0}".format(OCV.psz3))
 
         tkExtra.Balloon.set(but, bal_text)
 
@@ -334,15 +333,15 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         but = Tk.Button(
             self,
-            text="{0}".format(OCV.zstep4),
-            name="zstep_4",
+            text="{0}".format(OCV.psz4),
+            name="psz4",
             font=z_step_font,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
         but.bind("<Button-1>", lambda event: self.apply_preset("ZS4"))
         but.bind("<Button-3>", lambda event: self.edit_pre_step("ZS4"))
-        bal_text = _("Z Step4 = {0}".format(OCV.zstep4))
+        bal_text = _("Z Step4 = {0}".format(OCV.psz4))
         tkExtra.Balloon.set(but, bal_text)
         self.addWidget(but)
 
@@ -493,10 +492,6 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self.tk.call("grid", "anchor", self, Tk.CENTER)
         except Tk.TclError:
             pass
-
-    def saveConfig(self):
-        IniFile.set_value("Control", "step", OCV.stepxy)
-        IniFile.set_value("Control", "zstep", OCV.stepz)
       
     def reset_all(self):
         """reset all thing related to cam operation and memory
@@ -751,22 +746,22 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         #print("event {0} preset triggered".format(caller))
         if caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
             if caller == "ZS1":            
-                self.set_step_view(OCV.stepxy, OCV.zstep1)
+                self.set_step_view(OCV.stepxy, OCV.psz1)
             elif caller == "ZS2":            
-                self.set_step_view(OCV.stepxy, OCV.zstep2)
+                self.set_step_view(OCV.stepxy, OCV.psz2)
             elif caller == "ZS3":            
-                self.set_step_view(OCV.stepxy, OCV.zstep3)
+                self.set_step_view(OCV.stepxy, OCV.psz3)
             elif caller == "ZS4":            
-                self.set_step_view(OCV.stepxy, OCV.zstep4)
+                self.set_step_view(OCV.stepxy, OCV.psz4)
         elif caller in ("S1", "S2", "S3", "S4"):
             if caller == "S1":            
-                self.set_step_view(OCV.step1, OCV.stepz)
+                self.set_step_view(OCV.psxy1, OCV.stepz)
             elif caller == "S2":            
-                self.set_step_view(OCV.step2, OCV.stepz)
+                self.set_step_view(OCV.psxy2, OCV.stepz)
             elif caller == "S3":            
-                self.set_step_view(OCV.step3, OCV.stepz)
+                self.set_step_view(OCV.psxy3, OCV.stepz)
             elif caller == "S4":            
-                self.set_step_view(OCV.step4, OCV.stepz)
+                self.set_step_view(OCV.psxy4, OCV.stepz)
                     
 
     def edit_pre_step(self, caller):
@@ -785,48 +780,48 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
 
         if caller in ("S1", "S2", "S3", "S4"):
             if caller == "S1":
-                wid = self.nametowidget("step_1")
-                OCV.step1 = retval
-                bal_text = "Step1 = {0}".format(OCV.step1)
-                IniFile.set_value("Control", "step1", retval)
+                wid = self.nametowidget("psxy_1")
+                OCV.psxy1 = retval
+                bal_text = "Step1 = {0}".format(OCV.psxy1)
+                IniFile.set_value("Control", "psxy1", retval)
             elif caller == "S2":
-                wid = self.nametowidget("step_2")
-                OCV.step2 = retval
-                bal_text = "Step2 = {0}".format(OCV.step2)
-                IniFile.set_value("Control", "step2", retval)
+                wid = self.nametowidget("psxy_2")
+                OCV.psxy2 = retval
+                bal_text = "Step2 = {0}".format(OCV.psxy2)
+                IniFile.set_value("Control", "psxy2", retval)
             elif caller == "S3":
-                wid = self.nametowidget("step_3")
-                OCV.step3 = retval
-                IniFile.set_value("Control", "step3", retval)
-                bal_text = "Step3 = {0}".format(OCV.step3)
+                wid = self.nametowidget("psxy_3")
+                OCV.psxy3 = retval
+                IniFile.set_value("Control", "psxy3", retval)
+                bal_text = "Step3 = {0}".format(OCV.psxy3)
             elif caller == "S4":
-                wid = self.nametowidget("step_4")
-                OCV.step4 = retval
-                IniFile.set_value("Control", "step4", retval)
-                bal_text = "Step4 = {0}".format(OCV.step4)
+                wid = self.nametowidget("psxy_4")
+                OCV.psxy4 = retval
+                IniFile.set_value("Control", "psxy4", retval)
+                bal_text = "Step4 = {0}".format(OCV.psxy4)
 
 
         elif caller in ("ZS1", "ZS2", "ZS3", "ZS4"):
             if caller == "ZS1":
-                wid = self.nametowidget("zstep_1")
-                OCV.zstep1 = retval
-                bal_text = "Zstep1 = {0}".format(OCV.zstep1)
-                IniFile.set_value("Control", "zstep1", retval)
+                wid = self.nametowidget("psz1")
+                OCV.psz1 = retval
+                bal_text = "pred Z n1 = {0}".format(OCV.psz1)
+                IniFile.set_value("Control", "psz1", retval)
             elif caller == "ZS2":
-                wid = self.nametowidget("zstep_2")
-                OCV.zstep2 = retval
-                bal_text = "Zstep2 = {0}".format(OCV.zstep2)
-                IniFile.set_value("Control", "zstep2", retval)
+                wid = self.nametowidget("psz2")
+                OCV.psz2 = retval
+                bal_text = "pred Z n2 = {0}".format(OCV.psz2)
+                IniFile.set_value("Control", "psz2", retval)
             elif caller == "ZS3":
-                wid = self.nametowidget("zstep_3")
-                OCV.zstep3 = retval
-                bal_text = "Zstep2 = {0}".format(OCV.zstep3)
-                IniFile.set_value("Control", "zstep3", retval)
+                wid = self.nametowidget("psz3")
+                OCV.psz3 = retval
+                bal_text = "pred Z n3 = {0}".format(OCV.psz3)
+                IniFile.set_value("Control", "psz3", retval)
             elif caller == "ZS4":
-                wid = self.nametowidget("zstep_4")
-                OCV.zstep4 = retval
-                bal_text = "Zstep4 = {0}".format(OCV.zstep4)
-                IniFile.set_value("Control", "zstep4", retval)
+                wid = self.nametowidget("psz4")
+                OCV.psz4 = retval
+                bal_text = "pred Z n4 = {0}".format(OCV.psz4)
+                IniFile.set_value("Control", "psz4", retval)
         
         Utils.populate_cyclelist()
         
@@ -834,6 +829,13 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             wid.configure(text=retval)
             tkExtra.Balloon.set(wid, bal_text)
 
+    @staticmethod
+    def saveConfig():
+        """Save data on Config file, load is done in Utils.set_steps()"""
+        IniFile.set_value("Control", "xystep", OCV.stepxy)
+        IniFile.set_value("Control", "zstep", OCV.stepz)
+        IniFile.set_value("Control", "zstep_idx", OCV.pstep_z)
+        IniFile.set_value("Control", "xystep_idx", OCV.pstep_xy)
 
 class ControlPage(CNCRibbon.Page):
     """Control Page"""

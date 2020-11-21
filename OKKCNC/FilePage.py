@@ -190,7 +190,7 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
             text=_("About"),
             image=OCV.icons["about"],
             compound=Tk.LEFT,
-            command=OCV.TK_MAIN.about,
+            command=OCV.TK_MAIN.about_box,
             anchor=Tk.W,
             background=OCV.COLOR_BACKGROUND)
 

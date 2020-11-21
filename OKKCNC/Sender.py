@@ -321,10 +321,6 @@ class Sender(object):
         else:
             return _("unknown command"), _("Invalid command {0}").format(oline)
 
-    def help(self, event=None):
-        pass
-        # webbrowser.open(WIKI,new=2)
-
     def loadRecent(self, recent):
         filename = IniFile.get_recent_file(recent)
 

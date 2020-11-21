@@ -29,7 +29,7 @@ PRG_NAME = "OKKCNC"
 """version and date"""
 PRG_VER = "0.3.38-t1"
 PRG_DATE = "02 nov 2020"
-CONF_VER = "1.0"
+CONF_VER = "1.1"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
 PRG_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -87,6 +87,8 @@ else:
 SYS_CONFIG = os.path.join(PRG_PATH, "{0}.ini".format(PRG_NAME))
 USER_CONFIG = os.path.join(CONF_DIR, U_CONF_NAME)
 COM_HIST_FILE = os.path.join(CONF_DIR, U_HIST_NAME)
+HELP_FILE = os.path.join(PRG_PATH, "OKKCNC.help")
+
 
 if os.path.isfile(USER_CONFIG):
     print("User configuration file: {}".format(USER_CONFIG))
@@ -454,12 +456,24 @@ PRG_SITE = "https://github.com/onekk/OKKCNC"
 PRG_TRANS = \
     "Italian - @onekk\n" # \ for continuation
 
+
+pslist_xy = []
+pslist_z= []
 # positional index for the step cycling xy
 pstep_xy = 0
 # positional index for the step cycling z
 pstep_z = 0
-pslist_xy = []
-pslist_z= []
+# Z predefined steps
+psz1 = 0.0
+psz2 = 0.0
+psz3 = 0.0
+psz4 = 0.0
+# XY predefined steps
+psxy1 = 0.0
+psxy2 = 0.0
+psxy3 = 0.0
+psxy4 = 0.0
+
 
 #--- R #
 #--- Regular expressions
@@ -504,12 +518,9 @@ STATECOLOR = {
     STATE_NOT_CONN: "OrangeRed",
     "Default": "LightYellow"}
 stdexpr = False  # standard way of defining expressions with []
-step1 = 0.0
-step2 = 0.0
-step3 = 0.0
-step4 = 0.0
 stepxy = 0.0
 stepz = 0.0
+
 #
 str_sep = "-"*78
 str_pad = "-" + " "*76 + "-"
@@ -584,10 +595,7 @@ UNITS = {
     "G21": "mm"}
 
 #--- Z #
-zstep1 = 0.0
-zstep2 = 0.0
-zstep3 = 0.0
-zstep4 = 0.0
+
 
 #--- W #
 WCS = ["G54", "G55", "G56", "G57", "G58", "G59"]
@@ -615,14 +623,19 @@ WK_mem = 0  # pass memory number across the different program part
 WK_mem_name = ""  # pass memory name across the different program part
 
 """
-    dictionary containing memories data
     WK_mems[mem_name] = [mx,my,mz, set, desc]
-    where mem_name a string like mem_N with N 0 > N < 49
-    set is a flag 0 mem non set (used to inactivate a memory)
-    desc is the memory name in tooltips (button and canvas)
-    mem_0 is mem_A and mem_1 is mem_B and are treated in a special way
-    they are working memories and not saved in the user file
-    memories are saved in the configuration file <TODO>
+    dictionary containing memories data
+      mem_name = dictionary key defined as string
+                 mem_N with N 0 > N < [(Wk_bank_max + 1) * Wk_bank_mem] + 1
+                 so with bank_max = 3 and bank_mem = 9 is [4 * 9] + 1 = 37 
+      set    = flag 0 mem non set (used to inactivate a memory)
+      desc   = memory description shown in tooltips (button and canvas)
+   
+    memory positions are kept in MCS (Machine Coordinates)
+    
+    mem_0 is mem_A and mem_1 is mem_B these memories are special ones
+    position values are kept in WCS (Working coordinates, 
+    as they are used to calculate GCode commands in WCS plane
 """
 WK_mems = {}
 WK_mem_num = 0
