@@ -73,7 +73,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         row = 0
 
         self.zstep = tkExtra.Combobox(
-            self, width=4, background="White", command=self.set_z_fromcb)
+            self, width=4, background=OCV.COLOR_BG1,
+            command=self.set_z_fromcb)
         self.zstep.grid(row=row, column=0, columnspan=4, sticky=Tk.EW)
         self.zstep.fill(
             map(float, OCV.config.get("Control", "zsteplist").split()))
@@ -85,6 +86,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.psxy1),
             name="psxy_1",
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=4, columnspan=3, sticky=Tk.EW)
@@ -98,6 +100,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.psxy2),
             name="psxy_2",
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=7, columnspan=3, sticky=Tk.EW)
@@ -111,6 +114,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.psxy3),
             name="psxy_3",
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=10, columnspan=3, sticky=Tk.EW)
@@ -124,6 +128,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="{0}".format(OCV.psxy4),
             name="psxy_4",
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=13, columnspan=3, sticky=Tk.EW)
@@ -137,6 +142,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self, text="-",
             command=self.dec_z_step,
+            activebackground=OCV.COLOR_ACTIVE,
             padx=1, pady=1)
         but.grid(row=row, column=0, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Decrease zstep"))
@@ -145,6 +151,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self, text="+",
             command=self.inc_z_step,
+            activebackground=OCV.COLOR_ACTIVE,
             padx=1, pady=1)
         but.grid(row=row, column=1, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Increase zstep"))
@@ -155,6 +162,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text=u"\u00F75",
             command=self.div_step,
+            activebackground=OCV.COLOR_ACTIVE,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=4, columnspan=2, sticky=Tk.EW)
@@ -165,6 +173,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text=u"\u00D75",
             command=self.mul_step,
+            activebackground=OCV.COLOR_ACTIVE,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=6,columnspan=2, sticky=Tk.EW)
@@ -172,7 +181,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(but)
 
         self.step = tkExtra.Combobox(
-                self, width=6, background="White", command=self.set_xy_fromcb)
+                self, width=6, background=OCV.COLOR_BG1,
+                command=self.set_xy_fromcb)
         self.step.grid(row=row, column=8, columnspan=4, sticky=Tk.EW)
         self.step.fill(
             map(float, OCV.config.get("Control", "steplist").split()))
@@ -184,6 +194,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             self,
             text="<",
             command=self.dec_xy_step,
+            activebackground=OCV.COLOR_ACTIVE,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=12, columnspan=2, sticky=Tk.EW)
@@ -193,6 +204,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         but = Tk.Button(
             self, text=">",
             command=self.inc_xy_step,
+            activebackground=OCV.COLOR_ACTIVE,
             width=3,
             padx=1, pady=1)
         but.grid(row=row, column=14, columnspan=2, sticky=Tk.EW)
@@ -206,7 +218,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-ZUP>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +Z"))
         self.addWidget(but)
@@ -216,7 +228,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.UPPER_LEFT_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XDWYUP>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X +Y"))
@@ -227,7 +239,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_UP_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-YUP>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
         but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +Y"))
         self.addWidget(but)
@@ -237,7 +249,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.UPPER_RIGHT_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XYUP>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
         but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +X +Y"))
         self.addWidget(but)
@@ -249,6 +261,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.psz1),
             name="psz1",
             font=z_step_font,
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=0, columnspan=1, sticky=Tk.EW)
@@ -263,6 +276,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.psz2),
             name="psz2",
             font=z_step_font,
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
@@ -277,7 +291,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XDW>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
         but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X"))
         self.addWidget(but)
@@ -289,7 +303,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.LARGE_CIRCLE,
             command=self.go_to_origin,
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
 
@@ -304,7 +318,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XUP>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
 
@@ -319,6 +333,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.psz3),
             name="psz3",
             font=z_step_font,
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=0, columnspan=1, sticky=Tk.EW)
@@ -336,6 +351,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text="{0}".format(OCV.psz4),
             name="psz4",
             font=z_step_font,
+            activebackground=OCV.COLOR_ACTIVE,
             width=2,
             padx=1, pady=1)
         but.grid(row=row, column=1, columnspan=1, sticky=Tk.EW)
@@ -352,7 +368,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-ZDW>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
         but.grid(row=row, column=0, columnspan=2, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -Z"))
         self.addWidget(but)
@@ -362,7 +378,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.LOWER_LEFT_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XYDW>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=4, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -X -Y"))
@@ -373,7 +389,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-YDW>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=8, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move -Y"))
@@ -384,7 +400,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             text=Unicode.LOWER_RIGHT_TRIANGLE,
             command=lambda s=self: s.event_generate('<<JOG-XUPYDW>>'),
             width=b_width, height=b_height,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row, column=12, columnspan=4, rowspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Move +X -Y"))
@@ -402,8 +418,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.reset_all,
             width=3,
             padx=b_padx, pady=b_pady,
-            background="salmon",
-            activebackground="LightYellow")
+            background=OCV.COLOR_BG_WRN,
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=0, column=column, columnspan=2, rowspan=1, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Reset Gcode"))
@@ -416,8 +432,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.mem_a,
             width=3,
             padx=b_padx, pady=b_pady,
-            background="orchid1",
-            activebackground="LightYellow")
+            background=OCV.COLOR_MEM,
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=1, column=column, columnspan=2, rowspan=1, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Mem A"))
@@ -431,8 +447,8 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.mem_b,
             width=3,
             padx=b_padx, pady=b_pady,
-            background="orchid1",
-            activebackground="LightYellow")
+            background=OCV.COLOR_MEM,
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=2, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Mem B"))
@@ -445,7 +461,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.line,
             width=3,
             padx=b_padx, pady=b_pady,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=3, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Line from memA to memB"))
@@ -457,7 +473,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.pocket,
             width=3,
             padx=b_padx, pady=b_pady,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=4, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Rectangular Pocket from memA to memB"))
@@ -469,7 +485,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.ret_a,
             width=3,
             padx=b_padx, pady=b_pady,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=5, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Return to mem A"))
@@ -481,7 +497,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
             command=self.ret_b,
             width=3,
             padx=b_padx, pady=b_pady,
-            activebackground="LightYellow")
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=6, column=column, columnspan=2, sticky=Tk.EW)
         tkExtra.Balloon.set(but, _("Return to mem B"))
@@ -500,7 +516,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         self.event_generate("<<ClearEditor>>")
         wid = self.nametowidget("memA")
         tkExtra.Balloon.set(wid, "Empty")
-        wid.configure(background="orchid1")
+        wid.configure(background=OCV.COLOR_MEM)
 
         OCV.WK_mem = 0 # memA
         self.event_generate("<<ClrMem>>")
@@ -508,7 +524,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
         OCV.WK_mem = 1 # memB
         wid = self.nametowidget("memB")
         tkExtra.Balloon.set(wid, "Empty")
-        wid.configure(background="orchid1")
+        wid.configure(background=OCV.COLOR_MEM)
 
         self.event_generate("<<ClrMem>>")
 
@@ -570,7 +586,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                     mem_name, pos_x, pos_y, pos_z)
     
            tkExtra.Balloon.set(wid, wdata)
-           wid.configure(background="aquamarine")        
+           wid.configure(background=OCV.COLOR_MEM_SET)        
         
        # mem B
        if "mem_1" in OCV.WK_mems:
@@ -580,7 +596,7 @@ class ControlFrame(CNCRibbon.PageLabelFrame):
                    mem_name, pos_x, pos_y, pos_z)
     
            tkExtra.Balloon.set(wid, wdata)
-           wid.configure(background="aquamarine")        
+           wid.configure(background=OCV.COLOR_MEM_SET)        
     
 
     def line(self):

@@ -1,27 +1,58 @@
+<html>
+<body>
 <h2 style="color: blue; text-align: center"> OKKCNC Help File </h2>
 </br>
 
-<p>mainly forked from bCNC but some improvement are made
-
-
-TRhis help text is using tkhtmlview to permit a good visualization
+<p>It was forked from bCNC to do some improvements that were not accepted
+ upstream. </p>
+  
+<p>This help text is using tkhtmlview to permit a good visualization
 
  https://github.com/bauripalash/tkhtmlview/
- 
+ </p>
 
-<p> the improvements are:
+
+<p> The main reason to fork is the need of a more straight way to do some
+ operations in my (almost) everyday hobbyst use of CNC </p>
+ 
+<p>Most of the CAM plugins are not useful for me, as I use a proper CAM
+ software. </p>
+ 
+<p>Plus the interface to use the plugins are not very straightforward, so to 
+accomplish some task it is more quick to modify the relevant information
+in the CAM program, recreate GCode file and rerun the operation. </p>
+
+<p>In the "Tools" page only the <b>Stock</b>, <b>Material</b> and <b>EndMill</b>
+ databases are retained, more CAM operation could be added in future</p>
+ 
+<p>I don't think this is the "only correct way" to do something, it is
+ simply "my way" to do things.</p>
+
+
+<p> Main improvements are:
+
+<h3>CAM buttons</h3>
+Added some CAM buttons in the jog window, to do simple operation using two memorized position.
+
 
  <ul>
-  <li> <a href="#section2">Go to Section 2</a></li>
-  <li>Memory buttons are added to permit some posiziotn memorization:
+  <li> <b>RST</b> </li>
+  <li> <b>M2A</b> </li>
+  <li> <b>M2B</b> </li>
+  <li> <b>RMA</b> </li>  
+  <li> <b>RMB</b> </li>
 
+</ul>
+
+<h3>Memory buttons</h3>
 Left Click on the memory button will make a jog to this position
 Right Click on tthe memory button permit to store the position in this memory
 and to add some meaningful descriptor to the button and canvas marker tooltips</li>
 
+<h3>Many little improvements in the interface </h3>
+<p>The plugin mechanism is wiped out, some code is retained</p>
+<p>Optimisation is not active, but hte code is retained just in case</p>
 
-  <li>Milk</li>
-</ul> 
-<h3>CAM buttons</h3>
-<a name="section2"> </a> 
-some CAM buttons in the jog window, to do simple operation using two memorized position.
+
+</body>
+</html>

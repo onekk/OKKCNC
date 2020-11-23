@@ -38,7 +38,7 @@ class TerminalGroup(CNCRibbon.ButtonGroup):
             image=OCV.icons["clean32"],
             text=_("Clear"),
             compound=Tk.TOP,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.pack(fill=Tk.BOTH, expand=Tk.YES)
 
@@ -71,7 +71,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             state=state,
             command=OCV.TK_MCTRL.viewSettings,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(but, _("$$ Display settings of Grbl"))
@@ -87,7 +87,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.TK_MCTRL.viewParameters,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -102,7 +102,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.TK_MCTRL.viewState,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -121,7 +121,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.TK_MCTRL.viewBuild,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -139,7 +139,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             state=state,
             command=OCV.TK_MCTRL.viewStartup,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -158,7 +158,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             state=state,
             command=OCV.TK_MCTRL.checkGcode,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -177,7 +177,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=Tk.LEFT,
             anchor=Tk.W,
             command=OCV.TK_MCTRL.grblHelp,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=0, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -193,7 +193,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Error Help"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=1, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -204,7 +204,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Settings Help"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         but.grid(row=2, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -237,7 +237,7 @@ class TerminalFrame(CNCRibbon.PageFrame):
 
         OCV.TK_TERMBUF = Tk.Listbox(
             self,
-            background="LightYellow",
+            background=OCV.COLOR_BG3,
             selectmode=Tk.EXTENDED,
             height=5)
 

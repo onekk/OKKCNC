@@ -554,9 +554,9 @@ class Application(Tk.Toplevel, Sender):
         """Enable Widget"""
         self.configWidgets("state", Tk.NORMAL)
         OCV.TK_STATUSBAR.clear()
-        OCV.TK_STATUSBAR.config(background="LightGray")
+        OCV.TK_STATUSBAR.config(background=OCV.COLOR_BG)
         OCV.TK_BUFFERBAR.clear()
-        OCV.TK_BUFFERBAR.config(background="LightGray")
+        OCV.TK_BUFFERBAR.config(background=OCV.COLOR_BG)
         OCV.TK_BUFFERBAR.setText("")
 
     def disable(self):
@@ -1742,10 +1742,10 @@ class Application(Tk.Toplevel, Sender):
 
         OCV.TK_STATUSBAR.setLimits(0, self._runLines)
         OCV.TK_STATUSBAR.configText(fill="White")
-        OCV.TK_STATUSBAR.config(background="DarkGray")
+        OCV.TK_STATUSBAR.config(background=COLOR_BG_RUN)
 
         OCV.TK_BUFFERBAR.configText(fill="White")
-        OCV.TK_BUFFERBAR.config(background="DarkGray")
+        OCV.TK_BUFFERBAR.config(background=COLOR_BG_RUN)
         OCV.TK_BUFFERBAR.setText("")
 
     #--- Web Pendant
@@ -1792,8 +1792,8 @@ class Application(Tk.Toplevel, Sender):
             self.close()
             serialPage.connectBtn.config(
                 text=_("Open"),
-                background="Salmon",
-                activebackground="Salmon")
+                background=OCV.COLOR_BG_WRN,
+                activebackground=OCV.COLOR_BG_WRN)
             OCV.serial_open = False
         else:
             serialPage = Page.frames["Serial"]
@@ -1803,8 +1803,8 @@ class Application(Tk.Toplevel, Sender):
                 OCV.serial_open = True
                 serialPage.connectBtn.config(
                     text=_("Close"),
-                    background="LightGreen",
-                    activebackground="LightGreen")
+                    background=OCV.COLOR_BG_SAFE,
+                    activebackground=OCV.COLOR_BG_SAFE)
                 self.enable()
 
     def device_open(self, device, baudrate):

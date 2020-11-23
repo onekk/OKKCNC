@@ -393,12 +393,12 @@ class CNCCanvas(Tk.Canvas, object):
 
     def setActionGantry(self, event=None):
         self.setAction(ACTION_GANTRY)
-        self.config(background="seashell")
+        self.config(background=OCV.COLOR_ACTION_GANTRY)
         self.status(_("Move CNC gantry to mouse location"))
 
     def setActionWPOS(self, event=None):
         self.setAction(ACTION_WPOS)
-        self.config(background="ivory")
+        self.config(background=OCV.COLOR_ACTION_WPOS)
         self.status(_("Set mouse location as current machine position (X/Y only)"))
 
     def setActionRuler(self, event=None):
@@ -2269,9 +2269,12 @@ class CanvasFrame(Tk.Frame):
 
         self.view.trace('w', self.viewChange)
 
-        self.canvas = CNCCanvas(self, app, takefocus=True, background="White")
+        self.canvas = CNCCanvas(
+            self, app, takefocus=True,
+            background=OCV.COLOR_CANVAS)
 
-        print("self.canvas.winfo_id(): {0}".format(self.canvas.winfo_id())) #OpenGL context
+        #OpenGL context
+        #print("self.canvas.winfo_id(): {0}".format(self.canvas.winfo_id()))
 
         self.canvas.grid(row=1, column=0, sticky=Tk.NSEW)
 
@@ -2295,12 +2298,10 @@ class CanvasFrame(Tk.Frame):
 
 
     def createCanvasToolbar(self, toolbar):
-        """
-                Canvas toolbar
-        """
+        """Canvas toolbar"""
 
         obj = Tk.OptionMenu(toolbar, self.view, *VIEWS)
-        obj.config(padx=0, pady=1)
+        obj.config(activebackground=OCV.COLOR_ACTIVE, padx=0, pady=1)
         obj.unbind("F10")
         obj.pack(side=Tk.LEFT)
 
@@ -2309,6 +2310,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Button(
             toolbar,
             image=OCV.icons["zoom_in"],
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.menuZoomIn)
 
         tkExtra.Balloon.set(but, _("Zoom In [Ctrl-=]"))
@@ -2318,6 +2320,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Button(
             toolbar,
             image=OCV.icons["zoom_out"],
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.menuZoomOut)
 
         tkExtra.Balloon.set(but, _("Zoom Out [Ctrl--]"))
@@ -2327,6 +2330,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Button(
             toolbar,
             image=OCV.icons["zoom_on"],
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.fit2Screen)
 
         tkExtra.Balloon.set(but, _("Fit to screen [F]"))
@@ -2349,6 +2353,7 @@ class CanvasFrame(Tk.Frame):
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_SELECT,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.setActionSelect)
 
         tkExtra.Balloon.set(but, _("Select tool [S]"))
@@ -2363,6 +2368,7 @@ class CanvasFrame(Tk.Frame):
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_PAN,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.setActionPan)
 
         tkExtra.Balloon.set(but, _("Pan viewport [X]"))
@@ -2375,6 +2381,7 @@ class CanvasFrame(Tk.Frame):
             indicatoron=0,
             variable=self.canvas.actionVar,
             value=ACTION_RULER,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.canvas.setActionRuler)
 
         tkExtra.Balloon.set(but, _("Ruler [R]"))
@@ -2397,6 +2404,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["axes"],
             indicatoron=0,
             variable=self.draw_axes,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawAxes)
 
         tkExtra.Balloon.set(but, _("Toggle display of axes"))
@@ -2408,6 +2416,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["grid"],
             indicatoron=0,
             variable=self.draw_grid,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawGrid)
 
         tkExtra.Balloon.set(but, _("Toggle display of grid lines"))
@@ -2419,6 +2428,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["margins"],
             indicatoron=0,
             variable=self.draw_margin,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawMargin)
 
         tkExtra.Balloon.set(but, _("Toggle display of margins"))
@@ -2431,6 +2441,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["measure"],
             indicatoron=0,
             variable=self.draw_probe,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawProbe)
 
         tkExtra.Balloon.set(but, _("Toggle display of probe"))
@@ -2442,6 +2453,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["endmill"],
             indicatoron=0,
             variable=self.draw_paths,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.toggleDrawFlag)
 
         tkExtra.Balloon.set(but, _("Toggle display of paths (G1,G2,G3)"))
@@ -2453,6 +2465,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["rapid"],
             indicatoron=0,
             variable=self.draw_rapid,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.toggleDrawFlag)
 
         tkExtra.Balloon.set(but, _("Toggle display of rapid motion (G0)"))
@@ -2464,6 +2477,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["workspace"],
             indicatoron=0,
             variable=self.draw_workarea,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawWorkarea)
 
         tkExtra.Balloon.set(but, _("Toggle display of workarea"))
@@ -2475,6 +2489,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["memory"],
             indicatoron=0,
             variable=self.draw_mems,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawMemories)
 
         tkExtra.Balloon.set(but, _("Toggle display of memories"))
@@ -2486,6 +2501,7 @@ class CanvasFrame(Tk.Frame):
             image=OCV.icons["camera"],
             indicatoron=0,
             variable=self.draw_camera,
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.drawCamera)
 
         tkExtra.Balloon.set(but, _("Toggle display of camera"))
@@ -2497,6 +2513,7 @@ class CanvasFrame(Tk.Frame):
         but = Tk.Button(
             toolbar,
             image=OCV.icons["refresh"],
+            activebackground=OCV.COLOR_ACTIVE,
             command=self.viewChange)
 
         tkExtra.Balloon.set(but, _("Redraw display [Ctrl-R]"))
@@ -2507,7 +2524,7 @@ class CanvasFrame(Tk.Frame):
         self.drawTime = tkExtra.Combobox(
             toolbar,
             width=3,
-            background="White",
+            background=OCV.COLOR_BG1,
             command=self.drawTimeChange)
 
         tkExtra.Balloon.set(self.drawTime, _("Draw timeout in seconds"))

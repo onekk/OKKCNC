@@ -467,7 +467,7 @@ def about_win(timer = None):
     m_txt.tag_config(
         "title",
         font=OCV.FONT_ABOUT_TITLE,
-        background="white",
+        background=OCV.COLOR_BG1,
         foreground="black")
 
     m_txt.tag_config(

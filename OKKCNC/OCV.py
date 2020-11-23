@@ -27,8 +27,8 @@ PLATFORM = "({0} py{1}.{2}.{3})".format(
 
 PRG_NAME = "OKKCNC"
 """version and date"""
-PRG_VER = "0.3.38-t1"
-PRG_DATE = "02 nov 2020"
+PRG_VER = "0.3.38-t2"
+PRG_DATE = "23 nov 2020"
 CONF_VER = "1.1"
 PRG_DEV_HOME = "https://github.com/onekk/OKKCNC"
 
@@ -233,11 +233,19 @@ CNC_YZ = 2
 """See Inifile.py/load_colors()
 values with comments Above are the corresponding item names in IniFile
 """
+COLOR_ACTION_GANTRY = "seashell"
+COLOR_ACTION_WPOS = "ivory"
 # "ribbon.active"
 COLOR_ACTIVE = "LightYellow"
-COLOR_BACKGROUND = "#E6E2E0"
-COLOR_BACKGROUND_LABELS = "pale green"
-COLOR_BACKGROUND_DISABLE = "#A6A2A0"
+COLOR_BG = "#E6E2E0"
+COLOR_BG_DISABLE = "#A6A2A0"
+# used in some label, entry and window background
+COLOR_BG1 = "white"
+COLOR_BG2 = "khaki"
+COLOR_BG3 = "pale green"
+COLOR_BG_RUN = "DarkGray"
+COLOR_BG_SAFE = "lightgreen"
+COLOR_BG_WRN = "salmon"
 
 COLOR_BLOCK = "LightYellow"
 # "canvas.camera"
@@ -261,13 +269,17 @@ COLOR_GROUP_BACKGROUND2 = "#B0C0C0"
 COLOR_GROUP_FOREGROUND = "White"
 COLOR_INFO = "Gold"
 COLOR_INSERT = "Blue"  # CHECK set but unused
+
+
 COLOR_LSTB_NUMBER = "khaki1"
 COLOR_LSTB_SEP = "aquamarine"
 COLOR_LSTB_TEXT = "azure"
 COLOR_LSTB_VAL = "AntiqueWhite1"
 # "canvas.margin"
 COLOR_MARGIN = "Magenta"
+# "canvas.mems"
 COLOR_MEM = "Orchid1"
+COLOR_MEM_SET = "Aquamarine"
 # "canvas.move"
 COLOR_MOVE = "DarkCyan"
 # "canvas.probetext"

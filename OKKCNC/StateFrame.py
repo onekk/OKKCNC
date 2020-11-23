@@ -57,7 +57,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                 variable=OCV.wcsvar,
                 value=p,
                 indicatoron=0,
-                activebackground="LightYellow",
+                activebackground=OCV.COLOR_ACTIVE,
                 command=self.wcsChange)
 
             but.pack(side=Tk.LEFT, fill=Tk.X, expand=Tk.YES)
@@ -166,6 +166,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             frame,
             text=_("set"),
             command=self.setTool,
+            activebackground=OCV.COLOR_ACTIVE,
             padx=1, pady=1)
 
         but.grid(row=row, column=col, sticky=Tk.W)
@@ -224,6 +225,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             frame,
             text=_("set"),
             command=self.setFeedRate,
+            activebackground=OCV.COLOR_ACTIVE,
             padx=1, pady=1)
 
         but.grid(row=row, column=col, columnspan=2, sticky=Tk.W)
@@ -281,6 +283,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             frame,
             text=_("set"),
             command=self.setTLO,
+            activebackground=OCV.COLOR_ACTIVE,
             padx=1, pady=1)
 
         but.grid(row=row, column=col, columnspan=2, sticky=Tk.W)
@@ -324,7 +327,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             frame1,
             text=_("Reset"),
             pady=0,
-            command=self.resetOverride)
+            command=self.resetOverride,
+            activebackground=OCV.COLOR_ACTIVE)
 
         but.grid(row=row+1, column=col, pady=0, sticky=Tk.NSEW)
 
@@ -364,8 +368,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             compound=Tk.LEFT,
             indicatoron=0,
             variable=self.spindle,
-            padx=1,
-            pady=0)
+            activebackground=OCV.COLOR_ACTIVE,
+            padx=1,pady=0)
 
         tkExtra.Balloon.set(but, _("Start/Stop spindle (M3/M5)"))
 
@@ -407,8 +411,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             command=self.coolantOff,
             indicatoron=0,
             variable=self.coolant,
-            padx=1,
-            pady=0)
+            activebackground=OCV.COLOR_ACTIVE,
+            padx=1, pady=0)
 
         tkExtra.Balloon.set(coolantDisable, _("Stop cooling (M9)"))
         coolantDisable.grid(row=row, column=col, pady=0, sticky=Tk.NSEW)
@@ -422,8 +426,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             command=self.coolantFlood,
             indicatoron=0,
             variable=self.flood,
-            padx=1,
-            pady=0)
+            activebackground=OCV.COLOR_ACTIVE,
+            padx=1, pady=0)
 
         tkExtra.Balloon.set(floodEnable, _("Start flood (M8)"))
         floodEnable.grid(row=row, column=col, pady=0, sticky=Tk.NSEW)
@@ -437,8 +441,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             command=self.coolantMist,
             indicatoron=0,
             variable=self.mist,
-            padx=1,
-            pady=0)
+            activebackground=OCV.COLOR_ACTIVE,
+            padx=1, pady=0)
 
         tkExtra.Balloon.set(mistEnable, _("Start mist (M7)"))
         mistEnable.grid(row=row, column=col, pady=0, sticky=Tk.NSEW)

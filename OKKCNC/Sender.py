@@ -526,7 +526,7 @@ class Sender(object):
 
     def resume(self, event=None):
         but = OCV.TK_RUN_GROUP.frame.nametowidget("run_pause")
-        but.config(background=OCV.COLOR_BACKGROUND)
+        but.config(background=OCV.COLOR_BG)
         OCV.TK_MCTRL.resume(None)
 
     def pause(self, event=None):
@@ -573,10 +573,10 @@ class Sender(object):
                     pass
 
         but = OCV.TK_RUN_GROUP.frame.nametowidget("run_pause")
-        but.config(background=OCV.COLOR_BACKGROUND)
+        but.config(background=OCV.COLOR_BG)
 
         but = OCV.TK_RUN_GROUP.frame.nametowidget("run_stop")
-        but.config(background=OCV.COLOR_BACKGROUND)
+        but.config(background=OCV.COLOR_BG)
             
         # Restore variables set in InitRun and in 
         

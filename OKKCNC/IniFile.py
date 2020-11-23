@@ -258,6 +258,9 @@ def load_colors():
     OCV.COLOR_MOVE = get_str(
         "Color", "canvas.move", OCV.COLOR_MOVE)
 
+    OCV.COLOR_MEM = get_str(
+        "Color", "canvas.mems", OCV.COLOR_MEM) 
+
     OCV.COLOR_RULER = get_str(
         "Color", "canvas.ruler", OCV.COLOR_RULER)
 

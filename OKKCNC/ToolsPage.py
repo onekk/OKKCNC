@@ -22,6 +22,7 @@ try:
 except ImportError:
     import tkinter as Tk
     import tkinter.messagebox as tkMessageBox
+
 from operator import attrgetter
 
 import os
@@ -922,7 +923,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Stock",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, rowspan=3, padx=2, pady=0, sticky=Tk.NSEW)
         tkExtra.Balloon.set(b, _("Stock material currently on machine"))
@@ -938,7 +939,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Material",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -956,7 +957,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="EndMill",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -972,7 +973,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Rename"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -990,7 +991,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Add"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1008,7 +1009,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Clone"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1026,7 +1027,7 @@ class DataBaseGroup(CNCRibbon.ButtonGroup):
             text=_("Delete"),
             compound=Tk.LEFT,
             anchor=Tk.W,
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=0, pady=0, sticky=Tk.NSEW)
 
@@ -1052,7 +1053,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             padx=0, pady=0,
             sticky=Tk.NSEW)
 
-        b = Tk.Label(f, image=OCV.icons["globe"], background=OCV.COLOR_BACKGROUND)
+        b = Tk.Label(f, image=OCV.icons["globe"], background=OCV.COLOR_BG)
         b.pack(side=Tk.LEFT)
 
         self.language = Ribbon.LabelCombobox(
@@ -1075,7 +1076,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Camera",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1093,7 +1094,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Color",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1111,7 +1112,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="CNC",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1129,7 +1130,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Controller",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1146,7 +1147,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Font",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1164,7 +1165,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
             anchor=Tk.W,
             variable=OCV.TK_MAIN.tools.active,
             value="Shortcut",
-            background=OCV.COLOR_BACKGROUND)
+            background=OCV.COLOR_BG)
 
         b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 
@@ -1181,7 +1182,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
 #            anchor=Tk.W,
 #            variable=OCV.TK_MAIN.tools.active,
 #            value="Events",
-#            background=OCV.COLOR_BACKGROUND)
+#            background=OCV.COLOR_BG)
 #        b.grid(row=row, column=col, padx=1, pady=0, sticky=Tk.NSEW)
 #        tkExtra.Balloon.set(b, _("Events configuration"))
 #        self.addWidget(b)
@@ -1238,7 +1239,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
             compound=Tk.LEFT,
             foreground="DarkRed",
             activeforeground="DarkRed",
-            activebackground="LightYellow",
+            activebackground=OCV.COLOR_ACTIVE,
             font=OCV.FONT_EXE,
             command=self.execute)
 
